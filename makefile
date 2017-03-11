@@ -5,6 +5,9 @@ HEADER=flip_loop.h
 flip_loop: flip_loop.o $(HEADER)
 	$(CXX) -o $@ $^
 
+main: main.o $(HEADER)
+	$(CXX) -o $@ $^
+
 %.o : %.cpp $(HEADER)
 	$(CXX) -c $< -o $@
 
@@ -13,7 +16,7 @@ test : flip_loop
 	./$<
 
 .PHONY : all
-all : flip_loop
+all : flip_loop main
 
 .PHONY : clean
 clean :
