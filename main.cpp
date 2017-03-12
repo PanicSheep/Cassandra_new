@@ -3,6 +3,6 @@
 
 int main()
 {
-	std::cout << flip(0xFF00000000000080ULL, 0x00FFFFFFFFFFFF7EULL, 0) << std::endl;
+	std::cout << flip_loop(0xFF00000000000080ULL, 0x00FFFFFFFFFFFF7EULL, 0) << std::endl;
 	return 0;
 }
