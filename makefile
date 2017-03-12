@@ -1,24 +1,18 @@
-CXX=g++
+CC=g++
+CFLAGS=-c -Wall
+LDFLAGS=
+SOURCES=main.cpp flip_loop.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=main
 
-HEADER=flip_loop.h
+all: $(SOURCES) $(EXECUTABLE)
+    
+$(EXECUTABLE): $(OBJECTS) 
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
-flip_loop: flip_loop.o $(HEADER)
-	$(CXX) -o $@ $^
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
 
-main: main.o $(HEADER)
-	$(CXX) -o $@ $^
-
-%.o : %.cpp $(HEADER)
-	$(CXX) -c $< -o $@
-
-.PHONY : test
-test : flip_loop
-	./$<
-
-.PHONY : all
-all : flip_loop main
-
-.PHONY : clean
 clean :
 	rm -f *.o
 	rm -f *~
