@@ -1,17 +1,19 @@
 CC=g++
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -std=c++11
 LDFLAGS=
-SOURCES=main.cpp flip_loop.cpp
-OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=main
 
-all: $(SOURCES) $(EXECUTABLE)
+all: test
+
+test: bin\test_flip_loop
     
-$(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+bin\test_flip_loop: obj\test_flip_loop.o
+	$(CC) $(LDFLAGS) $< -o $@
 
-.cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
+obj\%.o: src\%.cpp
+	$(CC) $(CFLAGS) -o $@ $<
+	
+obj\%.o: test\%.cpp
+	$(CC) $(CFLAGS) -o $@ $<
 
 clean :
 	rm -f *.o
