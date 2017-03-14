@@ -9,11 +9,9 @@ test: bin\test_flip_loop
 bin\test_flip_loop: obj\test_flip_loop.o
 	$(CC) $(LDFLAGS) $< -o $@
 
-obj\%.o: src\%.cpp
-	$(CC) $(CFLAGS) -o $@ $<
-	
-obj\%.o: test\%.cpp
-	$(CC) $(CFLAGS) -o $@ $<
+%.o: %.cpp
+	$(CC) $(CFLAGS) -o ..\obj\$@ $<
+
 
 clean :
 	rm -f *.o
