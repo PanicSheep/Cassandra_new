@@ -1,5 +1,13 @@
 language:
   - cpp
 
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:ubuntu-toolchain-r/test'
+    packages:
+      - g++-5
+
+
 script:
   - make
