@@ -14,5 +14,5 @@ install:
 
 script: 
   - $CXX --version
-  - mkdir -p /obj
+  - sudo mkdir -p /obj
   - make
