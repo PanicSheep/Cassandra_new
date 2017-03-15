@@ -4,8 +4,8 @@ LDFLAGS=
 
 SOURCES_SRC=$(wildcard src/*.cpp)
 SOURCES_TEST=$(wildcard test/*.cpp)
-OBJECTS_SRC=$(SOURCES_SRC:src/%.cpp=$(obj/%.o))
-OBJECTS_TEST=$(SOURCES_TEST:src/%.cpp=$(obj/%.o))
+OBJECTS_SRC=$(SOURCES_SRC:src/%.cpp=obj/%.o)
+OBJECTS_TEST=$(SOURCES_TEST:src/%.cpp=obj/%.o)
 
 $(OBJECTS_SRC): obj/%.o : src/%.cpp
     $(CC) $(CFLAGS) -c $< -o $@
