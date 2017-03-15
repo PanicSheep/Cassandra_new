@@ -10,6 +10,7 @@ before_install:
 install:
   - sudo apt-get install g++-6 -y
   - export CXX="g++-6"
+  - gcc --version
 
 script:
   - make
