@@ -30,11 +30,11 @@ gtest_main.a : gtest-all.o gtest_main.o
 
 
 
-$(OBJECTS_SRC): obj/%.o : src/%.cpp
+$(OBJECTS_SRC): obj/%.o : src/%.cpp $(GTEST_HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
     
-$(OBJECTS_TEST): obj/%.o : test/%.cpp
+$(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 
