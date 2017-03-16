@@ -1,11 +1,34 @@
+GTEST_DIR = googletest/googletest
 CC=g++
-CFLAGS=-c -Wall -std=c++11 -I googletest/googletest -I googletest/googletest/include -I src
+CFLAGS=-c -Wall -std=c++11 -I $(GTEST_DIR) -I $(GTEST_DIR)/include -I src
 LDFLAGS= -lpthread -lgtest -lgtest_main -L/usr/lib
+
+# All Google test headers.
+GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
+		$(GTEST_DIR)/include/gtest/internal/*.h
 
 SOURCES_SRC=$(wildcard src/*.cpp)
 SOURCES_TEST=$(wildcard test/*.cpp)
 OBJECTS_SRC=$(SOURCES_SRC:src/%.cpp=obj/%.o)
 OBJECTS_TEST=$(SOURCES_TEST:test/%.cpp=obj/%.o)
+
+
+# Builds gtest.a gtest_main.a
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+
+gtest-all.o : $(GTEST_SRCS_)
+	$(CC) $(CFLAGS) -c $(GTEST_DIR)/src/gtest-all.cc
+
+gtest_main.o : $(GTEST_SRCS_)
+	$(CC) $(CFLAGS) -c $(GTEST_DIR)/src/gtest_main.cc
+
+gtest.a : gtest-all.o
+	ar rvs $@ $^
+
+gtest_main.a : gtest-all.o gtest_main.o
+	ar rvs $@ $^
+
+
 
 $(OBJECTS_SRC): obj/%.o : src/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
