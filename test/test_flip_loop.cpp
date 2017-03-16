@@ -1,6 +1,6 @@
 #include <iostream>
 #include "flip_loop.h"
-#include "gtest.h"
+#include "gtest/gtest.h"
 
 TEST (FlipLoopTest, OneFlip) {
 	const uint64_t P = 0xFF00000000000000ULL;
