@@ -19,6 +19,7 @@ bin/test_flip_loop: obj/test_flip_loop.o
 	$(CC) $(LDFLAGS) $< -o $@
 
 test: bin/test_flip_loop
+	./bin/test_flip_loop
 
 all: test
 
