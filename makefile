@@ -1,7 +1,7 @@
 GTEST_DIR = googletest/googletest
 CC=g++
 CFLAGS=-c -Wall -std=c++11 -I $(GTEST_DIR) -I $(GTEST_DIR)/include -I src
-LDFLAGS= -lpthread -lgtest_main -lgtest
+LDFLAGS= -lpthread
 
 # All Google test headers.
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
@@ -38,7 +38,7 @@ $(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS)
 	$(CC) $(CFLAGS) $< -o $@
 	@echo "Compiled "$<" successfully!"
 
-bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o gtest_main.a gtest.a
+bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o gtest-all.o gtest_main.o
 	$(CC) $(LDFLAGS) obj/test_flip_loop.o obj/flip_loop.o -o $@
 
 test: bin/test_flip_loop
