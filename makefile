@@ -16,7 +16,7 @@ $(OBJECTS_TEST): obj/%.o : test/%.cpp
 	@echo "Compiled "$<" successfully!"
 
 bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o
-	$(CC) $(LDFLAGS) $< -o $@
+	$(CC) $(LDFLAGS) obj/test_flip_loop.o obj/flip_loop.o -o $@
 
 test: bin/test_flip_loop
 	./bin/test_flip_loop
