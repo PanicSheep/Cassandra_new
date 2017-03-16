@@ -15,5 +15,7 @@ install:
 script: 
   - $CXX --version
   - ls -a
+  - cd googletest
+  - ls -a
   - make
   - make test
