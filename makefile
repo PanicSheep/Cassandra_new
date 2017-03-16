@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-c -Wall -std=c++11 -I googletest/googletest -I googletest/googletest/include -I src
-LDFLAGS=
+LDFLAGS= -lpthread -lgtest -lgtest_main -L/usr/lib
 
 SOURCES_SRC=$(wildcard src/*.cpp)
 SOURCES_TEST=$(wildcard test/*.cpp)
