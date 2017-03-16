@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-c -Wall -std=c++11 -I googletest/googletest/test/
+CFLAGS=-c -Wall -std=c++11 -I googletest/googletest/test/ src/
 LDFLAGS=
 
 SOURCES_SRC=$(wildcard src/*.cpp)
