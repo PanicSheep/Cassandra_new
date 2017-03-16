@@ -15,7 +15,7 @@ install:
 script: 
   - $CXX --version
   - ls -a
-  - cd googletest
+  - cd googletest\googletest\include\gtest
   - ls -a
   - make
   - make test
