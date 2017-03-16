@@ -15,13 +15,13 @@ $(OBJECTS_TEST): obj/%.o : src/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 
-bin/test_flip_loop: obj/test_flip_loop.o
+bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o
 	$(CC) $(LDFLAGS) $< -o $@
 
 test: bin/test_flip_loop
 	./bin/test_flip_loop
 
-all: test
+all:
 
 clean :
 	rm -f *.o
