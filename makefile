@@ -7,11 +7,11 @@ SOURCES_TEST=$(wildcard test/*.cpp)
 OBJECTS_SRC=$(SOURCES_SRC:src/%.cpp=obj/%.o)
 OBJECTS_TEST=$(SOURCES_TEST:src/%.cpp=obj/%.o)
 
-$(OBJECTS_SRC): obj/%.o : src/%.cpp
+$(OBJECTS_SRC): obj/%.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
     
-$(OBJECTS_TEST): obj/%.o : src/%.cpp
+$(OBJECTS_TEST): obj/%.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 
