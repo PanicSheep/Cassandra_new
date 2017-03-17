@@ -140,19 +140,21 @@ TEST (MacrosHellTest, GetMSB) {
 }
 
 TEST (MacrosHellTest, RemoveLSB) {
-	ASSERT_EQ (RemoveLSB(0), 0);
-	ASSERT_EQ (RemoveLSB(1), 0);
-	ASSERT_EQ (RemoveLSB(2), 0);
-	ASSERT_EQ (RemoveLSB(3), 2);
-	ASSERT_EQ (RemoveLSB(0x8000000001000000ULL), 0x8000000000000000ULL);
+	uint64_t a;
+	a = 0; RemoveLSB(a) ASSERT_EQ (a, 0);
+	a = 1; RemoveLSB(a) ASSERT_EQ (a, 0);
+	a = 2; RemoveLSB(a) ASSERT_EQ (a, 0);
+	a = 3; RemoveLSB(a) ASSERT_EQ (a, 2);
+	a = 0x8000000001000000ULL; RemoveLSB(a) ASSERT_EQ (a, 0x8000000001000000ULL);
 }
 
 TEST (MacrosHellTest, RemoveMSB) {
-	ASSERT_EQ (RemoveMSB(0), 0);
-	ASSERT_EQ (RemoveMSB(1), 0);
-	ASSERT_EQ (RemoveMSB(2), 0);
-	ASSERT_EQ (RemoveMSB(3), 1);
-	ASSERT_EQ (RemoveMSB(0x8000000001000000ULL), 0x0000000001000000ULL);
+	uint64_t a;
+	a = 0; RemoveMSB(a) ASSERT_EQ (a, 0);
+	a = 1; RemoveMSB(a) ASSERT_EQ (a, 0);
+	a = 2; RemoveMSB(a) ASSERT_EQ (a, 0);
+	a = 3; RemoveMSB(a) ASSERT_EQ (a, 1);
+	a = 0x8000000001000000ULL; RemoveLSB(a) ASSERT_EQ (a, 0x0000000001000000ULL);
 }
 // --------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////
