@@ -169,7 +169,7 @@
 	#pragma intrinsic(_BitScanReverse)
 
 	FORCE_INLINE unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) { return _BitScanForward64(index, mask); }
-	FORCE_INLINE unsigned long BitScanLSB(const uint64_t mask){	assert(mask); unsigned long index; _BitScanForward64(&index, mask); return index; }
+	FORCE_INLINE unsigned long BitScanLSB(const uint64_t mask){ assert(mask); unsigned long index; _BitScanForward64(&index, mask); return index; }
 	template <typename T> FORCE_INLINE unsigned char bsf(unsigned long * index, const T mask) { return BitScanLSB(index, mask); }
 
 	FORCE_INLINE unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) { return _BitScanReverse64(index, mask); }
