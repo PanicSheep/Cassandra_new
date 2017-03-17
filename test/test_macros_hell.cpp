@@ -106,7 +106,7 @@ TEST (MacrosHellTest, BitScanMSB_6) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, CountLeadingZerosTest) {
-	ASSERT_DEATH (CountLeadingZeros(0), "(.*?)");
+	ASSERT_EQ (CountLeadingZeros(0), 64);
 	ASSERT_EQ (CountLeadingZeros(1), 63);
 	ASSERT_EQ (CountLeadingZeros(2), 62);
 	ASSERT_EQ (CountLeadingZeros(3), 62);
@@ -147,7 +147,7 @@ TEST (MacrosHellTest, RemoveLSBTest) {
 	a = 1; RemoveLSB(a); ASSERT_EQ (a, 0);
 	a = 2; RemoveLSB(a); ASSERT_EQ (a, 0);
 	a = 3; RemoveLSB(a); ASSERT_EQ (a, 2);
-	a = 0x8000000001000000ULL; RemoveLSB(a); ASSERT_EQ (a, 0x8000000001000000ULL);
+	a = 0x8000000001000000ULL; RemoveLSB(a); ASSERT_EQ (a, 0x8000000000000000ULL);
 }
 
 TEST (MacrosHellTest, RemoveMSBTest) {
@@ -156,7 +156,7 @@ TEST (MacrosHellTest, RemoveMSBTest) {
 	a = 1; RemoveMSB(a); ASSERT_EQ (a, 0);
 	a = 2; RemoveMSB(a); ASSERT_EQ (a, 0);
 	a = 3; RemoveMSB(a); ASSERT_EQ (a, 1);
-	a = 0x8000000001000000ULL; RemoveLSB(a); ASSERT_EQ (a, 0x0000000001000000ULL);
+	a = 0x8000000001000000ULL; RemoveMSB(a); ASSERT_EQ (a, 0x0000000001000000ULL);
 }
 // --------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////
