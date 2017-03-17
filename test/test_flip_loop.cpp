@@ -10,7 +10,7 @@ TEST (FlipLoopTest, OneFlip) {
 	
 	ASSERT_EQ (P & flip, 0);
 	ASSERT_EQ (O & flip, flip);
-	ASSERT_EQ (flip, 0x008141211109050300ULL);
+	ASSERT_EQ (flip, 0x0041211109050300ULL);
 }
 
 int main(int argc, char **argv)
