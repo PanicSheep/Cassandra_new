@@ -104,7 +104,7 @@ TEST (MacrosHellTest, BitScanMSB_6) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, CountLeadingZerosTest) {
-	ASSERT_EQ (CountLeadingZeros(0), 64);
+	ASSERT_ANY_THROW (CountLeadingZeros(0));
 	ASSERT_EQ (CountLeadingZeros(1), 63);
 	ASSERT_EQ (CountLeadingZeros(2), 62);
 	ASSERT_EQ (CountLeadingZeros(3), 62);
@@ -112,7 +112,7 @@ TEST (MacrosHellTest, CountLeadingZerosTest) {
 }
 
 TEST (MacrosHellTest, CountTrailingZerosTest) {
-	ASSERT_EQ (CountTrailingZeros(0), 64);
+	ASSERT_ANY_THROW (CountTrailingZeros(0));
 	ASSERT_EQ (CountTrailingZeros(1), 0);
 	ASSERT_EQ (CountTrailingZeros(2), 1);
 	ASSERT_EQ (CountTrailingZeros(3), 0);
