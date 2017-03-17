@@ -30,12 +30,12 @@ gtest_main.a : gtest-all.o gtest_main.o
 
 
 
-$(OBJECTS_SRC): obj/%.o : src/%.cpp $(GTEST_HEADERS)
+$(OBJECTS_SRC): obj/%.o : src/%.cpp
 	$(CC) $(CFLAGS) $< -o $@
 	@echo "Compiled "$<" successfully!"
     
 $(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS)
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) gtest-all.o $< -o $@
 	@echo "Compiled "$<" successfully!"
 
 bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o gtest-all.o gtest_main.o
