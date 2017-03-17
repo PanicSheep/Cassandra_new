@@ -141,20 +141,20 @@ TEST (MacrosHellTest, GetMSBTest) {
 
 TEST (MacrosHellTest, RemoveLSBTest) {
 	uint64_t a;
-	a = 0; RemoveLSB(a) ASSERT_EQ (a, 0);
-	a = 1; RemoveLSB(a) ASSERT_EQ (a, 0);
-	a = 2; RemoveLSB(a) ASSERT_EQ (a, 0);
-	a = 3; RemoveLSB(a) ASSERT_EQ (a, 2);
-	a = 0x8000000001000000ULL; RemoveLSB(a) ASSERT_EQ (a, 0x8000000001000000ULL);
+	a = 0; RemoveLSB(a); ASSERT_EQ (a, 0);
+	a = 1; RemoveLSB(a); ASSERT_EQ (a, 0);
+	a = 2; RemoveLSB(a); ASSERT_EQ (a, 0);
+	a = 3; RemoveLSB(a); ASSERT_EQ (a, 2);
+	a = 0x8000000001000000ULL; RemoveLSB(a); ASSERT_EQ (a, 0x8000000001000000ULL);
 }
 
 TEST (MacrosHellTest, RemoveMSBTest) {
 	uint64_t a;
-	a = 0; RemoveMSB(a) ASSERT_EQ (a, 0);
-	a = 1; RemoveMSB(a) ASSERT_EQ (a, 0);
-	a = 2; RemoveMSB(a) ASSERT_EQ (a, 0);
-	a = 3; RemoveMSB(a) ASSERT_EQ (a, 1);
-	a = 0x8000000001000000ULL; RemoveLSB(a) ASSERT_EQ (a, 0x0000000001000000ULL);
+	a = 0; RemoveMSB(a); ASSERT_EQ (a, 0);
+	a = 1; RemoveMSB(a); ASSERT_EQ (a, 0);
+	a = 2; RemoveMSB(a); ASSERT_EQ (a, 0);
+	a = 3; RemoveMSB(a); ASSERT_EQ (a, 1);
+	a = 0x8000000001000000ULL; RemoveLSB(a); ASSERT_EQ (a, 0x0000000001000000ULL);
 }
 // --------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////
