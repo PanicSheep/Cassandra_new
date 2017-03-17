@@ -106,7 +106,7 @@ TEST (MacrosHellTest, BitScanMSB_6) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, CountLeadingZerosTest) {
-	ASSERT_EQ (CountLeadingZeros(0), 64);
+	ASSERT_DEATH (CountLeadingZeros(0), "(.*?)");
 	ASSERT_EQ (CountLeadingZeros(1), 63);
 	ASSERT_EQ (CountLeadingZeros(2), 62);
 	ASSERT_EQ (CountLeadingZeros(3), 62);
