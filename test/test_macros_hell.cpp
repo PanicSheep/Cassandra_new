@@ -103,7 +103,7 @@ TEST (MacrosHellTest, BitScanMSB_6) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST (MacrosHellTest, CountLeadingZeros) {
+TEST (MacrosHellTest, CountLeadingZerosTest) {
 	ASSERT_EQ (CountLeadingZeros(0), 64);
 	ASSERT_EQ (CountLeadingZeros(1), 63);
 	ASSERT_EQ (CountLeadingZeros(2), 62);
@@ -111,7 +111,7 @@ TEST (MacrosHellTest, CountLeadingZeros) {
 	ASSERT_EQ (CountLeadingZeros(0x8000000000000000ULL), 0);
 }
 
-TEST (MacrosHellTest, CountTrailingZeros) {
+TEST (MacrosHellTest, CountTrailingZerosTest) {
 	ASSERT_EQ (CountTrailingZeros(0), 64);
 	ASSERT_EQ (CountTrailingZeros(1), 0);
 	ASSERT_EQ (CountTrailingZeros(2), 1);
@@ -123,7 +123,7 @@ TEST (MacrosHellTest, CountTrailingZeros) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST (MacrosHellTest, GetLSB) {
+TEST (MacrosHellTest, GetLSBTest) {
 	ASSERT_EQ (GetLSB(0), 0);
 	ASSERT_EQ (GetLSB(1), 1);
 	ASSERT_EQ (GetLSB(2), 2);
@@ -131,7 +131,7 @@ TEST (MacrosHellTest, GetLSB) {
 	ASSERT_EQ (GetLSB(0x8000000000000000ULL), 0x8000000000000000ULL);
 }
 
-TEST (MacrosHellTest, GetMSB) {
+TEST (MacrosHellTest, GetMSBTest) {
 	ASSERT_EQ (GetMSB(0), 0);
 	ASSERT_EQ (GetMSB(1), 1);
 	ASSERT_EQ (GetMSB(2), 2);
@@ -139,7 +139,7 @@ TEST (MacrosHellTest, GetMSB) {
 	ASSERT_EQ (GetMSB(0x8000000000000000ULL), 0x8000000000000000ULL);
 }
 
-TEST (MacrosHellTest, RemoveLSB) {
+TEST (MacrosHellTest, RemoveLSBTest) {
 	uint64_t a;
 	a = 0; RemoveLSB(a) ASSERT_EQ (a, 0);
 	a = 1; RemoveLSB(a) ASSERT_EQ (a, 0);
@@ -148,7 +148,7 @@ TEST (MacrosHellTest, RemoveLSB) {
 	a = 0x8000000001000000ULL; RemoveLSB(a) ASSERT_EQ (a, 0x8000000001000000ULL);
 }
 
-TEST (MacrosHellTest, RemoveMSB) {
+TEST (MacrosHellTest, RemoveMSBTest) {
 	uint64_t a;
 	a = 0; RemoveMSB(a) ASSERT_EQ (a, 0);
 	a = 1; RemoveMSB(a) ASSERT_EQ (a, 0);
@@ -161,7 +161,7 @@ TEST (MacrosHellTest, RemoveMSB) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST (MacrosHellTest, PopCount) {
+TEST (MacrosHellTest, PopCountTest) {
 	ASSERT_EQ (PopCount(0), 0);
 	ASSERT_EQ (PopCount(1), 1);
 	ASSERT_EQ (PopCount(2), 1);
@@ -169,7 +169,7 @@ TEST (MacrosHellTest, PopCount) {
 	ASSERT_EQ (PopCount(0xFFFFFFFFFFFFFFFFULL), 64);
 }
 
-TEST (MacrosHellTest, PopCount_max15) {
+TEST (MacrosHellTest, PopCount_max15Test) {
 	ASSERT_EQ (PopCount_max15(0), 0);
 	ASSERT_EQ (PopCount_max15(1), 1);
 	ASSERT_EQ (PopCount_max15(2), 1);
