@@ -187,18 +187,22 @@
 
 
 // Count Leading Zeros
+// _lzcnt_u64(0) == 64
+// __builtin_clzll(0) is undefined
 #if defined(_MSC_VER)
-	FORCE_INLINE uint64_t CountLeadingZeros(const uint64_t mask) { return _lzcnt_u64(mask); }
+	FORCE_INLINE uint64_t CountLeadingZeros(const uint64_t mask) { assert(mask); return _lzcnt_u64(mask); }
 #elif defined(__GNUC__)
 	FORCE_INLINE uint64_t CountLeadingZeros(const uint64_t mask) { assert(mask); return __builtin_clzll(mask); }
 #endif
 	template <typename T> FORCE_INLINE T clz(const T mask) { return CountLeadingZeros(mask); }
 
 // Count Trailing Zeros
+// _tzcnt_u64(0) is undefined
+// __builtin_ctzll(0) is undefined
 #if defined(_MSC_VER)
-	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) { return _tzcnt_u64(mask); }
+	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) { assert(mask); return _tzcnt_u64(mask); }
 #elif defined(__GNUC__)
-	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) { return __builtin_ctzll(mask); }
+	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) { assert(mask); return __builtin_ctzll(mask); }
 #endif
 	template <typename T> FORCE_INLINE T ctz(const T mask) { return CountTrailingZeros(mask); }
 
