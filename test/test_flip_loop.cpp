@@ -1,4 +1,3 @@
-#include <iostream>
 #include "flip_loop.h"
 #include "gtest/gtest.h"
 
