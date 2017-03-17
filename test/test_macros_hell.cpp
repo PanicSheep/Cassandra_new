@@ -13,7 +13,7 @@ TEST (MacrosHellTest, BitScanLSB_1) {
 TEST (MacrosHellTest, BitScanLSB_2) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 1);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 0);
 	delete index;
 }
@@ -21,7 +21,7 @@ TEST (MacrosHellTest, BitScanLSB_2) {
 TEST (MacrosHellTest, BitScanLSB_3) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 2);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 1);
 	delete index;
 }
@@ -29,7 +29,7 @@ TEST (MacrosHellTest, BitScanLSB_3) {
 TEST (MacrosHellTest, BitScanLSB_4) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 3);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 0);
 	delete index;
 }
@@ -37,7 +37,7 @@ TEST (MacrosHellTest, BitScanLSB_4) {
 TEST (MacrosHellTest, BitScanLSB_5) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 0x8000000000000000ULL);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 63);
 	delete index;
 }
@@ -63,7 +63,7 @@ TEST (MacrosHellTest, BitScanMSB_1) {
 TEST (MacrosHellTest,BitScanMSB_2) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 1);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 0);
 	delete index;
 }
@@ -71,7 +71,7 @@ TEST (MacrosHellTest,BitScanMSB_2) {
 TEST (MacrosHellTest, BitScanMSB_3) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 2);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 1);
 	delete index;
 }
@@ -79,7 +79,7 @@ TEST (MacrosHellTest, BitScanMSB_3) {
 TEST (MacrosHellTest, BitScanMSB_4) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 3);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 1);
 	delete index;
 }
@@ -87,7 +87,7 @@ TEST (MacrosHellTest, BitScanMSB_4) {
 TEST (MacrosHellTest, BitScanMSB_5) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 0x8000000000000000ULL);
-	ASSERT_EQ (ret, 1);
+	ASSERT_NE (ret, 0);
 	ASSERT_EQ (*index, 63);
 	delete index;
 }
