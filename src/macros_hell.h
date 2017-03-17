@@ -176,11 +176,11 @@
 	FORCE_INLINE unsigned long BitScanMSB(const uint64_t mask){ assert(mask); unsigned long index; _BitScanReverse64(&index, mask); return index; }
 	template <typename T> FORCE_INLINE unsigned char bsr(unsigned long * index, const T mask) { return BitScanMSB(index, mask); }
 #elif defined(__GNUC__)
-	FORCE_INLINE unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) { *index = __builtin_ctzll(mask); return mask; }
+	FORCE_INLINE unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) { *index = __builtin_ctzll(mask); return mask != 0; }
 	FORCE_INLINE unsigned long BitScanLSB(const uint64_t mask){ assert(mask); return __builtin_ctzll(mask); }
 	template <typename T> FORCE_INLINE unsigned char bsf(unsigned long * index, const T mask) { return BitScanLSB(index, mask); }
 
-	FORCE_INLINE unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) { *index = __builtin_clzll(mask) ^ 63; return mask; }
+	FORCE_INLINE unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) { *index = __builtin_clzll(mask) ^ 63; return mask != 0; }
 	FORCE_INLINE unsigned long BitScanMSB(const uint64_t mask){ assert(mask); return __builtin_clzll(mask) ^ 63; }
 	template <typename T> FORCE_INLINE unsigned char bsr(unsigned long * index, const T mask) { return BitScanMSB(index, mask); }
 #endif
