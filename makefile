@@ -40,9 +40,13 @@ $(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS)
 
 bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o gtest-all.o
 	$(CC) $(LDFLAGS) obj/test_flip_loop.o obj/flip_loop.o gtest-all.o -o $@
+	
+bin/test_macros_hell: obj/test_macros_hell.o gtest-all.o
+	$(CC) $(LDFLAGS) obj/test_macros_hell.o gtest-all.o -o $@
 
-test: bin/test_flip_loop
+test: bin/test_flip_loop bin/test_macros_hell
 	./bin/test_flip_loop
+	./bin/test_macros_hell
 
 all:
 
