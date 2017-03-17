@@ -39,7 +39,7 @@ $(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS)
 	@echo "Compiled "$<" successfully!"
 
 bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o gtest-all.o gtest_main.o
-	$(CC) $(LDFLAGS) obj/test_flip_loop.o obj/flip_loop.o -o $@
+	$(CC) $(LDFLAGS) obj/test_flip_loop.o obj/flip_loop.o gtest-all.o gtest_main.o -o $@
 
 test: bin/test_flip_loop
 	./bin/test_flip_loop
