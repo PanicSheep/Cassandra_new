@@ -1,6 +1,6 @@
 GTEST_DIR = googletest/googletest
 CC=g++
-CFLAGS=-c -Wall -std=c++11 -I $(GTEST_DIR) -I $(GTEST_DIR)/include -I src
+CFLAGS=-c -Wall -std=c++11 -march=native -I $(GTEST_DIR) -I $(GTEST_DIR)/include -I src
 LDFLAGS= -pthread
 
 # All Google test headers.
