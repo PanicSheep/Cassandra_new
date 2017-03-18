@@ -26,11 +26,11 @@ uint64_t flip_loop_dir(const uint64_t P, const uint64_t O, const uint8_t move, c
 uint64_t flip_loop(const uint64_t P, const uint64_t O, const uint8_t move)
 {
 	return flip_loop_dir(P, O, move, -1, -1)
-		 | flip_loop_dir(P, O, move, -1,  0)
-		 | flip_loop_dir(P, O, move, -1, +1)
-		 | flip_loop_dir(P, O, move,  0, -1)
-		 | flip_loop_dir(P, O, move,  0, +1)
-		 | flip_loop_dir(P, O, move, +1, -1)
-		 | flip_loop_dir(P, O, move, +1,  0)
-		 | flip_loop_dir(P, O, move, +1, +1);
+	     | flip_loop_dir(P, O, move, -1,  0)
+	     | flip_loop_dir(P, O, move, -1, +1)
+	     | flip_loop_dir(P, O, move,  0, -1)
+	     | flip_loop_dir(P, O, move,  0, +1)
+	     | flip_loop_dir(P, O, move, +1, -1)
+	     | flip_loop_dir(P, O, move, +1,  0)
+	     | flip_loop_dir(P, O, move, +1, +1);
 }
