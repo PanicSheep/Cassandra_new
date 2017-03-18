@@ -44,15 +44,29 @@ void TestFlip(const uint8_t move)
 }
 
 TEST (FlipFastTest, Line) {
-    for (uint8_t move = 0; move < 64; move++)
-    {
-        ASSERT_EQ (PopCount(line(move, -1,  0) | line(move, +1,  0)), 7);
-        ASSERT_EQ (PopCount(line(move,  0, -1) | line(move,  0, +1)), 7);
-        ASSERT_EQ (PopCount(line(move, -1, +1) | line(move, +1, +1)), 7);
-        ASSERT_EQ (PopCount(line(move, -1, -1) | line(move, +1, -1)), 7);
-        ASSERT_EQ (PopCount(line(move, +1, -1) | line(move, +1, +1)), 7);
-        ASSERT_EQ (PopCount(line(move, -1, -1) | line(move, -1, +1)), 7);
-    }
+	uint64_t maskPopCount[64] = {
+		21, 21, 21, 21, 21, 21, 21, 21,
+		21, 23, 23, 23, 23, 23, 23, 21,
+		21, 23, 25, 25, 25, 25, 23, 21,
+		21, 23, 25, 27, 27, 25, 23, 21,
+		21, 23, 25, 27, 27, 25, 23, 21,
+		21, 23, 25, 25, 25, 25, 23, 21,
+		21, 23, 23, 23, 23, 23, 23, 21,
+		21, 21, 21, 21, 21, 21, 21, 21 };
+	for (uint8_t move = 0; move < 64; move++)
+	{
+		const uint64_t mask = line(move, -1, -1)
+				    | line(move, -1,  0)
+				    | line(move, -1, +1)
+				    | line(move,  0, -1)
+				    | line(move,  0, +1)
+				    | line(move, +1, -1)
+				    | line(move, +1,  0)
+				    | line(move, +1, +1);
+		ASSERT_EQ (PopCount(line(move, -1,  0) | line(move, +1,  0)), 7);
+		ASSERT_EQ (PopCount(line(move,  0, -1) | line(move,  0, +1)), 7);
+		ASSERT_EQ (PopCount(mask), maskPopCount[move]);
+	}
 }
 
 TEST (FlipFastTest, Move_00) { TestFlip( 0); }
