@@ -1,5 +1,6 @@
 #include "macros_hell.h"
 #include "flip_loop.h"
+#include "flip_fast.h"
 #include "gtest/gtest.h"
 
 uint64_t line(const uint8_t move, const int dX, const int dY)
