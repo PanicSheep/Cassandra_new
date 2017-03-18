@@ -46,14 +46,10 @@ void TestFlip(const uint8_t move)
 TEST (FlipFastTest, Line) {
     for (uint8_t move = 0; move < 64; move++)
     {
-        ASSERT_EQ (PopCount(line(move, -1, -1)), 7);
-        ASSERT_EQ (PopCount(line(move, -1,  0)), 7);
-        ASSERT_EQ (PopCount(line(move, -1, +1)), 7);
-        ASSERT_EQ (PopCount(line(move,  0, -1)), 7);
-        ASSERT_EQ (PopCount(line(move,  0, +1)), 7);
-        ASSERT_EQ (PopCount(line(move, +1, -1)), 7);
-        ASSERT_EQ (PopCount(line(move, +1,  0)), 7);
-        ASSERT_EQ (PopCount(line(move, +1, +1)), 7);
+        ASSERT_EQ (PopCount(line(move, -1, -1) | line(move, +1, +1)), 7);
+        ASSERT_EQ (PopCount(line(move, -1,  0) | line(move, +1,  0)), 7);
+        ASSERT_EQ (PopCount(line(move, -1, +1) | line(move, +1, -1)), 7);
+        ASSERT_EQ (PopCount(line(move,  0, -1) | line(move,  0, +1)), 7);
     }
 }
 
