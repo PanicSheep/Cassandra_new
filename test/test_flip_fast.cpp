@@ -3,6 +3,35 @@
 #include "flip_fast.h"
 #include "gtest/gtest.h"
 
+class CPosition
+{
+public:
+	uint64_t P, O;
+	
+	CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
+	CPosition() : CPosition(0, 0) {}
+	
+	CPosition& MakeRandom(const uint64_t mask = 0xFFFFFFFFFFFFFFFFULL)
+	{
+		static auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0,3), std::mt19937_64(13));
+		uint64_t p = 0;
+		uint64_t o = 0;
+		for (int i = 0; i < PopCount(mask); i++)
+		{
+			p <<= 1;
+			o <<= 1;
+			switch (rnd())
+			{
+				case 0: p |= 1ULL; break;
+				case 1: o |= 1ULL; break;
+			}
+		}
+		P = PDep(p, mask);
+		O = PDep(o, mask);
+		return *this;
+	}
+};
+
 uint64_t line(const uint8_t move, const int dX, const int dY)
 {
     uint64_t ret = 0;
@@ -29,16 +58,13 @@ void TestFlip(const uint8_t move)
 	                    | line(move, +1, -1)
 	                    | line(move, +1,  0)
 	                    | line(move, +1, +1);
-	const int maskPopCount = PopCount(mask);
-        for (int i = 0; i < (1 << maskPopCount); i++)
+	
+        for (int i = 0; i < 1000000; i++)
         {
-            const uint64_t P = PDep(i, mask);
-            const int max_j = 1 << (maskPopCount - PopCount(i));
-            for (int j = 0; j < max_j; j++)
-            {
-                const uint64_t O = PDep(j, mask ^ P);
-                ASSERT_EQ (flip(P, O, move), flip_loop(P, O, move))
-            }
+		CPosition pos();
+		pos.MakeRandom(mask);
+		ASSERT_EQ (flip(pos.P, pos.O, move), flip_loop(pos.P, pos.O, move));
+		}
         }
 }
 
