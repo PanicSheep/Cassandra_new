@@ -38,7 +38,7 @@ void TestFlip(const uint8_t move)
 		for (int j = 0; j < max_j; j++)
 		{
 			const uint64_t O = PDep(j, mask ^ P);
-			ASSERT_NE (flip(P, O, move), flip_loop(P, O, move))
+			ASSERT_NE (flip(P, O, move), flip_loop(P, O, move));
 		}
 	}
 }
