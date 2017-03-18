@@ -57,16 +57,16 @@ TEST (FlipFastTest, Line) {
     }
 }
 
-TEST (FlipFastTest, Move_00) { TestFlip(00); }
-TEST (FlipFastTest, Move_01) { TestFlip(01); }
-TEST (FlipFastTest, Move_02) { TestFlip(02); }
-TEST (FlipFastTest, Move_03) { TestFlip(03); }
-TEST (FlipFastTest, Move_04) { TestFlip(04); }
-TEST (FlipFastTest, Move_05) { TestFlip(05); }
-TEST (FlipFastTest, Move_06) { TestFlip(06); }
-TEST (FlipFastTest, Move_07) { TestFlip(07); }
-TEST (FlipFastTest, Move_08) { TestFlip(08); }
-TEST (FlipFastTest, Move_09) { TestFlip(09); }
+TEST (FlipFastTest, Move_00) { TestFlip( 0); }
+TEST (FlipFastTest, Move_01) { TestFlip( 1); }
+TEST (FlipFastTest, Move_02) { TestFlip( 2); }
+TEST (FlipFastTest, Move_03) { TestFlip( 3); }
+TEST (FlipFastTest, Move_04) { TestFlip( 4); }
+TEST (FlipFastTest, Move_05) { TestFlip( 5); }
+TEST (FlipFastTest, Move_06) { TestFlip( 6); }
+TEST (FlipFastTest, Move_07) { TestFlip( 7); }
+TEST (FlipFastTest, Move_08) { TestFlip( 8); }
+TEST (FlipFastTest, Move_09) { TestFlip( 9); }
 TEST (FlipFastTest, Move_10) { TestFlip(10); }
 TEST (FlipFastTest, Move_11) { TestFlip(11); }
 TEST (FlipFastTest, Move_12) { TestFlip(12); }
