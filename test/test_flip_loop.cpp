@@ -7,7 +7,7 @@ TEST (FlipLoopTest, OneFlip) {
 	const uint8_t move = 0;
 	const uint64_t flip = flip_loop(P, O, move);
 	
-	ASSERT_EQ (P & flip, 0);
+	ASSERT_EQ (P & flip, 0ULL);
 	ASSERT_EQ (O & flip, flip);
 	ASSERT_EQ (flip, 0x0041211109050300ULL);
 }

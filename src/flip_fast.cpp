@@ -896,11 +896,8 @@ namespace Flip_Fast
 	#endif
 		flipped |= FLIPPED_3_H[outflank_h] & 0x00000000FF000000ULL;
 
-	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_3[PExt(O, 0x0000020408102000ULL)] & PExt(P, 0x0001020408102040ULL);
-	#else
 		outflank_d7 = OUTFLANK_3[((O & 0x0000020408102000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0001020408102040ULL) * 0x0101010101010101ULL) >> 56);
-	#endif
+		
 		flipped |= FLIPPED_3_H[outflank_d7] & 0x0000020408102000ULL;
 
 	#ifdef USE_PEXT
@@ -932,15 +929,12 @@ namespace Flip_Fast
 	#endif
 		flipped |= FLIPPED_4_H[outflank_h] & 0x00000000FF000000ULL;
 
-	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_4[PExt(O, 0x0002040810204000ULL)] & PExt(P, 0x0102040810204080ULL);
-	#else
 		outflank_d7 = OUTFLANK_4[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
-	#endif
+		
 		flipped |= FLIPPED_4_H[outflank_d7] & 0x0002040810204000ULL;
 
 	#ifdef USE_PEXT
-		outflank_d9 = OUTFLANK_4[PExt(O, 0x0000402010080400ULL)] & PExt(P, 0x0080402010080402ULL);
+		outflank_d9 = (OUTFLANK_3[PExt(O, 0x0000402010080400ULL)] & PExt(P, 0x0080402010080402ULL)) << 1;
 	#else
 		outflank_d9 = OUTFLANK_4[((O & 0x0000402010080400ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0080402010080402ULL) * 0x0101010101010101ULL) >> 56);
 	#endif
@@ -1152,11 +1146,8 @@ namespace Flip_Fast
 	#endif
 		flipped |= FLIPPED_3_H[outflank_h] & 0x000000FF00000000ULL;
 
-	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_3[PExt(O, 0x0002040810204000ULL)] & PExt(P, 0x0102040810204080ULL);
-	#else
 		outflank_d7 = OUTFLANK_3[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
-	#endif
+		
 		flipped |= FLIPPED_3_H[outflank_d7] & 0x0002040810204000ULL;
 
 	#ifdef USE_PEXT
@@ -1187,12 +1178,9 @@ namespace Flip_Fast
 		outflank_h = OUTFLANK_4[(O >> 33) & 0x3F] & (P >> 32);
 	#endif
 		flipped |= FLIPPED_4_H[outflank_h] & 0x000000FF00000000ULL;
-
-	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_4[PExt(O, 0x0004081020400000ULL)] & PExt(P, 0x0204081020408000ULL);
-	#else
+		
 		outflank_d7 = OUTFLANK_4[((O & 0x0004081020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0204081020408000ULL) * 0x0101010101010101ULL) >> 56);
-	#endif
+		
 		flipped |= FLIPPED_4_H[outflank_d7] & 0x0004081020400000ULL;
 
 	#ifdef USE_PEXT
