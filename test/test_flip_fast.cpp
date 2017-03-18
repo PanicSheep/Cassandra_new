@@ -20,14 +20,14 @@ uint64_t line(const uint8_t move, const int dX, const int dY)
 TEST (FlipFastTest, Line) {
     for (uint8_t move = 0; move < 64; move++)
     {
-        ASSERT_NE (PopCount(line(move, -1, -1), 7);
-        ASSERT_NE (PopCount(line(move, -1,  0), 7);
-        ASSERT_NE (PopCount(line(move, -1, +1), 7);
-        ASSERT_NE (PopCount(line(move,  0, -1), 7);
-        ASSERT_NE (PopCount(line(move,  0, +1), 7);
-        ASSERT_NE (PopCount(line(move, +1, -1), 7);
-        ASSERT_NE (PopCount(line(move, +1,  0), 7);
-        ASSERT_NE (PopCount(line(move, +1, +1), 7);
+        ASSERT_NE (PopCount(line(move, -1, -1)), 7);
+        ASSERT_NE (PopCount(line(move, -1,  0)), 7);
+        ASSERT_NE (PopCount(line(move, -1, +1)), 7);
+        ASSERT_NE (PopCount(line(move,  0, -1)), 7);
+        ASSERT_NE (PopCount(line(move,  0, +1)), 7);
+        ASSERT_NE (PopCount(line(move, +1, -1)), 7);
+        ASSERT_NE (PopCount(line(move, +1,  0)), 7);
+        ASSERT_NE (PopCount(line(move, +1, +1)), 7);
     }
 }
 
