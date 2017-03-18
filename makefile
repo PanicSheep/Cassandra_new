@@ -47,7 +47,7 @@ bin/test_macros_hell: obj/test_macros_hell.o gtest-all.o
 bin/test_flip_fast: obj/test_flip_fast.o obj/flip_fast.o gtest-all.o
 	$(CC) $(LDFLAGS) obj/test_flip_fast.o obj/flip_fast.o gtest-all.o -o $@
 
-test: bin/test_flip_loop bin/test_macros_hell /bin/test_flip_fast
+test: bin/test_flip_loop bin/test_macros_hell bin/test_flip_fast
 	./bin/test_flip_loop
 	./bin/test_macros_hell
 	./bin/test_flip_fast
