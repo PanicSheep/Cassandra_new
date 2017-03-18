@@ -38,7 +38,7 @@ void TestFlip(const uint8_t move)
 		for (int j = 0; j < max_j; j++)
 		{
 			const uint64_t O = PDep(j, mask ^ P);
-			ASSERT_NE (flip(P, O, move), flip_loop(P, O, move));
+			ASSERT_EQ (flip(P, O, move), flip_loop(P, O, move));
 		}
 	}
 }
@@ -46,14 +46,14 @@ void TestFlip(const uint8_t move)
 TEST (FlipFastTest, Line) {
     for (uint8_t move = 0; move < 64; move++)
     {
-        ASSERT_NE (PopCount(line(move, -1, -1)), 7);
-        ASSERT_NE (PopCount(line(move, -1,  0)), 7);
-        ASSERT_NE (PopCount(line(move, -1, +1)), 7);
-        ASSERT_NE (PopCount(line(move,  0, -1)), 7);
-        ASSERT_NE (PopCount(line(move,  0, +1)), 7);
-        ASSERT_NE (PopCount(line(move, +1, -1)), 7);
-        ASSERT_NE (PopCount(line(move, +1,  0)), 7);
-        ASSERT_NE (PopCount(line(move, +1, +1)), 7);
+        ASSERT_EQ (PopCount(line(move, -1, -1)), 7);
+        ASSERT_EQ (PopCount(line(move, -1,  0)), 7);
+        ASSERT_EQ (PopCount(line(move, -1, +1)), 7);
+        ASSERT_EQ (PopCount(line(move,  0, -1)), 7);
+        ASSERT_EQ (PopCount(line(move,  0, +1)), 7);
+        ASSERT_EQ (PopCount(line(move, +1, -1)), 7);
+        ASSERT_EQ (PopCount(line(move, +1,  0)), 7);
+        ASSERT_EQ (PopCount(line(move, +1, +1)), 7);
     }
 }
 
