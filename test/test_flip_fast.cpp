@@ -29,8 +29,6 @@ void TestFlip(const uint8_t move)
 	                    | line(move, +1, -1)
 	                    | line(move, +1,  0)
 	                    | line(move, +1, +1);
-
-	ASSERT_EQ (PopCount(mask), 21);
 	for (int i = 0; i < (1 << 21); i++)
 	{
 		const uint64_t P = PDep(i, mask);
