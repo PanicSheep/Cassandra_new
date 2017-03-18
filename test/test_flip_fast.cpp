@@ -29,16 +29,17 @@ void TestFlip(const uint8_t move)
 	                    | line(move, +1, -1)
 	                    | line(move, +1,  0)
 	                    | line(move, +1, +1);
-	for (int i = 0; i < (1 << 21); i++)
-	{
-		const uint64_t P = PDep(i, mask);
-		const int max_j = 1 << (21 - PopCount(i));
-		for (int j = 0; j < max_j; j++)
-		{
-			const uint64_t O = PDep(j, mask ^ P);
-			ASSERT_EQ (flip(P, O, move), flip_loop(P, O, move));
-		}
-	}
+	const int maskPopCount = PopCount(mask);
+        for (int i = 0; i < (1 << maskPopCount); i++)
+        {
+            const uint64_t P = PDep(i, mask);
+            const int max_j = 1 << (maskPopCount - PopCount(i));
+            for (int j = 0; j < max_j; j++)
+            {
+                const uint64_t O = PDep(j, mask ^ P);
+                ASSERT_EQ (flip(P, O, move), flip_loop(P, O, move))
+            }
+        }
 }
 
 TEST (FlipFastTest, Line) {
