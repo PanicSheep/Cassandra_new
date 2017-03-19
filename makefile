@@ -58,8 +58,12 @@ bin/test_possiblemoves: obj/test_possiblemoves.o obj/possiblemoves.o obj/possibl
 	$(CC) $(LDFLAGS) obj/test_possiblemoves.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/helpers.o gtest-all.o -o $@
 	./bin/test_possiblemoves
 
+bin/test_utility: obj/test_utility.o obj/utility.o gtest-all.o
+	$(CC) $(LDFLAGS) obj/test_utility.o obj/utility.o gtest-all.o -o $@
+	./bin/test_utility
+
 .PHONY: test
-test: bin/test_flip_loop bin/test_macros_hell bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves
+test: bin/test_flip_loop bin/test_macros_hell bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_utility
 
 .PHONY: all
 all:
