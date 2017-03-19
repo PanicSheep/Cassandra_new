@@ -40,20 +40,28 @@ $(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS)
 
 bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o gtest-all.o
 	$(CC) $(LDFLAGS) obj/test_flip_loop.o obj/flip_loop.o gtest-all.o -o $@
+	./bin/test_flip_loop
 	
 bin/test_macros_hell: obj/test_macros_hell.o gtest-all.o
 	$(CC) $(LDFLAGS) obj/test_macros_hell.o gtest-all.o -o $@
-
-bin/test_flip_fast: obj/test_flip_fast.o obj/flip_loop.o obj/flip_fast.o gtest-all.o
-	$(CC) $(LDFLAGS) obj/test_flip_fast.o obj/flip_loop.o obj/flip_fast.o gtest-all.o -o $@
-
-test: bin/test_flip_loop bin/test_macros_hell bin/test_flip_fast
-	./bin/test_flip_loop
 	./bin/test_macros_hell
+
+bin/test_flip_fast: obj/test_flip_fast.o obj/flip_loop.o obj/flip_fast.o obj/helpers.o gtest-all.o
+	$(CC) $(LDFLAGS) obj/test_flip_fast.o obj/flip_loop.o obj/flip_fast.o obj/helpers.o gtest-all.o -o $@
 	./bin/test_flip_fast
 
+bin/test_count_last_flip: obj/test_count_last_flip.o obj/flip_fast.o obj/count_last_flip.o obj/helpers.o gtest-all.o
+	$(CC) $(LDFLAGS) obj/test_count_last_flip.o obj/flip_fast.o obj/count_last_flip.o obj/helpers.o gtest-all.o -o $@
+	./bin/test_count_last_flip
+
+
+.PHONY: test
+test: bin/test_flip_loop bin/test_macros_hell bin/test_flip_fast bin/test_count_last_flip
+
+.PHONY: all
 all:
 
+.PHONY: clean
 clean :
 	rm -f *.o
 	rm -f *~
