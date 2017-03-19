@@ -1,78 +1,8 @@
 #include "macros_hell.h"
 #include "flip_loop.h"
 #include "flip_fast.h"
+#include "helpers.h"
 #include "gtest/gtest.h"
-#include <functional>
-
-class CPosition
-{
-public:
-	uint64_t P, O;
-	
-	CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
-	CPosition() : CPosition(0, 0) {}
-	
-	void MakeRandom(const uint64_t mask = 0xFFFFFFFFFFFFFFFFULL)
-	{
-		static auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0,3), std::mt19937_64(13));
-		uint64_t p = 0;
-		uint64_t o = 0;
-		for (unsigned int i = 0; i < PopCount(mask); i++)
-		{
-			p <<= 1;
-			o <<= 1;
-			switch (rnd())
-			{
-				case 0: p |= 1ULL; break;
-				case 1: o |= 1ULL; break;
-			}
-		}
-		P = PDep(p, mask);
-		O = PDep(o, mask);
-	}
-};
-
-uint64_t line(const uint8_t move, const int dX, const int dY)
-{
-    uint64_t ret = 0;
-    int i = (move % 8) + dX; // Starting index in x direction
-    int j = (move / 8) + dY; // Starting index in y direction
-
-    while ((i >= 0) && (i < 8) && (j >= 0) && (j < 8)) // In between boundaries
-    {
-        ret |= 1ULL << (j * 8 + i);
-        i += dX;
-        j += dY;
-    }
-
-    return ret;
-}
-
-TEST (FlipFastTest, Line) {
-	uint64_t maskPopCount[64] = {
-		21, 21, 21, 21, 21, 21, 21, 21,
-		21, 23, 23, 23, 23, 23, 23, 21,
-		21, 23, 25, 25, 25, 25, 23, 21,
-		21, 23, 25, 27, 27, 25, 23, 21,
-		21, 23, 25, 27, 27, 25, 23, 21,
-		21, 23, 25, 25, 25, 25, 23, 21,
-		21, 23, 23, 23, 23, 23, 23, 21,
-		21, 21, 21, 21, 21, 21, 21, 21 };
-	for (uint8_t move = 0; move < 64; move++)
-	{
-		const uint64_t mask = line(move, -1, -1)
-				    | line(move, -1,  0)
-				    | line(move, -1, +1)
-				    | line(move,  0, -1)
-				    | line(move,  0, +1)
-				    | line(move, +1, -1)
-				    | line(move, +1,  0)
-				    | line(move, +1, +1);
-		ASSERT_EQ (PopCount(line(move, -1,  0) | line(move, +1,  0)), 7);
-		ASSERT_EQ (PopCount(line(move,  0, -1) | line(move,  0, +1)), 7);
-		ASSERT_EQ (PopCount(mask), maskPopCount[move]);
-	}
-}
 
 void TestFlip(const uint8_t move)
 {
@@ -89,6 +19,13 @@ void TestFlip(const uint8_t move)
 	{
 		CPosition pos;
 		pos.MakeRandom(mask);
+		ASSERT_EQ (flip(pos.P, pos.O, move), flip_loop(pos.P, pos.O, move));
+	}
+	
+	for (unsigned int i = 0; i < 100000; i++)
+	{
+		CPosition pos;
+		pos.MakeRandom(~(1ULL << move));
 		ASSERT_EQ (flip(pos.P, pos.O, move), flip_loop(pos.P, pos.O, move));
 	}
 }
