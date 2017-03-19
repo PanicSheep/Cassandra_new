@@ -1949,7 +1949,7 @@ namespace Flip_Fast
 	}
 
 
-	uint64_t (*flip_fp[])(const uint64_t, const uint64_t) = {
+	uint64_t (*flip_fp[65])(const uint64_t, const uint64_t) = {
 		flip_A1, flip_B1, flip_C1, flip_D1, flip_E1, flip_F1, flip_G1, flip_H1,
 		flip_A2, flip_B2, flip_C2, flip_D2, flip_E2, flip_F2, flip_G2, flip_H2,
 		flip_A3, flip_B3, flip_C3, flip_D3, flip_E3, flip_F3, flip_G3, flip_H3,
