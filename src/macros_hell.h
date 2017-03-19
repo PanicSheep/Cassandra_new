@@ -1,6 +1,7 @@
 #pragma once
 #include <cassert>
 #include <cstdint>
+#include <string>
 
 #if defined(_MSC_VER)
 	#include <intrin.h>
@@ -402,4 +403,10 @@ inline uint64_t _mm256_extract_epi64(__m256i X, const unsigned int N)
 	else
 		return _mm_extract_epi64(Y, 0);
 }
+#endif
+
+#ifdef _WIN32
+	const std::string FOLDER_SEPARATOR = "\\";
+#else
+	const std::string FOLDER_SEPARATOR = "/";
 #endif
