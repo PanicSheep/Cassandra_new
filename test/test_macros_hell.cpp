@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, BitScanLSB_1) {
-	ASSERT_DEATH(BitScanLSB(0), "(.*?)");
+	ASSERT_DEATH (BitScanLSB(0), "(.*?)");
 	ASSERT_EQ (BitScanLSB(1), 0);
 	ASSERT_EQ (BitScanLSB(2), 1);
 	ASSERT_EQ (BitScanLSB(3), 0);
@@ -55,7 +55,7 @@ TEST (MacrosHellTest, BitScanLSB_6) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, BitScanMSB_1) {
-	ASSERT_DEATH(BitScanMSB(0), "(.*?)");
+	ASSERT_DEATH (BitScanMSB(0), "(.*?)");
 	ASSERT_EQ (BitScanMSB(1), 0);
 	ASSERT_EQ (BitScanMSB(2), 1);
 	ASSERT_EQ (BitScanMSB(3), 1);
