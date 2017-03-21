@@ -200,13 +200,13 @@ uint64_t StableStonesSkyline(uint64_t O)
 	for (int directions = 0; directions < 8; ++directions)
 	{
 		StablesOld = BitScanLSB(~(O & 0x00000000000000FFULL));
-		StableStones |= 0x00000000000000FFULL >> 8-StablesOld;
+		StableStones |= 0x00000000000000FFULL >> (8 - StablesOld);
 		for (int counter = 0; (StablesOld > 1) && (counter < 64); counter += 8)
 		{
 			StablesNew = BitScanLSB(~((O >> counter) & 0x00000000000000FFULL));
 			if ((StablesOld != 8) || (StablesNew != 8))
 				StablesOld = MIN(StablesOld-1, StablesNew);
-			StableStones |= (0x00000000000000FFULL >> 8-StablesOld) << counter;
+			StableStones |= (0x00000000000000FFULL >> (8 - StablesOld)) << counter;
 		}
 
 		switch (directions)
@@ -247,7 +247,9 @@ namespace Stability
 		unsigned int stables;
 		uint64_t flipped;
 
-		memset(edge_stables, 0, 256 * 256 * sizeof(uint8_t));
+		for (unsigned int i = 0; i < 256; i++)
+			for (unsigned int j = 0; j < 256; j++)
+				edge_stables[i][j] = 0;
 
 		for (unsigned int empty = 0; empty < 9; empty++)
 			for (unsigned int P = 0; P < 256; P++)
@@ -361,10 +363,10 @@ uint64_t StableEdges(const uint64_t P, const uint64_t O)
 uint64_t StableStonesPlayer(const uint64_t P, const uint64_t O)
 {
 	const uint64_t discs = P | O;
-	uint64_t full_h = Stability::FullLineHorizontal(discs);
-	uint64_t full_v = Stability::FullLineVertival(discs);
-	uint64_t full_d = Stability::FullLineDiagonal(discs);
-	uint64_t full_c = Stability::FullLineCodiagonal(discs);
+	const uint64_t full_h = Stability::FullLineHorizontal(discs);
+	const uint64_t full_v = Stability::FullLineVertival(discs);
+	const uint64_t full_d = Stability::FullLineDiagonal(discs);
+	const uint64_t full_c = Stability::FullLineCodiagonal(discs);
 	uint64_t new_stables = StableEdges(P, O) & P;
 	new_stables |= full_h & full_v & full_d & full_c & P & 0x007E7E7E7E7E7E00ULL;
 
@@ -372,10 +374,10 @@ uint64_t StableStonesPlayer(const uint64_t P, const uint64_t O)
 	while (new_stables & ~stables)
 	{
 		stables |= new_stables;
-		uint64_t stables_h = (stables >> 1) | (stables << 1) | full_h;
-		uint64_t stables_v = (stables >> 8) | (stables << 8) | full_v;
-		uint64_t stables_d = (stables >> 9) | (stables << 9) | full_d;
-		uint64_t stables_c = (stables >> 7) | (stables << 7) | full_c;
+		const uint64_t stables_h = (stables >> 1) | (stables << 1) | full_h;
+		const uint64_t stables_v = (stables >> 8) | (stables << 8) | full_v;
+		const uint64_t stables_d = (stables >> 9) | (stables << 9) | full_d;
+		const uint64_t stables_c = (stables >> 7) | (stables << 7) | full_c;
 		new_stables = stables_h & stables_v & stables_d & stables_c & P & 0x007E7E7E7E7E7E00ULL;
 	}
 	return stables;

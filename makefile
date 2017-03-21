@@ -46,6 +46,10 @@ bin/test_macros_hell: obj/test_macros_hell.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_macros_hell
 
+bin/test_utility: obj/test_utility.o obj/utility.o gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_utility
+
 bin/test_configfile: obj/test_configfile.o obj/configfile.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_configfile
@@ -70,12 +74,12 @@ bin/test_possiblemoves: obj/test_possiblemoves.o obj/possiblemoves.o obj/possibl
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_possiblemoves
 
-bin/test_utility: obj/test_utility.o obj/utility.o gtest-all.o
+bin/test_position: obj/test_position.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
-	./bin/test_utility
+	./bin/test_position
 
 .PHONY: test
-test: bin/test_flip_loop bin/test_macros_hell bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_utility
+test: bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position
 
 .PHONY: all
 all:
