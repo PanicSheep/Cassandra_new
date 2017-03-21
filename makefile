@@ -78,8 +78,12 @@ bin/test_position: obj/test_position.o obj/position.o obj/possiblemoves.o obj/po
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_position
 
+bin/test_perft: obj/test_perft.o obj/perft_basic.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_perft
+
 .PHONY: test
-test: bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position
+test: bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_perft
 
 .PHONY: all
 all:
