@@ -164,7 +164,7 @@ TEST (MacrosHellTest, RemoveMSBTest) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, SetBitTest) {
-	for (uint8 i = 0; i < 64; i++)
+	for (uint8_t i = 0; i < 64; i++)
 	{
 		uint64_t a = 0ULL;
 		SetBit(a, i);
@@ -180,14 +180,14 @@ TEST (MacrosHellTest, GetBitTest) {
 	uint64_t a = 0x8000000000000008ULL;
 	ASSERT_EQ (GetBit(a,  0), true);
 	ASSERT_EQ (GetBit(a, 63), true);
-	for (uint8 i = 1; i < 63; i++)
+	for (uint8_t i = 1; i < 63; i++)
 		ASSERT_EQ (GetBit(a, i), false);
 	
 	ASSERT_DEATH (GetBit(a, 64);, "(.*?)");
 }
 
 TEST (MacrosHellTest, MakeBitTest) {
-	for (uint8 i = 0; i < 64; i++)
+	for (uint8_t i = 0; i < 64; i++)
 		ASSERT_EQ (MakeBit(a, i), 1ULL << i);
 	ASSERT_EQ (MakeBit(a, 64), 0ULL);
 }
