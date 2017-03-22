@@ -177,7 +177,7 @@ TEST (MacrosHellTest, SetBitTest) {
 }
 
 TEST (MacrosHellTest, GetBitTest) {
-	uint64_t a = 0x8000000000000008ULL;
+	uint64_t a = 0x8000000000000001ULL;
 	ASSERT_EQ (GetBit(a,  0), true);
 	ASSERT_EQ (GetBit(a, 63), true);
 	for (uint8_t i = 1; i < 63; i++)
