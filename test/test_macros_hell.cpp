@@ -188,8 +188,8 @@ TEST (MacrosHellTest, GetBitTest) {
 
 TEST (MacrosHellTest, MakeBitTest) {
 	for (uint8_t i = 0; i < 64; i++)
-		ASSERT_EQ (MakeBit(a, i), 1ULL << i);
-	ASSERT_EQ (MakeBit(a, 64), 0ULL);
+		ASSERT_EQ (MakeBit(i), 1ULL << i);
+	ASSERT_EQ (MakeBit(64), 0ULL);
 }
 // --------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////
