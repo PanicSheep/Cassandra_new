@@ -29,7 +29,12 @@ TEST (PossibleMovesTest, HasMoves)
 	}
 }
 
-TEST (PossibleMovesTest, PossibleMoves)
+TEST (PossibleMovesTest, PossibleMoves1){
+	ASSERT_EQ (PossibleMoves(0x0000001800000000ULL, 0x0000000018000000ULL), 0x00000000003C0000ULL);
+	ASSERT_EQ (PossibleMoves(0x0000000810000000ULL, 0x0000001008000000ULL), 0x0000102004080000ULL);
+}
+
+TEST (PossibleMovesTest, PossibleMoves2)
 {
 	for (unsigned int i = 0; i < 1000000; i++)
 	{
