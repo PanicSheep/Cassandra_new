@@ -4,6 +4,12 @@
 #include <functional>
 #include <random>
 
+TEST (PositionTest, SignedInt) {
+	ASSERT_EQ (SignedInt(-1), "-1");
+	ASSERT_EQ (SignedInt(+0), "+0");
+	ASSERT_EQ (SignedInt(+1), "+1");
+}
+
 TEST (PositionTest, SMEAR_BITBOARD) {
 	for (int move = 0; move < 64; move++)
 	{
@@ -49,14 +55,14 @@ TEST (PositionTest, FlipHorizontal) {
 			ASSERT_EQ (FlipHorizontal(1ULL << (i * 8 + j)), 1ULL << (i * 8 + (7 - j)));
 }
 
-TEST (PositionTest, Empties) {
-	ASSERT_EQ (Empties(0x0000000000000000ULL, 0x0000000000000000ULL), 64u);
-	ASSERT_EQ (Empties(0x0000000000000001ULL, 0x0000000000000000ULL), 63u);
-	ASSERT_EQ (Empties(0x0000000000000000ULL, 0x0000000000000001ULL), 63u);
-	ASSERT_EQ (Empties(0x0000000000000001ULL, 0x0000000000000001ULL), 63u);
-	ASSERT_EQ (Empties(0xFFFFFFFFFFFFFFFFULL, 0x0000000000000000ULL),  0u);
-	ASSERT_EQ (Empties(0x0000000000000000ULL, 0xFFFFFFFFFFFFFFFFULL),  0u);
-	ASSERT_EQ (Empties(0xFFFFFFFFFFFFFFFFULL, 0xFFFFFFFFFFFFFFFFULL),  0u);
+TEST (PositionTest, EmptyCount) {
+	ASSERT_EQ (EmptyCount(0x0000000000000000ULL, 0x0000000000000000ULL), 64u);
+	ASSERT_EQ (EmptyCount(0x0000000000000001ULL, 0x0000000000000000ULL), 63u);
+	ASSERT_EQ (EmptyCount(0x0000000000000000ULL, 0x0000000000000001ULL), 63u);
+	ASSERT_EQ (EmptyCount(0x0000000000000001ULL, 0x0000000000000001ULL), 63u);
+	ASSERT_EQ (EmptyCount(0xFFFFFFFFFFFFFFFFULL, 0x0000000000000000ULL),  0u);
+	ASSERT_EQ (EmptyCount(0x0000000000000000ULL, 0xFFFFFFFFFFFFFFFFULL),  0u);
+	ASSERT_EQ (EmptyCount(0xFFFFFFFFFFFFFFFFULL, 0xFFFFFFFFFFFFFFFFULL),  0u);
 }
 
 TEST (PositionTest, Paritiy1) {
@@ -97,14 +103,19 @@ TEST (PositionTest, Paritiy2) {
 // TODO: StableEdges
 // TODO: StableStonesPlayer
 // TODO: StableStones
-// TODO: PlayersBorder
-// TODO: OpponentsBorder
+// TODO: PlayersBoarder
+// TODO: OpponentsBoarder
 // TODO: Borders
 // TODO: PlayersExposed
 // TODO: OpponentsExposed
 // TODO: Exposeds
-// TODO: CPositionScore
+// TODO: comp
+// TODO: equiv
 // TODO: CPosition
+// TODO: CPositionScore
+// TODO: CPositionFullScore
+// TODO: CPositionScoreDepth
+// TODO: CPositionAllScore
 
 int main(int argc, char **argv)
 {

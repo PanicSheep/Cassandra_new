@@ -7,6 +7,7 @@
 #include "macros_hell.h"
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -121,7 +122,7 @@ inline void ResetPosition(uint64_t & P, uint64_t & O, const bool ETH)
 	O = StartPositionO(ETH);
 }
 
-FORCE_INLINE uint64_t EmptiesCount(const uint64_t P, const uint64_t O) { return PopCount(~(P | O)); }
+FORCE_INLINE uint64_t EmptyCount(const uint64_t P, const uint64_t O) { return PopCount(~(P | O)); }
 
 inline uint64_t Parity(uint64_t E)
 {
@@ -206,7 +207,7 @@ FORCE_INLINE uint64_t SMEAR_BITBOARD(uint64_t B)
 {
 	// 4x SHIFT, 4x OR, 2x AND 
 	// = 10 OPs
-	B |= (B >> 1) & 0x7F7F7F7F7F7F7F7FULL | (B << 1) & 0xFEFEFEFEFEFEFEFEULL;
+	B |= ((B >> 1) & 0x7F7F7F7F7F7F7F7FULL) | ((B << 1) & 0xFEFEFEFEFEFEFEFEULL);
 	return B | (B >> 8) | (B << 8);
 }
 
@@ -654,7 +655,7 @@ uint64_t CPositionScoreDepth::PossibleMoves() const { return ::PossibleMoves(P, 
 bool CPositionScoreDepth::HasMoves() const { return ::HasMoves(P, O); }
 void CPositionScoreDepth::PlayStone(const int move, const int8_t newScore, const int8_t newDepth, const uint8_t newSelectivity) { ::PlayStone(P, O, move); score = newScore; depth = newDepth; selectivity = newSelectivity; }
 
-bool CPositionScoreDepth::IsSolved() const { return (depth == EmptyCount()) && (selectivity == 0); }
+bool CPositionScoreDepth::IsSolved() const { return (depth == static_cast<int8_t>(EmptyCount())) && (selectivity == 0); }
 bool CPositionScoreDepth::IsSolved(const int8_t Depth, const uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
@@ -686,7 +687,6 @@ void CPositionAllScore::PlayStone(const int move) { ::PlayStone(P, O, move); Res
 
 bool CPositionAllScore::IsSolved() const { uint64_t pm = PossibleMoves(); while (pm) { if (score[BitScanLSB(pm)] == DEFAULT_SCORE) return false; RemoveLSB(pm); } return true; }
 int8_t CPositionAllScore::MaxScore() const { return *std::max_element(score, score + 64); }
-
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 

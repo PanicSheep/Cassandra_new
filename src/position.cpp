@@ -445,11 +445,11 @@ bool CPositionFullScore::Test() const
 { 
 	if ((P & O) != 0) return false;
 
-	const int emptiesCount = EmptyCount();
-	for (int i = 0; i <= emptiesCount; i++)
+	const uint64_t emptyCount = EmptyCount();
+	for (uint64_t i = 0; i <= emptyCount; i++)
 		if (!(((score[i] >= -64) && (score[i] <= 64)) || (score[i] == DEFAULT_SCORE)))
 			return false;
-	for (int i = emptiesCount + 1; i < 64; i++)
+	for (uint64_t i = emptyCount + 1; i < 64; i++)
 		if (score[i] != DEFAULT_SCORE)
 			return false;
 	return true;
@@ -457,7 +457,7 @@ bool CPositionFullScore::Test() const
 
 bool CPositionFullScore::IsSolved() const
 { 
-	for (int i = 0; i <= EmptyCount(); i++) 
+	for (uint64_t i = 0; i <= EmptyCount(); i++) 
 		if (score[i] == DEFAULT_SCORE)
 			return false; 
 	return true; 
@@ -480,21 +480,21 @@ int8_t CPositionFullScore::MaxSolvedDepth() const
 std::string CPositionFullScore::to_string_1D() const
 {
 	std::string ret = board1D(P, O);
-	for (int i = 0; i <= EmptyCount(); i++)
+	for (uint64_t i = 0; i <= EmptyCount(); i++)
 		ret += " " + SignedInt(score[i]);
 	return ret;
 }
 std::string CPositionFullScore::to_string_2D() const
 {
 	std::string ret = board2D(P, O) + "\nscore:";
-	for (int i = 0; i <= EmptyCount(); i++)
+	for (uint64_t i = 0; i <= EmptyCount(); i++)
 		ret += " " + SignedInt(score[i]);
 	return ret;
 }
 std::string CPositionFullScore::to_string_2D_PM() const
 {
 	std::string ret = board2D(P, O, PossibleMoves()) + "\nscore:";
-	for (int i = 0; i <= EmptyCount(); i++)
+	for (uint64_t i = 0; i <= EmptyCount(); i++)
 		ret += " " + SignedInt(score[i]);
 	return ret;
 }
@@ -516,7 +516,7 @@ std::string CPositionScoreDepth::GetDepthSelectivity() const
 
 std::string CPositionScoreDepth::GetScoreDepthSelectivity() const
 {
-	if (depth == Empties())
+	if (depth == static_cast<int8_t>(EmptyCount()))
 	{
 		if (selectivity == NO_SELECTIVITY)
 			return SignedInt(score);
@@ -593,7 +593,7 @@ CPositionAllScore::CPositionAllScore(std::string s) : CPositionAllScore()
 
 bool CPositionAllScore::Test() const
 {
-	if (P & O != 0) return false;
+	if ((P & O) != 0) return false;
 
 	const int possibleMoves = PossibleMoves();
 	for (int i = 0; i <= 64; i++)
@@ -702,9 +702,9 @@ template <> std::vector<CPositionAllScore> LoadVector(const std::string& filenam
 	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
 	if (filename_extension == "obf")
 		return read_vector_OBF(filename, size);
-	if (filename_extension == CPositionAllScore::FILENAME_EXTENSION)
-		return read_vector<CPositionAllScore>(filename, size);
-	std::cerr << "WARNING: Filename extension does not match data type when loading." << std::endl;
+	if (filename_extension != CPositionAllScore::FILENAME_EXTENSION)
+		std::cerr << "WARNING: Filename extension does not match data type when loading." << std::endl;
+	return read_vector<CPositionAllScore>(filename, size);
 }
 
 template <> void SaveVector<CPositionAllScore>(const std::string& filename, const std::vector<CPositionAllScore>& vec)
@@ -712,8 +712,10 @@ template <> void SaveVector<CPositionAllScore>(const std::string& filename, cons
 	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
 	if (filename_extension == "obf")
 		write_to_file_OBF(filename, vec);
-	else if (filename_extension == CPositionAllScore::FILENAME_EXTENSION)
-		write_to_file(filename, vec);
 	else
-		std::cerr << "WARNING: Filename extension does not match data type when saving." << std::endl;
+	{
+		if (filename_extension != CPositionAllScore::FILENAME_EXTENSION)
+			std::cerr << "WARNING: Filename extension does not match data type when saving." << std::endl;
+		write_to_file(filename, vec);
+	}
 }
