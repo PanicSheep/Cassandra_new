@@ -191,17 +191,11 @@ inline uint64_t StableStonesCornerAndCo(const uint64_t O)
 				) & O;
 	#endif
 }
-//inline uint64_t StableStones_affectables(const uint64_t P, const uint64_t O) { return O & ~AFFECTABLE(~(P | O)); }
 uint64_t StableStonesFullEdges(const uint64_t P, const uint64_t O);
 uint64_t StableStonesFullEdgesSecondOrder(const uint64_t P, const uint64_t O);
 uint64_t StableStonesTriangles(const uint64_t O);
-uint64_t StableStonesSkyline(const uint64_t O);
 uint64_t StableEdges(const uint64_t P, const uint64_t O);
 uint64_t StableStonesPlayer(const uint64_t P, const uint64_t O);
-//uint64_t StableStones(const uint64_t P, const uint64_t O);
-//{
-//	return StableStonesFullEdges(P, O) | StableStonesFullEdgesSecondOrder(P, O) | StableStonesTriangles(O);
-//}
 
 FORCE_INLINE uint64_t SMEAR_BITBOARD(uint64_t B)
 {

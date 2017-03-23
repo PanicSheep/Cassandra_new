@@ -86,31 +86,27 @@ TEST (PositionTest, Paritiy2) {
 		ASSERT_EQ (quadrant_id_4_bit[i], 1ULL << quadrant_id_2_bit[i]);
 }
 
+
 // TODO: quadrant_mask
 // TODO: quadrant
-// TODO: board1D
-// TODO: board2D
-// TODO: board2D
 // TODO: PlayStone
 // TODO: StableStonesCornerAndCo
 // TODO: StableStonesFullEdges
 // TODO: StableStonesFullEdgesSecondOrder
 // TODO: StableStonesTriangles
+// TODO: StableEdges
+// TODO: StableStonesPlayer
+// TODO: StableStones
 // TODO: FullLineHorizontal
 // TODO: FullLineVertival
 // TODO: FullLineDiagonal
 // TODO: FullLineCodiagonal
-// TODO: StableEdges
-// TODO: StableStonesPlayer
-// TODO: StableStones
 // TODO: PlayersBoarder
 // TODO: OpponentsBoarder
 // TODO: Borders
 // TODO: PlayersExposed
 // TODO: OpponentsExposed
 // TODO: Exposeds
-// TODO: comp
-// TODO: equiv
 // TODO: CPosition
 // TODO: CPositionScore
 // TODO: CPositionFullScore

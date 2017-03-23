@@ -144,6 +144,7 @@ uint64_t StableStonesFullEdgesSecondOrder(const uint64_t P, const uint64_t O)
 
 uint64_t StableStonesTriangles(const uint64_t O)
 {
+	// Room for optimization: put this in a decision tree
     uint64_t ret = 0;
 	if ((O & 0x0000000000000001ULL) == 0x0000000000000001ULL) ret |= 0x0000000000000001ULL;
 	if ((O & 0x0000000000000103ULL) == 0x0000000000000103ULL) ret |= 0x0000000000000103ULL;
@@ -182,52 +183,6 @@ uint64_t StableStonesTriangles(const uint64_t O)
 	if ((O & 0xFF7F3F1F0F070301ULL) == 0xFF7F3F1F0F070301ULL) ret |= 0xFF7F3F1F0F070301ULL;
 	return ret;
 }
-
-uint64_t StableStonesSkyline(uint64_t O)
-{
-    int StablesOld, StablesNew;
-    uint64_t StableStones;
-	StableStones = 0x0000000000000000ULL;
-		
-	for (int directions = 0; directions < 8; ++directions)
-	{
-		StablesOld = BitScanLSB(~(O & 0x00000000000000FFULL));
-		StableStones |= 0x00000000000000FFULL >> (8-StablesOld);
-		for (int counter = 0; (StablesOld > 1) && (counter < 64); counter += 8)
-		{
-			StablesNew = BitScanLSB(~((O >> counter) & 0x00000000000000FFULL));
-			if ((StablesOld != 8) || (StablesNew != 8))
-				StablesOld = MIN(StablesOld-1, StablesNew);
-			StableStones |= (0x00000000000000FFULL >> (8-StablesOld)) << counter;
-		}
-
-		switch (directions)
-		{
-		case 0:
-		case 2:
-		case 5:
-			O = FlipVertical(O);
-			StableStones = FlipVertical(StableStones);
-			break;
-		case 1:
-		case 4:
-		case 6:
-			O = FlipHorizontal(O);
-			StableStones = FlipHorizontal(StableStones);
-			break;
-		case 3:
-			O = FlipDiagonal(O);
-			StableStones = FlipDiagonal(StableStones);
-			break;
-		}
-	}
-
-    StableStones = FlipDiagonal(StableStones); //Fliping back
-
-    return StableStones;
-}
-
-
 
 namespace Stability
 {
@@ -353,10 +308,10 @@ uint64_t StableEdges(const uint64_t P, const uint64_t O)
 uint64_t StableStonesPlayer(const uint64_t P, const uint64_t O)
 {
 	const uint64_t discs = P | O;
-	uint64_t full_h = Stability::FullLineHorizontal(discs);
-	uint64_t full_v = Stability::FullLineVertival(discs);
-	uint64_t full_d = Stability::FullLineDiagonal(discs);
-	uint64_t full_c = Stability::FullLineCodiagonal(discs);
+	const uint64_t full_h = Stability::FullLineHorizontal(discs);
+	const uint64_t full_v = Stability::FullLineVertival(discs);
+	const uint64_t full_d = Stability::FullLineDiagonal(discs);
+	const uint64_t full_c = Stability::FullLineCodiagonal(discs);
 	uint64_t new_stables = StableEdges(P, O) & P;
 	new_stables |= full_h & full_v & full_d & full_c & P & 0x007E7E7E7E7E7E00ULL;
 
@@ -364,19 +319,14 @@ uint64_t StableStonesPlayer(const uint64_t P, const uint64_t O)
 	while (new_stables & ~stables)
 	{
 		stables |= new_stables;
-		uint64_t stables_h = (stables >> 1) | (stables << 1) | full_h;
-		uint64_t stables_v = (stables >> 8) | (stables << 8) | full_v;
-		uint64_t stables_d = (stables >> 9) | (stables << 9) | full_d;
-		uint64_t stables_c = (stables >> 7) | (stables << 7) | full_c;
+		const uint64_t stables_h = (stables >> 1) | (stables << 1) | full_h;
+		const uint64_t stables_v = (stables >> 8) | (stables << 8) | full_v;
+		const uint64_t stables_d = (stables >> 9) | (stables << 9) | full_d;
+		const uint64_t stables_c = (stables >> 7) | (stables << 7) | full_c;
 		new_stables = stables_h & stables_v & stables_d & stables_c & P & 0x007E7E7E7E7E7E00ULL;
 	}
 	return stables;
 }
-
-//uint64_t StableStones(const uint64_t P, const uint64_t O)
-//{
-//	return StableStonesPlayer(P, O) | StableStonesPlayer(O, P);
-//}
 
 
 
