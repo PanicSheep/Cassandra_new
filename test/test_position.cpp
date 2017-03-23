@@ -318,7 +318,6 @@ TEST (CPositionScoreTest, ctorCPositionAllScore) {
 // TODO: PlayersExposed
 // TODO: OpponentsExposed
 // TODO: Exposeds
-// TODO: CPositionScore
 // TODO: CPositionFullScore
 // TODO: CPositionScoreDepth
 // TODO: CPositionAllScore
