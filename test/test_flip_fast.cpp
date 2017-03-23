@@ -15,14 +15,14 @@ void TestFlip(const uint8_t move)
 	                    | line(move, +1,  0)
 	                    | line(move, +1, +1);
 	
-	for (unsigned int i = 0; i < 1000000; i++)
+	for (unsigned int i = 0; i < 100000; i++)
 	{
 		CPosition pos;
 		pos.MakeRandom(mask);
 		ASSERT_EQ (flip(pos.P, pos.O, move), flip_loop(pos.P, pos.O, move));
 	}
 	
-	for (unsigned int i = 0; i < 100000; i++)
+	for (unsigned int i = 0; i < 10000; i++)
 	{
 		CPosition pos;
 		pos.MakeRandom(~(1ULL << move));
