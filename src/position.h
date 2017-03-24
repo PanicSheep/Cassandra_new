@@ -414,7 +414,7 @@ public:
 	inline CPositionAllScore();
 	inline CPositionAllScore(uint64_t P, uint64_t O);
 	inline CPositionAllScore(const bool ETH);
-	inline CPositionAllScore(std::string s);
+	       CPositionAllScore(std::string s);
 	inline explicit CPositionAllScore(const CPosition& o);
 	inline explicit CPositionAllScore(const CPositionScore& o);
 	inline explicit CPositionAllScore(const CPositionFullScore& o);

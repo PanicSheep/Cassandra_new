@@ -89,6 +89,14 @@ TEST (PositionTest, Paritiy2) {
 	for (unsigned int i = 0; i < 64; i++)
 		ASSERT_EQ (quadrant_id_4_bit[i], 1ULL << quadrant_id_2_bit[i]);
 }
+
+TEST (PositionTest, HasValidFilenameExtension) {
+	ASSERT_EQ ("tmp.pos", true);
+	ASSERT_EQ ("C:\tmp.psc", true);
+	ASSERT_EQ ("tmp.pfs", true);
+	ASSERT_EQ ("tmp.psd", true);
+	ASSERT_EQ ("tmp.pas", true);
+}
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 
@@ -319,7 +327,8 @@ TEST (CPositionFullScoreTest, Reset2) {
 }
 
 TEST (CPositionFullScoreTest, ResetInformation) {
-	CPositionFullScore pos = CPositionFullScore(0, 0, 0);
+	CPositionFullScore pos = CPositionFullScore(0, 0);
+	pos.score[3] = 12;
 	pos.ResetInformation();
 	for (int i = 0; i < 61; i++)
 		ASSERT_EQ (pos.score[i], CPositionFullScore().score[i]);
@@ -329,7 +338,7 @@ TEST (CPositionFullScoreTest, Test1) {
 	ASSERT_EQ (CPositionFullScore().Test(), true);
 	ASSERT_EQ (CPositionFullScore(true).Test(), true);
 	ASSERT_EQ (CPositionFullScore(false).Test(), true);
-	ASSERT_EQ (CPositionFullScore(0xFFULL, 0xFFULL, 1).Test(), false);
+	ASSERT_EQ (CPositionFullScore(0xFFULL, 0xFFULL).Test(), false);
 }
 
 TEST (CPositionFullScoreTest, Test2) {
