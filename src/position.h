@@ -301,7 +301,7 @@ public:
 	inline bool HasMoves() const;
 	inline void PlayStone(const int move, const int8_t newScore = DEFAULT_SCORE);
 
-	inline bool IsSolved() const;
+	inline bool HasScore() const;
 	
 	inline bool  comp(const CPositionScore& other) const { return ::comp (P, O, other.P, other.O); }
 	inline bool equiv(const CPositionScore& other) const { return ::equiv(P, O, other.P, other.O); }
@@ -591,7 +591,7 @@ uint64_t CPositionScore::PossibleMoves() const { return ::PossibleMoves(P, O); }
 bool CPositionScore::HasMoves() const { return ::HasMoves(P, O); }
 void CPositionScore::PlayStone(const int move, const int8_t newScore) { ::PlayStone(P, O, move); score = newScore; }
 
-bool CPositionScore::IsSolved() const { return score != DEFAULT_SCORE; }
+bool CPositionScore::HasScore() const { return score != DEFAULT_SCORE; }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 

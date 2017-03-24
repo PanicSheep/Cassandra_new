@@ -396,10 +396,10 @@ bool CPositionFullScore::Test() const
 	if ((P & O) != 0) return false;
 
 	const uint64_t emptyCount = EmptyCount();
-	for (uint64_t i = 0; i <= emptyCount; i++)
+	for (uint64_t i = 0; i <= MIN(emptyCount, 60); i++)
 		if (!(((score[i] >= -64) && (score[i] <= 64)) || (score[i] == DEFAULT_SCORE)))
 			return false;
-	for (uint64_t i = emptyCount + 1; i < 64; i++)
+	for (uint64_t i = emptyCount + 1; i < 61; i++)
 		if (score[i] != DEFAULT_SCORE)
 			return false;
 	return true;

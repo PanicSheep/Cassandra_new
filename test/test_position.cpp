@@ -192,20 +192,20 @@ TEST (CPositionScoreTest, Reset1) {
 	CPositionScore pos = CPositionScore(false);
 	pos.Reset();
 	ASSERT_EQ (equiv(pos, CPositionScore()), true);
-	ASSERT_EQ (pos.score, -99);
+	ASSERT_EQ (pos.score, CPositionScore().score);
 }
 
 TEST (CPositionScoreTest, Reset2) {
 	CPositionScore pos = CPositionScore();
 	pos.Reset(true);
 	ASSERT_EQ (equiv(pos, CPositionScore(true)), true);
-	ASSERT_EQ (pos.score, -99);
+	ASSERT_EQ (pos.score, CPositionScore().score);
 }
 
 TEST (CPositionScoreTest, ResetInformation) {
 	CPositionScore pos = CPositionScore(0, 0, 0);
 	pos.ResetInformation();
-	ASSERT_EQ (pos.score, -99);
+	ASSERT_EQ (pos.score, CPositionScore().score);
 }
 
 TEST (CPositionScoreTest, Test) {
@@ -263,40 +263,86 @@ TEST (CPositionScoreTest, PlayStone) {
 TEST (CPositionScoreTest, ctorCPosition) {
 	CPosition pos(false);
 	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true);
-	ASSERT_EQ (pos_cast.score, -99);
+	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
+	ASSERT_EQ (pos_cast.score, -99); // Score is default
 }
 
 TEST (CPositionScoreTest, ctorCPositionFullScore) {
 	CPositionFullScore pos(false);
-	pos.score[0] = 0;
-	pos.score[1] = 1;
-	pos.score[2] = 2;
+	pos.score[0] = 0; // depth 0, score +0
+	pos.score[1] = 3; // depth 1, score +3
+	pos.score[2] = 2; // depth 2, score +2
 	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true);
-	ASSERT_EQ (pos_cast.score, 2);
+	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
+	ASSERT_EQ (pos_cast.score, 2); // Score of highest depth is copied
 }
 
 TEST (CPositionScoreTest, ctorCPositionScoreDepth) {
 	CPositionScoreDepth pos(false);
 	pos.score = 2;
 	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true);
-	ASSERT_EQ (pos_cast.score, 2);
+	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
+	ASSERT_EQ (pos_cast.score, 2); // Score is copied
 }
 
 TEST (CPositionScoreTest, ctorCPositionAllScore) {
 	CPositionAllScore pos(false);
-	pos.score[0] = 0;
-	pos.score[1] = 1;
-	pos.score[2] = 2;
+	pos.score[0] = 0; // depth 0, score +0
+	pos.score[1] = 3; // depth 1, score +3
+	pos.score[2] = 2; // depth 2, score +2
 	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true);
-	ASSERT_EQ (pos_cast.score, 2);
+	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
+	ASSERT_EQ (pos_cast.score, 3); // Highest score is copied
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 
+
+// ################################################################################################
+// CPositionFullScore Test
+// ################################################################################################
+// ------------------------------------------------------------------------------------------------
+TEST (CPositionFullScoreTest, Reset1) {
+	CPositionFullScore pos = CPositionFullScore(false);
+	pos.Reset();
+	ASSERT_EQ (equiv(pos, CPositionFullScore()), true);
+	for (int i = 0; i < 61; i++)
+		ASSERT_EQ (pos.score[i], CPositionFullScore().score[i]);
+}
+
+TEST (CPositionFullScoreTest, Reset2) {
+	CPositionFullScore pos = CPositionFullScore();
+	pos.Reset(true);
+	ASSERT_EQ (equiv(pos, CPositionFullScore(true)), true);
+	for (int i = 0; i < 61; i++)
+		ASSERT_EQ (pos.score[i], CPositionFullScore().score[i]);
+}
+
+TEST (CPositionFullScoreTest, ResetInformation) {
+	CPositionFullScore pos = CPositionFullScore(0, 0, 0);
+	pos.ResetInformation();
+	for (int i = 0; i < 61; i++)
+		ASSERT_EQ (pos.score[i], CPositionFullScore().score[i]);
+}
+
+TEST (CPositionFullScoreTest, Test1) {
+	ASSERT_EQ (CPositionFullScore().Test(), true);
+	ASSERT_EQ (CPositionFullScore(true).Test(), true);
+	ASSERT_EQ (CPositionFullScore(false).Test(), true);
+	ASSERT_EQ (CPositionFullScore(0xFFULL, 0xFFULL, 1).Test(), false);
+}
+
+TEST (CPositionFullScoreTest, Test2) {
+	CPositionFullScore pos(0xFFULL, 0xFF00ULL);
+	pos.score[59] = 13; // Score outside of range
+	ASSERT_EQ (pos.Test(), false);
+}
+
+TEST (CPositionFullScoreTest, MaxSolvedDepth) {
+	ASSERT_EQ (CPositionFullScore().MaxSolvedDepth(), -1);
+}
+// ------------------------------------------------------------------------------------------------
+// ################################################################################################
 
 // TODO: quadrant_mask
 // TODO: quadrant
@@ -318,7 +364,6 @@ TEST (CPositionScoreTest, ctorCPositionAllScore) {
 // TODO: PlayersExposed
 // TODO: OpponentsExposed
 // TODO: Exposeds
-// TODO: CPositionFullScore
 // TODO: CPositionScoreDepth
 // TODO: CPositionAllScore
 // TODO: HasValidFilenameExtension
