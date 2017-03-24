@@ -301,7 +301,7 @@ public:
 	inline bool HasMoves() const;
 	inline void PlayStone(const int move, const int8_t newScore = DEFAULT_SCORE);
 
-	inline bool HasScore() const;
+	inline bool IsSolved() const;
 	
 	inline bool  comp(const CPositionScore& other) const { return ::comp (P, O, other.P, other.O); }
 	inline bool equiv(const CPositionScore& other) const { return ::equiv(P, O, other.P, other.O); }
@@ -591,7 +591,7 @@ uint64_t CPositionScore::PossibleMoves() const { return ::PossibleMoves(P, O); }
 bool CPositionScore::HasMoves() const { return ::HasMoves(P, O); }
 void CPositionScore::PlayStone(const int move, const int8_t newScore) { ::PlayStone(P, O, move); score = newScore; }
 
-bool CPositionScore::HasScore() const { return score != DEFAULT_SCORE; }
+bool CPositionScore::IsSolved() const { return score != DEFAULT_SCORE; }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 
@@ -604,9 +604,9 @@ CPositionFullScore::CPositionFullScore() : CPositionFullScore(0, 0) {}
 CPositionFullScore::CPositionFullScore(uint64_t P, uint64_t O) : P(P), O(O) { ResetInformation(); }
 CPositionFullScore::CPositionFullScore(const bool ETH) : CPositionFullScore(StartPositionP(ETH), StartPositionO(ETH)) {}
 CPositionFullScore::CPositionFullScore(const CPosition& o) : CPositionFullScore(o.P, o.O) {}
-CPositionFullScore::CPositionFullScore(const CPositionScore& o) : CPositionFullScore(o.P, o.O) { score[o.EmptyCount()] = o.score; }
+CPositionFullScore::CPositionFullScore(const CPositionScore& o) : CPositionFullScore(o.P, o.O) { assert(o.EmptyCount() < 61); score[o.EmptyCount()] = o.score; }
 CPositionFullScore::CPositionFullScore(const CPositionScoreDepth& o) : CPositionFullScore(o.P, o.O) { if (o.selectivity == 0) score[o.depth] = o.score; }
-CPositionFullScore::CPositionFullScore(const CPositionAllScore& o) : CPositionFullScore(o.P, o.O) { score[o.EmptyCount()] = o.MaxScore(); }
+CPositionFullScore::CPositionFullScore(const CPositionAllScore& o) : CPositionFullScore(o.P, o.O) { assert(o.EmptyCount() < 61); score[o.EmptyCount()] = o.MaxScore(); }
 
 void CPositionFullScore::Reset() { P = 0; O = 0; ResetInformation(); }
 void CPositionFullScore::Reset(const bool ETH) { ResetPosition(P, O, ETH); ResetInformation(); }

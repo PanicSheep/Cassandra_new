@@ -338,8 +338,39 @@ TEST (CPositionFullScoreTest, Test2) {
 	ASSERT_EQ (pos.Test(), false);
 }
 
-TEST (CPositionFullScoreTest, MaxSolvedDepth) {
-	ASSERT_EQ (CPositionFullScore().MaxSolvedDepth(), -1);
+TEST (CPositionFullScoreTest, ctorCPosition) {
+	CPosition pos(false);
+	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
+	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
+	for (int i = 0; i < 61; i++)
+		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+}
+
+TEST (CPositionFullScoreTest, ctorCPositionScore) {
+	CPositionScore pos(0xFFULL, 0ULL, 10);
+	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
+	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
+	for (int i = 0; i < 61; i++)
+		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], pos.score);
+}
+
+TEST (CPositionFullScoreTest, ctorCPositionScoreDepth1) {
+	CPositionScoreDepth pos(0xFFULL, 0ULL, 10, 3, 0);
+	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
+	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
+	for (int i = 0; i < 61; i++)
+		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], pos.score); // copied score
+}
+
+TEST (CPositionFullScoreTest, ctorCPositionScoreDepth2) {
+	CPositionScoreDepth pos(0xFFULL, 0ULL, 10, 3, 1);
+	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
+	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
+	for (int i = 0; i < 61; i++)
+		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], CPositionScoreDepth().score); // default score
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
