@@ -91,11 +91,11 @@ TEST (PositionTest, Paritiy2) {
 }
 
 TEST (PositionTest, HasValidFilenameExtension) {
-	ASSERT_EQ ("tmp.pos", true);
-	ASSERT_EQ ("C:\tmp.psc", true);
-	ASSERT_EQ ("tmp.pfs", true);
-	ASSERT_EQ ("tmp.psd", true);
-	ASSERT_EQ ("tmp.pas", true);
+	ASSERT_EQ (HasValidFilenameExtension("tmp.pos"), true);
+	ASSERT_EQ (HasValidFilenameExtension("C:\tmp.psc"), true);
+	ASSERT_EQ (HasValidFilenameExtension("tmp.pfs"), true);
+	ASSERT_EQ (HasValidFilenameExtension("tmp.psd"), true);
+	ASSERT_EQ (HasValidFilenameExtension("tmp.pas"), true);
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
@@ -167,6 +167,57 @@ TEST (CPositionTest, PlayStone) {
 	ASSERT_EQ (pos, CPosition(false));
 	pos.PlayStone(19);
 	ASSERT_EQ (pos, CPosition(0x0000001000000000ULL, 0x0000000818080000ULL));
+}
+
+TEST (CPositionTest, FlipCodiagonal) {
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos5(0x8080808000000000ULL, 0x0ULL);
+	pos1.FlipCodiagonal();
+	
+	ASSERT_EQ (pos1, pos5);
+}
+
+TEST (CPositionTest, FlipDiagonal) {
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos7(0x0000000001010101ULL, 0x0ULL);
+	pos1.FlipDiagonal();
+	
+	ASSERT_EQ (pos1, pos7);
+}
+
+TEST (CPositionTest, FlipHorizontal) {
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();
+	pos1.FlipHorizontal();
+	
+	ASSERT_EQ (pos1, pos2);
+}
+
+TEST (CPositionTest, FlipVertical) {
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos4(0x0F00000000000000ULL, 0x0ULL); pos4.FlipToMin();
+	pos1.FlipVertical();
+	
+	ASSERT_EQ (pos1, pos4);
+}
+
+TEST (CPositionTest, FlipToMin) {
+	CPosition pos1(0x000000000000000FULL, 0x0ULL); pos1.FlipToMin();
+	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();
+	CPosition pos3(0xF000000000000000ULL, 0x0ULL); pos3.FlipToMin();
+	CPosition pos4(0x0F00000000000000ULL, 0x0ULL); pos4.FlipToMin();
+	CPosition pos5(0x8080808000000000ULL, 0x0ULL); pos5.FlipToMin();
+	CPosition pos6(0x0101010100000000ULL, 0x0ULL); pos6.FlipToMin();
+	CPosition pos7(0x0000000001010101ULL, 0x0ULL); pos7.FlipToMin();
+	CPosition pos8(0x0000000080808080ULL, 0x0ULL); pos8.FlipToMin();
+	
+	ASSERT_EQ (pos1, pos2);
+	ASSERT_EQ (pos1, pos3);
+	ASSERT_EQ (pos1, pos4);
+	ASSERT_EQ (pos1, pos5);
+	ASSERT_EQ (pos1, pos6);
+	ASSERT_EQ (pos1, pos7);
+	ASSERT_EQ (pos1, pos8);
 }
 
 TEST (CPositionTest, ctorCPositionScore) {
@@ -351,35 +402,36 @@ TEST (CPositionFullScoreTest, ctorCPosition) {
 	CPosition pos(false);
 	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
 	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
-	for (int i = 0; i < 61; i++)
+	for (unsigned int i = 0; i < 61; i++)
 		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
 }
 
 TEST (CPositionFullScoreTest, ctorCPositionScore) {
 	CPositionScore pos(0xFFULL, 0ULL, 10);
 	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
-	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
-	for (int i = 0; i < 61; i++)
-		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
+	for (unsigned int i = 0; i < 61; i++)
+		if (i != pos.EmptyCount())
+			ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
 	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], pos.score);
 }
 
 TEST (CPositionFullScoreTest, ctorCPositionScoreDepth1) {
 	CPositionScoreDepth pos(0xFFULL, 0ULL, 10, 3, 0);
 	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
-	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
-	for (int i = 0; i < 61; i++)
-		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
-	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], pos.score); // copied score
+	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
+	for (unsigned int i = 0; i < 61; i++)
+		if (i != 3)
+			ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+	ASSERT_EQ (pos_cast.score[3], pos.score); // copied score
 }
 
 TEST (CPositionFullScoreTest, ctorCPositionScoreDepth2) {
 	CPositionScoreDepth pos(0xFFULL, 0ULL, 10, 3, 1);
 	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
-	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
-	for (int i = 0; i < 61; i++)
+	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
+	for (unsigned int i = 0; i < 61; i++)
 		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
-	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], CPositionScoreDepth().score); // default score
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
@@ -406,7 +458,6 @@ TEST (CPositionFullScoreTest, ctorCPositionScoreDepth2) {
 // TODO: Exposeds
 // TODO: CPositionScoreDepth
 // TODO: CPositionAllScore
-// TODO: HasValidFilenameExtension
 // TODO: read_vector_OBF
 // TODO: LoadVector
 // TODO: SaveVector

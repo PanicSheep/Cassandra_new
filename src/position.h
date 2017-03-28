@@ -271,6 +271,17 @@ public:
 	void FlipToMin(); ///< Flip to minimum of all flips
 };
 
+namespace std
+{
+	template<> struct hash<CPosition>
+	{
+		inline std::size_t operator()(const CPosition& pos) const
+		{
+			return pos.P ^ ((pos.O << 32) | (pos.O >> 32));
+		}
+	};
+}
+
 /// Position with score
 class CPositionScore
 {
@@ -559,10 +570,10 @@ bool CPosition::operator>=(const CPosition& other) const { return (this->P >= ot
 bool CPosition::operator< (const CPosition& other) const { return (this->P <  other.P) || ((this->P == other.P) && (this->O <  other.O)); }
 bool CPosition::operator> (const CPosition& other) const { return (this->P >  other.P) || ((this->P == other.P) && (this->O >  other.O)); }
 
-void CPosition::FlipCodiagonal() { ::FlipCodiagonal(P); ::FlipCodiagonal(O); }
-void CPosition::FlipDiagonal() { ::FlipDiagonal(P); ::FlipDiagonal(O); }
-void CPosition::FlipHorizontal() { ::FlipHorizontal(P); ::FlipHorizontal(O); }
-void CPosition::FlipVertical() { ::FlipVertical(P); ::FlipVertical(O); }
+void CPosition::FlipCodiagonal() { P = ::FlipCodiagonal(P); O = ::FlipCodiagonal(O); }
+void CPosition::FlipDiagonal() { P = ::FlipDiagonal(P); O = ::FlipDiagonal(O); }
+void CPosition::FlipHorizontal() { P = ::FlipHorizontal(P); O = ::FlipHorizontal(O); }
+void CPosition::FlipVertical() { P = ::FlipVertical(P); O = ::FlipVertical(O); }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 
