@@ -187,7 +187,7 @@ TEST (CPositionTest, FlipDiagonal) {
 
 TEST (CPositionTest, FlipHorizontal) {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL);
-	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();
+	CPosition pos2(0x00000000000000F0ULL, 0x0ULL);
 	pos1.FlipHorizontal();
 	
 	ASSERT_EQ (pos1, pos2);
@@ -195,7 +195,7 @@ TEST (CPositionTest, FlipHorizontal) {
 
 TEST (CPositionTest, FlipVertical) {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL);
-	CPosition pos4(0x0F00000000000000ULL, 0x0ULL); pos4.FlipToMin();
+	CPosition pos4(0x0F00000000000000ULL, 0x0ULL);
 	pos1.FlipVertical();
 	
 	ASSERT_EQ (pos1, pos4);
