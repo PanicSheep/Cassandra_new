@@ -1,6 +1,6 @@
 #include "flip_loop.h"
 
-// the flip discs in one direction
+// flips discs in one direction
 uint64_t flip_loop_dir(const uint64_t P, const uint64_t O, const uint8_t move, const int dX, const int dY)
 {
 	uint64_t flips = 0;
