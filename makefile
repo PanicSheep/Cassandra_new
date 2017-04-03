@@ -88,7 +88,7 @@ bin/test_perft: obj/test_perft.o obj/perft_basic.o obj/position.o obj/possiblemo
 
 bin/test_line: obj/test_line.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
-	./bin/test_position
+	./bin/test_line
 
 bin/test_game: obj/test_game.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
