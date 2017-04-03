@@ -86,12 +86,16 @@ bin/test_perft: obj/test_perft.o obj/perft_basic.o obj/position.o obj/possiblemo
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_perft
 
+bin/test_line: obj/test_line.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_position
+
 bin/test_game: obj/test_game.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_game
 
 .PHONY: test
-test: bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_generatepositions bin/test_perft bin/test_game
+test: bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_generatepositions bin/test_perft bin/test_line bin/test_game
 
 .PHONY: all
 all:
