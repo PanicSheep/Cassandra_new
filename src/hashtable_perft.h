@@ -50,6 +50,7 @@ class CHashTable
 	inline uint64_t bucketSize(uint64_t Buckets) { while ((Buckets % 2 == 0) || (Buckets % 3 == 0) || (Buckets % 5 == 0)) Buckets--; return Buckets; }
 public:
 	CHashTable(const uint64_t Buckets) : buckets(bucketSize(Buckets)) { table = new NodeType[buckets]; }
+	CHashTable() : CHashTable(1) {}
 	~CHashTable() { delete[] table; }
 	inline void Update(const uint64_t P, const uint64_t O, const uint64_t depth, const uint64_t Value){ table[Hash(P, O)].Update(P, O, depth, Value); }
 	inline bool LookUp(const uint64_t P, const uint64_t O, const uint64_t depth, uint64_t & Value){ return table[Hash(P, O)].LookUp(P, O, depth, Value); }

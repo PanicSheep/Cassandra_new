@@ -1,7 +1,7 @@
 GTEST_DIR = googletest/googletest
 CC=g++
-CFLAGS=-c -Wall -std=c++11 -march=native -O3 -I $(GTEST_DIR) -I $(GTEST_DIR)/include -I src
-LDFLAGS= -pthread
+CFLAGS=-c -fopenmp -Wall -std=c++11 -march=native -O3 -I $(GTEST_DIR) -I $(GTEST_DIR)/include -I src
+LDFLAGS= -fopenmp -lpthread
 
 # All Google test headers.
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
@@ -85,6 +85,9 @@ bin/test_generatepositions: obj/test_generatepositions.o obj/generatepositions.o
 bin/test_perft: obj/test_perft.o obj/perft_basic.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_perft
+	
+bin/perft_haswell: obj/perft_haswell.o obj/perft_basic.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
 
 bin/test_line: obj/test_line.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
@@ -98,7 +101,7 @@ bin/test_game: obj/test_game.o obj/position.o obj/game_endgame_negamax.o obj/gam
 test: bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_generatepositions bin/test_perft bin/test_line bin/test_game
 
 .PHONY: all
-all:
+all: bin/perft_haswell
 
 .PHONY: clean
 clean :
