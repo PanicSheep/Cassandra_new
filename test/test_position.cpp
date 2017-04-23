@@ -9,9 +9,11 @@
 // ################################################################################################
 // ------------------------------------------------------------------------------------------------
 TEST (PositionTest, SignedInt) {
-	ASSERT_EQ (SignedInt(-1), "-1");
-	ASSERT_EQ (SignedInt(+0), "+0");
-	ASSERT_EQ (SignedInt(+1), "+1");
+	ASSERT_EQ (SignedInt(-10), "-10");
+	ASSERT_EQ (SignedInt(-1), "-01");
+	ASSERT_EQ (SignedInt(+0), "+00");
+	ASSERT_EQ (SignedInt(+1), "+01");
+	ASSERT_EQ (SignedInt(+10), "+10");
 }
 
 TEST (PositionTest, SMEAR_BITBOARD) {

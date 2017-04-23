@@ -653,7 +653,7 @@ template <> std::vector<CPositionAllScore> LoadVector(const std::string& filenam
 	if (filename_extension == "obf")
 		return read_vector_OBF(filename, size);
 	if (filename_extension != CPositionAllScore::FILENAME_EXTENSION)
-		std::cerr << "WARNING: Filename extension does not match data type when loading." << std::endl;
+		std::cerr << "WARNING: Filename extension '" << filename_extension << "' does not match data type when loading." << std::endl;
 	return read_vector<CPositionAllScore>(filename, size);
 }
 
@@ -665,7 +665,7 @@ template <> void SaveVector<CPositionAllScore>(const std::string& filename, cons
 	else
 	{
 		if (filename_extension != CPositionAllScore::FILENAME_EXTENSION)
-			std::cerr << "WARNING: Filename extension does not match data type when saving." << std::endl;
+			std::cerr << "WARNING: Filename extension '" << filename_extension << "' does not match data type when saving." << std::endl;
 		write_to_file(filename, vec);
 	}
 }

@@ -16,7 +16,7 @@
 #define PLAY_STONE_SWAP
 
 /// Returns an int with either a '+' or a '-' prefix. Zero is represented '+0'.
-inline std::string SignedInt(int score) { return std::string((score >= 0) ? "+" : "") + std::to_string(score); }
+inline std::string SignedInt(int score) { return std::string((score >= 0) ? "+" : "-") + std::string((std::abs(score) < 10) ? "0" : "") + std::to_string(std::abs(score)); }
 
 inline std::string field_name(const uint8_t move)
 {
