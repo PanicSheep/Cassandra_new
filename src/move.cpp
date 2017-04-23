@@ -27,7 +27,8 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 	const uint64_t BBEmpties = ~(P | O);
 	const uint64_t empties = EmptyCount(P, O);
 
-	m_Moves = std::vector<CMove>(PopCount(BitBoardPossible));
+	m_Moves = std::vector<CMove>();
+	m_Moves.reserve(PopCount(BitBoardPossible));
 	int index = 0;
 
 	int sort_depth;
@@ -73,8 +74,8 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 			case -1:
 				break;
 			case 0:
-			//	Move.Value -= EvaluateFeatures(Move.P, Move.O) << 16;
-			//	break;
+				Move.Value -= EvaluatePattern(Move.P, Move.O) << 16;
+				break;
 			case 1:
 			case 2:
 				//Move.Value -= Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 17;
@@ -86,7 +87,7 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 				break;
 			}
 		}
-		m_Moves[index++] = Move;
+		m_Moves.push_back(Move);
 	}
 	sort();
 	return;

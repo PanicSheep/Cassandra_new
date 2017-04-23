@@ -2,7 +2,7 @@
 #include "position.h"
 #include "hashtable.h"
 #include "utility.h"
-#include "features.h"
+#include "pattern.h"
 #include "game.h"
 #include <algorithm>
 #include <vector>
