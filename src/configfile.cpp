@@ -36,6 +36,7 @@ bool CConfigurations::TryReadConfigFile(const std::string& ConfigFilePath)
 {
 	std::size_t pos;
 	std::string s, key;
+	const std::string token = " = ";
 	std::ifstream file;
 	
 	file.open(ConfigFilePath);
@@ -44,9 +45,9 @@ bool CConfigurations::TryReadConfigFile(const std::string& ConfigFilePath)
 
 	while (std::getline(file, s))
 	{
-		pos = s.find(" = ");
+		pos = s.find(token);
 		key = s.substr(0, pos);
-		s.erase(0, pos + 3);
+		s.erase(0, pos + token.length());
 
 		s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());
 		m_ConfigMap[key] = s;
@@ -64,4 +65,9 @@ bool CConfigurations::HasConfiguration(const std::string& key) const
 std::string CConfigurations::GetConfiguration(const std::string& key) const
 {
 	return m_ConfigMap.at(key);
+}
+
+void CConfigurations::SetConfiguration(const std::string& key, std::string value)
+{
+	m_ConfigMap[key] = std::move(value);
 }
