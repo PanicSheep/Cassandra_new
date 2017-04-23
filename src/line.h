@@ -24,6 +24,7 @@ public:
 	}
 	
 	inline std::size_t size() const { return line.size(); }
+	inline std::size_t empty() const { return line.empty(); }
 
 	// Sets a new best move and its line
 	inline void NewPV(const uint8_t newMove, CLine newLine) {
