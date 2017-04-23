@@ -37,7 +37,7 @@ TEST (ConfigfileTest, TwoParameters) {
 TEST (ConfigfileTest, GlobalSingleton) {
 	std::string ProgramFolderPath = "D:" + FOLDER_SEPARATOR + "user" + FOLDER_SEPARATOR + "Username" + FOLDER_SEPARATOR;
 	std::string ProgramFilePath = ProgramFolderPath + "file.exe";
-	gConfigurations = CConfigurations(ProgramFilePath);
+	Configfile::Initialize(ProgramFilePath);
 	
 	ASSERT_EQ (gConfigurations.Verbosity, 1);
 	ASSERT_EQ (gConfigurations.HasConfiguration("ProgramFilePath"), true);

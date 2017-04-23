@@ -6,6 +6,12 @@
 #include <unordered_map>
 #include <string>
 
+namespace Configfile
+{
+	void Initialize(const std::string& ProgramFilePath);
+	void Initialize(const std::string& ProgramFilePath, const std::string& ConfigFilePath);
+}
+
 class CConfigurations
 {
 	std::unordered_map<std::string, std::string> m_ConfigMap;

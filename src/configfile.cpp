@@ -4,6 +4,20 @@ CConfigurations gConfigurations = CConfigurations();
 
 
 
+namespace Configfile
+{
+	void Initialize(const std::string& ProgramFilePath)
+	{
+		gConfigurations = CConfigurations(ProgramFilePath);
+	}
+	
+	void Initialize(const std::string& ProgramFilePath, const std::string& ConfigFilePath)
+	{
+		gConfigurations = CConfigurations(ProgramFilePath, ConfigFilePath);
+	}
+}
+
+
 CConfigurations::CConfigurations()
 {
 	Verbosity = 1;
