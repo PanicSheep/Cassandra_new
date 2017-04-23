@@ -25,7 +25,7 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 	};
 	static const int PARITY_VALUE[16] = { 0, 20, 0, 10, 1, 10, 2, 10, 3, 5, 3, 4, 3, 4, 3, 4 };
 	const uint64_t BBEmpties = ~(P | O);
-	const uint64_t empties = EmptiesCount(P, O);
+	const uint64_t empties = EmptyCount(P, O);
 
 	m_Moves = std::vector<CMove>(PopCount(BitBoardPossible));
 	int index = 0;
@@ -37,7 +37,7 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 	{
 		sort_depth = (depth - 15) / 3;
 		if (ttValue.beta < alpha) sort_depth -= 2; 
-		sort_depth = BIND(sort_depth, 0, 6);
+		sort_depth = CLAMP(sort_depth, 0, 6);
     }
 	else
         sort_depth = -1;
@@ -73,16 +73,16 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 			case -1:
 				break;
 			case 0:
-				Move.Value -= EvaluateFeatures(Move.P, Move.O) << 16;
-				break;
+			//	Move.Value -= EvaluateFeatures(Move.P, Move.O) << 16;
+			//	break;
 			case 1:
 			case 2:
-				Move.Value -= PVS(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth, empties-1) << 17;
-				break;
+				//Move.Value -= Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 17;
+				//break;
 			default:
-				Move.Value -= PVS(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth, empties-1) << 18;
+				//Move.Value -= Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 18;
 				CHashTableValueType ttValue2;
-				if (TT.LookUp(Move.P, Move.O, ttValue2)) Move.Value += 1 << 21;
+				if (gTT.LookUp(Move.P, Move.O, ttValue2)) Move.Value += 1 << 21;
 				break;
 			}
 		}
