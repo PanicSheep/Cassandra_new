@@ -22,7 +22,7 @@ public:
 
 	CHashTableValueType() : cost(0), depth(-1), selectivity(0), alpha(-99), beta(99), PV(64), AV(64) {}
 	CHashTableValueType(const uint64_t NodeCounter, const int8_t depth, const uint8_t selectivity, const int8_t alpha, const int8_t beta, const uint8_t PV, const uint8_t AV) :
-		cost(BitScanMSB(NodeCounter)), depth(depth), selectivity(selectivity), alpha(alpha), beta(beta), PV(PV), AV(AV) {}
+		cost(BitScanMSB(NodeCounter+1)), depth(depth), selectivity(selectivity), alpha(alpha), beta(beta), PV(PV), AV(AV) {}
 };
 
 class CTwoNode
@@ -39,7 +39,7 @@ public:
 	inline CTwoNode() : m_P1(0), m_O1(0), m_P2(0), m_O2(0), m_date1(0), m_date2(0) { spinlock.clear(); }
 	inline CTwoNode(const uint64_t P1, const uint64_t O1, const CHashTableValueType& Value1,
 	         const uint64_t P2, const uint64_t O2, const CHashTableValueType& Value2)
-		: m_P1(0), m_O1(0), m_P2(0), m_O2(0), m_date1(0), m_date2(0), m_value1(Value1), m_value2(Value2) { spinlock.clear(); }
+		: m_P1(0), m_O1(0), m_P2(0), m_O2(0), m_value1(Value1), m_value2(Value2), m_date1(0), m_date2(0) { spinlock.clear(); }
 	CTwoNode(const CTwoNode& o);
 	CTwoNode(CTwoNode&& o);
 	

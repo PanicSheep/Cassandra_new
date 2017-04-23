@@ -178,14 +178,6 @@ void CTwoNode::Clear()
 	spinlock.clear(std::memory_order_release);
 }
 
-
-uint64_t CHashTable::bucketSize(uint64_t Buckets)
-{ 
-	while ((Buckets % 2 == 0) || (Buckets % 3 == 0) || (Buckets % 5 == 0)) 
-		Buckets--; 
-	return Buckets; 
-}
-
 CHashTable& CHashTable::operator=(const CHashTable& other)
 {
 	if (this != &other)
