@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 		if (rnd)
 			std::cout << " done." << std::endl;
 		else if (all)
-			std::cout << ThousandsSeparator(posSet.size()) << "positions written." << std::endl;
+			std::cout << ThousandsSeparator(posSet.size()) << " positions written." << std::endl;
 	}
 	
 	return 0;
