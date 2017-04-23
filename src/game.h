@@ -1,6 +1,8 @@
 #pragma once
 #include "count_last_flip.h"
 #include "position.h"
+#include "line.h"
+#include "move.h"
 #include <cassert>
 #include <cstdint>
 
@@ -16,6 +18,14 @@ namespace Endgame_AlphaBeta
 {
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 }
+
+// PVS + ZWS + MPC + MoveOrdering + HashTable + IterativeDeepening + IterativeBroadening
+namespace Endgame_PVS
+{
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine pline = CLine());
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
+}
+
 
 // ################################################################################################
 // Inline section
