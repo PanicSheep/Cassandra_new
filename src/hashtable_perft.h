@@ -1,6 +1,7 @@
 #pragma once
 #include <atomic>
 #include <cstdint>
+#include <vector>
 
 class BigNode
 {
@@ -47,19 +48,17 @@ public:
 class CHashTable
 {
 	typedef BigNode NodeType;
+	std::vector<NodeType> table;
+	const uint64_t buckets;
 	inline uint64_t bucketSize(uint64_t Buckets) { while ((Buckets % 2 == 0) || (Buckets % 3 == 0) || (Buckets % 5 == 0)) Buckets--; return Buckets; }
 public:
-	CHashTable(const uint64_t Buckets) : buckets(bucketSize(Buckets)) { table = new NodeType[buckets]; }
+	CHashTable(const uint64_t Buckets) : buckets(bucketSize(Buckets)) { table = std::vector<NodeType>(buckets); }
 	CHashTable() : CHashTable(1) {}
-	~CHashTable() { delete[] table; }
 	inline void Update(const uint64_t P, const uint64_t O, const uint64_t depth, const uint64_t Value){ table[Hash(P, O)].Update(P, O, depth, Value); }
 	inline bool LookUp(const uint64_t P, const uint64_t O, const uint64_t depth, uint64_t & Value){ return table[Hash(P, O)].LookUp(P, O, depth, Value); }
-	inline void Clear() { for (uint64_t i = 0; i < buckets; i++) table[i].Clear(); }
+	inline void Clear() { for (auto& it : table) it.Clear(); }
 	inline uint64_t size() { return sizeof(NodeType) * buckets; }
 private:
-	NodeType* table;
-	const uint64_t buckets;
-
 	inline std::size_t Hash(uint64_t P, uint64_t O) const
 	{
 		P ^= P >> 36;
