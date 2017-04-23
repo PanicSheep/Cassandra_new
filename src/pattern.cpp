@@ -304,7 +304,7 @@ namespace Pattern
 	}
 }
 
-int EvaluateFeatures(const uint64_t P, const uint64_t O, const uint64_t emptyCount)
+int EvaluatePattern(const uint64_t P, const uint64_t O, const uint64_t emptyCount)
 {
 	if (emptyCount == 0) return static_cast<int>((PopCount(P) << 1) - 64);
 	const float score = Pattern::BoxedPatternSet.score(P, O, emptyCount);
