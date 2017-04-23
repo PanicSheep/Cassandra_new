@@ -13,29 +13,26 @@ TEST (GeneratePositionsTest, GenerateRandomPositions) {
 		ASSERT_EQ (it.EmptyCount(), numEmpties);
 }
 
-TEST (GeneratePositionsTest, GeneratePerftPositions1) {
+TEST (GeneratePositionsTest, GenerateAllPositions) {
 	const uint8_t numEmpties = 55;
 	const bool ETH = false;
 	
-	auto RndPos = GeneratePerftPositions(numEmpties, ETH);
+	auto RndPos = GenerateAllPositions(numEmpties, ETH);
 	
 	for (const auto& it : RndPos)
 		ASSERT_EQ (it.EmptyCount(), numEmpties);
 }
 
-TEST (GeneratePositionsTest, GeneratePerftPositions2) {
-	auto RndPos = GeneratePerftPositions(59, false);
-	ASSERT_EQ (GeneratePerftPositions(60, false).size(),      1u);
-	ASSERT_EQ (GeneratePerftPositions(59, false).size(),      1u);
-	ASSERT_EQ (GeneratePerftPositions(58, false).size(),      3u);
-	ASSERT_EQ (GeneratePerftPositions(57, false).size(),     14u);
-	ASSERT_EQ (GeneratePerftPositions(56, false).size(),     60u);
-	ASSERT_EQ (GeneratePerftPositions(55, false).size(),    322u);
-	ASSERT_EQ (GeneratePerftPositions(54, false).size(),   1773u);
-	ASSERT_EQ (GeneratePerftPositions(53, false).size(),  10649u);
-	ASSERT_EQ (GeneratePerftPositions(52, false).size(),  67245u);
-	ASSERT_EQ (GeneratePerftPositions(51, false).size(), 434029u);
-}
+TEST (GeneratePositionsTest, All60) { ASSERT_EQ (GenerateAllPositions(60, false).size(),      1u); }
+TEST (GeneratePositionsTest, All59) { ASSERT_EQ (GenerateAllPositions(59, false).size(),      1u); }
+TEST (GeneratePositionsTest, All58) { ASSERT_EQ (GenerateAllPositions(58, false).size(),      3u); }
+TEST (GeneratePositionsTest, All57) { ASSERT_EQ (GenerateAllPositions(57, false).size(),     14u); }
+TEST (GeneratePositionsTest, All56) { ASSERT_EQ (GenerateAllPositions(56, false).size(),     60u); }
+TEST (GeneratePositionsTest, All55) { ASSERT_EQ (GenerateAllPositions(55, false).size(),    322u); }
+TEST (GeneratePositionsTest, All54) { ASSERT_EQ (GenerateAllPositions(54, false).size(),   1773u); }
+TEST (GeneratePositionsTest, All53) { ASSERT_EQ (GenerateAllPositions(53, false).size(),  10649u); }
+TEST (GeneratePositionsTest, All52) { ASSERT_EQ (GenerateAllPositions(52, false).size(),  67245u); }
+TEST (GeneratePositionsTest, All51) { ASSERT_EQ (GenerateAllPositions(51, false).size(), 434029u); }
 
 int main(int argc, char **argv)
 {
