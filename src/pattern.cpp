@@ -224,10 +224,8 @@ namespace Pattern
 
 	std::vector<std::pair<std::string, uint64_t>> GetActivePattern()
 	{
-		assert(gConfigurations.HasConfiguration("active pattern"));
-		
 		std::vector<std::pair<std::string, uint64_t>> ActivePattern;
-		std::string PatternString = gConfigurations.GetConfiguration("active pattern");
+		std::string PatternString = gConfigurations.HasConfiguration("active pattern") ? gConfigurations.GetConfiguration("active pattern") : "";
 		
 		const std::string delimiter = " ";
 		std::string token;
