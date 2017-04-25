@@ -91,7 +91,7 @@ bin/test_line: obj/test_line.o obj/position.o obj/possiblemoves.o obj/possiblemo
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_line
 
-bin/test_game: obj/test_game.o obj/pattern.h obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
+bin/test_game: obj/test_game.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_game
 
@@ -99,7 +99,7 @@ bin/test_pattern: obj/test_pattern.o obj/pattern.o obj/position.o obj/possiblemo
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_pattern
 
-bin/solver: obj/solver.o obj/pattern.h obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/gtest-all.o
+bin/solver: obj/solver.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 bin/posgen: obj/posgen.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o obj/gtest-all.o
