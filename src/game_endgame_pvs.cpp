@@ -11,6 +11,7 @@ namespace Endgame_PVS
 	
 	// Function in header file
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine pline);
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	
 	// Helper functions
 	// -----------------------

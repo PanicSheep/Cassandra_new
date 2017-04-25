@@ -213,8 +213,10 @@ int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
 	
-	Stability::Initialize();
+	Configfile::Initialize(argv[0]);
 	CountLastFlip::Initialize();
+	Stability::Initialize();
+	Pattern::Initialize(false, false);
 	gTT = CHashTable(32 * 1024 * 1024);
 	gTTPV = CHashTable(1024 * 1024);
 	
