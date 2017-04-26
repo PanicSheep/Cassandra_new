@@ -3,8 +3,8 @@
 
 namespace Endgame_PVS
 {
-	const bool USE_IID = true;
-	const bool USE_PV_TTCUT = true;
+	const bool USE_IID = false;
+	const bool USE_PV_TTCUT = false;
 
 	const int A = 8;
 	const int B = 12;
@@ -269,18 +269,19 @@ namespace Endgame_PVS
 			if (HasMoves(O, P))
 				return -PVS_A(O, P, NodeCounter, -beta, -alpha, pline);
 			else {
-				if (pline) pline.NoMoves();
+				if (pline) pline->NoMoves();
 				return EvalGameOver(P, EmptyCount(P, O));
 			}
 		}
 
-		CLine* line = (pline ? new CLine(pline.size()-1) : nullptr);
+		CLine* line = (pline ? new CLine(pline->size()-1) : nullptr);
 		
 		uint64_t LocalNodeCounter = NodeCounter;
 		CHashTableValueType ttValue;
-		if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
-			if (USE_PV_TTCUT && !pline && UseTTValue(ttValue, alpha, beta, empties, NO_SELECTIVITY, score))
-				return score;
+		if (USE_PV_TTCUT && !pline)
+			if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
+				if (UseTTValue(ttValue, alpha, beta, empties, NO_SELECTIVITY, score))
+					return score;
 
 		CMoveList mvList(P, O, NodeCounter, BitBoardPossible, empties, alpha, ttValue, true);
 		for (const auto& mv : mvList)
@@ -409,15 +410,16 @@ namespace Endgame_PVS
 			if (HasMoves(O, P))
 				return -PVS(O, P, NodeCounter, -beta, -alpha, selectivity, depth, pline);
 			else {
-				if (!pline.empty()) pline.NoMoves();
+				if (pline) pline->NoMoves();
 				return EvalGameOver(P, empties);
 			}
 		}
 
-		if (!pline.empty() && StabilityCutoff_PVS(P, O, alpha, score)) return score;
-		if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
-			if (USE_PV_TTCUT && pline.empty() && UseTTValue(ttValue, alpha, beta, depth, selectivity, score))
-				return score;
+		if (pline && StabilityCutoff_PVS(P, O, alpha, score)) return score;
+		if (USE_PV_TTCUT && !pline)
+			if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
+				if (UseTTValue(ttValue, alpha, beta, depth, selectivity, score))
+					return score;
 		// if (USE_IID && ttValue.PV == 64) // IID TODO !!!
 		// {
 		// 	int reduced_depth = (depth == empties) ? depth - A : depth - 2;
@@ -425,12 +427,12 @@ namespace Endgame_PVS
 		// 	{
 		// 		PVS(P, O, NodeCounter, -64, 64, 6, reduced_depth, empties, nullptr);
 		// 		if (LookUpTTPV(P, O, ttValue))
-		// 			if (USE_PV_TTCUT && pline.empty() && UseTTValue(ttValue, alpha, beta, depth, selectivity, score))
+		// 			if (USE_PV_TTCUT && pline->empty() && UseTTValue(ttValue, alpha, beta, depth, selectivity, score))
 		// 				return score;
 		// 	}
 		// }
 
-		CLine* line = (pline ? new CLine(pline.size()-1) : nullptr);
+		CLine* line = (pline ? new CLine(pline->size()-1) : nullptr);
 		CMoveList mvList(P, O, NodeCounter, BitBoardPossible, depth, alpha, ttValue, true);
 		for (const auto& mv : mvList)
 		{
@@ -446,7 +448,7 @@ namespace Endgame_PVS
 			{
 				bestscore = score;
 				BestMove = mv.move;
-				if (line) pline.NewPV(mv.move, line);
+				if (line) pline->NewPV(mv.move, line);
 				if (score >= beta) break;
 				if (score > lower) lower = score;
 			}

@@ -27,10 +27,10 @@ public:
 	inline std::size_t empty() const { return line.empty(); }
 
 	// Sets a new best move and its line
-	inline void NewPV(const uint8_t newMove, CLine newLine) {
-		assert(line.size() == newLine.size()+1);
+	inline void NewPV(const uint8_t newMove, CLine * newLine) {
+		assert(line.size() == newLine->size()+1);
 		line[0] = newMove;
-		std::copy(newLine.line.begin(), newLine.line.end(), line.begin()+1);
+		std::copy(newLine->line.begin(), newLine->line.end(), line.begin()+1);
 	}
 	
 	// Sets a new best move
