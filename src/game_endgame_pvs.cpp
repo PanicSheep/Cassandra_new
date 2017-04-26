@@ -10,7 +10,7 @@ namespace Endgame_PVS
 	const int B = 12;
 	
 	// Function in header file
-	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine pline);
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline);
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	
 	// Helper functions
@@ -36,11 +36,11 @@ namespace Endgame_PVS
 	       int ZWS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha);
 	       int ZWS_B(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha);
 	
-	inline int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 CLine pline = CLine());
-	       int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter,       int alpha, const int beta, CLine pline = CLine());
+	inline int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 CLine* pline = nullptr);
+	       int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter,       int alpha, const int beta, CLine* pline = nullptr);
 	
 	       int ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 const int selectivity, const unsigned int depth);
-	       int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine pline = CLine());
+	       int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline = nullptr);
 	// -----------------------
 	
 	
@@ -53,7 +53,7 @@ namespace Endgame_PVS
 	int ZWS_3(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, unsigned int x1, unsigned int x2, unsigned int x3);
 	int ZWS_4(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4);
 
-	int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const unsigned int x, CLine pline = CLine());
+	int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const unsigned int x, CLine* pline = nullptr);
 	// -----------------------
 	
 	
@@ -62,7 +62,7 @@ namespace Endgame_PVS
 	//  Function in header file
 	// ################################################################################################
 	// ------------------------------------------------------------------------------------------------
-	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine pline)
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline)
 	{
 		assert((P & O) == 0);
 		assert(-64 <= alpha); assert(alpha <= 64);
@@ -236,13 +236,13 @@ namespace Endgame_PVS
 		return bestscore;
 	}
 	
-	inline int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, CLine pline) 
+	inline int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, CLine* pline) 
 	{
 		const auto x = BitScanLSB(~(P | O));
 		return PVS_1(P, O, NodeCounter, alpha, x, pline);
 	}
 	
-	int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, const int beta, CLine pline)
+	int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, const int beta, CLine* pline)
 	{
 		assert((P & O) == 0);
 		assert(-64 <= alpha); assert(alpha <= 64);
@@ -269,17 +269,17 @@ namespace Endgame_PVS
 			if (HasMoves(O, P))
 				return -PVS_A(O, P, NodeCounter, -beta, -alpha, pline);
 			else {
-				if (!pline.empty()) pline.NoMoves();
+				if (pline) pline.NoMoves();
 				return EvalGameOver(P, EmptyCount(P, O));
 			}
 		}
 
-		CLine line(pline.size() ? pline.size()-1 : 0);
+		CLine* line = (pline ? new CLine(pline.size()-1) : nullptr);
 		
 		uint64_t LocalNodeCounter = NodeCounter;
 		CHashTableValueType ttValue;
 		if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
-			if (USE_PV_TTCUT && pline.empty() && UseTTValue(ttValue, alpha, beta, empties, NO_SELECTIVITY, score))
+			if (USE_PV_TTCUT && !pline && UseTTValue(ttValue, alpha, beta, empties, NO_SELECTIVITY, score))
 				return score;
 
 		CMoveList mvList(P, O, NodeCounter, BitBoardPossible, empties, alpha, ttValue, true);
@@ -297,7 +297,7 @@ namespace Endgame_PVS
 			{
 				bestscore = score;
 				BestMove = mv.move;
-				if (!line.empty()) pline.NewPV(mv.move, line);
+				if (line) pline->NewPV(mv.move, line);
 				if (score >= beta) break;
 				if (score > lower) lower = score;
 			}
@@ -306,6 +306,7 @@ namespace Endgame_PVS
 		UpdateTTPV(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, empties, NO_SELECTIVITY, BestMove, mvList.BestMove(), mvList.NextBestMove());
 		UpdateTT(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, empties, NO_SELECTIVITY, BestMove, mvList.BestMove(), mvList.NextBestMove());
 
+		delete line;
 		return bestscore;
 	}
 	
@@ -376,7 +377,7 @@ namespace Endgame_PVS
 		return bestscore;
 	}
 
-	int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine pline)
+	int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline)
 	{
 		assert((P & O) == 0);
 		assert(-64 <= alpha); assert(alpha <= 64);
@@ -429,7 +430,7 @@ namespace Endgame_PVS
 		// 	}
 		// }
 
-		CLine line(pline.size() ? pline.size()-1 : 0);
+		CLine* line = (pline ? new CLine(pline.size()-1) : nullptr);
 		CMoveList mvList(P, O, NodeCounter, BitBoardPossible, depth, alpha, ttValue, true);
 		for (const auto& mv : mvList)
 		{
@@ -445,7 +446,7 @@ namespace Endgame_PVS
 			{
 				bestscore = score;
 				BestMove = mv.move;
-				if (!line.empty()) pline.NewPV(mv.move, line);
+				if (line) pline.NewPV(mv.move, line);
 				if (score >= beta) break;
 				if (score > lower) lower = score;
 			}
@@ -461,6 +462,7 @@ namespace Endgame_PVS
 			UpdateTTPV(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, depth, selectivity, BestMove, mvList.BestMove(), mvList.NextBestMove());
 			UpdateTT(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, depth, selectivity, BestMove, mvList.BestMove(), mvList.NextBestMove());
 		}
+		delete line;
 		return bestscore;
 	}
 	// ------------------------------------------------------------------------------------------------
@@ -657,6 +659,7 @@ namespace Endgame_PVS
 
 		if (bestscore != 65) return bestscore;
 		
+		NodeCounter--;
 		return EvalGameOver<2>(P);
 	}
 	
@@ -723,6 +726,7 @@ namespace Endgame_PVS
 
 		if (bestscore != 65) return bestscore;
 		
+		NodeCounter--;
 		return EvalGameOver<3>(P);
 	}
 	
@@ -823,10 +827,11 @@ namespace Endgame_PVS
 
 		if (bestscore != 65) return bestscore;
 		
+		NodeCounter--;
 		return EvalGameOver<4>(P);
 	}
 	
-	int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const unsigned int x, CLine pline)
+	int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const unsigned int x, CLine* pline)
 	{
 		assert((P & O) == 0);
 		assert(EmptyCount(P, O) == 1);
@@ -839,22 +844,24 @@ namespace Endgame_PVS
 		if (const auto diff = count_last_flip(P, x))
 		{
 			NodeCounter++;
-			if (!pline.empty()) pline.NewPV(x);
+			if (pline) pline->NewPV(x);
 			return score + diff + 1;
 		}
 		else
 		{
+			// TODO: Decide what to do. Maybe you want to uncomment things.
+			
 			//if (!pline && (score + 1 < alpha)) return score + 1;
 
 			if (const auto diff = count_last_flip(O, x))
 			{
 				NodeCounter += 2; // One for passing, one for playing
-				if (!pline.empty()) pline.NewPV(x);
+				if (pline) pline->NewPV(x);
 				return score - diff - 1;
 			}
 			else
 			{
-				if (!pline.empty()) pline.NoMoves();
+				if (pline) pline->NoMoves();
 				return score > 0 ? score + 1 : score - 1;
 			}
 

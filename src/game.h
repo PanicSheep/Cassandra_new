@@ -22,7 +22,7 @@ namespace Endgame_AlphaBeta
 // PVS + ZWS + MPC + MoveOrdering + HashTable + IterativeDeepening + IterativeBroadening
 namespace Endgame_PVS
 {
-	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine pline = CLine());
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline = nullptr);
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 }
 
