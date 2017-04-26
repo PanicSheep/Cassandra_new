@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 		std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 		std::size_t superNC = 0;
 		#pragma omp parallel for reduction(+:superNC)
-		for (std::size_t i = 0; i < vec.size(); i++)
+		for (int64_t i = 0; i < vec.size(); i++)
 		{
 			uint64_t NC = 0;
 			auto score = Endgame_PVS::Eval(vec[i].P, vec[i].O, NC);

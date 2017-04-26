@@ -15,7 +15,7 @@ std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, 
 		auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0, 64), std::mt19937_64(seed.fetch_add(1)));
 		
 		#pragma omp for
-		for (std::size_t i = 0; i < numPos; i++)
+		for (int64_t i = 0; i < numPos; i++)
 		{
 			CPosition pos(ETH);
 			unsigned int plies = pos.EmptyCount() - numEmpties;
