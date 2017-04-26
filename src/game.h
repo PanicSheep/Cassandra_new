@@ -3,6 +3,7 @@
 #include "position.h"
 #include "line.h"
 #include "move.h"
+#include "hashtable.h"
 #include <cassert>
 #include <cstdint>
 
