@@ -34,6 +34,72 @@ inline std::string field_name(const uint8_t move)
 	return name[move];
 }
 
+const uint8_t FIELD_A1 =  0;
+const uint8_t FIELD_B1 =  1;
+const uint8_t FIELD_C1 =  2;
+const uint8_t FIELD_D1 =  3;
+const uint8_t FIELD_E1 =  4;
+const uint8_t FIELD_F1 =  5;
+const uint8_t FIELD_G1 =  6;
+const uint8_t FIELD_H1 =  7;
+const uint8_t FIELD_A2 =  8;
+const uint8_t FIELD_B2 =  9;
+const uint8_t FIELD_C2 = 10;
+const uint8_t FIELD_D2 = 11;
+const uint8_t FIELD_E2 = 12;
+const uint8_t FIELD_F2 = 13;
+const uint8_t FIELD_G2 = 14;
+const uint8_t FIELD_H2 = 15;
+const uint8_t FIELD_A3 = 16;
+const uint8_t FIELD_B3 = 17;
+const uint8_t FIELD_C3 = 18;
+const uint8_t FIELD_D3 = 19;
+const uint8_t FIELD_E3 = 20;
+const uint8_t FIELD_F3 = 21;
+const uint8_t FIELD_G3 = 22;
+const uint8_t FIELD_H3 = 23;
+const uint8_t FIELD_A4 = 24;
+const uint8_t FIELD_B4 = 25;
+const uint8_t FIELD_C4 = 26;
+const uint8_t FIELD_D4 = 27;
+const uint8_t FIELD_E4 = 28;
+const uint8_t FIELD_F4 = 29;
+const uint8_t FIELD_G4 = 30;
+const uint8_t FIELD_H4 = 31;
+const uint8_t FIELD_A5 = 32;
+const uint8_t FIELD_B5 = 33;
+const uint8_t FIELD_C5 = 34;
+const uint8_t FIELD_D5 = 35;
+const uint8_t FIELD_E5 = 36;
+const uint8_t FIELD_F5 = 37;
+const uint8_t FIELD_G5 = 38;
+const uint8_t FIELD_H5 = 39;
+const uint8_t FIELD_A6 = 40;
+const uint8_t FIELD_B6 = 41;
+const uint8_t FIELD_C6 = 42;
+const uint8_t FIELD_D6 = 43;
+const uint8_t FIELD_E6 = 44;
+const uint8_t FIELD_F6 = 45;
+const uint8_t FIELD_G6 = 46;
+const uint8_t FIELD_H6 = 47;
+const uint8_t FIELD_A7 = 48;
+const uint8_t FIELD_B7 = 49;
+const uint8_t FIELD_C7 = 50;
+const uint8_t FIELD_D7 = 51;
+const uint8_t FIELD_E7 = 52;
+const uint8_t FIELD_F7 = 53;
+const uint8_t FIELD_G7 = 54;
+const uint8_t FIELD_H7 = 55;
+const uint8_t FIELD_A8 = 56;
+const uint8_t FIELD_B8 = 57;
+const uint8_t FIELD_C8 = 58;
+const uint8_t FIELD_D8 = 59;
+const uint8_t FIELD_E8 = 60;
+const uint8_t FIELD_F8 = 61;
+const uint8_t FIELD_G8 = 62;
+const uint8_t FIELD_H8 = 63;
+
+
 const uint64_t neighbour[64] = { // Neighbours to the input-field
 	0x0000000000000302ULL, 0x0000000000000705ULL, 0x0000000000000e0aULL, 0x0000000000001c14ULL,	0x0000000000003828ULL, 0x0000000000007050ULL, 0x000000000000e0a0ULL, 0x000000000000c040ULL,
 	0x0000000000030203ULL, 0x0000000000070507ULL, 0x00000000000e0a0eULL, 0x00000000001c141cULL,	0x0000000000382838ULL, 0x0000000000705070ULL, 0x0000000000e0a0e0ULL, 0x0000000000c040c0ULL,
