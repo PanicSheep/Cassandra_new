@@ -124,7 +124,7 @@ namespace Endgame_NegaMax
 	
 	int Eval_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x)
 	{
-		const auto score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
+		const int score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
 		
 		if (const auto DiffCount = count_last_flip(P, x))
 		{
@@ -230,8 +230,6 @@ namespace Endgame_NegaMax
 	{
 		uint64_t flipped;
 		int score = -128;
-		bool played = false;
-		++NodeCounter;
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))

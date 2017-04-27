@@ -97,7 +97,7 @@ namespace Endgame_AlphaBeta
 	
 	int Eval_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, const unsigned int x)
 	{
-		const auto score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
+		const int score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
 		
 		if (const auto DiffCount = count_last_flip(P, x))
 		{
