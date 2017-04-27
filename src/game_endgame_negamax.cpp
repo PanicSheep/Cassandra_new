@@ -28,21 +28,17 @@ namespace Endgame_NegaMax
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter)
 	{
 		const uint64_t empties = EmptyCount(P, O);
-		if (empties <= 4)
+		switch (empties)
 		{
-			switch (empties)
-			{
-				case 0 : return Eval_0(P, O, NodeCounter);
-				case 1 : return Eval_1(P, O, NodeCounter);
-				case 2 : return Eval_2(P, O, NodeCounter);
-				case 3 : return Eval_3(P, O, NodeCounter);
-				case 4 : return Eval_4(P, O, NodeCounter);
-			}
-			
+			case 0 : return Eval_0(P, O, NodeCounter);
+			case 1 : return Eval_1(P, O, NodeCounter);
+			case 2 : return Eval_2(P, O, NodeCounter);
+			case 3 : return Eval_3(P, O, NodeCounter);
+			case 4 : return Eval_4(P, O, NodeCounter);
 		}
 
 		uint64_t BitBoardPossible = PossibleMoves(P, O);
-		int Score = -64;
+		int score = -128;
 		NodeCounter++;
 
 		if (!BitBoardPossible){
@@ -57,10 +53,10 @@ namespace Endgame_NegaMax
 			const auto Move = BitScanLSB(BitBoardPossible);
 			RemoveLSB(BitBoardPossible);
 			const uint64_t flipped = flip(P, O, Move);
-			Score = MAX(Score, -Eval(O ^ flipped, P ^ (1ULL << Move) ^ flipped, NodeCounter));
+			score = MAX(score, -Eval(O ^ flipped, P ^ (1ULL << Move) ^ flipped, NodeCounter));
 		}
 
-		return Score;
+		return score;
 	}
 	// ------------------------------------------------------------------------------------------------
 	// ################################################################################################
@@ -128,202 +124,161 @@ namespace Endgame_NegaMax
 	
 	int Eval_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x)
 	{
-		int Score, DiffCount;
-		Score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
+		const auto score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
 		
-		NodeCounter++;
-		if ((DiffCount = count_last_flip(P, x)))
+		if (const auto DiffCount = count_last_flip(P, x))
 		{
-			NodeCounter++;
-			return Score + DiffCount + 1;
+			NodeCounter += 2; // One for this, one for playing.
+			return score + DiffCount + 1;
 		}
-		else if ((DiffCount = count_last_flip(O, x)))
+		else if (const auto DiffCount = count_last_flip(O, x))
 		{
-			NodeCounter += 2; // One for passing, one for playing
-			return Score - DiffCount - 1;
+			NodeCounter += 3; // One for this, one for passing, one for playing.
+			return score - DiffCount - 1;
 		}
 		else
-			return (Score > 0) ? Score + 1 : Score - 1;
+		{
+			NodeCounter++;
+			return (score > 0) ? score + 1 : score - 1;
+		}
 	}
 	
 	int Eval_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x1, const unsigned int x2)
 	{
 		uint64_t flipped;
-		int Score = -64;
-		bool played = false;
-		NodeCounter++;
+		int score = -128;
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
-		{
-			Score = MAX(Score, -Eval_1(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
-			played = true;
-		}
+			score = MAX(score, -Eval_1(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
 
 		//Play on x2
 		if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
-		{
-			Score = MAX(Score, -Eval_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
-			played = true;
+			score = MAX(score, -Eval_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
+
+		if (score != -128) {
+			NodeCounter++;
+			return score;
 		}
-
-		if (played) return Score;
-
-		NodeCounter++;
-		Score = 64;
+		score = 128;
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
-		{
-			Score = MIN(Score, Eval_1(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
-			played = true;
-		}
+			score = MIN(score, Eval_1(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
+			
 
 		//Play on x2
 		if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
-		{
-			Score = MIN(Score, Eval_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
-			played = true;
-		}
+			score = MIN(score, Eval_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
 
-		if (played)
-			return Score;
-		else
+		if (score != 128) {
+			NodeCounter += 2; // One for this, one for passing.
+			return score;
+		}
+		else {
+			NodeCounter++; // One for this.
 			return EvalGameOver<2>(P);
+		}
 	}
 	
 	int Eval_3(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x1, const unsigned int x2, const unsigned int x3)
 	{
 		uint64_t flipped;
-		int Score = -64;
-		bool played = false;
-		NodeCounter++;
+		int score = -128;
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
-		{
-			Score = MAX(Score, -Eval_2(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
-			played = true;
-		}
+			score = MAX(score, -Eval_2(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
 
 		//Play on x2
 		if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
-		{
-			Score = MAX(Score, -Eval_2(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
-			played = true;
-		}
+			score = MAX(score, -Eval_2(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
 
 		//Play on x3
 		if ((O & neighbour[x3]) && (flipped = flip(P, O, x3)))
-		{
-			Score = MAX(Score, -Eval_2(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
-			played = true;
+			score = MAX(score, -Eval_2(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
+
+		if (score != -128) {
+			NodeCounter++;
+			return score;
 		}
-
-		if (played) return Score;
-
-		NodeCounter++;
-		Score = 64;
+		score = 128;
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
-		{
-			Score = MIN(Score, Eval_2(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
-			played = true;
-		}
+			score = MIN(score, Eval_2(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
 
 		//Play on x2
 		if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
-		{
-			Score = MIN(Score, Eval_2(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
-			played = true;
-		}
+			score = MIN(score, Eval_2(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
 
 		//Play on x3
 		if ((P & neighbour[x3]) && (flipped = flip(O, P, x3)))
-		{
-			Score = MIN(Score, Eval_2(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
-			played = true;
-		}
+			score = MIN(score, Eval_2(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
 
-		if (played)
-			return Score;
-		else
+		if (score != 128) {
+			NodeCounter += 2; // One for this, one for passing.
+			return score;
+		}
+		else {
+			NodeCounter++; // One for this.
 			return EvalGameOver<3>(P);
+		}
 	}
 	
 	int Eval_4(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x1, const unsigned int x2, const unsigned int x3, const unsigned int x4)
 	{
 		uint64_t flipped;
-		int Score = -64;
+		int score = -64;
 		bool played = false;
 		++NodeCounter;
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
-		{
-			Score = MAX(Score, -Eval_3(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
-			played = true;
-		}
+			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
 
 		//Play on x2
 		if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
-		{
-			Score = MAX(Score, -Eval_3(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
-			played = true;
-		}
+			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
 
 		//Play on x3
 		if ((O & neighbour[x3]) && (flipped = flip(P, O, x3)))
-		{
-			Score = MAX(Score, -Eval_3(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
-			played = true;
-		}
+			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
 
 		//Play on x4
 		if ((O & neighbour[x4]) && (flipped = flip(P, O, x4)))
-		{
-			Score = MAX(Score, -Eval_3(O ^ flipped, P ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
-			played = true;
+			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
+
+		if (score != -128) {
+			NodeCounter++;
+			return score;
 		}
-
-		if (played) return Score;
-
-		++NodeCounter;
-		Score = 64;
+		score = 128;
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
-		{
-			Score = MIN(Score, Eval_3(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
-			played = true;
-		}
+			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
 
 		//Play on x2
 		if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
-		{
-			Score = MIN(Score, Eval_3(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
-			played = true;
-		}
+			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
 
 		//Play on x3
 		if ((P & neighbour[x3]) && (flipped = flip(O, P, x3)))
-		{
-			Score = MIN(Score, Eval_3(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
-			played = true;
-		}
+			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
 
 		//Play on x4
 		if ((P & neighbour[x4]) && (flipped = flip(O, P, x4)))
-		{
-			Score = MIN(Score, Eval_3(P ^ flipped, O ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
-			played = true;
-		}
+			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
 
-		if (played)
-			return Score;
-		else
+		if (score != 128) {
+			NodeCounter += 2; // One for this, one for passing.
+			return score;
+		}
+		else {
+			NodeCounter++; // One for this.
 			return EvalGameOver<4>(P);
+		}
 	}
 	// ------------------------------------------------------------------------------------------------
 	// ################################################################################################

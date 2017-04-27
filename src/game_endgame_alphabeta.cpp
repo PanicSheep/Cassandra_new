@@ -97,26 +97,30 @@ namespace Endgame_AlphaBeta
 	
 	int Eval_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, const unsigned int x)
 	{
-		int Score, DiffCount;
-		Score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
+		const auto score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
 		
-		NodeCounter++;
-		if ((DiffCount = count_last_flip(P, x)))
+		if (const auto DiffCount = count_last_flip(P, x))
 		{
-			NodeCounter++;
-			return Score + DiffCount + 1;
+			NodeCounter += 2; // One for this, one for playing.
+			return score + DiffCount + 1;
 		}
 		else
 		{
-			if (Score < alpha)
-				return alpha;
-			else if ((DiffCount = count_last_flip(O, x)))
+			if (score < alpha)
 			{
-				NodeCounter += 2; // One for passing, one for playing
-				return Score - DiffCount - 1;
+				NodeCounter += 2; // One for this, one for playing.
+				return alpha;
+			}
+			else if (const auto DiffCount = count_last_flip(O, x))
+			{
+				NodeCounter += 2; // One for passing, one for playing.
+				return score - DiffCount - 1;
 			}
 			else
-				return (Score > 0) ? Score + 1 : Score - 1;
+			{
+				NodeCounter++;
+				return (score > 0) ? score + 1 : score - 1;
+			}
 		}
 	}
 	
@@ -124,7 +128,6 @@ namespace Endgame_AlphaBeta
 	{
 		int score = -128;
 		uint64_t flipped;
-		NodeCounter++;
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
@@ -143,9 +146,10 @@ namespace Endgame_AlphaBeta
 			return alpha;
 		}
 
-		if (score != -128) return alpha;
-
-		NodeCounter++;
+		if (score != -128) {
+			NodeCounter++;
+			return alpha;
+		}
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
@@ -164,17 +168,20 @@ namespace Endgame_AlphaBeta
 			return beta;
 		}
 
-		if (score == -128)
-			return EvalGameOver<2>(P);
-		else
+		if (score != -128) {
+			NodeCounter += 2; // One for this, one for passing.
 			return beta;
+		}
+		else {
+			NodeCounter++; // One for this.
+			return EvalGameOver<2>(P);
+		}
 	}
 	
 	int Eval_3(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, int beta, const unsigned int x1, const unsigned int x2, const unsigned int x3)
 	{
 		int score = -128;
 		uint64_t flipped;
-		NodeCounter++;
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
@@ -201,9 +208,10 @@ namespace Endgame_AlphaBeta
 			return alpha;
 		}
 
-		if (score != -128) return alpha;
-
-		NodeCounter++;
+		if (score != -128) {
+			NodeCounter++;
+			return alpha;
+		}
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
@@ -230,17 +238,20 @@ namespace Endgame_AlphaBeta
 			return beta;
 		}
 
-		if (score == -128)
-			return EvalGameOver<3>(P);
-		else
+		if (score != -128) {
+			NodeCounter += 2; // One for this, one for passing.
 			return beta;
+		}
+		else {
+			NodeCounter++; // One for this.
+			return EvalGameOver<3>(P);
+		}
 	}
 	
 	int Eval_4(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, int beta, const unsigned int x1, const unsigned int x2, const unsigned int x3, const unsigned int x4)
 	{
 		int score = -128;
-		unsigned long long flipped;
-		++NodeCounter;
+		uint64_t flipped;
 		
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
@@ -275,10 +286,10 @@ namespace Endgame_AlphaBeta
 			return alpha;
 		}
 
-		if (score != -128)
+		if (score != -128) {
+			NodeCounter++;
 			return alpha;
-
-		++NodeCounter;
+		}
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
@@ -313,29 +324,30 @@ namespace Endgame_AlphaBeta
 			return beta;
 		}
 
-		if (score == -128) //Nobody could play
-			return EvalGameOver(P, 4);
-		else
+		if (score != -128) {
+			NodeCounter += 2; // One for this, one for passing.
 			return beta;
+		}
+		else {
+			NodeCounter++; // One for this.
+			return EvalGameOver<4>(P);
+		}
 	}
 	
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, int beta)
 	{
 		const uint64_t empties = EmptyCount(P, O);
-		if (empties <= 4)
+		switch (empties)
 		{
-			switch (empties)
-			{
-				case 0: return Eval_0(P, O, NodeCounter, alpha, beta);
-				case 1: return Eval_1(P, O, NodeCounter, alpha, beta);
-				case 2: return Eval_2(P, O, NodeCounter, alpha, beta);
-				case 3: return Eval_3(P, O, NodeCounter, alpha, beta);
-				case 4: return Eval_4(P, O, NodeCounter, alpha, beta);
-			}
+			case 0: return Eval_0(P, O, NodeCounter, alpha, beta);
+			case 1: return Eval_1(P, O, NodeCounter, alpha, beta);
+			case 2: return Eval_2(P, O, NodeCounter, alpha, beta);
+			case 3: return Eval_3(P, O, NodeCounter, alpha, beta);
+			case 4: return Eval_4(P, O, NodeCounter, alpha, beta);
 		}
 
 		uint64_t BitBoardPossible = PossibleMoves(P, O);
-		int score = -64;
+		int score = -128;
 		NodeCounter++;
 
 		if (!BitBoardPossible){
