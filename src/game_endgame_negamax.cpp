@@ -229,7 +229,7 @@ namespace Endgame_NegaMax
 	int Eval_4(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x1, const unsigned int x2, const unsigned int x3, const unsigned int x4)
 	{
 		uint64_t flipped;
-		int score = -64;
+		int score = -128;
 		bool played = false;
 		++NodeCounter;
 
