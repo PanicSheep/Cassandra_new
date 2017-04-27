@@ -140,15 +140,12 @@ namespace Endgame_PVS
 		assert(-64 <= alpha); assert(alpha <= 64);
 		
 		const auto empties = EmptyCount(P, O);
-		if (empties <= 4)
-		{
-			switch (empties) {
-				case 0: return Eval_0(P, NodeCounter);
-				case 1: return ZWS_1(P, O, NodeCounter, alpha);
-				case 2: return ZWS_2(P, O, NodeCounter, alpha);
-				case 3: return ZWS_3(P, O, NodeCounter, alpha);
-				case 4: return ZWS_4(P, O, NodeCounter, alpha);
-			}
+		switch (empties) {
+			case 0: return Eval_0(P, NodeCounter);
+			case 1: return ZWS_1(P, O, NodeCounter, alpha);
+			case 2: return ZWS_2(P, O, NodeCounter, alpha);
+			case 3: return ZWS_3(P, O, NodeCounter, alpha);
+			case 4: return ZWS_4(P, O, NodeCounter, alpha);
 		}
 
 		int score;
@@ -165,7 +162,7 @@ namespace Endgame_PVS
 
 		if (StabilityCutoff_ZWS(P, O, alpha, score)) return score;
 		
-		const uint64_t BBParity = quadrant[Parity(P, O)];
+		const auto BBParity = quadrant[Parity(P, O)];
 		uint64_t BBTmp;
 
 		BBTmp = BitBoardPossible &  BBParity;
@@ -204,8 +201,8 @@ namespace Endgame_PVS
 		int score;
 		int bestscore = -64;
 		uint8_t BestMove = 64;
-		uint64_t BitBoardPossible = PossibleMoves(P, O);
-		uint64_t LocalNodeCounter = NodeCounter;
+		auto BitBoardPossible = PossibleMoves(P, O);
+		const auto LocalNodeCounter = NodeCounter;
 		CHashTableValueType ttValue;
 		NodeCounter++;
 
@@ -249,19 +246,16 @@ namespace Endgame_PVS
 		assert(alpha <= beta);
 		
 		const auto empties = EmptyCount(P, O);
-
-		if (empties <= 1) {
-			switch (empties) {
-				case 0: return Eval_0(P, NodeCounter);
-				case 1: return PVS_1(P, O, NodeCounter, alpha, pline);
-			}
+		switch (empties) {
+			case 0: return Eval_0(P, NodeCounter);
+			case 1: return PVS_1(P, O, NodeCounter, alpha, pline);
 		}
 		
 		int lower = alpha;
 		int score;
 		int bestscore = -65;
 		uint8_t BestMove = 64;
-		uint64_t BitBoardPossible = PossibleMoves(P, O);
+		auto BitBoardPossible = PossibleMoves(P, O);
 		NodeCounter++;
 
 		if (!BitBoardPossible){
@@ -269,7 +263,7 @@ namespace Endgame_PVS
 				return -PVS_A(O, P, NodeCounter, -beta, -alpha, pline);
 			else {
 				if (pline) pline->NoMoves();
-				return EvalGameOver(P, EmptyCount(P, O));
+				return EvalGameOver(P, empties);
 			}
 		}
 
@@ -331,8 +325,8 @@ namespace Endgame_PVS
 		int score;
 		int bestscore = -64;
 		uint8_t BestMove = 64;
-		uint64_t BitBoardPossible = PossibleMoves(P, O);
-		uint64_t LocalNodeCounter = NodeCounter;
+		auto BitBoardPossible = PossibleMoves(P, O);
+		const auto LocalNodeCounter = NodeCounter;
 		CHashTableValueType ttValue;
 		NodeCounter++;
 
@@ -400,8 +394,8 @@ namespace Endgame_PVS
 		int score;
 		int bestscore = -65;
 		uint8_t BestMove = 64;
-		uint64_t BitBoardPossible = PossibleMoves(P, O);
-		uint64_t LocalNodeCounter = NodeCounter;
+		auto BitBoardPossible = PossibleMoves(P, O);
+		const auto LocalNodeCounter = NodeCounter;
 		CHashTableValueType ttValue;
 		NodeCounter++;
 
@@ -521,7 +515,7 @@ namespace Endgame_PVS
 
 	inline bool StabilityCutoff_ZWS(const uint64_t P, const uint64_t O, const int alpha, int& score)
 	{
-		static const char stability_cutoff_limits[64] = {
+		static const int stability_cutoff_limits[64] = {
 			 99, 99, 99, 99,  6,  8, 10, 12,
 			 14, 16, 20, 22, 24, 26, 28, 30,
 			 32, 34, 36, 38, 40, 42, 44, 46,
@@ -544,7 +538,7 @@ namespace Endgame_PVS
 
 	inline bool StabilityCutoff_PVS(const uint64_t P, const uint64_t O, const int alpha, int& score)
 	{
-		static const char stability_cutoff_limits[64] = {
+		static const int stability_cutoff_limits[64] = {
 			 99, 99, 99, 99, -2,  0,  2,  4,
 			  6,  8, 12, 14, 16, 18, 20, 22,
 			 24, 26, 28, 30, 32, 34, 36, 38,
@@ -583,12 +577,11 @@ namespace Endgame_PVS
 		assert(-64 <= alpha); assert(alpha <= 64);
 		assert(x < 64);
 
-		int score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
-		NodeCounter++;
+		const int score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
 
 		if (const auto diff = count_last_flip(P, x))
 		{
-			NodeCounter++;
+			NodeCounter += 2; // One for this, one for playing.
 			return score + diff + 1;
 		}
 		else
@@ -599,11 +592,14 @@ namespace Endgame_PVS
 
 				if (const auto diff = count_last_flip(O, x))
 				{
-					NodeCounter += 2; // One for passing, one for playing
+					NodeCounter += 3; // One for this, one for passing, one for playing.
 					return score - diff - 1;
 				}
 				else
+				{
+					NodeCounter++; // One for this.
 					return score + 1;
+				}
 			}
 			else
 			{
@@ -611,11 +607,14 @@ namespace Endgame_PVS
 
 				if (const auto diff = count_last_flip(O, x))
 				{
-					NodeCounter += 2; // One for passing, one for playing
+					NodeCounter += 3; // One for this, one for passing, one for playing.
 					return score - diff - 1;
 				}
 				else
+				{
+					NodeCounter++; // One for this.
 					return score - 1;
+				}
 			}
 		}
 	}
@@ -841,10 +840,9 @@ namespace Endgame_PVS
 
 		int score = (PopCount(P) << 1) - 63; // == PopCount(P) - PopCount(O)
 
-		NodeCounter++;
 		if (const auto diff = count_last_flip(P, x))
 		{
-			NodeCounter++;
+			NodeCounter += 2; // One for this, one for playing.
 			if (pline) pline->NewPV(x);
 			return score + diff + 1;
 		}
@@ -852,16 +850,20 @@ namespace Endgame_PVS
 		{
 			// TODO: Decide what to do. Maybe you want to uncomment things.
 			
-			//if (!pline && (score + 1 < alpha)) return score + 1;
-
+			//if (!pline && (score < alpha))
+			//{
+			//	NodeCounter += 2; // One for this, one for playing.
+			//	return alpha;
+			//}
 			if (const auto diff = count_last_flip(O, x))
 			{
-				NodeCounter += 2; // One for passing, one for playing
+				NodeCounter += 2; // One for passing, one for playing.
 				if (pline) pline->NewPV(x);
 				return score - diff - 1;
 			}
 			else
 			{
+				NodeCounter++;
 				if (pline) pline->NoMoves();
 				return score > 0 ? score + 1 : score - 1;
 			}
