@@ -111,7 +111,7 @@ namespace Endgame_AlphaBeta
 				NodeCounter += 2; // One for this, one for playing.
 				return alpha;
 			}
-			else if (const auto DiffCount = count_last_flip(O, x))
+			if (const auto DiffCount = count_last_flip(O, x))
 			{
 				NodeCounter += 2; // One for passing, one for playing.
 				return score - DiffCount - 1;
