@@ -143,7 +143,6 @@ namespace Endgame_AlphaBeta
 			score = -Eval_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, -beta, x1);
 			if (score >= beta) return beta;
 			if (score > alpha) alpha = score;
-			return alpha;
 		}
 
 		if (score != -128) {
@@ -165,7 +164,6 @@ namespace Endgame_AlphaBeta
 			score = Eval_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, alpha, x1);
 			if (score <= alpha) return alpha;
 			if (score < beta) beta = score;
-			return beta;
 		}
 
 		if (score != -128) {
@@ -205,7 +203,6 @@ namespace Endgame_AlphaBeta
 			score = -Eval_2(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, -beta, -alpha, x1, x2);
 			if (score >= beta) return beta;
 			if (score > alpha) alpha = score;
-			return alpha;
 		}
 
 		if (score != -128) {
@@ -235,7 +232,6 @@ namespace Endgame_AlphaBeta
 			score = Eval_2(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, alpha, beta, x1, x2);
 			if (score <= alpha)	return alpha;
 			if (score < beta) beta = score;
-			return beta;
 		}
 
 		if (score != -128) {
@@ -283,7 +279,6 @@ namespace Endgame_AlphaBeta
 			score = -Eval_3(O ^ flipped, P ^ (1ULL << x4) ^ flipped, NodeCounter, -beta, -alpha, x1, x2, x3);
 			if (score >= beta) return beta;
 			if (score > alpha) alpha = score;
-			return alpha;
 		}
 
 		if (score != -128) {
@@ -321,7 +316,6 @@ namespace Endgame_AlphaBeta
 			score = Eval_3(P ^ flipped, O ^ (1ULL << x4) ^ flipped, NodeCounter, alpha, beta, x1, x2, x3);
 			if (score <= alpha)	return alpha;
 			if (score < beta) beta = score;
-			return beta;
 		}
 
 		if (score != -128) {
