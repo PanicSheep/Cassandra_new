@@ -36,7 +36,8 @@ namespace Endgame_PVS
 	       int ZWS_B(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha);
 	
 	inline int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 CLine* pline = nullptr);
-	       int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter,       int alpha, const int beta, CLine* pline = nullptr);
+	inline int PVS_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline = nullptr);
+	       int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline = nullptr);
 	
 	       int ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 const int selectivity, const unsigned int depth);
 	       int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline = nullptr);
@@ -53,6 +54,7 @@ namespace Endgame_PVS
 	int ZWS_4(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4);
 
 	int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const unsigned int x, CLine* pline = nullptr);
+	int PVS_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const unsigned int x1, const unsigned int x2, CLine* pline = nullptr);
 	// -----------------------
 	
 	
@@ -238,7 +240,17 @@ namespace Endgame_PVS
 		return PVS_1(P, O, NodeCounter, alpha, x, pline);
 	}
 	
-	int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, int alpha, const int beta, CLine* pline)
+	inline int PVS_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline)
+	{
+		assert(EmptyCount(P, O) == 2);
+		
+		uint64_t Empties = ~(P | O);
+		const auto x1 = BitScanLSB(Empties); RemoveLSB(Empties);
+		const auto x2 = BitScanLSB(Empties);
+		return PVS_2(P, O, NodeCounter, alpha, beta, x1, x2, pline);
+	}
+	
+	int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline)
 	{
 		assert((P & O) == 0);
 		assert(-64 <= alpha); assert(alpha <= 64);
@@ -249,6 +261,7 @@ namespace Endgame_PVS
 		switch (empties) {
 			case 0: return Eval_0(P, NodeCounter);
 			case 1: return PVS_1(P, O, NodeCounter, alpha, pline);
+			case 2: return PVS_2(P, O, NodeCounter, alpha, beta, pline);
 		}
 		
 		int lower = alpha;
@@ -745,7 +758,7 @@ namespace Endgame_PVS
 		uint64_t flipped;
 		NodeCounter++;
 
-		if (StabilityCutoff_ZWS(P, O, alpha, score)) return score;
+		//if (StabilityCutoff_ZWS(P, O, alpha, score)) return score;
 
 		//uint64_t parity = Parity(~(P, O));
 		//if (!(parity & quadrant_id_4_bit[x1])) { // (..) (..) (x1 ..)
@@ -902,5 +915,139 @@ namespace Endgame_PVS
 			//}
 		}
 	}
+	
+	int PVS_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const unsigned int x1, const unsigned int x2, CLine* pline)
+    {
+        assert((P & O) == 0);
+        assert(EmptyCount(P, O) == 2);
+        assert(-64 <= alpha); assert(alpha <= 64);
+        assert(-64 <= beta ); assert(beta  <= 64);
+        assert(alpha <= beta);
+        assert(x1 < 64);
+        assert(x2 < 64);
+                
+        int lower = alpha;
+        int score;
+        int bestscore = -65;
+        uint8_t BestMove = 64;
+        uint64_t flipped;
+        auto BitBoardPossible = PossibleMoves(P, O);
+        NodeCounter++;
+
+        CLine* line = (pline ? new CLine(pline->size()-1) : nullptr);
+        
+        //Play on x1
+        if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
+        {
+            if (bestscore == -65)
+                score = -PVS_1(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, -beta, x2, line);
+            else
+            {
+                score = -ZWS_1(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, -lower-1, x2);
+                if (score > lower && score < beta)
+                    score = -PVS_1(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, -beta, x2, line);
+            }
+            if (score > bestscore)
+            {
+                bestscore = score;
+                BestMove = x1;
+                if (line) pline->NewPV(x1, line);
+                if (score >= beta) {
+                    delete line;
+                    return bestscore;
+                }
+                if (score > lower) lower = score;
+            }
+        }
+        
+        //Play on x2
+        if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
+        {
+            if (bestscore == -65)
+                score = -PVS_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, -beta, x1, line);
+            else
+            {
+                score = -ZWS_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, -lower-1, x1);
+                if (score > lower && score < beta)
+                    score = -PVS_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, -beta, x1, line);
+            }
+            if (score > bestscore)
+            {
+                bestscore = score;
+                BestMove = x2;
+                if (line) pline->NewPV(x2, line);
+                if (score >= beta) {
+                    delete line;
+                    return bestscore;
+                }
+                if (score > lower) lower = score;
+            }
+        }
+        
+        if (bestscore != -65) {
+            delete line;
+            return bestscore;
+        }
+		
+        bestscore = 65;
+        lower = beta;
+        NodeCounter++;
+        
+        //Play on x1
+        if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
+        {
+            if (bestscore == 65)
+                score = PVS_1(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, alpha, x2, line);
+            else
+            {
+                score = ZWS_1(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, lower+1, x2);
+                if (score < lower && score > alpha)
+                    score = PVS_1(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, alpha, x2, line);
+            }
+            if (score < bestscore)
+            {
+                bestscore = score;
+                BestMove = x2;
+                if (line) pline->NewPV(x2, line);
+                if (score <= alpha) {
+                    delete line;
+                    return bestscore;
+                }
+                if (score < lower) lower = score;
+            }
+        }
+        
+        //Play on x2
+        if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
+        {
+            if (bestscore == 65)
+                score = PVS_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, alpha, x1, line);
+            else
+            {
+                score = ZWS_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, lower+1, x1);
+                if (score < lower && score > alpha)
+                    score = PVS_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, alpha, x1, line);
+            }
+            if (score < bestscore)
+            {
+                bestscore = score;
+                BestMove = x2;
+                if (line) pline->NewPV(x2, line);
+                if (score <= alpha) {
+                    delete line;
+                    return bestscore;
+                }
+                if (score < lower) lower = score;
+            }
+        }
+
+        delete line;
+		if (bestscore != 65)
+			return bestscore;
+		else {
+        	NodeCounter--;
+        	return EvalGameOver<2>(P);
+		}
+    }
 	// ------------------------------------------------------------------------------------------------
 }
