@@ -166,18 +166,20 @@ namespace Perft_Haswell
 			case 7:
 			case 8:
 			case 9:
-			case 10: return perft(P, O, depth);
+			case 10:
+			case 11: return perft(P, O, depth);
 			default:
+				const std::size_t initialDepth = 9;
 				PosMap.clear();
-				perft_fill_unique(P, O, 8);
+				perft_fill_unique(P, O, initialDepth);
 				const int64_t size = static_cast<int64_t>(PosMap.size());
 				hashtable = new CHashTable(RAM / sizeof(BigNode));
 				std::vector<std::pair<CPosition, std::size_t>> vec(PosMap.begin(), PosMap.end());
 				std::size_t sum = 0;
-				#pragma omp parallel for reduction(+:sum)
+				#pragma omp parallel for schedule(static,1) reduction(+:sum)
 				for (int64_t i = 0; i < size; i++)
 				{
-					sum += perft_HT(vec[i].first.P, vec[i].first.O, depth-8) * vec[i].second;
+					sum += perft_HT(vec[i].first.P, vec[i].first.O, depth-initialDepth) * vec[i].second;
 				}
 				delete hashtable;
 				return sum;
