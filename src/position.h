@@ -597,7 +597,8 @@ template <typename T> std::vector<T> LoadTransform(const std::string& filename)
 	if (filename_extension == CPositionFullScore ::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPositionFullScore >(filename); return std::vector<T>(vec.begin(), vec.end()); } 
 	if (filename_extension == CPositionScoreDepth::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPositionScoreDepth>(filename); return std::vector<T>(vec.begin(), vec.end()); } 
 	if (filename_extension == CPositionAllScore  ::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPositionAllScore  >(filename); return std::vector<T>(vec.begin(), vec.end()); } 
-	if (filename_extension == "obf")										{ auto vec = LoadVector<CPositionAllScore  >(filename); return std::vector<T>(vec.begin(), vec.end()); } 
+	if (filename_extension == "obf")										{ auto vec = LoadVector<CPositionAllScore  >(filename); return std::vector<T>(vec.begin(), vec.end()); }
+	throw "Not implemented yet";
 }
 
 
