@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <ostream>
 #include <iterator>
 #include <math.h>
 #include <vector>
@@ -9,50 +10,94 @@ template <typename T>
 std::vector<T>& operator+=(std::vector<T>& a, const std::vector<T>& b)
 {
 	assert(a.size() == b.size());
+	const int64_t size = a.size();
 	#pragma omp parallel for
-	for (long long i = 0; i < static_cast<long long>(a.size()); i++) a[i] += b[i];
+	for (int64_t i = 0; i < size; i++)
+		a[i] += b[i];
 	return a;
 }
 
+template <typename T>
+std::vector<T> operator+=(std::vector<T>&& a, const std::vector<T>& b)
+{
+	assert(a.size() == b.size());
+	const int64_t size = a.size();
+	#pragma omp parallel for
+	for (int64_t i = 0; i < size; i++)
+		a[i] += b[i];
+	return a;
+}
 
 template <typename T>
 std::vector<T>& operator-=(std::vector<T>& a, const std::vector<T>& b)
 {
 	assert(a.size() == b.size());
+	const int64_t size = a.size();
 	#pragma omp parallel for
-	for (long long i = 0; i < static_cast<long long>(a.size()); i++) a[i] -= b[i];
+	for (int64_t i = 0; i < size; i++)
+		a[i] -= b[i];
 	return a;
 }
 
 template <typename T>
-std::vector<T> operator*=(std::vector<T>& a, const T& b)
+std::vector<T> operator-=(std::vector<T>&& a, const std::vector<T>& b)
 {
+	assert(a.size() == b.size());
+	const int64_t size = a.size();
 	#pragma omp parallel for
-	for (long long i = 0; i < static_cast<long long>(a.size()); i++) a[i] *= b;
+	for (int64_t i = 0; i < size; i++)
+		a[i] -= b[i];
 	return a;
 }
 
 template <typename T>
-std::vector<T> operator/=(std::vector<T>& a, const T& b)
+std::vector<T>& operator*=(std::vector<T>& a, const T& b)
 {
+	const int64_t size = a.size();
 	#pragma omp parallel for
-	for (long long i = 0; i < static_cast<long long>(a.size()); i++) a[i] /= b;
+	for (int64_t i = 0; i < size; i++)
+		a[i] *= b;
 	return a;
 }
 
 template <typename T>
-std::vector<T> operator*=(std::vector<T>& a, const std::vector<T>& b)
+std::vector<T>& operator/=(std::vector<T>& a, const T& b)
 {
+	const int64_t size = a.size();
 	#pragma omp parallel for
-	for (long long i = 0; i < static_cast<long long>(a.size()); i++) a[i] *= b[i];
+	for (int64_t i = 0; i < size; i++)
+		a[i] /= b;
+	return a;
+}
+
+template <typename T>
+std::vector<T>& operator*=(std::vector<T>& a, const std::vector<T>& b)
+{
+	const int64_t size = a.size();
+	#pragma omp parallel for
+	for (int64_t i = 0; i < size; i++)
+		a[i] *= b[i];
 	return a;
 }
 
 template <typename T>
 std::vector<T> operator-(std::vector<T> a)
 {
+	const int64_t size = a.size();
 	#pragma omp parallel for
-	for (long long i = 0; i < static_cast<long long>(a.size()); i++) a[i] = -a[i];
+	for (int64_t i = 0; i < size; i++)
+		a[i] = -a[i];
+	return a;
+}
+
+template <typename T>
+std::vector<T> operator/(std::vector<T> a, const std::vector<T>& b)
+{
+	assert(a.size() == b.size());
+	const int64_t size = a.size();
+	#pragma omp parallel for
+	for (int64_t i = 0; i < size; i++)
+		a[i] /= b[i];
 	return a;
 }
 
@@ -60,7 +105,7 @@ template <typename T> inline std::vector<T> operator+(      std::vector<T>  a, c
 template <typename T> inline std::vector<T> operator+(const std::vector<T>& a,       std::vector<T>&& b) { return b += a; }
 
 template <typename T> inline std::vector<T> operator-(      std::vector<T>  a, const std::vector<T>&  b) { return a -= b; }
-template <typename T> inline std::vector<T> operator-(const std::vector<T>& a,       std::vector<T>&& b) { return -std::move(b) += a; }
+template <typename T> inline std::vector<T> operator-(const std::vector<T>& a,       std::vector<T>&& b) { return -b += a; }
 
 template <typename T> inline std::vector<T> operator*(std::vector<T> a, const T& b) { return a *= b; }
 template <typename T> inline std::vector<T> operator*(const T& b, std::vector<T> a) { return a *= b; }
@@ -74,8 +119,10 @@ template <typename T>
 bool operator==(const std::vector<T>& a, const std::vector<T>& b)
 {
 	assert(a.size() == b.size());
-	for (long long i = 0; i < a.size(); i++)
-		if (a[i] != b[i]) return false;
+	const int64_t size = a.size();
+	for (int64_t i = 0; i < size; i++)
+		if (a[i] != b[i])
+			return false;
 	return true;
 }
 
@@ -85,9 +132,11 @@ template <typename T>
 T dot(const std::vector<T>& a, const std::vector<T>& b)
 {
 	assert(a.size() == b.size());
+	const int64_t size = a.size();
 	long double sum = 0;
 	#pragma omp parallel for reduction(+ : sum)
-	for (long long i = 0; i < static_cast<long long>(a.size()); i++) sum += a[i] * b[i];
+	for (int64_t i = 0; i < size; i++)
+		sum += a[i] * b[i];
 	return static_cast<T>(sum);
 }
 
@@ -95,9 +144,19 @@ template <typename T> inline T norm(const std::vector<T>& a) { return sqrt(dot(a
 
 template <typename T> inline std::vector<T> sqrt(std::vector<T> a)
 {
+	const int64_t size = a.size();
 	#pragma omp parallel for
-	for(long long i = 0; i < static_cast<long long>(a.size()); i++)
+	for(int64_t i = 0; i < size; i++)
 		a[i] = sqrt(a[i]);
+	return a;
+}
+
+template <typename T> inline std::vector<T> inv(std::vector<T> a)
+{
+	const int64_t size = a.size();
+	#pragma omp parallel for
+	for(int64_t i = 0; i < size; i++)
+		a[i] = (a[i] == 0.0) ? 1.0 : 1.0 / a[i];
 	return a;
 }
 
@@ -106,4 +165,25 @@ inline void Decompose(T& length, std::vector<T>& unitvector, const std::vector<T
 {
 	length = norm(inputVector);
 	unitvector = static_cast<T>(1 / length) * inputVector;
+}
+
+namespace std
+{
+	template <typename T>
+	inline std::string to_string(const std::vector<T>& vec)
+	{
+		std::string s = "(";
+		for (std::size_t i = 0; i < vec.size() - 1; i++)
+			s += std::to_string(vec[i]) + ", ";
+		if (!vec.empty())
+			s += vec.back();
+		s += ")";
+		return s;
+	}
+}
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
+{
+	return os << to_string(vec);
 }
