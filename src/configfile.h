@@ -27,13 +27,13 @@ public:
 	CConfigurations(const std::string& ProgramFilePath); // Default settings
 	CConfigurations(const std::string& ProgramFilePath, const std::string& ConfigFilePath); // Settings from file
 	
-	bool 		HasConfiguration(const std::string& key) const;
+	bool 			HasConfiguration(const std::string& key) const;
 	std::string 	GetConfiguration(const std::string& key) const;
-	void 		SetConfiguration(const std::string& key, std::string value);
+	void 			SetConfiguration(const std::string& key, std::string value);
 
-	void 		Save(const std::string& ConfigFilePath) const;
+	void	 		Save(const std::string& ConfigFilePath) const;
 private:
-	bool 		TryReadConfigFile(const std::string& ConfigFilePath);
+	bool 			TryReadConfigFile(const std::string& ConfigFilePath);
 };
 
 extern CConfigurations gConfigurations;
