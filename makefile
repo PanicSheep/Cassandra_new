@@ -125,6 +125,9 @@ bin/solver: obj/solver.o obj/configfile.o obj/pattern.o obj/position.o obj/game_
 bin/posgen: obj/posgen.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
+bin/positiontomatrix: obj/positiontomatrix.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o obj/gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+
 bin/weightfitter: obj/weightfitter.o obj/utility.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/configfile.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
