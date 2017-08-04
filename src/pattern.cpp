@@ -222,9 +222,9 @@ namespace Pattern
 			return NewPattern(name, pattern);
 	}
 
-	std::vector<std::pair<std::string, uint64_t>> GetActivePattern()
+	std::vector<std::string> GetActivePattern()
 	{
-		std::vector<std::pair<std::string, uint64_t>> ActivePattern;
+		std::vector<std::string> ActivePattern;
 		std::string PatternString = gConfigurations.HasConfiguration("active pattern") ? gConfigurations.GetConfiguration("active pattern") : "";
 		
 		const std::string delimiter = " ";
@@ -233,11 +233,11 @@ namespace Pattern
 		while ((pos = PatternString.find(delimiter)) != std::string::npos)
 		{
 			token = PatternString.substr(0, pos);
-			ActivePattern.push_back(std::pair<std::string, uint64_t>(token, LookupPattern(token)));
+			ActivePattern.push_back(token);
 			PatternString.erase(0, pos + delimiter.length());
 		}
 		if (!PatternString.empty())
-			ActivePattern.push_back(std::pair<std::string, uint64_t>(PatternString, LookupPattern(PatternString)));
+			ActivePattern.push_back(PatternString);
 
 		return ActivePattern;
 	}
@@ -250,13 +250,13 @@ namespace Pattern
 
 		if (singleton)
 		{
-			std::vector<std::pair<std::string, uint64_t>> ActivePattern = GetActivePattern();
+			std::vector<std::string> ActivePattern = GetActivePattern();
 
 			if (gConfigurations.Verbosity > 1)
 			{
 				std::cout << std::hex;
 				for (const auto& it : ActivePattern)
-					std::cout << "Using Pattern " << it.first << " : " << it.second << std::endl;
+					std::cout << "Using Pattern " << it << " : " << LookupPattern(it) << std::endl;
 				std::cout << std::dec;
 			}
 
@@ -273,8 +273,8 @@ namespace Pattern
 				CPatternSet set;
 				for (auto& it : ActivePattern)
 				{
-					auto filename = WeightsPath + "range" + std::to_string(i) + "_" + it.first + ".weights";
-					auto newPattern = NewPattern(it.first, it.second);
+					auto filename = WeightsPath + "range" + std::to_string(i) + "_" + it + ".w";
+					auto newPattern = NewPattern(it);
 					if (weights)
 					{
 						std::vector<float> weightsVector;
@@ -284,7 +284,7 @@ namespace Pattern
 						}
 						catch (...)
 						{
-							std::cerr << "WARNING: File '" << filename << "' not found." << std::endl;
+							//std::cerr << "WARNING: File '" << filename << "' not found." << std::endl;
 							newPattern->set_weights();
 							continue;
 						}

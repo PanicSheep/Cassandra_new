@@ -31,6 +31,8 @@ namespace Pattern
 	CPattern* NewPattern(const std::string& name, const uint64_t pattern);
 	CPattern* NewPattern(const std::string& name);
 	
+	std::vector<std::string> GetActivePattern();
+	
 	inline unsigned int FullPatternIndex(const uint64_t P, const uint64_t O, const uint64_t mask);
 
 
