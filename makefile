@@ -34,7 +34,19 @@ $(OBJECTS_SRC): obj/%.o : src/%.cpp
     
 $(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS) obj/gtest-all.o
 	$(CC) $(CFLAGS) obj/gtest-all.o $< -o $@
-	@echo "Compiled "$<" successfully!"
+	@echo "\033[1;33mCompiled\033[0m \033[0;33m"$<"\033[0m \033[1;33msuccessfully!\033[0m"
+
+bin/test_array2D: obj/test_array2D.o obj/gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_array2D
+
+bin/test_vecvec: obj/test_vecvec.o obj/gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_vecvec
+
+bin/test_matrixCSR_Grid: obj/test_matrixCSR_Grid.o obj/gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_matrixCSR_Grid
 
 bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
