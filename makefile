@@ -30,11 +30,11 @@ gtest_main.a : obj/gtest-all.o gtest_main.o
 
 $(OBJECTS_SRC): obj/%.o : src/%.cpp
 	$(CC) $(CFLAGS) $< -o $@
-	@echo "Compiled "$<" successfully!"
+	@echo "\033[1;33mCompiled\033[0m \033[0;33m"$<"\033[0m \033[1;33msuccessfully!\033[0m"
     
 $(OBJECTS_TEST): obj/%.o : test/%.cpp $(GTEST_HEADERS) obj/gtest-all.o
 	$(CC) $(CFLAGS) obj/gtest-all.o $< -o $@
-	@echo "Compiled "$<" successfully!"
+	@echo "\033[1;33mCompiled\033[0m \033[0;33m"$<"\033[0m \033[1;33msuccessfully!\033[0m"
 
 bin/test_array2D: obj/test_array2D.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
