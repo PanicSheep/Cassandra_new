@@ -115,14 +115,21 @@ bin/test_positiontomatrix: obj/test_positiontomatrix.o obj/configfile.o obj/patt
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_positiontomatrix
 
+bin/test_weightfitter: obj/test_weightfitter.o obj/configfile.o obj/generatepositions.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_weightfitter
+
 bin/solver: obj/solver.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 bin/posgen: obj/posgen.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
+bin/weightfitter: obj/weightfitter.o obj/utility.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/configfile.o obj/gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+
 .PHONY: test
-test: bin/test_array2D bin/test_vecvec bin/test_matrixCSR_Grid bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_generatepositions bin/test_perft bin/test_line bin/test_pattern bin/test_game bin/test_positiontomatrix
+test: bin/test_array2D bin/test_vecvec bin/test_matrixCSR_Grid bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_generatepositions bin/test_perft bin/test_line bin/test_pattern bin/test_game bin/test_positiontomatrix bin/test_weightfitter
 
 .PHONY: all
 all: bin/perft_haswell bin/solver bin/posgen
