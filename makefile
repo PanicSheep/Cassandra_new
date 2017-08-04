@@ -40,6 +40,10 @@ bin/test_array2D: obj/test_array2D.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_array2D
 
+bin/test_vecvec: obj/test_vecvec.o obj/gtest-all.o
+	$(CC) $(LDFLAGS) $^ -o $@
+	./bin/test_vecvec
+
 bin/test_flip_loop: obj/test_flip_loop.o obj/flip_loop.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_flip_loop
@@ -110,7 +114,7 @@ bin/posgen: obj/posgen.o obj/position.o obj/possiblemoves.o obj/possiblemoves_ss
 	$(CC) $(LDFLAGS) $^ -o $@
 
 .PHONY: test
-test: bin/test_array2D bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_generatepositions bin/test_perft bin/test_line bin/test_pattern bin/test_game
+test: bin/test_array2D bin/test_vecvec bin/test_flip_loop bin/test_macros_hell bin/test_utility bin/test_configfile bin/test_path bin/test_datamanipulation bin/test_flip_fast bin/test_count_last_flip bin/test_possiblemoves bin/test_position bin/test_generatepositions bin/test_perft bin/test_line bin/test_pattern bin/test_game
 
 .PHONY: all
 all: bin/perft_haswell bin/solver bin/posgen
