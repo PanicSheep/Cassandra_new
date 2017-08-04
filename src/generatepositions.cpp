@@ -3,19 +3,19 @@
 #include <mutex>
 #include <omp.h>
 
-std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, const uint8_t numEmpties, const bool ETH)
+std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, const uint8_t numEmpties, const bool ETH, const std::size_t seedNum)
 {
 	std::unordered_set<CPosition> pos_set;
 	std::mutex pos_set_mutex;
 	std::atomic<std::size_t> seed;
-	seed.store(std::chrono::system_clock::now().time_since_epoch().count());
+	seed.store(seedNum);
 	
 	#pragma omp parallel
 	{
 		auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0, 64), std::mt19937_64(seed.fetch_add(1)));
 		
 		#pragma omp for
-		for (int64_t i = 0; i < numPos; i++)
+		for (int64_t i = 0; i < static_cast<int64_t>(numPos); i++)
 		{
 			CPosition pos(ETH);
 			unsigned int plies = pos.EmptyCount() - numEmpties;
@@ -74,6 +74,11 @@ std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, 
 		pos_set.insert(pos);
 	}
 	return pos_set;
+}
+
+std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, const uint8_t numEmpties, const bool ETH)
+{
+	return GenerateRandomPositions(numPos, numEmpties, ETH, std::chrono::system_clock::now().time_since_epoch().count());
 }
 
 void GenAll(CPosition pos, std::unordered_set<CPosition>& pos_set, const unsigned int depth)
