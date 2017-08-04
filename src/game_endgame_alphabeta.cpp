@@ -4,6 +4,7 @@ namespace Endgame_AlphaBeta
 {
 	// Function in header file
 	// This is not a strict hard fail implementation but it is not a soft fail implementation either
+	int Eval(const uint64_t P, const uint64_t O);
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	
 	// Generic functions
@@ -27,6 +28,12 @@ namespace Endgame_AlphaBeta
 	//  Function in header file
 	// ################################################################################################
 	// ------------------------------------------------------------------------------------------------
+	int Eval(const uint64_t P, const uint64_t O)
+	{
+		uint64_t NC = 0;
+		return Eval(P, O, NC);
+	}
+	
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter)
 	{
 		return Eval(P, O, NodeCounter, -64, 64);

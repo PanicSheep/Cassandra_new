@@ -18,7 +18,7 @@ TEST (GameTest, EvalGameOver)
 	ASSERT_EQ (EvalGameOver<63>(0x0000000000000000ULL), -64); // Player: 0   Opponent:  1   Empty: 63   Score: 0-1-63=-64
 }
 
-enum eEvalFkt { NegaMax, AlphaBeta, PVS };
+enum eEvalFkt { NegaMax, AlphaBeta, PVS_ZWS };
 
 class CTestPos
 {
@@ -109,7 +109,7 @@ void TestPosition(unsigned int index, eEvalFkt evalFkt)
 		case AlphaBeta:
 			score = Endgame_AlphaBeta::Eval(TestPos[index].P, TestPos[index].O, NodeCounter);
 			break;
-		case PVS:
+		case PVS_ZWS:
 			score = Endgame_PVS::Eval(TestPos[index].P, TestPos[index].O, NodeCounter);
 			break;
 	}
@@ -178,36 +178,36 @@ TEST (AlphaBetaTest, FForum8) { TestPosition(26, eEvalFkt::AlphaBeta); }
 TEST (AlphaBetaTest, FForum9) { TestPosition(27, eEvalFkt::AlphaBeta); }
 TEST (AlphaBetaTest, FForum10) { TestPosition(28, eEvalFkt::AlphaBeta); }
 
-TEST (PvsTest, ZeroEmpties0) { TestPosition(0, eEvalFkt::PVS); }
-TEST (PvsTest, ZeroEmpties1) { TestPosition(1, eEvalFkt::PVS); }
-TEST (PvsTest, ZeroEmpties2) { TestPosition(2, eEvalFkt::PVS); }
-TEST (PvsTest, OneEmpties0) { TestPosition(3, eEvalFkt::PVS); }
-TEST (PvsTest, OneEmpties1) { TestPosition(4, eEvalFkt::PVS); }
-TEST (PvsTest, OneEmpties2) { TestPosition(5, eEvalFkt::PVS); }
-TEST (PvsTest, OneEmpties3) { TestPosition(6, eEvalFkt::PVS); }
-TEST (PvsTest, TwoEmpties0) { TestPosition(7, eEvalFkt::PVS); }
-TEST (PvsTest, TwoEmpties1) { TestPosition(8, eEvalFkt::PVS); }
-TEST (PvsTest, TwoEmpties2) { TestPosition(9, eEvalFkt::PVS); }
-TEST (PvsTest, TwoEmpties3) { TestPosition(10, eEvalFkt::PVS); }
-TEST (PvsTest, ThreeEmpties0) { TestPosition(11, eEvalFkt::PVS); }
-TEST (PvsTest, ThreeEmpties1) { TestPosition(12, eEvalFkt::PVS); }
-TEST (PvsTest, ThreeEmpties2) { TestPosition(13, eEvalFkt::PVS); }
-TEST (PvsTest, ThreeEmpties3) { TestPosition(14, eEvalFkt::PVS); }
-TEST (PvsTest, FourEmpties0) { TestPosition(15, eEvalFkt::PVS); }
-TEST (PvsTest, FourEmpties1) { TestPosition(16, eEvalFkt::PVS); }
-TEST (PvsTest, FourEmpties2) { TestPosition(17, eEvalFkt::PVS); }
-TEST (PvsTest, FourEmpties3) { TestPosition(18, eEvalFkt::PVS); }
+TEST (PvsTest, ZeroEmpties0) { TestPosition(0, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, ZeroEmpties1) { TestPosition(1, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, ZeroEmpties2) { TestPosition(2, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, OneEmpties0) { TestPosition(3, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, OneEmpties1) { TestPosition(4, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, OneEmpties2) { TestPosition(5, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, OneEmpties3) { TestPosition(6, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, TwoEmpties0) { TestPosition(7, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, TwoEmpties1) { TestPosition(8, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, TwoEmpties2) { TestPosition(9, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, TwoEmpties3) { TestPosition(10, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, ThreeEmpties0) { TestPosition(11, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, ThreeEmpties1) { TestPosition(12, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, ThreeEmpties2) { TestPosition(13, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, ThreeEmpties3) { TestPosition(14, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FourEmpties0) { TestPosition(15, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FourEmpties1) { TestPosition(16, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FourEmpties2) { TestPosition(17, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FourEmpties3) { TestPosition(18, eEvalFkt::PVS_ZWS); }
 
-TEST (PvsTest, FForum1) { TestPosition(19, eEvalFkt::PVS); }
-TEST (PvsTest, FForum2) { TestPosition(20, eEvalFkt::PVS); }
-TEST (PvsTest, FForum3) { TestPosition(21, eEvalFkt::PVS); }
-TEST (PvsTest, FForum4) { TestPosition(22, eEvalFkt::PVS); }
-TEST (PvsTest, FForum5) { TestPosition(23, eEvalFkt::PVS); }
-TEST (PvsTest, FForum6) { TestPosition(24, eEvalFkt::PVS); }
-TEST (PvsTest, FForum7) { TestPosition(25, eEvalFkt::PVS); }
-TEST (PvsTest, FForum8) { TestPosition(26, eEvalFkt::PVS); }
-TEST (PvsTest, FForum9) { TestPosition(27, eEvalFkt::PVS); }
-TEST (PvsTest, FForum10) { TestPosition(28, eEvalFkt::PVS); }
+TEST (PvsTest, FForum1) { TestPosition(19, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum2) { TestPosition(20, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum3) { TestPosition(21, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum4) { TestPosition(22, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum5) { TestPosition(23, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum6) { TestPosition(24, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum7) { TestPosition(25, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum8) { TestPosition(26, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum9) { TestPosition(27, eEvalFkt::PVS_ZWS); }
+TEST (PvsTest, FForum10) { TestPosition(28, eEvalFkt::PVS_ZWS); }
 
 int main(int argc, char **argv)
 {

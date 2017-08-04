@@ -3,6 +3,7 @@
 namespace Endgame_NegaMax
 {
 	// Function in header file
+	int Eval(const uint64_t P, const uint64_t O);
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	
 	// Generic functions
@@ -13,7 +14,7 @@ namespace Endgame_NegaMax
 	inline int Eval_4(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	
 	// Specialized functions
-	int Eval_0(const uint64_t P, uint64_t& NodeCounter);
+	int Eval_0(const uint64_t P,                   uint64_t& NodeCounter);
 	int Eval_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x);
 	int Eval_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x1, const unsigned int x2);
 	int Eval_3(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int x1, const unsigned int x2, const unsigned int x3);
@@ -25,6 +26,12 @@ namespace Endgame_NegaMax
 	//  Function in header file
 	// ################################################################################################
 	// ------------------------------------------------------------------------------------------------
+	int Eval(const uint64_t P, const uint64_t O)
+	{
+		uint64_t NC = 0;
+		return Eval(P, O, NC);
+	}
+	
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter)
 	{
 		const uint64_t empties = EmptyCount(P, O);

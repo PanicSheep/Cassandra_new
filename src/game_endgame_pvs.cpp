@@ -1,28 +1,16 @@
 #include "game.h"
 
 namespace Endgame_PVS
-{
-	const bool USE_IID = false;
-	const bool USE_PV_TTCUT = false;
-
-	const int A = 8;
-	const int B = 12;
-	
-	// Function in header file
-	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline);
+{	
+	// Functions in header file (redefinition)
+	// -----------------------
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline);
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
+	int Eval(const uint64_t P, const uint64_t O);
 	
-	// Helper functions
+	int  PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline);
+	int  ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha);
 	// -----------------------
-	inline bool UseTTValue(const CHashTableValueType& ttValue, const int alpha, const int beta, const unsigned int depth, const int selectivity, int & score);
-	inline void UpdateTT(const uint64_t P, const uint64_t O, const uint64_t NodeCounter, const int alpha, const int beta, const int score, const unsigned int depth, const int selectivity, const uint8_t BestMove, const uint8_t PV, const uint8_t AV);
-	inline void UpdateTTPV(const uint64_t P, const uint64_t O, const uint64_t NodeCounter, const int alpha, const int beta, const int score, const unsigned int depth, const int selectivity, const uint8_t BestMove, const uint8_t PV, const uint8_t AV);
-	inline bool LookUpTT(const uint64_t P, const uint64_t O, CHashTableValueType& ttValue);
-	inline bool LookUpTTPV(const uint64_t P, const uint64_t O, CHashTableValueType& ttValue);
-	inline bool StabilityCutoff_ZWS(const uint64_t P, const uint64_t O, const int alpha, int& score);
-	inline bool StabilityCutoff_PVS(const uint64_t P, const uint64_t O, const int alpha, int& score);
-	// -----------------------
-	
 	
 	// Generic functions
 	// -----------------------
@@ -38,9 +26,6 @@ namespace Endgame_PVS
 	inline int PVS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 CLine* pline = nullptr);
 	inline int PVS_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline = nullptr);
 	       int PVS_A(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline = nullptr);
-	
-	       int ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 const int selectivity, const unsigned int depth);
-	       int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline = nullptr);
 	// -----------------------
 	
 	
@@ -60,25 +45,49 @@ namespace Endgame_PVS
 	
 		
 	// ################################################################################################
-	//  Function in header file
+	//  Functions in header file
 	// ################################################################################################
 	// ------------------------------------------------------------------------------------------------
-	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline)
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline)
 	{
 		assert((P & O) == 0);
 		assert(-64 <= alpha); assert(alpha <= 64);
 		assert(-64 <= beta ); assert(beta  <= 64);
 		assert(alpha <= beta);
-		assert(0 <= depth); assert(depth <= 60);
 		assert(0 <= EmptyCount(P, O)); assert(EmptyCount(P, O) <= 60);
-		assert(depth <= EmptyCount(P, O));
 		
-		return PVS(P, O, NodeCounter, alpha, beta, selectivity, depth, pline);
+		return PVS_A(P, O, NodeCounter, alpha, beta, pline);
 	}
 	
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter)
 	{
-		return Eval(P, O, NodeCounter, -64, 64, NO_SELECTIVITY, EmptyCount(P, O));
+		return Eval(P, O, NodeCounter, -64, 64);
+	}
+	
+	int Eval(const uint64_t P, const uint64_t O)
+	{
+		uint64_t NodeCounter = 0;
+		return Eval(P, O, NodeCounter);
+	}
+	
+	int  PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, CLine* pline)
+	{
+		assert((P & O) == 0);
+		assert(-64 <= alpha); assert(alpha <= 64);
+		assert(-64 <= beta ); assert(beta  <= 64);
+		assert(alpha <= beta);
+		assert(0 <= EmptyCount(P, O)); assert(EmptyCount(P, O) <= 60);
+		
+		return PVS_A(P, O, NodeCounter, alpha, beta, pline);
+	}
+	
+	int  ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha)
+	{
+		assert((P & O) == 0);
+		assert(-64 <= alpha); assert(alpha <= 64);
+		assert(0 <= EmptyCount(P, O)); assert(EmptyCount(P, O) <= 60);
+		
+		return ZWS_B(P, O, NodeCounter, alpha);
 	}
 	// ------------------------------------------------------------------------------------------------
 	
@@ -198,7 +207,7 @@ namespace Endgame_PVS
 		
 		const auto empties = EmptyCount(P, O);
 
-		if (empties <= A) return ZWS_A(P, O, NodeCounter, alpha);
+		if (empties <= 8) return ZWS_A(P, O, NodeCounter, alpha);
 
 		int score;
 		int bestscore = -64;
@@ -284,7 +293,7 @@ namespace Endgame_PVS
 		
 		uint64_t LocalNodeCounter = NodeCounter;
 		CHashTableValueType ttValue;
-		if (USE_PV_TTCUT && !pline)
+		if (PVS::USE_PV_TTCUT && !pline)
 			if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
 				if (UseTTValue(ttValue, alpha, beta, empties, NO_SELECTIVITY, score))
 					return score;
@@ -316,262 +325,8 @@ namespace Endgame_PVS
 		delete line;
 		return bestscore;
 	}
-	
-	int ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int selectivity, const unsigned int depth)
-	{
-		assert((P & O) == 0);
-		assert(-64 <= alpha); assert(alpha <= 64);
-		assert(0 <= depth); assert(depth <= 60);
-		
-		const auto empties = EmptyCount(P, O);
-		assert(depth <= empties);
-
-		if (depth <= 3 && depth < empties) {
-			throw "Not implemented yet";
-			// if (depth == 3) return Midgame::ZWS_3(P, O, NodeCounter, alpha);
-			// if (depth == 2) return Midgame::ZWS_2(P, O, NodeCounter, alpha);
-			// if (depth == 1) return Midgame::ZWS_1(P, O, NodeCounter, alpha);
-			// if (depth == 0) return Midgame::Eval_0(P, O, NodeCounter);
-		}
-		if (empties <= B && depth == empties) return ZWS_B(P, O, NodeCounter, alpha);
-
-		int score;
-		int bestscore = -64;
-		uint8_t BestMove = 64;
-		auto BitBoardPossible = PossibleMoves(P, O);
-		const auto LocalNodeCounter = NodeCounter;
-		CHashTableValueType ttValue;
-		NodeCounter++;
-
-		if (!BitBoardPossible){
-			if (HasMoves(O, P))
-				return -ZWS(O, P, NodeCounter, -alpha - 1, selectivity, depth);
-			else
-				return EvalGameOver(P, empties);
-		}
-
-		if (StabilityCutoff_ZWS(P, O, alpha, score)) return score;
-		if (LookUpTT(P, O, ttValue) && UseTTValue(ttValue, alpha, alpha+1, depth, selectivity, score)) return score;
-		// if (MPC(P, O, NodeCounter, alpha, selectivity, depth, empties, score)) return score; // TODO !!!
-
-		CMoveList mvList(P, O, NodeCounter, BitBoardPossible, depth, alpha, ttValue, false);
-		for (const auto& mv : mvList) // ETC
-		{
-			if (StabilityCutoff_ZWS(mv.P, mv.O, -alpha - 1, score)) {
-				UpdateTT(P, O, 0, alpha, alpha + 1, -score, depth, NO_SELECTIVITY, mv.move, mvList.BestMove(), mvList.NextBestMove());
-				return -score;
-			}
-			if (LookUpTT(mv.P, mv.O, ttValue) && UseTTValue(ttValue, -alpha - 1, -alpha, depth - 1, selectivity, score) && (-score > alpha)) {
-				UpdateTT(P, O, 0, alpha, alpha+1, -score, depth, selectivity, mv.move, mvList.BestMove(), mvList.NextBestMove());
-				return -score;
-			}
-		}
-		for (const auto& mv : mvList)
-		{
-			score = -ZWS(mv.P, mv.O, NodeCounter, -alpha-1, selectivity, depth-1);
-			if (score > bestscore)
-			{
-				bestscore = score;
-				BestMove = mv.move;
-				if (score > alpha) break;
-			}
-		}
-
-		if (empties-1 <= B)
-			UpdateTT(P, O, NodeCounter-LocalNodeCounter, alpha, alpha+1, bestscore, depth, NO_SELECTIVITY, BestMove, mvList.BestMove(), mvList.NextBestMove());
-		else
-			UpdateTT(P, O, NodeCounter-LocalNodeCounter, alpha, alpha+1, bestscore, depth, selectivity, BestMove, mvList.BestMove(), mvList.NextBestMove());
-		return bestscore;
-	}
-
-	int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline)
-	{
-		assert((P & O) == 0);
-		assert(-64 <= alpha); assert(alpha <= 64);
-		assert(-64 <= beta ); assert(beta  <= 64);
-		assert(alpha <= beta);
-		assert(0 <= depth); assert(depth <= 60);
-		
-		const auto empties = EmptyCount(P, O);
-		assert(depth <= empties);
-
-		// if (depth <= 2 && depth < empties) { // TODO !!!
-		// 	if (depth == 2) return Midgame::PVS_2(P, O, NodeCounter, alpha, beta, pline);
-		// 	if (depth == 1) return Midgame::PVS_1(P, O, NodeCounter, alpha, beta, pline);
-		// 	if (depth == 0) return Midgame::Eval_0(P, O, NodeCounter);
-		// }
-		if (empties <= A && depth == empties) 
-			return PVS_A(P, O, NodeCounter, alpha, beta, pline);
-
-		int lower = alpha;
-		int score;
-		int bestscore = -65;
-		uint8_t BestMove = 64;
-		auto BitBoardPossible = PossibleMoves(P, O);
-		const auto LocalNodeCounter = NodeCounter;
-		CHashTableValueType ttValue;
-		NodeCounter++;
-
-		if (!BitBoardPossible){
-			if (HasMoves(O, P))
-				return -PVS(O, P, NodeCounter, -beta, -alpha, selectivity, depth, pline);
-			else {
-				if (pline) pline->NoMoves();
-				return EvalGameOver(P, empties);
-			}
-		}
-
-		if (pline && StabilityCutoff_PVS(P, O, alpha, score)) return score;
-		if (USE_PV_TTCUT && !pline)
-			if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
-				if (UseTTValue(ttValue, alpha, beta, depth, selectivity, score))
-					return score;
-		// if (USE_IID && ttValue.PV == 64) // IID TODO !!!
-		// {
-		// 	int reduced_depth = (depth == empties) ? depth - A : depth - 2;
-		// 	if (reduced_depth >= 3)
-		// 	{
-		// 		PVS(P, O, NodeCounter, -64, 64, 6, reduced_depth, empties, nullptr);
-		// 		if (LookUpTTPV(P, O, ttValue))
-		// 			if (USE_PV_TTCUT && pline->empty() && UseTTValue(ttValue, alpha, beta, depth, selectivity, score))
-		// 				return score;
-		// 	}
-		// }
-
-		CLine* line = (pline ? new CLine(pline->size()-1) : nullptr);
-		CMoveList mvList(P, O, NodeCounter, BitBoardPossible, depth, alpha, ttValue, true);
-		for (const auto& mv : mvList)
-		{
-			if (bestscore == -65)
-				score = -PVS(mv.P, mv.O, NodeCounter, -beta, -lower, selectivity, depth-1, line);
-			else
-			{
-				score = -ZWS(mv.P, mv.O, NodeCounter, -lower-1, selectivity, depth-1);
-				if (score > lower && score < beta)
-					score = -PVS(mv.P, mv.O, NodeCounter, -beta, -lower, selectivity, depth-1, line); // OPTIMIZATION: -lower -> -score
-			}
-			if (score > bestscore)
-			{
-				bestscore = score;
-				BestMove = mv.move;
-				if (line) pline->NewPV(mv.move, line);
-				if (score >= beta) break;
-				if (score > lower) lower = score;
-			}
-		}
-
-		if (empties-1 <= B)
-		{
-			UpdateTTPV(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, depth, NO_SELECTIVITY, BestMove, mvList.BestMove(), mvList.NextBestMove());
-			UpdateTT(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, depth, NO_SELECTIVITY, BestMove, mvList.BestMove(), mvList.NextBestMove());
-		}
-		else
-		{
-			UpdateTTPV(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, depth, selectivity, BestMove, mvList.BestMove(), mvList.NextBestMove());
-			UpdateTT(P, O, NodeCounter - LocalNodeCounter, alpha, beta, bestscore, depth, selectivity, BestMove, mvList.BestMove(), mvList.NextBestMove());
-		}
-		delete line;
-		return bestscore;
-	}
 	// ------------------------------------------------------------------------------------------------
 	
-	
-	// ################################################################################################
-	//  Helper functions
-	// ################################################################################################
-	// ------------------------------------------------------------------------------------------------
-	// Use Transposition Table Value
-	inline bool UseTTValue(const CHashTableValueType& ttValue, const int alpha, const int beta, const unsigned int depth, const int selectivity, int & score)
-	{
-		if ((ttValue.depth >= static_cast<int>(depth)) && (ttValue.selectivity <= selectivity))
-		{
-			if (ttValue.alpha >= beta)         { score = ttValue.alpha; return true; }
-			if (ttValue.beta <= alpha)         { score = ttValue.beta;  return true; }
-			if (ttValue.alpha == ttValue.beta) { score = ttValue.alpha; return true; }
-		}
-		return false;
-	}
-
-	// Update Transposition Table
-	inline void UpdateTT(const uint64_t P, const uint64_t O, const uint64_t NodeCounter, const int alpha, const int beta, const int score, const unsigned int depth, const int selectivity, const uint8_t BestMove, const uint8_t PV, const uint8_t AV)
-	{ 
-		if (score >= beta)
-			gTT.Update(P, O, CHashTableValueType(NodeCounter, depth, selectivity, score, +64, BestMove, BestMove == PV ? AV : PV));
-		else if (score <= alpha)
-			gTT.Update(P, O, CHashTableValueType(NodeCounter, depth, selectivity, -64, score, BestMove, BestMove == PV ? AV : PV));
-		else
-			gTT.Update(P, O, CHashTableValueType(NodeCounter, depth, selectivity, score, score, BestMove, BestMove == PV ? AV : PV));
-	}
-
-	// Update Transposition Table
-	inline void UpdateTTPV(const uint64_t P, const uint64_t O, const uint64_t NodeCounter, const int alpha, const int beta, const int score, const unsigned int depth, const int selectivity, const uint8_t BestMove, const uint8_t PV, const uint8_t AV)
-	{ 
-		if (score >= beta)
-			gTTPV.Update(P, O, CHashTableValueType(NodeCounter, depth, selectivity, score, +64, BestMove, BestMove == PV ? AV : PV));
-		else if (score <= alpha)
-			gTTPV.Update(P, O, CHashTableValueType(NodeCounter, depth, selectivity, -64, score, BestMove, BestMove == PV ? AV : PV));
-		else
-			gTTPV.Update(P, O, CHashTableValueType(NodeCounter, depth, selectivity, score, score, BestMove, BestMove == PV ? AV : PV));
-	}
-
-	// Look Up Transposition Table
-	inline bool LookUpTT(const uint64_t P, const uint64_t O, CHashTableValueType& ttValue)
-	{ 
-		return gTT.LookUp(P, O, ttValue);
-	}
-
-	// Look Up Transposition Table
-	inline bool LookUpTTPV(const uint64_t P, const uint64_t O, CHashTableValueType& ttValue)
-	{ 
-		return gTTPV.LookUp(P, O, ttValue);
-	}
-
-	inline bool StabilityCutoff_ZWS(const uint64_t P, const uint64_t O, const int alpha, int& score)
-	{
-		static const int stability_cutoff_limits[64] = {
-			 99, 99, 99, 99,  6,  8, 10, 12,
-			 14, 16, 20, 22, 24, 26, 28, 30,
-			 32, 34, 36, 38, 40, 42, 44, 46,
-			 48, 48, 50, 50, 52, 52, 54, 54,
-			 56, 56, 58, 58, 60, 60, 62, 62,
-			 64, 64, 64, 64, 64, 64, 64, 64,
-			 99, 99, 99, 99, 99, 99, 99, 99,
-		};
-		if (alpha >= stability_cutoff_limits[EmptyCount(P, O)]) //Worth checking stability
-		{
-			int value = 64 - 2 * PopCount(StableStonesPlayer(O, P));
-			if (value <= alpha)
-			{
-				score = value;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	inline bool StabilityCutoff_PVS(const uint64_t P, const uint64_t O, const int alpha, int& score)
-	{
-		static const int stability_cutoff_limits[64] = {
-			 99, 99, 99, 99, -2,  0,  2,  4,
-			  6,  8, 12, 14, 16, 18, 20, 22,
-			 24, 26, 28, 30, 32, 34, 36, 38,
-			 40, 40, 42, 42, 44, 44, 46, 46,
-			 48, 48, 50, 50, 52, 52, 54, 54,
-			 56, 56, 58, 58, 60, 60, 62, 62,
-			 99, 99, 99, 99, 99, 99, 99, 99,
-		};
-		if (alpha >= stability_cutoff_limits[EmptyCount(P, O)]) //Worth checking stability
-		{
-			int value = 64 - 2 * PopCount(StableStonesPlayer(O, P));
-			if (value <= alpha)
-			{
-				score = value;
-				return true;
-			}
-		}
-		return false;
-	}
-	// ------------------------------------------------------------------------------------------------
 	
 	// ################################################################################################
 	//  Specialized functions
@@ -929,9 +684,7 @@ namespace Endgame_PVS
         int lower = alpha;
         int score;
         int bestscore = -65;
-        uint8_t BestMove = 64;
         uint64_t flipped;
-        auto BitBoardPossible = PossibleMoves(P, O);
         NodeCounter++;
 
         CLine* line = (pline ? new CLine(pline->size()-1) : nullptr);
@@ -950,7 +703,6 @@ namespace Endgame_PVS
             if (score > bestscore)
             {
                 bestscore = score;
-                BestMove = x1;
                 if (line) pline->NewPV(x1, line);
                 if (score >= beta) {
                     delete line;
@@ -974,7 +726,6 @@ namespace Endgame_PVS
             if (score > bestscore)
             {
                 bestscore = score;
-                BestMove = x2;
                 if (line) pline->NewPV(x2, line);
                 if (score >= beta) {
                     delete line;
@@ -1007,7 +758,6 @@ namespace Endgame_PVS
             if (score < bestscore)
             {
                 bestscore = score;
-                BestMove = x2;
                 if (line) pline->NewPV(x2, line);
                 if (score <= alpha) {
                     delete line;
@@ -1031,7 +781,6 @@ namespace Endgame_PVS
             if (score < bestscore)
             {
                 bestscore = score;
-                BestMove = x2;
                 if (line) pline->NewPV(x2, line);
                 if (score <= alpha) {
                     delete line;
