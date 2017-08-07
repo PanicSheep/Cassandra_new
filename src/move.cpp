@@ -78,10 +78,10 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 				break;
 			case 1:
 			case 2:
-				//Move.Value -= Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 17;
-				//break;
+				Move.Value -= PVS::Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 17;
+				break;
 			default:
-				//Move.Value -= Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 18;
+				Move.Value -= PVS::Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 18;
 				CHashTableValueType ttValue2;
 				if (gTT.LookUp(Move.P, Move.O, ttValue2)) Move.Value += 1 << 21;
 				break;
