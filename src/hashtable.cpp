@@ -260,7 +260,7 @@ void CHashTable::print_stats()
 		counter[num]++;
 	}
 	float total = counter[0] + counter[1] + counter[2];
-	printf("Zero enpty nodes : %2.1f%%\n", counter[0] / total * 100);
+	printf("Zero entry nodes : %2.1f%%\n", counter[0] / total * 100);
 	printf("One  entry nodes : %2.1f%%\n", counter[1] / total * 100);
 	printf("Two  entry nodes : %2.1f%%\n", counter[2] / total * 100);
 }
