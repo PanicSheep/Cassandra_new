@@ -107,7 +107,7 @@ bin/test_pattern: obj/test_pattern.o obj/configfile.o obj/pattern.o obj/position
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_pattern
 
-bin/test_game: obj/test_game.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
+bin/test_game: obj/test_game.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o  obj/game_IDAB.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_game
 
@@ -115,11 +115,11 @@ bin/test_positiontomatrix: obj/test_positiontomatrix.o obj/configfile.o obj/patt
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_positiontomatrix
 
-bin/test_weightfitter: obj/test_weightfitter.o obj/configfile.o obj/generatepositions.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
+bin/test_weightfitter: obj/test_weightfitter.o obj/configfile.o obj/generatepositions.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o  obj/game_IDAB.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_weightfitter
 
-bin/solver: obj/solver.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/gtest-all.o
+bin/solver: obj/solver.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o  obj/game_IDAB.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 bin/posgen: obj/posgen.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o obj/gtest-all.o
@@ -134,7 +134,7 @@ bin/positiontomatrix: obj/positiontomatrix.o obj/configfile.o obj/pattern.o obj/
 bin/weightfitter: obj/weightfitter.o obj/utility.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/configfile.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
-bin/PCfitter: obj/PCfitter.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/generatepositions.o obj/gtest-all.o
+bin/PCfitter: obj/PCfitter.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o  obj/game_IDAB.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/generatepositions.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 .PHONY: test
