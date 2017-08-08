@@ -69,6 +69,14 @@ namespace PVS
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	int Eval(const uint64_t P, const uint64_t O);
 }
+
+namespace IDAB // Iterative Deepening and Broadening
+{
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline = nullptr);
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter,                                  const int selectivity, const unsigned int depth);
+	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
+	int Eval(const uint64_t P, const uint64_t O);
+}
 	
 // Helper functions
 // -----------------------
