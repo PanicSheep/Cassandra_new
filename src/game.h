@@ -77,6 +77,10 @@ namespace IDAB // Iterative Deepening and Broadening
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	int Eval(const uint64_t P, const uint64_t O);
 }
+
+inline int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int selectivity, const unsigned int depth);
+inline int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
+inline int Eval(const uint64_t P, const uint64_t O);
 	
 // Helper functions
 // -----------------------
@@ -88,6 +92,19 @@ inline bool LookUpTTPV(const uint64_t P, const uint64_t O, CHashTableValueType& 
 inline bool StabilityCutoff_ZWS(const uint64_t P, const uint64_t O, const int alpha, int& score);
 inline bool StabilityCutoff_PVS(const uint64_t P, const uint64_t O, const int alpha, int& score);
 // -----------------------
+
+int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int selectivity, const unsigned int depth)
+{
+	return IDAB::Eval(P, O, NodeCounter, selectivity, depth);
+}
+int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter)
+{
+	return IDAB::Eval(P, O, NodeCounter);
+}
+int Eval(const uint64_t P, const uint64_t O)
+{
+	return IDAB::Eval(P, O);
+}
 
 // ################################################################################################
 //  Helper functions
