@@ -16,12 +16,14 @@ void print_help()
 		" In detail specification:\n" <<
 		" -mat abc.xyz def.uvw ... (NxM)    Matrix filenames.\n" <<
 		" -vec abc.xyz def.uvw ... (N  )    Vector filenames.\n" <<
-		" -wei abc.xyz def.uvw ... (  M)    Position filenames.\n" <<
+		" -wei abc.xyz def.uvw ... (  M)    Weights filenames.\n" <<
+		" -wei0 abc.xyz def.uvw ... (  M)   Initial-weights filenames.\n" <<
 		" Batch processing:\n" <<
 		" -p abc abc                        Position filename prefix.\n" <<
 		" -m \abc                           Matrix folder.\n" <<
 		" -v \abc                           Vector folder.\n" <<
 		" -w \abc                           Weights filename prefix.\n" <<
+		" -w0 \abc                          Initial-weights filename prefix.\n" <<
 		" -pattern name1 name2 name3        Pattern.\n" <<
 		"-maxit 123                         Maximum iterations to use.\n"
 		"-h                                 Display help." << std::endl;
@@ -33,11 +35,13 @@ int main(int argc, char* argv[])
 	std::string matrix;
 	std::string vector;
 	std::string weight;
+	std::string weight0;
 	std::vector<std::string> position;
 	std::vector<std::string> pattern;
 	std::vector<std::string> matrix_filename;
 	std::vector<std::string> vector_filename;
 	std::vector<std::string> weight_filename;
+	std::vector<std::string> weight0_filename;
 	std::chrono::high_resolution_clock::time_point startTime, endTime;
 	
 	Configfile::Initialize(argv[0]);
@@ -60,6 +64,7 @@ int main(int argc, char* argv[])
 		else if (std::string(argv[i]) == "-m") matrix = std::string(argv[++i]);
 		else if (std::string(argv[i]) == "-v") vector = std::string(argv[++i]);
 		else if (std::string(argv[i]) == "-w") weight = std::string(argv[++i]);
+		else if (std::string(argv[i]) == "-w0") weight0 = std::string(argv[++i]);
 		else if (std::string(argv[i]) == "-mat") {
 			++i;
 			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
@@ -78,11 +83,17 @@ int main(int argc, char* argv[])
 				weight_filename.push_back(std::string(argv[i++]));
 			--i;
 		}
+		else if (std::string(argv[i]) == "-wei0") {
+			++i;
+			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
+				weight_filename.push_back(std::string(argv[i++]));
+			--i;
+		}
 		else if (std::string(argv[i]) == "-maxit") maxIt = atoi(argv[++i]);
 		else if (std::string(argv[i]) == "-h") { print_help(); return 0; }
 	}
 	
-	// If no pattern were provided, use pattern from config file.
+	// If no pattern provided, use pattern from config file.
 	if (pattern.empty())
 	{
 		std::vector<std::string> ActivePattern = Pattern::GetActivePattern();
@@ -101,7 +112,12 @@ int main(int argc, char* argv[])
 		
 		for (const auto& pat : pattern)
 			weight_filename.push_back(weight + "_" + pat + ".w");
+		
+		if (!weight0.empty())
+			for (const auto& pat : pattern)
+				weight0_filename.push_back(weight0 + "_" + pat + ".w");
 	}
+	
 
 	startTime = std::chrono::high_resolution_clock::now();
 
@@ -127,6 +143,11 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Weights:" << std::endl;
 	for (const auto& it : weight_filename)
+		std::cout << it << ", ";
+	std::cout << std::endl;
+	
+	std::cout << "Initial-Weights:" << std::endl;
+	for (const auto& it : weight0_filename)
 		std::cout << it << ", ";
 	std::cout << std::endl;
 	
@@ -158,7 +179,15 @@ int main(int argc, char* argv[])
 	std::cout << "Solving data...";;
 	startTime = std::chrono::high_resolution_clock::now();
 	
-	Vecvec<float> x0(A.ms(), 0);
+	Vecvec<float> x0;
+	if (weight0_filename.empty())
+		x0 = Vecvec<float>(A.ms(), 0);
+	else
+	{
+		x0 = Vecvec<float>(m);
+		for (std::size_t j = 0; j < m; j++)
+			x0(j) = read_vector<float>(weight0_filename[j]);
+	}
 	CDiagonalPreconditioner<CMatrix_CSR_Grid<uint8_t, uint32_t>, Vecvec<float>> P(sqrt(A.JacobiPreconditionerSquare<float>()));
 	auto alg = new CIterativePLSQR<CMatrix_CSR_Grid<uint8_t, uint32_t>, Vecvec<float>, float>(A, &P, b, x0, 1);
 	alg->Iterate(maxIt);
