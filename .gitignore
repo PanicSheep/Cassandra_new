@@ -1,3 +1,15 @@
+# Position files
+.pos
+.psc
+.pfs
+.psd
+.pas
+
+# Cassandra specific files
+.m
+.v
+.w
+
 # Compiled Object files
 *.slo
 *.lo
