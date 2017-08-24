@@ -74,10 +74,10 @@ std::string short_time_format(std::chrono::duration<long long, std::pico> durati
 
 std::string ThousandsSeparator(uint64_t n)
 {
-	if (n < 1000)
-		return std::to_string(n);
-	else
-		return ThousandsSeparator(n / 1000ULL).append("'").append(std::string(3 - std::to_string(n % 1000ULL).length(), '0')).append(std::to_string(n % 1000ULL));
+	std::ostringstream oss;
+	oss.imbue(std::locale(""));
+	oss << n;
+	return oss.str();
 }
 
 std::string DateTimeNow()
