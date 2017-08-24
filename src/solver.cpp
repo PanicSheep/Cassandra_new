@@ -7,14 +7,13 @@
 
 std::size_t ParseRAM(const std::string& s)
 {
-	std::size_t GB = s.find("GB");
-	std::size_t MB = s.find("MB");
-	std::size_t kB = s.find("kB");
-	std::size_t B = s.find("B");
-	if (GB != std::string::npos) return std::stoll(s) * 1024 * 1024 * 1024;
-	if (MB != std::string::npos) return std::stoll(s) * 1024 * 1024;
-	if (kB != std::string::npos) return std::stoll(s) * 1024;
-	if ( B != std::string::npos) return std::stoll(s);
+	if (s.find("EB") != std::string::npos) return std::stoll(s) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024;
+	if (s.find("PB") != std::string::npos) return std::stoll(s) * 1024 * 1024 * 1024 * 1024 * 1024;
+	if (s.find("TB") != std::string::npos) return std::stoll(s) * 1024 * 1024 * 1024 * 1024;
+	if (s.find("GB") != std::string::npos) return std::stoll(s) * 1024 * 1024 * 1024;
+	if (s.find("MB") != std::string::npos) return std::stoll(s) * 1024 * 1024;
+	if (s.find("kB") != std::string::npos) return std::stoll(s) * 1024;
+	if (s.find("B")  != std::string::npos) return std::stoll(s);
 	return 0;
 }
 
