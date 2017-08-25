@@ -7,7 +7,9 @@
 #include <cstdint>
 #include <ratio>
 #include <string>
+#include <sstream>
 
+// TODO: Remove!
 template <typename T> inline T ABS(const T & a) { return a > 0 ? a : -a; }
 template <typename A, typename B> inline A MIN(const A & a, const B & b) { return a < b ? a : b; }
 template <typename A, typename B> inline B MAX(const A & a, const B & b) { return a > b ? a : b; }
