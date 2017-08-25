@@ -11,7 +11,7 @@ std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFF
 {
 	auto file = std::fstream(filename, std::ios::in | std::ios::binary);
 	if (!file.is_open())
-		throw std::ios_base::failure::failure("File '" + filename + "' could not be opened.");
+		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
 	std::vector<T> vec;
 	T buffer;
@@ -29,7 +29,7 @@ void write_to_file(const std::string & filename, const std::vector<T>& vec)
 {
 	auto file = std::fstream(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open())
-		throw std::ios_base::failure::failure("File '" + filename + "' could not be opened.");
+		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
 	file.write(reinterpret_cast<const char*>(&vec[0]), sizeof vec);
 
@@ -41,7 +41,7 @@ void write_to_file(const std::string & filename, Iterator begin, Iterator end)
 {
 	auto file = std::fstream(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open())
-		throw std::ios_base::failure::failure("File '" + filename + "' could not be opened.");
+		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
 	for (auto it = begin; it != end; it++)
 		file.write(&*it, sizeof(typename Iterator::value_type));

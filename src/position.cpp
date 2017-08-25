@@ -618,7 +618,7 @@ std::vector<CPositionAllScore> read_vector_OBF(const std::string& filename, std:
 {
 	auto file = std::fstream(filename, std::ios::in | std::ios::binary);
 	if (!file.is_open())
-		throw std::ios_base::failure::failure("File '" + filename + "' could not be opened.");
+		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
 	std::vector<CPositionAllScore> vec;
 	std::string line;
@@ -633,7 +633,7 @@ void write_to_file_OBF(const std::string& filename, const std::vector<CPositionA
 {
 	auto file = std::fstream(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open())
-		throw std::ios_base::failure::failure("File '" + filename + "' could not be opened.");
+		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
 	for (const auto& it : vec)
 		file << it.to_string_1D();
