@@ -616,7 +616,7 @@ bool HasValidFilenameExtension(const std::string& filename)
 
 std::vector<CPositionAllScore> read_vector_OBF(const std::string& filename, std::size_t size)
 {
-	auto file = std::fstream(filename, std::ios::in | std::ios::binary);
+	std::fstream file(filename, std::ios::in | std::ios::binary);
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
@@ -631,7 +631,7 @@ std::vector<CPositionAllScore> read_vector_OBF(const std::string& filename, std:
 
 void write_to_file_OBF(const std::string& filename, const std::vector<CPositionAllScore>& vec)
 {
-	auto file = std::fstream(filename, std::ios::out | std::ios::binary);
+	std::fstream file(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 

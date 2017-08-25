@@ -9,7 +9,7 @@
 template <typename T>
 std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFFFFFFFFFFFFFFFFULL)
 {
-	auto file = std::fstream(filename, std::ios::in | std::ios::binary);
+	std::fstream file(filename, std::ios::in | std::ios::binary);
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
@@ -27,7 +27,7 @@ std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFF
 template <typename T>
 void write_to_file(const std::string & filename, const std::vector<T>& vec)
 {
-	auto file = std::fstream(filename, std::ios::out | std::ios::binary);
+	std::fstream file(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
@@ -39,7 +39,7 @@ void write_to_file(const std::string & filename, const std::vector<T>& vec)
 template <typename Iterator>
 void write_to_file(const std::string & filename, Iterator begin, Iterator end)
 {
-	auto file = std::fstream(filename, std::ios::out | std::ios::binary);
+	std::fstream file(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
