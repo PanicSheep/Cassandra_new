@@ -616,35 +616,29 @@ bool HasValidFilenameExtension(const std::string& filename)
 
 std::vector<CPositionAllScore> read_vector_OBF(const std::string& filename, std::size_t size)
 {
-	FILE* file = fopen(filename.c_str(), "rb");
-	if (!file) {
-		std::cerr << "ERROR: File '" << filename << "' could not be opened!" << std::endl;
-		throw "File could not be opened.";
-	}
+	auto file = std::fstream(filename, std::ios::in | std::ios::binary);
+	if (!file.is_open())
+		throw std::ios_base::failure::failure("File '" + filename + "' could not be opened.");
 
-	const std::size_t N = 4 * 1024;
 	std::vector<CPositionAllScore> vec;
-	char * buffer = new char[N];
-	while (size-- && fgets(buffer, N, file))
-		vec.push_back(CPositionAllScore(std::string(buffer)));
+	std::string line;
+	while (std::getline(file, line))
+		vec.push_back(CPositionAllScore(line));
 
-	fclose(file);
-	delete[] buffer;
-
+	file.close();
 	return vec;
 }
 
 void write_to_file_OBF(const std::string& filename, const std::vector<CPositionAllScore>& vec)
 {
-	FILE* file = fopen(filename.c_str(), "w");
-	if (!file) {
-		std::cerr << "ERROR: File '" << filename << "' could not be opened!" << std::endl;
-		throw "File could not be opened.";
-	}
+	auto file = std::fstream(filename, std::ios::out | std::ios::binary);
+	if (!file.is_open())
+		throw std::ios_base::failure::failure("File '" + filename + "' could not be opened.");
 
-	for (const auto& it : vec) fputs((it.to_string_1D() + "\n").c_str(), file);
+	for (const auto& it : vec)
+		file << it.to_string_1D();
 
-	fclose(file);
+	file.close();
 }
 
 template <> std::vector<CPositionAllScore> LoadVector(const std::string& filename, std::size_t size)
