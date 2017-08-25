@@ -22,7 +22,7 @@ public:
 
 	CHashTableValueType() : cost(0), depth(-1), selectivity(0), alpha(-99), beta(99), PV(64), AV(64) {}
 	CHashTableValueType(const uint64_t NodeCounter, const int8_t depth, const uint8_t selectivity, const int8_t alpha, const int8_t beta, const uint8_t PV, const uint8_t AV) :
-		cost(BitScanMSB(NodeCounter+1)), depth(depth), selectivity(selectivity), alpha(alpha), beta(beta), PV(PV), AV(AV) {}
+		cost(static_cast<int8_t>(BitScanMSB(NodeCounter+1))), depth(depth), selectivity(selectivity), alpha(alpha), beta(beta), PV(PV), AV(AV) {}
 };
 
 class CTwoNode

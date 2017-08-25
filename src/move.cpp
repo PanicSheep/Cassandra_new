@@ -33,7 +33,7 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 
 	int sort_depth;
 	int min_depth = 9;
-    if (empties <= 27) min_depth += (30 - empties) / 3;
+    if (empties <= 27) min_depth += (30 - static_cast<int>(empties)) / 3;
     if (depth >= min_depth)
 	{
 		sort_depth = (depth - 15) / 3;
@@ -62,13 +62,13 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 			uint64_t PossMoves = PossibleMoves(Move.P, Move.O);
 			Move.Value = FIELD_VALUE[Move.move];
 			Move.Value += PARITY_VALUE[PopCount(BBEmpties & quadrant_mask[Move.move])];
-			Move.Value -= PopCount(PossMoves) << 17;
-			Move.Value -= PopCount(PossMoves & 0x8100000000000081UL) << 18;
+			Move.Value -= static_cast<int>(PopCount(PossMoves) << 17);
+			Move.Value -= static_cast<int>(PopCount(PossMoves & 0x8100000000000081UL) << 18);
 			if (sort_depth < 0)
-				Move.Value += PopCount(StableStonesCornerAndCo(Move.O)) << 12;
+				Move.Value += static_cast<int>(PopCount(StableStonesCornerAndCo(Move.O)) << 12);
 			else
-				Move.Value += PopCount(StableEdges(Move.O, Move.P) & Move.O) << 12;
-			Move.Value -= PopCount(OpponentsExposed(Move.P, Move.O)) << 6;
+				Move.Value += static_cast<int>(PopCount(StableEdges(Move.O, Move.P) & Move.O) << 12);
+			Move.Value -= static_cast<int>(PopCount(OpponentsExposed(Move.P, Move.O)) << 6);
 			switch (sort_depth)
 			{
 			case -1:

@@ -211,6 +211,7 @@
 #ifdef HAS_BLSI
 	FORCE_INLINE uint64_t GetLSB(const uint64_t b) { return _blsi_u64(b); }
 #else
+	#pragma warning(disable : 4146)
 	FORCE_INLINE uint64_t GetLSB(const uint64_t b) { return b & -b; }
 #endif
 

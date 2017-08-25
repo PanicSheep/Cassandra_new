@@ -711,9 +711,9 @@ CPositionScoreDepth::CPositionScoreDepth() : CPositionScoreDepth(0, 0, DEFAULT_S
 CPositionScoreDepth::CPositionScoreDepth(uint64_t P, uint64_t O, int8_t score, int8_t depth, uint8_t selectivity) : P(P), O(O), score(score), depth(depth), selectivity(selectivity) {}
 CPositionScoreDepth::CPositionScoreDepth(const bool ETH) : CPositionScoreDepth(StartPositionP(ETH), StartPositionO(ETH), DEFAULT_SCORE, DEFAULT_DEPTH, DEFAULT_SELECTIVITY) {}
 CPositionScoreDepth::CPositionScoreDepth(const CPosition& o) : CPositionScoreDepth(o.P, o.O, DEFAULT_SCORE, DEFAULT_DEPTH, DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(const CPositionScore& o) : CPositionScoreDepth(o.P, o.O, o.score, o.IsSolved() ? o.EmptyCount() : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(const CPositionFullScore& o) : CPositionScoreDepth(o.P, o.O, o.IsSolved() ? o.score[o.MaxSolvedDepth()] : DEFAULT_SCORE, o.IsSolved() ? o.EmptyCount() : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(const CPositionAllScore& o) : CPositionScoreDepth(o.P, o.O, o.IsSolved() ? o.MaxScore() : DEFAULT_SCORE, o.IsSolved() ? o.EmptyCount() : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
+CPositionScoreDepth::CPositionScoreDepth(const CPositionScore& o) : CPositionScoreDepth(o.P, o.O, o.score, o.IsSolved() ? static_cast<int8_t>(o.EmptyCount()) : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
+CPositionScoreDepth::CPositionScoreDepth(const CPositionFullScore& o) : CPositionScoreDepth(o.P, o.O, o.IsSolved() ? o.score[o.MaxSolvedDepth()] : DEFAULT_SCORE, o.IsSolved() ? static_cast<int8_t>(o.EmptyCount()) : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
+CPositionScoreDepth::CPositionScoreDepth(const CPositionAllScore& o) : CPositionScoreDepth(o.P, o.O, o.IsSolved() ? o.MaxScore() : DEFAULT_SCORE, o.IsSolved() ? static_cast<int8_t>(o.EmptyCount()) : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
 
 void CPositionScoreDepth::Reset() { P = 0; O = 0; ResetInformation(); }
 void CPositionScoreDepth::Reset(const bool ETH) { ResetPosition(P, O, ETH); ResetInformation(); }

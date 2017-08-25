@@ -56,6 +56,6 @@ public:
 		s.append(GetPV(StartDepth + Count - 1));
 		return s;
 	}
-	inline const std::string GetPV() const { return GetPV(0, line.size()); }
+	inline const std::string GetPV() const { return GetPV(0, static_cast<int>(line.size())); }
 	
 };
