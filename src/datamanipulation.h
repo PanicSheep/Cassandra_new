@@ -15,7 +15,7 @@ std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFF
 
 	std::vector<T> vec;
 	T buffer;
-	while ((size > 0) && file.read(reinterpret_cast<char*>(&buffer), sizeof T)){
+	while ((size > 0) && file.read(reinterpret_cast<char*>(&buffer), sizeof(T))){
 		vec.push_back(buffer);
 		size--;
 	}
@@ -31,7 +31,7 @@ void write_to_file(const std::string & filename, const std::vector<T>& vec)
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
-	file.write(reinterpret_cast<const char*>(&vec[0]), sizeof vec);
+	file.write(reinterpret_cast<const char*>(&vec[0]), sizeof(vec));
 
 	file.close();
 }
