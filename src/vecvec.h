@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <cstdint>
+#include <cmath>
 #include "vector_extensions.h"
 
 template <typename T>
