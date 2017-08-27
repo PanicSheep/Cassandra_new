@@ -8,9 +8,9 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install -qq g++-7.2
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7.2 50
-  - export CXX="g++-7.2"
+  - sudo apt-get install -qq g++-7
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 50
+  - export CXX="g++-7"
 
 script: 
   - $CXX --version
