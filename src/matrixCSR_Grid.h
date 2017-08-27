@@ -197,7 +197,7 @@ Vecvec<T> CMatrix_CSR_Grid<ValueType, SizeType>::DiagATA() const
 	Vecvec<T> ret(ms(), 0);
 	for (std::size_t j = 0; j < m_arr.m(); j++)
 		for (std::size_t i = 0; i < m_arr.n(); i++)
-			ret(j) += m_arr(i,j).DiagATA<T>();
+			ret(j) += m_arr(i,j).template DiagATA<T>();
 	return ret;
 }
 
