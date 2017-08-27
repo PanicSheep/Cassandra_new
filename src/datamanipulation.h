@@ -44,7 +44,7 @@ void write_to_file(const std::string & filename, Iterator begin, Iterator end)
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
 	for (auto it = begin; it != end; it++)
-		file.write(&*it, sizeof(typename Iterator::value_type));
+		file.write(&(*it), sizeof(typename Iterator::value_type));
 
 	file.close();
 }
