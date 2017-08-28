@@ -25,7 +25,7 @@ namespace IDAB // Iterative Deepening and Broadening
 		
 		const int FULL_SELECTIVITY = 6;
 		const auto empties = EmptyCount(P, O);
-		int score;
+		int score = -99;
 		
 		if (empties <= 14)
 		{
@@ -39,6 +39,7 @@ namespace IDAB // Iterative Deepening and Broadening
 			for (int s = FULL_SELECTIVITY; s >= selectivity; s-=3)
 				score = PVS::Eval(P, O, NodeCounter, alpha, beta, s, depth, pline);
 		}
+		assert(score != -99);
 		return score;
 	}
 	
