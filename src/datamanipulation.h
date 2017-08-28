@@ -31,7 +31,7 @@ void write_to_file(const std::string & filename, const std::vector<T>& vec)
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
-	file.write(reinterpret_cast<const char*>(&vec[0]), sizeof(vec));
+	file.write(reinterpret_cast<const char*>(&vec[0]), sizeof(T) * vec.size());
 
 	file.close();
 }
@@ -43,7 +43,7 @@ void write_to_file(const std::string & filename, Iterator begin, Iterator end)
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened.");
 
-	for (auto it = begin; it != end; it++)
+	for (auto it = begin; it != end; ++it)
 		file.write(reinterpret_cast<const char*>(&*it), sizeof(typename Iterator::value_type));
 
 	file.close();
