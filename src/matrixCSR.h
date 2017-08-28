@@ -80,6 +80,7 @@ CMatrix_CSR<ValueType, SizeType>& CMatrix_CSR<ValueType, SizeType>::operator=(co
 	data = o.data;
 	col_indices = o.col_indices;
 	row_starts = o.row_starts;
+	return *this;
 }
 
 template <typename ValueType, typename SizeType>
