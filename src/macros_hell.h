@@ -413,7 +413,7 @@ inline uint64_t _mm256_extract_epi64(__m256i X, const unsigned int N)
 }
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	const std::string       FOLDER_SEPARATOR = "\\";
 	const std::string WRONG_FOLDER_SEPARATOR = "/";
 #else
