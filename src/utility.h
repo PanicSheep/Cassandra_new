@@ -8,6 +8,7 @@
 #include <ratio>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 // TODO: Remove!
 template <typename T> inline T ABS(const T & a) { return a > 0 ? a : -a; }
@@ -31,3 +32,5 @@ std::string time_format(const std::chrono::duration<U, V> duration)
 std::string short_time_format(std::chrono::duration<long long, std::pico> duration);
 std::string ThousandsSeparator(uint64_t n);
 std::string DateTimeNow();
+
+void replace_all(std::string& source, const std::string& find, const std::string& replace);

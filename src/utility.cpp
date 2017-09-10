@@ -86,3 +86,13 @@ std::string DateTimeNow()
 	std::time_t t = std::chrono::system_clock::to_time_t(p);
 	return std::string(std::ctime(&t));
 }
+
+void replace_all(std::string& source, const std::string& find, const std::string& replace)
+{
+	std::size_t i = 0;
+	while ((i = source.find(find, i)) != std::string::npos)
+	{
+		source.replace(i, find.length(), replace);
+		i += replace.length();
+	}
+}
