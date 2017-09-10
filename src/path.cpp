@@ -2,6 +2,8 @@
 
 CPath::CPath(std::string path)
 {
+	replace_all(path, WRONG_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
+
 	const std::string NETWORK_SEPARATOR = FOLDER_SEPARATOR + FOLDER_SEPARATOR;
 	if (path.substr(1, 1) == ":" || path.substr(0, NETWORK_SEPARATOR.length()) == NETWORK_SEPARATOR || path.substr(0, 1) == ".") // absolute path
 		m_fullpath = path;
