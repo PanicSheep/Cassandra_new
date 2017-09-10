@@ -111,7 +111,7 @@ bin/test_game: obj/test_game.o obj/configfile.o obj/pattern.o obj/position.o obj
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_game
 
-bin/test_positiontomatrix: obj/test_positiontomatrix.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o obj/gtest-all.o
+bin/test_positiontomatrix: obj/test_positiontomatrix.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/path.o obj/utility.o obj/generatepositions.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_positiontomatrix
 
@@ -128,7 +128,7 @@ bin/posgen: obj/posgen.o obj/position.o obj/possiblemoves.o obj/possiblemoves_ss
 bin/positionmanager: obj/positionmanager.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
-bin/positiontomatrix: obj/positiontomatrix.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/generatepositions.o
+bin/positiontomatrix: obj/positiontomatrix.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/path.o obj/utility.o obj/generatepositions.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 bin/weightfitter: obj/weightfitter.o obj/utility.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/configfile.o

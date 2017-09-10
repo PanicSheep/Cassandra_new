@@ -18,9 +18,9 @@ int main(int argc, char* argv[])
 	Configfile::Initialize(argv[0]);
 	Pattern::Initialize(false, false);
 	
-	std::string position_filename;
-	std::string matrix_filepath;
-	std::string vector_filepath;
+	CPath position_filename;
+	CPath matrix_filepath;
+	CPath vector_filepath;
 	std::vector<std::string> pattern;
 	std::chrono::high_resolution_clock::time_point startTime, endTime;
 
@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
 	if (gConfigurations.Verbosity >= 1)
 	{
 		std::cout << "Converting positions to matrices and vector." << std::endl;
-		std::cout << "Input position: '" << position_filename << "'" << std::endl;
-		std::cout << "Output matrix path: '" << matrix_filepath << "'" << std::endl;
-		std::cout << "Output vector path: '" << vector_filepath << "'" << std::endl;
+		std::cout << "Input position: '" << position_filename.GetAbsoluteFilePath() << "'" << std::endl;
+		std::cout << "Output matrix path: '" << matrix_filepath.GetAbsoluteFilePath() << "'" << std::endl;
+		std::cout << "Output vector path: '" << vector_filepath.GetAbsoluteFilePath() << "'" << std::endl;
 		std::cout << "Pattern: ";
 		for (std::size_t i = 0; i < pattern.size() - 1; i++)
 			std::cout << pattern[i] << ",";
@@ -65,18 +65,12 @@ int main(int argc, char* argv[])
 	}
 	// ------------------------
 
-	std::string pos_name; // filename without path and extension.
-	{
-		auto begin = position_filename.rfind(FOLDER_SEPARATOR);
-		if (begin == std::string::npos)
-			begin = 0;
-		auto end = position_filename.rfind(".");
-		pos_name = position_filename.substr(begin + 1, end - begin - 1);
-	}
+	std::string pos_name = position_filename.GetFileName(); // filename without path and extension.
+	pos_name = pos_name.substr(0, pos_name.rfind(".") - 1);
 
 	//std::cout << "Loading positions...";
 	//startTime = std::chrono::high_resolution_clock::now();
-	std::vector<CPositionScore> pos = LoadTransform<CPositionScore>(position_filename);
+	std::vector<CPositionScore> pos = LoadTransform<CPositionScore>(position_filename.GetAbsoluteFilePath());
 	//endTime = std::chrono::high_resolution_clock::now();
 	//std::cout << "done. " << time_format(endTime - startTime) << std::endl;
 
@@ -85,7 +79,7 @@ int main(int argc, char* argv[])
 		//std::cout << "Processing pattern '" << pat << "'...";
 		//startTime = std::chrono::high_resolution_clock::now();
 		std::pair<CMatrix_CSR<uint8_t, uint32_t>, std::vector<float>> ret = PositionToMatrix<uint8_t, uint32_t, float>(pos, pat);
-		ret.first.save(matrix_filepath + FOLDER_SEPARATOR + pos_name + "_" + pat + ".m");
+		ret.first.save(matrix_filepath.GetAbsoluteFolderPath() + FOLDER_SEPARATOR + pos_name + "_" + pat + ".m");
 		//endTime = std::chrono::high_resolution_clock::now();
 		//std::cout << "done. " << time_format(endTime - startTime) << std::endl;
 
@@ -94,7 +88,7 @@ int main(int argc, char* argv[])
 		std::vector<float> b;
 		for (const auto& it : pos)
 			b.push_back(it.score);
-		write_to_file(vector_filepath + FOLDER_SEPARATOR + pos_name + ".v", b);
+		write_to_file(vector_filepath.GetAbsoluteFolderPath() + FOLDER_SEPARATOR + pos_name + ".v", b);
 		//endTime = std::chrono::high_resolution_clock::now();
 		//std::cout << "done. " << time_format(endTime - startTime) << std::endl;
 	}

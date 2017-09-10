@@ -4,6 +4,7 @@
 #include "matrixCSR_Grid.h"
 #include "position.h"
 #include "pattern.h"
+#include "path.h"
 #include "vecvec.h"
 #include <vector>
 #include <map>
