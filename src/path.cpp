@@ -9,7 +9,7 @@ CPath::CPath(std::string path)
 		m_fullpath = path;
 	else // relative path
 	{
-		m_fullpath = gConfigurations.GetConfiguration("ProgramFolderPath") + path;
+		m_fullpath = GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + path;
 		
 		std::string token = FOLDER_SEPARATOR + "..";
 		std::size_t pos1;
