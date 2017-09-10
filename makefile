@@ -64,7 +64,7 @@ bin/test_configfile: obj/test_configfile.o obj/configfile.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_configfile
 
-bin/test_path: obj/test_path.o obj/configfile.o obj/path.o obj/gtest-all.o
+bin/test_path: obj/test_path.o obj/configfile.o obj/utility.o obj/path.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_path
 
