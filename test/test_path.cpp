@@ -8,7 +8,7 @@ TEST (PathTest, RelativeFolder1) {
 	ASSERT_EQ (path.IsFile(), false);
 	ASSERT_EQ (path.IsFolder(), true);
 	
-	ASSERT_EQ (path.GetAbsoluteFolderPath(), gConfigurations.GetConfiguration("ProgramFolderPath") + "home" + FOLDER_SEPARATOR);
+	ASSERT_EQ (path.GetAbsoluteFolderPath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR);
 	ASSERT_EQ (path.GetFolderName(), "home");
 	ASSERT_ANY_THROW (path.GetRelativeFolderPath());
 	
@@ -24,7 +24,7 @@ TEST (PathTest, RelativeFolder2) {
 	ASSERT_EQ (path.IsFile(), false);
 	ASSERT_EQ (path.IsFolder(), true);
 	
-	ASSERT_EQ (path.GetAbsoluteFolderPath(), gConfigurations.GetConfiguration("ProgramFolderPath") + "home" + FOLDER_SEPARATOR);
+	ASSERT_EQ (path.GetAbsoluteFolderPath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR);
 	ASSERT_EQ (path.GetFolderName(), "home");
 	ASSERT_ANY_THROW (path.GetRelativeFolderPath());
 	
@@ -94,7 +94,7 @@ TEST (PathTest, RelativeFile1) {
 	
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
-	ASSERT_EQ (path.GetAbsoluteFilePath(), gConfigurations.GetConfiguration("ProgramFolderPath") + "home" + FOLDER_SEPARATOR + "text.txt");
+	ASSERT_EQ (path.GetAbsoluteFilePath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt");
 	ASSERT_ANY_THROW (path.GetRelativeFilePath());
 }
 
@@ -110,7 +110,7 @@ TEST (PathTest, RelativeFile2) {
 	
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
-	ASSERT_EQ (path.GetAbsoluteFilePath(), gConfigurations.GetConfiguration("ProgramFolderPath") + "text.txt");
+	ASSERT_EQ (path.GetAbsoluteFilePath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "text.txt");
 	ASSERT_ANY_THROW (path.GetRelativeFilePath());
 }
 
@@ -126,7 +126,7 @@ TEST (PathTest, RelativeFile3) {
 	
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
-	ASSERT_EQ (path.GetAbsoluteFilePath(), gConfigurations.GetConfiguration("ProgramFolderPath") + "text.txt");
+	ASSERT_EQ (path.GetAbsoluteFilePath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "text.txt");
 	ASSERT_ANY_THROW (path.GetRelativeFilePath());
 }
 
