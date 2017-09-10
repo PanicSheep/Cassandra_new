@@ -5,13 +5,14 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+#include "path.h"
 
 template <typename T>
 std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFFFFFFFFFFFFFFFFULL)
 {
 	std::fstream file(filename, std::ios::in | std::ios::binary);
 	if (!file.is_open())
-		throw std::iostream::failure("File '" + filename + "' could not be opened.");
+		throw std::iostream::failure("File '" + filename + "' could not be opened for input.");
 
 	std::vector<T> vec;
 	T buffer;
@@ -29,7 +30,7 @@ void write_to_file(const std::string & filename, const std::vector<T>& vec)
 {
 	std::fstream file(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open())
-		throw std::iostream::failure("File '" + filename + "' could not be opened.");
+		throw std::iostream::failure("File '" + filename + "' could not be opened for output.");
 
 	file.write(reinterpret_cast<const char*>(&vec[0]), sizeof(T) * vec.size());
 
