@@ -10,6 +10,12 @@
 #include <sstream>
 #include <iomanip>
 
+#ifdef _MSC_VER
+	#include <direct.h>
+#else
+	#include <unistd.h>
+#endif
+
 // TODO: Remove!
 template <typename T> inline T ABS(const T & a) { return a > 0 ? a : -a; }
 template <typename A, typename B> inline A MIN(const A & a, const B & b) { return a < b ? a : b; }
@@ -34,3 +40,5 @@ std::string ThousandsSeparator(uint64_t n);
 std::string DateTimeNow();
 
 void replace_all(std::string& source, const std::string& find, const std::string& replace);
+
+std::string GetCurrentWorkingDirectory();
