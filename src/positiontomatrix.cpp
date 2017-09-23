@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	// ------------------------
 
 	std::string pos_name = position_filename.GetFileName(); // filename without path and extension.
-	pos_name = pos_name.substr(0, pos_name.rfind(".") - 1);
+	pos_name = pos_name.substr(0, pos_name.rfind("."));
 
 	//std::cout << "Loading positions...";
 	//startTime = std::chrono::high_resolution_clock::now();
