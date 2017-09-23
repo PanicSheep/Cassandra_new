@@ -4,20 +4,32 @@
 std::string time_format(const std::chrono::milliseconds duration)
 {
 	typedef std::chrono::duration<int, std::ratio<24 * 3600> > days_t;
-	auto millis = duration.count() % 1000;
-	auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count() % 60;
-	auto hours = std::chrono::duration_cast<std::chrono::hours>(duration).count() % 24;
-	auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration).count() % 60;
-	auto days = std::chrono::duration_cast<days_t>(duration).count();
-	
+	const auto millis = duration.count() % 1000;
+	const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count() % 60;
+	const auto hours = std::chrono::duration_cast<std::chrono::hours>(duration).count() % 24;
+	const auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration).count() % 60;
+	const auto days = std::chrono::duration_cast<days_t>(duration).count();
+
 	std::ostringstream oss;
-	oss << std::setfill(' ') << std::setw(3) << days;
-	if (days) oss << ":" << std::setfill('0');
-	oss << std::setw(2) << hours;
-	if (hours) oss << ":" << std::setfill('0');
-	oss << minutes;
-	if (minutes) oss << ":" << std::setfill('0');
-	oss << seconds << "." << std::setfill('0') << std::setw(3) << millis;
+	oss << std::setfill(' ');
+
+	if (days)
+		oss << std::setw(3) << days << ":" << std::setfill('0');
+	else
+		oss << "    ";
+
+	if (hours)
+		oss << std::setw(2) << hours << ":" << std::setfill('0');
+	else
+		oss << "   ";
+
+	if (minutes)
+		oss << std::setw(2) << minutes << ":" << std::setfill('0');
+	else
+		oss << "   ";
+
+	oss << std::setw(2) << seconds << "." << std::setfill('0') << std::setw(3) << millis;
+
 	return oss.str();
 }
 
