@@ -98,6 +98,7 @@ const uint8_t FIELD_E8 = 60;
 const uint8_t FIELD_F8 = 61;
 const uint8_t FIELD_G8 = 62;
 const uint8_t FIELD_H8 = 63;
+const uint8_t FIELD_PASS = 64;
 
 
 const uint64_t neighbour[64] = { // Neighbours to the input-field
