@@ -26,6 +26,12 @@ std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFF
 }
 
 template <typename T>
+std::vector<T> read_vector(const CPath & file, std::size_t size = 0xFFFFFFFFFFFFFFFFULL)
+{
+	return read_vector<T>(file.GetAbsoluteFilePath(), size);
+}
+
+template <typename T>
 void write_to_file(const std::string & filename, const std::vector<T>& vec)
 {
 	std::fstream file(filename, std::ios::out | std::ios::binary);
@@ -35,6 +41,12 @@ void write_to_file(const std::string & filename, const std::vector<T>& vec)
 	file.write(reinterpret_cast<const char*>(&vec[0]), sizeof(T) * vec.size());
 
 	file.close();
+}
+
+template <typename T>
+void write_to_file(const CPath & file, const std::vector<T>& vec)
+{
+	write_to_file(file.GetAbsoluteFilePath(), vec);
 }
 
 template <typename Iterator>
@@ -48,4 +60,10 @@ void write_to_file(const std::string & filename, Iterator begin, Iterator end)
 		file.write(reinterpret_cast<const char*>(&*it), sizeof(typename Iterator::value_type));
 
 	file.close();
+}
+
+template <typename Iterator>
+void write_to_file(const CPath & file, Iterator begin, Iterator end)
+{
+	write_to_file(file.GetAbsoluteFilePath(), begin, end);
 }
