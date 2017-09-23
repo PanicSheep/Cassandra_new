@@ -38,10 +38,10 @@ int main(int argc, char* argv[])
 	std::string weight0;
 	std::vector<std::string> position;
 	std::vector<std::string> pattern;
-	std::vector<std::string> matrix_filename;
-	std::vector<std::string> vector_filename;
-	std::vector<std::string> weight_filename;
-	std::vector<std::string> weight0_filename;
+	std::vector<CPath> matrix_filename;
+	std::vector<CPath> vector_filename;
+	std::vector<CPath> weight_filename;
+	std::vector<CPath> weight0_filename;
 	std::chrono::high_resolution_clock::time_point startTime, endTime;
 	
 	Configfile::Initialize(argv[0]);
@@ -117,7 +117,6 @@ int main(int argc, char* argv[])
 			for (const auto& pat : pattern)
 				weight0_filename.push_back(weight0 + "_" + pat + ".w");
 	}
-	
 
 	startTime = std::chrono::high_resolution_clock::now();
 
@@ -133,32 +132,35 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Matrices:" << std::endl;
 	for (const auto& it : matrix_filename)
-		std::cout << it << ", ";
+		std::cout << it.GetAbsoluteFilePath() << ", ";
 	std::cout << std::endl;
 	
 	std::cout << "Vectors:" << std::endl;
 	for (const auto& it : vector_filename)
-		std::cout << it << ", ";
+		std::cout << it.GetAbsoluteFilePath() << ", ";
 	std::cout << std::endl;
 	
 	std::cout << "Weights:" << std::endl;
 	for (const auto& it : weight_filename)
-		std::cout << it << ", ";
+		std::cout << it.GetAbsoluteFilePath() << ", ";
 	std::cout << std::endl;
 	
 	std::cout << "Initial-Weights:" << std::endl;
 	for (const auto& it : weight0_filename)
-		std::cout << it << ", ";
+		std::cout << it.GetAbsoluteFilePath() << ", ";
 	std::cout << std::endl;
 	
 	if (matrix_filename.size() != n*m)
+	{
+		throw std::logic_error("Matrix vector size mismatch");
 		return -1;
+	}
 	
 	
 	Array2D<std::string> arr_matrix_filename(n,m);
 	for (std::size_t i = 0; i < n; i++)
 		for (std::size_t j = 0; j < m; j++)
-			arr_matrix_filename(i,j) = matrix_filename[i * m + j];
+			arr_matrix_filename(i,j) = matrix_filename[i * m + j].GetAbsoluteFilePath();
 	
 	// Loading data
 	// ------------------------
@@ -176,7 +178,7 @@ int main(int argc, char* argv[])
 	
 	// Solving data
 	// ------------------------
-	std::cout << "Solving data...";;
+	std::cout << "Solving data...";
 	startTime = std::chrono::high_resolution_clock::now();
 	
 	Vecvec<float> x0;
