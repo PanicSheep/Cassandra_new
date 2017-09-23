@@ -85,7 +85,7 @@ void replace_all(std::string& source, const std::string& find, const std::string
 
 std::string GetCurrentWorkingDirectory()
 {
-	char* cwd = _getcwd(nullptr, 0);
+	char* cwd = getcwd(nullptr, 0);
 	std::string ret(cwd);
 	std::free(cwd);
 	return ret;
