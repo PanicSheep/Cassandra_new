@@ -6,7 +6,7 @@ namespace Midgame_PVS
 	// -----------------------
 	int Eval  (const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const unsigned int depth, CLine* pline);
 	int Eval  (const uint64_t P, const uint64_t O, uint64_t& NodeCounter,                                  const unsigned int depth);
-	int Eval_0(const uint64_t P, const uint64_t O);
+	int Eval_0(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	
 	int  PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const unsigned int depth, CLine* pline);
 	int  ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha                , const unsigned int depth);
@@ -14,7 +14,6 @@ namespace Midgame_PVS
 	
 	// Forward declaration
 	// -----------------------
-	int Eval_0(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	int  ZWS_1(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha);
 	int  ZWS_2(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha);
 	int  ZWS_3(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha);
@@ -34,12 +33,6 @@ namespace Midgame_PVS
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const unsigned int depth)
 	{
 		return Eval(P, O, NodeCounter, -64, 64, depth);
-	}
-	
-	int Eval_0(const uint64_t P, const uint64_t O)
-	{
-		uint64_t NodeCounter = 0;
-		return Eval_0(P, O, NodeCounter);
 	}
 	
 	int  PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const unsigned int depth, CLine* pline)
