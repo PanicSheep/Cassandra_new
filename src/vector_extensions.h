@@ -156,7 +156,7 @@ template <typename T> inline std::vector<T> inv(std::vector<T> a)
 	const int64_t size = a.size();
 	#pragma omp parallel for
 	for(int64_t i = 0; i < size; i++)
-		a[i] = (a[i] == 0.0) ? 1.0 : 1.0 / a[i];
+		a[i] = (a[i] == 0) ? static_cast<T>(1) : static_cast<T>(1) / a[i];
 	return a;
 }
 
