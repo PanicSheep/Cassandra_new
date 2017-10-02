@@ -8,24 +8,16 @@ class ThreadSavePosSet
 	mutable std::mutex mtx;
 	std::unordered_set<CPosition> set;
 public:
-	bool TryInsert(const CPosition& pos);
 	bool TryInsert(const CPosition& pos, std::size_t maxSize);
 	std::size_t size() const;
 	inline const std::unordered_set<CPosition>& GetSet() const { return set; }
 	inline       std::unordered_set<CPosition>  GetSet()       { return set; }
 };
 
-bool ThreadSavePosSet::TryInsert(const CPosition& pos)
-{
-	std::lock_guard<std::mutex> guard(mtx);
-	const bool InsertionTookPlace = set.insert(pos).second;
-	return InsertionTookPlace;
-}
-
 bool ThreadSavePosSet::TryInsert(const CPosition& pos, std::size_t maxSize)
 {
 	std::lock_guard<std::mutex> guard(mtx);
-	if (set.size() > maxSize)
+	if (set.size() >= maxSize)
 		return false;
 	const bool InsertionTookPlace = set.insert(pos).second;
 	return InsertionTookPlace;
@@ -94,12 +86,13 @@ std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, 
 	
 	while (pos_set.size() < numPos)
 	{
+		const std::size_t pos_set_size = pos_set.size();
 		#pragma omp parallel
 		{
 			auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0, 64), std::mt19937_64(seed.fetch_add(1)));
 
 			#pragma omp for
-			for (int64_t i = pos_set.size(); i < static_cast<int64_t>(numPos); i++)
+			for (int64_t i = pos_set_size; i < static_cast<int64_t>(numPos); i++)
 			{
 				CPosition pos(ETH);
 				unsigned int plies = pos.EmptyCount() - numEmpties;
