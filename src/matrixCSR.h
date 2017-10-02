@@ -182,7 +182,7 @@ void CMatrix_CSR<ValueType, SizeType>::push_back(const SizeType& col, const Valu
 template <typename ValueType, typename SizeType>
 inline void CMatrix_CSR<ValueType, SizeType>::endRow()
 {
-	row_starts.push_back(col_indices.size());
+	row_starts.push_back(static_cast<SizeType>(col_indices.size()));
 	++m_n;
 }
 
