@@ -62,6 +62,7 @@ std::pair<CMatrix_CSR<ValueType, SizeType>, std::vector<VectorValueType>> Positi
 		}
 	}
 	
+	delete Pattern;
 	return std::pair<CMatrix_CSR<ValueType, SizeType>, std::vector<VectorValueType>>(A, Score);
 }
 
