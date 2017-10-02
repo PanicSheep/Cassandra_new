@@ -3,16 +3,16 @@
 CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t BitBoardPossible, int depth, int alpha, const CHashTableValueType& ttValue, const bool pvs)
 {
 	//if (!pvs) depth -= 2;
-	static const int A = 9;
-	static const int C = 8;
-	static const int H = 7;
-	static const int D = 6;
-	static const int I = 5;
-	static const int G = 4;
-	static const int F = 3;
-	static const int B = 2;
-	static const int E = 1;
-	static const int J = 0;
+	const int A = 9;
+	const int C = 8;
+	const int H = 7;
+	const int D = 6;
+	const int I = 5;
+	const int G = 4;
+	const int F = 3;
+	const int B = 2;
+	const int E = 1;
+	const int J = 0;
 	static const int FIELD_VALUE[64] = {
 		A, B, C, D, D, C, B, A,
 		B, E, F, G, G, F, E, B,
@@ -51,7 +51,7 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 		CMove Move;
 		Move.move = BitScanLSB(BitBoardPossible);
 		RemoveLSB(BitBoardPossible);
-		uint64_t flipped = flip(P, O, Move.move);
+		const uint64_t flipped = flip(P, O, Move.move);
 		Move.P = O ^ flipped;
 		Move.O = P ^ flipped ^ (1ULL << Move.move);
 		     if (flipped == O) Move.Value = 1 << 31;
@@ -83,7 +83,7 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 			default:
 				Move.Value -= PVS::Eval(Move.P, Move.O, NodeCounter, -64, -sort_alpha, NO_SELECTIVITY, sort_depth) << 18;
 				CHashTableValueType ttValue2;
-				if (gTT.LookUp(Move.P, Move.O, ttValue2)) Move.Value += 1 << 21;
+				if (LookUpTT(Move.P, Move.O, ttValue2)) Move.Value += 1 << 21;
 				break;
 			}
 		}
