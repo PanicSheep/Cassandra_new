@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <vector>
 
 #ifdef _MSC_VER
 	#include <direct.h>
@@ -24,8 +25,8 @@ template <typename S, typename T, typename U> inline S CLAMP(const S & value, co
 
 inline int RoundInt(const double d) { return static_cast<int>(std::round(d)); }
 inline int RoundInt(const float  f) { return static_cast<int>(std::round(f)); }
-//inline int RoundInt(double d) { int i = static_cast<int>(d); return i + (d - i >= .5 ) - (d - i <= -.5 ); }
-//inline int RoundInt(float  f) { int i = static_cast<int>(f); return i + (f - i >= .5f) - (f - i <= -.5f); }
+//inline int RoundInt(double d) { int i = static_cast<int>(d); return i + (d - i >= .5 ) - (d - i <= -.5 ); } // TODO: Test if this is faster.
+//inline int RoundInt(float  f) { int i = static_cast<int>(f); return i + (f - i >= .5f) - (f - i <= -.5f); } // TODO: Test if this is faster.
 
 std::string time_format(const std::chrono::milliseconds duration);
 
@@ -42,3 +43,6 @@ std::string DateTimeNow();
 void replace_all(std::string& source, const std::string& find, const std::string& replace);
 
 std::string GetCurrentWorkingDirectory();
+
+std::vector<std::string> split(const std::string& src, const std::string& deli);
+std::string join(const std::vector<std::string>& parts, const std::string& deli);

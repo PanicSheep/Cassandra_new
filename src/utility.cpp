@@ -74,20 +74,45 @@ std::string DateTimeNow()
 	return std::string(std::ctime(&t));
 }
 
-void replace_all(std::string& source, const std::string& find, const std::string& replace)
-{
-	std::size_t i = 0;
-	while ((i = source.find(find, i)) != std::string::npos)
-	{
-		source.replace(i, find.length(), replace);
-		i += replace.length();
-	}
-}
-
 std::string GetCurrentWorkingDirectory()
 {
-	char* cwd = getcwd(nullptr, 0);
+	char * cwd = getcwd(nullptr, 0);
 	std::string ret(cwd);
 	std::free(cwd);
 	return ret;
+}
+
+void replace_all(std::string& source, const std::string& from, const std::string& to)
+{
+	assert(!from.empty());
+	
+	for (std::size_t i = source.find(from); i != std::string::npos; i = source.find(from, i + to.length()))
+		source.replace(i, from.length(), to);
+}
+
+std::vector<std::string> split(const std::string& src, const std::string& deli)
+{
+	assert(!deli.empty());
+	std::vector<std::string> vec;
+	
+	std::size_t begin = 0;
+	std::size_t end = src.find(deli);
+	while (end != std::string::npos) {
+		vec.push_back(src.substr(begin, end-begin));
+		begin = end + deli.length();
+		end = src.find(deli, begin);
+	}
+	vec.push_back(src.substr(begin));
+	
+	return vec;
+}
+
+std::string join(const std::vector<std::string>& parts, const std::string& deli)
+{
+	std::string str;
+	for (std::size_t i = 0; i+1 < parts.size(); i++)
+		str += parts[i] + deli;
+	if (parts.size() > 0)
+		str += parts.back();
+	return str;
 }

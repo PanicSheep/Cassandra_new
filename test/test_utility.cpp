@@ -76,6 +76,121 @@ TEST (UtilityTest, ThousandsSeparator) {
 	ASSERT_EQ (ThousandsSeparator(1000000), "1'000'000");
 }
 
+TEST (UtilityTest, replace_all) {
+	std::string source = "aababba";
+	replace_all(source, "b", "c");
+	ASSERT_EQ (source, "aacacca");
+}
+TEST (UtilityTest, replace_all_empty) {
+	std::string source = "";
+	replace_all(source, "b", "");
+	ASSERT_EQ (source, ""); 
+}
+TEST (UtilityTest, replace_all_withEmpty) {
+	std::string source = "aababba";
+	replace_all(source, "b", "");
+	ASSERT_EQ (source, "aaaa"); 
+}
+TEST (UtilityTest, replace_all_none) {
+	std::string source = "aababba";
+	replace_all(source, "c", "b");
+	ASSERT_EQ (source, "aababba");
+}
+
+TEST (UtilityTest, split_simple) {
+	const std::string source = "a,b,c";
+	const std::string delimitter = ",";
+	
+	std::vector<std::string> vec = split(source, delimitter);
+	
+	ASSERT_EQ (vec.size(), 3u);
+	ASSERT_EQ (vec[0], "a");
+	ASSERT_EQ (vec[1], "b");
+	ASSERT_EQ (vec[2], "c");
+}
+TEST (UtilityTest, split_empty) {
+	const std::string source = "";
+	const std::string delimitter = ",";
+	
+	std::vector<std::string> vec = split(source, delimitter);
+	
+	ASSERT_EQ (vec.size(), 1u);
+	ASSERT_EQ (vec[0], "");
+}
+TEST (UtilityTest, split_none) {
+	const std::string source = "a;b";
+	const std::string delimitter = ",";
+	
+	std::vector<std::string> vec = split(source, delimitter);
+	
+	ASSERT_EQ (vec.size(), 1u);
+	ASSERT_EQ (vec[0], "a;b");
+}
+TEST (UtilityTest, split_one) {
+	const std::string source = "a";
+	const std::string delimitter = ",";
+	
+	std::vector<std::string> vec = split(source, delimitter);
+	
+	ASSERT_EQ (vec.size(), 1u);
+	ASSERT_EQ (vec[0], "a");
+}
+TEST (UtilityTest, split_emptyToken) {
+	const std::string source = "a,,c,";
+	const std::string delimitter = ",";
+	
+	std::vector<std::string> vec = split(source, delimitter);
+	
+	ASSERT_EQ (vec.size(), 4u);
+	ASSERT_EQ (vec[0], "a");
+	ASSERT_EQ (vec[1], "");
+	ASSERT_EQ (vec[2], "c");
+	ASSERT_EQ (vec[3], "");
+}
+
+TEST (UtilityTest, join_simple) {
+	const std::vector<std::string> parts = {"a", "b", "c"};
+	const std::string delimitter = ",";
+	
+	const std::string str = join(parts, delimitter);
+	
+	ASSERT_EQ (str, "a,b,c");
+}
+TEST (UtilityTest, join_empty) {
+	const std::vector<std::string> parts;
+	const std::string delimitter = ",";
+	
+	const std::string str = join(parts, delimitter);
+	
+	ASSERT_EQ (str, "");
+}
+TEST (UtilityTest, join_one) {
+	const std::vector<std::string> parts = {"a"};
+	const std::string delimitter = ",";
+	
+	const std::string str = join(parts, delimitter);
+	
+	ASSERT_EQ (str, "a");
+}
+TEST (UtilityTest, join_emptyToken) {
+	const std::vector<std::string> parts = {"a", "b", "c"};
+	const std::string delimitter = "";
+	
+	const std::string str = join(parts, delimitter);
+	
+	ASSERT_EQ (str, "abc");
+}
+
+TEST (UtilityTest, join_split) {
+	const std::string source = "a,,c,";
+	const std::string delimitter = ",";
+	
+	const auto parts = split(source, delimitter);
+	const std::string str = join(parts, delimitter);
+	
+	ASSERT_EQ (str, source);
+}
+
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
