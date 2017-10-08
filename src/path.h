@@ -21,4 +21,6 @@ public:
 	std::string GetFileNameExtension() const;
 	std::string GetAbsoluteFilePath() const;
 	std::string GetRelativeFilePath() const;
+private:
+	void ProcessFolderUps();
 };

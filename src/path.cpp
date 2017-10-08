@@ -1,23 +1,34 @@
 #include "path.h"
 
+bool StartsWith(const std::string& string, const std::string& substring)
+{
+	return string.substr(0, substring.length()) == substring;
+}
+
+bool IsAbsolutePath(const std::string& path)
+{
+	const std::string NETWORK_SEPARATOR = FOLDER_SEPARATOR + FOLDER_SEPARATOR;
+
+	if (path.substr(1, 1) == ":")
+		return true;
+	if (StartsWith(path, NETWORK_SEPARATOR))
+		return true;
+	if (StartsWith(path, "."))
+		return true;
+	return false;
+}
+
 CPath::CPath(std::string path)
 {
 	replace_all(path, WRONG_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
 
 	const std::string NETWORK_SEPARATOR = FOLDER_SEPARATOR + FOLDER_SEPARATOR;
-	if (path.substr(1, 1) == ":" || path.substr(0, NETWORK_SEPARATOR.length()) == NETWORK_SEPARATOR || path.substr(0, 1) == ".") // absolute path
+	if (IsAbsolutePath(path))
 		m_fullpath = path;
 	else // relative path
 	{
 		m_fullpath = GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + path;
-		
-		std::string token = FOLDER_SEPARATOR + "..";
-		std::size_t pos1;
-		while ((pos1 = m_fullpath.find(token)) != std::string::npos)
-		{
-			std::size_t pos2 = m_fullpath.rfind(FOLDER_SEPARATOR, pos1 - 1);
-			m_fullpath = m_fullpath.substr(0, pos2) + m_fullpath.substr(pos1 + token.length());
-		}
+		ProcessFolderUps();
 	}
 }
 
@@ -72,4 +83,15 @@ bool CPath::IsFile() const
 bool CPath::IsFolder() const
 {
 	return m_fullpath.substr(m_fullpath.length() - 1) == FOLDER_SEPARATOR;
+}
+
+void CPath::ProcessFolderUps()
+{
+	std::string Token = FOLDER_SEPARATOR + "..";
+	std::size_t TokenPos;;
+	while ((TokenPos = m_fullpath.find(Token)) != std::string::npos)
+	{
+		std::size_t FolderStartPos = m_fullpath.rfind(FOLDER_SEPARATOR, TokenPos - 1);
+		m_fullpath = m_fullpath.substr(0, FolderStartPos) + m_fullpath.substr(TokenPos + Token.length());
+	}
 }
