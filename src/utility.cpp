@@ -35,6 +35,7 @@ std::string time_format(const std::chrono::milliseconds duration)
 
 std::string short_time_format(std::chrono::duration<long long, std::pico> duration)
 {
+	// TODO: Refactor and test!
 	char buff[16];
 
 	unsigned long long millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
