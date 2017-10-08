@@ -65,6 +65,17 @@ TEST (UtilityTest, time_format) {
 	ASSERT_EQ (time_format(time), "  1:02:41:00.001");
 }
 
+TEST (UtilityTest, ThousandsSeparator) {
+	ASSERT_EQ (ThousandsSeparator(      0),         "0");
+	ASSERT_EQ (ThousandsSeparator(      1),         "1");
+	ASSERT_EQ (ThousandsSeparator(     10),        "10");
+	ASSERT_EQ (ThousandsSeparator(    100),       "100");
+	ASSERT_EQ (ThousandsSeparator(   1000),     "1'000");
+	ASSERT_EQ (ThousandsSeparator(  10000),    "10'000");
+	ASSERT_EQ (ThousandsSeparator( 100000),   "100'000");
+	ASSERT_EQ (ThousandsSeparator(1000000), "1'000'000");
+}
+
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
