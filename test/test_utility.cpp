@@ -52,6 +52,19 @@ TEST (UtilityTest, RoundInt) {
 	ASSERT_EQ (RoundInt( 1.1f),  1);
 }
 
+TEST (UtilityTest, time_format) {
+	//ddd:hh:mm:ss.ccc
+	ASSERT_EQ (time_format(std::chrono::milliseconds( 0)), "           0.000");
+	ASSERT_EQ (time_format(std::chrono::milliseconds( 1)), "           0.001");
+	ASSERT_EQ (time_format(std::chrono::     seconds( 1)), "           1.000");
+	ASSERT_EQ (time_format(std::chrono::     minutes( 1)), "        1:00.000");
+	ASSERT_EQ (time_format(std::chrono::       hours( 1)), "     1:00:00.000");
+	ASSERT_EQ (time_format(std::chrono::       hours(24)), "  1:00:00:00.000");
+	
+	auto time = std::chrono::hours(26) + std::chrono::minutes(41) + std::chrono::milliseconds(1);
+	ASSERT_EQ (time_format(time), "  1:02:41:00.001");
+}
+
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
