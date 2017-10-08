@@ -4,11 +4,11 @@
 std::string time_format(const std::chrono::milliseconds duration)
 {
 	typedef std::chrono::duration<int, std::ratio<24 * 3600> > days_t;
-	const auto millis = duration.count() % 1000;
+	const auto millis  = duration.count() % 1000;
 	const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count() % 60;
-	const auto hours = std::chrono::duration_cast<std::chrono::hours>(duration).count() % 24;
 	const auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration).count() % 60;
-	const auto days = std::chrono::duration_cast<days_t>(duration).count();
+	const auto hours   = std::chrono::duration_cast<std::chrono::hours>  (duration).count() % 24;
+	const auto days    = std::chrono::duration_cast<days_t>              (duration).count();
 
 	std::ostringstream oss;
 	oss << std::setfill(' ');
@@ -18,12 +18,12 @@ std::string time_format(const std::chrono::milliseconds duration)
 	else
 		oss << "    ";
 
-	if (hours)
+	if (days || hours)
 		oss << std::setw(2) << hours << ":" << std::setfill('0');
 	else
 		oss << "   ";
 
-	if (minutes)
+	if (days || hours || minutes)
 		oss << std::setw(2) << minutes << ":" << std::setfill('0');
 	else
 		oss << "   ";
