@@ -34,16 +34,12 @@ CPath::CPath(std::string path)
 
 std::string CPath::GetRelativeFolderPath() const
 {
-	// TODO: Add tests!
-	
 	assert(IsFolder());
 	return GetRelativePath();
 }
 
 std::string CPath::GetRelativeFilePath() const
 {
-	// TODO: Add tests!
-	
 	assert(IsFile());
 	return GetRelativePath();
 }
