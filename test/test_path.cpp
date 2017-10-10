@@ -2,15 +2,18 @@
 #include "macros_hell.h"
 #include "gtest/gtest.h"
 
-TEST (PathTest, RelativeFolder1) {
-	CPath path = CPath("home" + FOLDER_SEPARATOR); //     "home/"
+TEST (PathTest, RelativeFolder1)
+{
+	//     "home/"
+	const std::string PathString = "home" + FOLDER_SEPARATOR;
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), false);
 	ASSERT_EQ (path.IsFolder(), true);
 	
 	ASSERT_EQ (path.GetAbsoluteFolderPath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR);
 	ASSERT_EQ (path.GetFolderName(), "home");
-	ASSERT_ANY_THROW (path.GetRelativeFolderPath());
+	ASSERT_EQ (path.GetRelativeFolderPath(), PathString);
 	
 	ASSERT_DEATH (path.GetFileName(), "(.*?)");
 	ASSERT_DEATH (path.GetFileNameExtension(), "(.*?)");
@@ -18,15 +21,18 @@ TEST (PathTest, RelativeFolder1) {
 	ASSERT_DEATH (path.GetRelativeFilePath(), "(.*?)");
 }
 
-TEST (PathTest, RelativeFolder2) {
-	CPath path = CPath("etc" + FOLDER_SEPARATOR + ".." + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR); //     "etc/../home/"
+TEST (PathTest, RelativeFolder2)
+{
+	//     "etc/../home/"
+	const std::string PathString = "etc" + FOLDER_SEPARATOR + ".." + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR;
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), false);
 	ASSERT_EQ (path.IsFolder(), true);
 	
 	ASSERT_EQ (path.GetAbsoluteFolderPath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR);
 	ASSERT_EQ (path.GetFolderName(), "home");
-	ASSERT_ANY_THROW (path.GetRelativeFolderPath());
+	ASSERT_EQ (path.GetRelativeFolderPath(), "home" + FOLDER_SEPARATOR);
 	
 	ASSERT_DEATH (path.GetFileName(), "(.*?)");
 	ASSERT_DEATH (path.GetFileNameExtension(), "(.*?)");
@@ -34,15 +40,18 @@ TEST (PathTest, RelativeFolder2) {
 	ASSERT_DEATH (path.GetRelativeFilePath(), "(.*?)");
 }
 
-TEST (PathTest, AbsoluteFolder1) {
-	CPath path = CPath("C:" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR); //     "C:\home\"
+TEST (PathTest, AbsoluteFolder1)
+{
+	//     "C:\home\"
+	const std::string PathString = "C:" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR;
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), false);
 	ASSERT_EQ (path.IsFolder(), true);
 	
-	ASSERT_EQ (path.GetAbsoluteFolderPath(), "C:" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR);
+	ASSERT_EQ (path.GetAbsoluteFolderPath(), PathString);
 	ASSERT_EQ (path.GetFolderName(), "home");
-	ASSERT_ANY_THROW (path.GetRelativeFolderPath());
+	ASSERT_EQ (path.GetRelativeFolderPath(), PathString);
 	
 	ASSERT_DEATH (path.GetFileName(), "(.*?)");
 	ASSERT_DEATH (path.GetFileNameExtension(), "(.*?)");
@@ -50,15 +59,18 @@ TEST (PathTest, AbsoluteFolder1) {
 	ASSERT_DEATH (path.GetRelativeFilePath(), "(.*?)");
 }
 
-TEST (PathTest, AbsoluteFolder2) {
-	CPath path = CPath("." + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR); //     ".\home\"
+TEST (PathTest, AbsoluteFolder2)
+{
+	 //     "~\home\"
+	const std::string PathString = "~" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR;
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), false);
 	ASSERT_EQ (path.IsFolder(), true);
 	
-	ASSERT_EQ (path.GetAbsoluteFolderPath(), "." + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR);
+	ASSERT_EQ (path.GetAbsoluteFolderPath(), PathString);
 	ASSERT_EQ (path.GetFolderName(), "home");
-	ASSERT_ANY_THROW (path.GetRelativeFolderPath());
+	ASSERT_EQ (path.GetRelativeFolderPath(), PathString);
 	
 	ASSERT_DEATH (path.GetFileName(), "(.*?)");
 	ASSERT_DEATH (path.GetFileNameExtension(), "(.*?)");
@@ -66,15 +78,18 @@ TEST (PathTest, AbsoluteFolder2) {
 	ASSERT_DEATH (path.GetRelativeFilePath(), "(.*?)");
 }
 
-TEST (PathTest, AbsoluteFolder3) {
-	CPath path = CPath(FOLDER_SEPARATOR + FOLDER_SEPARATOR + "computer" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR); //     "\\computer\home\"
+TEST (PathTest, AbsoluteFolder3)
+{
+	//     "\\computer\home\"
+	const std::string PathString = FOLDER_SEPARATOR + FOLDER_SEPARATOR + "computer" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR;
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), false);
 	ASSERT_EQ (path.IsFolder(), true);
 	
-	ASSERT_EQ (path.GetAbsoluteFolderPath(), FOLDER_SEPARATOR + FOLDER_SEPARATOR + "computer" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR);
+	ASSERT_EQ (path.GetAbsoluteFolderPath(), PathString);
 	ASSERT_EQ (path.GetFolderName(), "home");
-	ASSERT_ANY_THROW (path.GetRelativeFolderPath());
+	ASSERT_EQ (path.GetRelativeFolderPath(), PathString);
 	
 	ASSERT_DEATH (path.GetFileName(), "(.*?)");
 	ASSERT_DEATH (path.GetFileNameExtension(), "(.*?)");
@@ -82,8 +97,11 @@ TEST (PathTest, AbsoluteFolder3) {
 	ASSERT_DEATH (path.GetRelativeFilePath(), "(.*?)");
 }
 
-TEST (PathTest, RelativeFile1) {
-	CPath path = CPath("home" + FOLDER_SEPARATOR + "text.txt"); //     "home/text.txt"
+TEST (PathTest, RelativeFile1)
+{
+	//     "home/text.txt"
+	const std::string PathString = "home" + FOLDER_SEPARATOR + "text.txt";
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), true);
 	ASSERT_EQ (path.IsFolder(), false);
@@ -95,11 +113,14 @@ TEST (PathTest, RelativeFile1) {
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
 	ASSERT_EQ (path.GetAbsoluteFilePath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt");
-	ASSERT_ANY_THROW (path.GetRelativeFilePath());
+	ASSERT_EQ (path.GetRelativeFilePath(), PathString);
 }
 
-TEST (PathTest, RelativeFile2) {
-	CPath path = CPath("text.txt"); //     "text.txt"
+TEST (PathTest, RelativeFile2)
+{
+	//     "text.txt"
+	const std::string PathString = "text.txt";
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), true);
 	ASSERT_EQ (path.IsFolder(), false);
@@ -111,11 +132,14 @@ TEST (PathTest, RelativeFile2) {
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
 	ASSERT_EQ (path.GetAbsoluteFilePath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "text.txt");
-	ASSERT_ANY_THROW (path.GetRelativeFilePath());
+	ASSERT_EQ (path.GetRelativeFilePath(), PathString);
 }
 
-TEST (PathTest, RelativeFile3) {
-	CPath path = CPath("home" + FOLDER_SEPARATOR + ".." + FOLDER_SEPARATOR + "text.txt"); //     "home/../text.txt"
+TEST (PathTest, RelativeFile3)
+{
+	//     "home/../text.txt"
+	const std::string PathString = "home" + FOLDER_SEPARATOR + ".." + FOLDER_SEPARATOR + "text.txt";
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), true);
 	ASSERT_EQ (path.IsFolder(), false);
@@ -127,11 +151,14 @@ TEST (PathTest, RelativeFile3) {
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
 	ASSERT_EQ (path.GetAbsoluteFilePath(), GetCurrentWorkingDirectory() + FOLDER_SEPARATOR + "text.txt");
-	ASSERT_ANY_THROW (path.GetRelativeFilePath());
+	ASSERT_EQ (path.GetRelativeFilePath(), "text.txt");
 }
 
-TEST (PathTest, AbsoluteFile1) {
-	CPath path = CPath("C:" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt"); //     "C:/home/text.txt"
+TEST (PathTest, AbsoluteFile1)
+{
+	//     "C:/home/text.txt"
+	const std::string PathString = "C:" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt";
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), true);
 	ASSERT_EQ (path.IsFolder(), false);
@@ -143,11 +170,14 @@ TEST (PathTest, AbsoluteFile1) {
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
 	ASSERT_EQ (path.GetAbsoluteFilePath(), "C:" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt");
-	ASSERT_ANY_THROW (path.GetRelativeFilePath());
+	ASSERT_EQ (path.GetRelativeFilePath(), PathString);
 }
 
-TEST (PathTest, AbsoluteFile2) {
-	CPath path = CPath("." + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt"); //     "./home/text.txt"
+TEST (PathTest, AbsoluteFile2)
+{
+	//     "~/home/text.txt"
+	const std::string PathString = "~" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt";
+	CPath path(PathString);
 	
 	ASSERT_EQ (path.IsFile(), true);
 	ASSERT_EQ (path.IsFolder(), false);
@@ -158,13 +188,16 @@ TEST (PathTest, AbsoluteFile2) {
 	
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
-	ASSERT_EQ (path.GetAbsoluteFilePath(), "." + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt");
-	ASSERT_ANY_THROW (path.GetRelativeFilePath());
+	ASSERT_EQ (path.GetAbsoluteFilePath(), "~" + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt");
+	ASSERT_EQ (path.GetRelativeFilePath(), PathString);
 }
 
-TEST (PathTest, AbsoluteFile3) {
-	CPath path = CPath(FOLDER_SEPARATOR + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt"); //     "//home/text.txt"
-	
+TEST (PathTest, AbsoluteFile3)
+{
+	//     "//home/text.txt"
+	const std::string PathString = FOLDER_SEPARATOR + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt";
+	CPath path(PathString);
+		
 	ASSERT_EQ (path.IsFile(), true);
 	ASSERT_EQ (path.IsFolder(), false);
 	
@@ -175,7 +208,7 @@ TEST (PathTest, AbsoluteFile3) {
 	ASSERT_EQ (path.GetFileName(), "text.txt");
 	ASSERT_EQ (path.GetFileNameExtension(), "txt");
 	ASSERT_EQ (path.GetAbsoluteFilePath(), FOLDER_SEPARATOR + FOLDER_SEPARATOR + "home" + FOLDER_SEPARATOR + "text.txt");
-	ASSERT_ANY_THROW (path.GetRelativeFilePath());
+	ASSERT_EQ (path.GetRelativeFilePath(), PathString);
 }
 
 int main(int argc, char **argv)

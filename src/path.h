@@ -23,4 +23,5 @@ public:
 	std::string GetRelativeFilePath() const;
 private:
 	void ProcessFolderUps();
+	std::string GetRelativePath() const;
 };

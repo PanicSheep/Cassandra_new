@@ -13,7 +13,7 @@ bool IsAbsolutePath(const std::string& path)
 		return true;
 	if (StartsWith(path, NETWORK_SEPARATOR))
 		return true;
-	if (StartsWith(path, "."))
+	if (StartsWith(path, "~"))
 		return true;
 	return false;
 }
@@ -37,22 +37,7 @@ std::string CPath::GetRelativeFolderPath() const
 	// TODO: Add tests!
 	
 	assert(IsFolder());
-	
-	auto cwd = GetCurrentWorkingDirectory();
-	auto SplittedCwd = split(cwd, FOLDER_SEPARATOR);
-	auto SplittedFullPath = split(m_fullpath, FOLDER_SEPARATOR);
-	
-	std::size_t idx = 0;
-	while ((idx < SplittedCwd.size()) && (idx < SplittedFullPath.size()) && (SplittedCwd[idx] == SplittedFullPath[idx]))
-		idx++;
-	
-	const std::size NumFoldersUp = SplittedCwd.size() - idx;
-	std::vector<std::string> RelPath(NumFoldersUp, "..");
-	
-	RelPath.insert(RelPath.end(), SplittedFullPath.begin() + idx, SplittedFullPath.end());
-	RelPath.push_back("");
-	
-	return join(RelPath, FOLDER_SEPARATOR);
+	return GetRelativePath();
 }
 
 std::string CPath::GetRelativeFilePath() const
@@ -60,21 +45,7 @@ std::string CPath::GetRelativeFilePath() const
 	// TODO: Add tests!
 	
 	assert(IsFile());
-	
-	auto cwd = GetCurrentWorkingDirectory();
-	auto SplittedCwd = split(cwd, FOLDER_SEPARATOR);
-	auto SplittedFullPath = split(m_fullpath, FOLDER_SEPARATOR);
-	
-	std::size_t idx = 0;
-	while ((idx < SplittedCwd.size()) && (idx < SplittedFullPath.size()) && (SplittedCwd[idx] == SplittedFullPath[idx]))
-		idx++;
-	
-	const std::size NumFoldersUp = SplittedCwd.size() - idx;
-	std::vector<std::string> RelPath(NumFoldersUp, "..");
-	
-	RelPath.insert(RelPath.end(), SplittedFullPath.begin() + idx, SplittedFullPath.end());
-	
-	return join(RelPath, FOLDER_SEPARATOR);
+	return GetRelativePath();
 }
 
 std::string CPath::GetAbsoluteFolderPath() const
@@ -127,4 +98,25 @@ void CPath::ProcessFolderUps()
 		std::size_t FolderStartPos = m_fullpath.rfind(FOLDER_SEPARATOR, TokenPos - 1);
 		m_fullpath = m_fullpath.substr(0, FolderStartPos) + m_fullpath.substr(TokenPos + Token.length());
 	}
+}
+
+std::string CPath::GetRelativePath() const
+{
+	auto cwd = GetCurrentWorkingDirectory();
+	auto SplittedCwd = split(cwd, FOLDER_SEPARATOR);
+	auto SplittedFullPath = split(m_fullpath, FOLDER_SEPARATOR);
+	
+	std::size_t idx = 0;
+	while ((idx < SplittedCwd.size()) && (idx < SplittedFullPath.size()) && (SplittedCwd[idx] == SplittedFullPath[idx]))
+		idx++;
+	
+	if ((idx == 0) || ((idx == 1) && (SplittedFullPath[0] == ""))) // No common parts
+		return m_fullpath;
+	
+	const std::size_t NumFoldersUp = SplittedCwd.size() - idx;
+	std::vector<std::string> RelPath(NumFoldersUp, "..");
+	
+	RelPath.insert(RelPath.end(), SplittedFullPath.begin() + idx, SplittedFullPath.end());
+		
+	return join(RelPath, FOLDER_SEPARATOR);
 }
