@@ -12,6 +12,7 @@
 #include <functional>
 #include <random>
 #include <vector>
+#include <iostream>
 
 std::vector<CPositionScore> MakeSolvedRandomPosition(const std::size_t size, const std::size_t empties)
 {
@@ -312,6 +313,10 @@ protected:
 		tmp.push_back(stddev["PCGLS_" + std::to_string(pattern)]);
 		tmp.push_back(stddev["LSQR_" + std::to_string(pattern)]);
 		tmp.push_back(stddev["PLSQR_" + std::to_string(pattern)]);
+		std::cout << tmp[0] << std::endl;
+		std::cout << tmp[1] << std::endl;
+		std::cout << tmp[2] << std::endl;
+		std::cout << tmp[3] << std::endl;
 		
 		ASSERT_LT(StandardDeviation(tmp), Average(tmp) * 0.01);
 	}
