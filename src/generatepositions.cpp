@@ -125,20 +125,16 @@ std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, 
 }
 
 void GenAll(CPosition pos, std::unordered_set<CPosition>& pos_set, const unsigned int depth)
-{
-	pos.FlipToMin();
-	
-	if (pos_set.count(pos))
-		return;
-	
+{	
 	if (depth == 0) {
+		pos.FlipToMin();
 		pos_set.insert(pos);
 		return;
 	}
 
-	uint64_t possibles = pos.PossibleMoves();
+	uint64_t moves = pos.PossibleMoves();
 
-	if (!possibles)
+	if (!moves)
 	{
 		pos.PlayStone(64);
 		if (pos.HasMoves())
@@ -146,10 +142,10 @@ void GenAll(CPosition pos, std::unordered_set<CPosition>& pos_set, const unsigne
 		return;
 	}
 	
-	while (possibles)
+	while (moves)
 	{
-		const auto move = BitScanLSB(possibles);
-		RemoveLSB(possibles);
+		const auto move = BitScanLSB(moves);
+		RemoveLSB(moves);
 		CPosition next = pos;
 		next.PlayStone(move);
 		GenAll(next, pos_set, depth-1);
