@@ -1,13 +1,15 @@
-#include "matrixCSR_Grid.h"
 #include <chrono>
 #include <omp.h>
 #include <iostream>
+#include <string>
+#include "matrixCSR_Grid.h"
 #include "datamanipulation.h"
 #include "utility.h"
 #include "iterativealgorithms.h"
 #include "vector_extensions.h"
 #include "statistics.h"
 #include "pattern.h"
+#include "path.h"
 
 void print_help()
 {
@@ -45,7 +47,8 @@ public:
 	std::vector<std::string>	ExtractStrings(const std::string& token);
 	bool						ExtractToken  (const std::string& token);
 	int							ExtractInt    (const std::string& token);
-	std::string					TryExtractString(const std::string& token, const std::string& default);
+	
+	std::string					TryExtractString(const std::string& token, const std::string& def);
 };
 
 bool CommandlineArguments::ContainsToken(const std::string& token) const
@@ -125,7 +128,7 @@ std::string CommandlineArguments::ExtractString(const std::string& token)
 		throw std::out_of_range("Index out of range.");
 }
 
-std::string CommandlineArguments::TryExtractString(const std::string& token, const std::string& default)
+std::string CommandlineArguments::TryExtractString(const std::string& token, const std::string& def)
 {
 	try
 	{
@@ -133,7 +136,7 @@ std::string CommandlineArguments::TryExtractString(const std::string& token, con
 	}
 	catch (std::out_of_range err)
 	{
-		return default;
+		return def;
 	}
 }
 
