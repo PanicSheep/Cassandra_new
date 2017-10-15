@@ -50,7 +50,7 @@ namespace Midgame_PVS
 	/// Evaluates a position with PVS for depth <= Depth_PVS. Will not work for bigger depth!
 	int Eval  (const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const unsigned int depth, CLine* pline = nullptr);
 	int Eval  (const uint64_t P, const uint64_t O, uint64_t& NodeCounter,                                  const unsigned int depth);
-	int Eval_0(const uint64_t P, const uint64_t O);
+	int Eval_0(const uint64_t P, const uint64_t O, uint64_t& NodeCounter);
 	
 	/// For exlicit calling of PVS for depth <= Depth_PVS. Will not work for bigger depth!
 	int  PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const unsigned int depth, CLine* pline = nullptr);
