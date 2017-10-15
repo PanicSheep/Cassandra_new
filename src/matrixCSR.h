@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstdint>
 #include <iostream>
+#include <fstream>
 #include "vector_extensions.h"
 
 /// Compressed Sparse Row Matrix
@@ -86,54 +87,48 @@ CMatrix_CSR<ValueType, SizeType>& CMatrix_CSR<ValueType, SizeType>::operator=(co
 template <typename ValueType, typename SizeType>
 void CMatrix_CSR<ValueType, SizeType>::load(const std::string & filename)
 {
-	FILE* file = fopen(filename.c_str(), "rb");
-	if (!file) {
-		std::cerr << "ERROR: File '" << filename << "' could not be opened!" << std::endl;
-		throw "File could not be opened.";
-		return;
-	}
-
+	std::fstream file(filename, std::ios::in | std::ios::binary);
+	if (!file.is_open())
+		throw std::iostream::failure("File '" + filename + "' could not be opened for input.");
+	
 	std::size_t vec1size;
 	std::size_t vec2size;
-
-	fread(&m_n, sizeof(std::size_t), 1, file);
-	fread(&m_m, sizeof(std::size_t), 1, file);
-	fread(&vec1size, sizeof(std::size_t), 1, file);
-	fread(&vec2size, sizeof(std::size_t), 1, file);
-
+	
+	file.read(reinterpret_cast<char*>(&m_n), sizeof(std::size_t));
+	file.read(reinterpret_cast<char*>(&m_m), sizeof(std::size_t));
+	file.read(reinterpret_cast<char*>(&vec1size), sizeof(std::size_t));
+	file.read(reinterpret_cast<char*>(&vec2size), sizeof(std::size_t));
+	
 	data = std::vector<ValueType>(vec1size);
 	col_indices = std::vector<SizeType >(vec1size);
 	row_starts = std::vector<SizeType >(vec2size);
-
-	fread(&data[0], sizeof(ValueType), vec1size, file);
-	fread(&col_indices[0], sizeof(SizeType), vec1size, file);
-	fread(&row_starts[0], sizeof(SizeType), vec2size, file);
-
-	fclose(file);
+	
+	file.read(reinterpret_cast<char*>(&data[0])       , sizeof(ValueType) * vec1size);
+	file.read(reinterpret_cast<char*>(&col_indices[0]), sizeof(SizeType ) * vec1size);
+	file.read(reinterpret_cast<char*>(&row_starts[0]) , sizeof(SizeType ) * vec2size);
+	
+	file.close();
 }
 
 template <typename ValueType, typename SizeType>
 void CMatrix_CSR<ValueType, SizeType>::save(const std::string & filename) const
 {
-	FILE* file = fopen(filename.c_str(), "wb");
-	if (!file) {
-		std::cerr << "ERROR: File '" << filename << "' could not be opened!" << std::endl;
-		throw "File could not be opened.";
-		return;
-	}
+	std::fstream file(filename, std::ios::out | std::ios::binary);
+	if (!file.is_open())
+		throw std::iostream::failure("File '" + filename + "' could not be opened for output.");
 
 	const std::size_t vec1size = data.size();
 	const std::size_t vec2size = row_starts.size();
 
-	fwrite(&m_n, sizeof(std::size_t), 1, file);
-	fwrite(&m_m, sizeof(std::size_t), 1, file);
-	fwrite(&vec1size, sizeof(std::size_t), 1, file);
-	fwrite(&vec2size, sizeof(std::size_t), 1, file);
-	fwrite(&data[0], sizeof(ValueType), vec1size, file);
-	fwrite(&col_indices[0], sizeof(SizeType), vec1size, file);
-	fwrite(&row_starts[0], sizeof(SizeType), vec2size, file);
+	file.write(reinterpret_cast<const char*>(&m_n)           , sizeof(std::size_t));
+	file.write(reinterpret_cast<const char*>(&m_m)           , sizeof(std::size_t));
+	file.write(reinterpret_cast<const char*>(&vec1size)      , sizeof(std::size_t));
+	file.write(reinterpret_cast<const char*>(&vec2size)      , sizeof(std::size_t));
+	file.write(reinterpret_cast<const char*>(&data[0])       , sizeof(ValueType) * vec1size);
+	file.write(reinterpret_cast<const char*>(&col_indices[0]), sizeof(SizeType ) * vec1size);
+	file.write(reinterpret_cast<const char*>(&row_starts[0]) , sizeof(SizeType ) * vec2size);
 
-	fclose(file);
+	file.close();
 }
 
 template <typename ValueType, typename SizeType>
