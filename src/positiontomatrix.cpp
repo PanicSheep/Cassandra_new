@@ -40,11 +40,7 @@ int main(int argc, char* argv[])
 	}
 	
 	if (pattern.empty())
-	{
-		std::vector<std::string> ActivePattern = Pattern::GetActivePattern();
-		for (const auto& it : ActivePattern)
-			pattern.push_back(it);
-	}
+		pattern = Pattern::GetActivePattern();
 
 	startTime = std::chrono::high_resolution_clock::now();
 
@@ -53,14 +49,11 @@ int main(int argc, char* argv[])
 	if (gConfigurations.Verbosity >= 1)
 	{
 		std::cout << "Converting positions to matrices and vector." << std::endl;
-		std::cout << "Input position: '" << position_filename.GetAbsoluteFilePath() << "'" << std::endl;
-		std::cout << "Output matrix path: '" << matrix_filepath.GetAbsoluteFilePath() << "'" << std::endl;
-		std::cout << "Output vector path: '" << vector_filepath.GetAbsoluteFilePath() << "'" << std::endl;
+		std::cout << "Input position: '" << position_filename.GetRelativeFilePath() << "'" << std::endl;
+		std::cout << "Output matrix path: '" << matrix_filepath.GetRelativeFilePath() << "'" << std::endl;
+		std::cout << "Output vector path: '" << vector_filepath.GetRelativeFilePath() << "'" << std::endl;
 		std::cout << "Pattern: ";
-		for (std::size_t i = 0; i < pattern.size() - 1; i++)
-			std::cout << pattern[i] << ",";
-		if (pattern.size())
-			std::cout << pattern.back();
+		std::cout << join(pattern, ",");
 		std::cout << std::endl;
 	}
 	// ------------------------
