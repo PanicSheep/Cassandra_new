@@ -17,6 +17,85 @@ namespace PVS
 	int ZWS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha,                 const int selectivity, const unsigned int depth);
 	int PVS(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline = nullptr);
 	// -----------------------
+
+	//inline double sigma(int D, int d, int E) { return (std::exp(-0.2770 * d) + 1.0295) * std::pow(D - d, 0.3044) * (-0.0276 * E + 2.1746); }
+
+	//bool MPC(uint64_t P, uint64_t O, uint64_t& NodeCounter, int alpha, int selectivity, int depth, int empties, int& value)
+	//{
+	//	assert((P & O) == 0);
+	//	assert(-64 <= alpha); assert(alpha <= 64);
+	//	assert(0 <= depth); assert(depth <= 60);
+	//	assert(0 <= empties); assert(empties <= 60); assert(empties == Empties(P, O));
+	//	assert(depth <= empties);
+
+	//	if (selectivity)
+	//	{
+	//		const int beta = alpha + 1;
+	//		const double t = SelectivityTable[selectivity].T;
+	//		const int zero_eval = Midgame_PVS::Eval_0(P, O, NodeCounter);
+	//		double probcut_sigma = sigma(depth, 0, empties);
+	//		int probcut_beta = beta + t * probcut_sigma;
+	//		int probcut_alpha = probcut_beta - 1;
+
+	//		if (empties <= 21)
+	//		{
+	//			if (zero_eval >= beta + t * probcut_sigma) { value = beta; return true; }
+	//			if (zero_eval < alpha - t * probcut_sigma) { value = alpha; return true; }
+	//		}
+
+	//		probcut_sigma = sigma(depth, (depth % 2 == 0 ? 2 : 1), empties);
+
+	//		if (zero_eval >= beta + t * probcut_sigma)
+	//		{
+	//			for (int probcut_depth = (depth % 2 == 0 ? 2 : 1) + 2; probcut_depth <= depth / 2; probcut_depth += 2)
+	//			{
+	//				double probcut_sigma = sigma(depth, probcut_depth, empties);
+	//				int probcut_beta = beta + t * probcut_sigma;
+	//				int probcut_alpha = probcut_beta - 1;
+	//				if (probcut_beta <= 64)
+	//				{
+	//					int score = ZWS(P, O, NodeCounter, probcut_alpha, NO_SELECTIVITY, probcut_depth, empties);
+	//					if (score >= probcut_beta) { value = beta; return true; }
+	//				}
+	//			}
+	//		}
+	//		if (zero_eval < alpha - t * probcut_sigma)
+	//		{
+	//			for (int probcut_depth = (depth % 2 == 0 ? 2 : 1) + 2; probcut_depth <= depth / 2; probcut_depth += 2)
+	//			{
+	//				int probcut_sigma = sigma(depth, probcut_depth, empties);
+	//				int probcut_alpha = alpha - t * probcut_sigma;
+	//				if (probcut_alpha >= -64)
+	//				{
+	//					int score = ZWS(P, O, NodeCounter, probcut_alpha, NO_SELECTIVITY, probcut_depth, empties);
+	//					if (score <= probcut_alpha) { value = alpha; return true; }
+	//				}
+	//			}
+	//		}
+
+	//		//for (int probcut_depth = depth % 2 ? 1 : 2; probcut_depth <= depth / 2; probcut_depth++)
+	//		//{
+	//		//	double probcut_sigma = sigma(depth, probcut_depth, empties);
+	//		//	int probcut_beta = RoundInt(beta + t * probcut_sigma);
+	//		//	int probcut_alpha = probcut_beta - 1;
+	//		//	int score;
+
+	//		//	if (zero_eval >= beta && probcut_beta <= 64)
+	//		//	{
+	//		//		score = ZWS(P, O, NodeCounter, probcut_alpha, NO_SELECTIVITY, probcut_depth, empties);
+	//		//		if (score >= probcut_beta) { value = beta; return true; }
+	//		//	}
+
+	//		//	probcut_alpha = RoundInt(alpha - t * probcut_sigma);
+	//		//	if (zero_eval < alpha && probcut_alpha >= -64)
+	//		//	{
+	//		//		score = ZWS(P, O, NodeCounter, probcut_alpha, NO_SELECTIVITY, probcut_depth, empties);
+	//		//		if (score <= probcut_alpha) { value = alpha; return true; }
+	//		//	}
+	//		//}
+	//	}
+	//	return false;
+	//}
 	
 	// ################################################################################################
 	//  Functions in header file
@@ -95,7 +174,7 @@ namespace PVS
 
 		if (StabilityCutoff_ZWS(P, O, alpha, score)) return score;
 		if (LookUpTT(P, O, ttValue) && UseTTValue(ttValue, alpha, alpha+1, depth, selectivity, score)) return score;
-		// if (MPC(P, O, NodeCounter, alpha, selectivity, depth, empties, score)) return score; // TODO !!!
+		//if (MPC(P, O, NodeCounter, alpha, selectivity, depth, empties, score)) return score;
 
 		CMoveList mvList(P, O, NodeCounter, BitBoardPossible, depth, alpha, ttValue, false);
 		for (const auto& mv : mvList) // ETC
