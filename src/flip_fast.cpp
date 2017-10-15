@@ -787,7 +787,7 @@ namespace Flip_Fast
 	uint64_t flip_A4(const uint64_t P, const uint64_t O)
 	{
 		uint8_t outflank_v;
-		uint64_t flipped, outflank_h, flip_d7, outflank_d9;
+		uint64_t flipped, outflank_h;
 	#ifdef USE_PEXT
 		outflank_v = OUTFLANK_3[PExt(O, 0x0001010101010100ULL)] & PExt(P, 0x0101010101010101ULL);
 	#else
@@ -802,11 +802,11 @@ namespace Flip_Fast
 		outflank_v = OUTFLANK_3[PExt(O, 0x0008040201020400ULL)] & PExt(P, 0x1008040201020408ULL);
 		flipped |= FLIPPED_3_V[outflank_v] & 0x0008040201020400ULL;
 	#else
-		flip_d7 = O & 0x0000000000020000ULL;
+		uint64_t flip_d7 = O & 0x0000000000020000ULL;
 		flip_d7 |= (flip_d7 >> 7) & O;
 		flipped |= flip_d7 & -(flip_d7 & (P << 7));
 
-		outflank_d9 = ((O | ~0x1008040200000000ULL) + 0x0000000200000000ULL) & P & 0x1008040200000000ULL;
+		uint64_t outflank_d9 = ((O | ~0x1008040200000000ULL) + 0x0000000200000000ULL) & P & 0x1008040200000000ULL;
 		flipped |= (outflank_d9 - (outflank_d9 >> 32)) & 0x1008040200000000ULL;
 	#endif
 
@@ -816,7 +816,7 @@ namespace Flip_Fast
 	uint64_t flip_B4(const uint64_t P, const uint64_t O)
 	{
 		uint8_t outflank_v;
-		uint64_t flipped, outflank_h, flip_d7, outflank_d9;
+		uint64_t flipped, outflank_h;
 	#ifdef USE_PEXT
 		outflank_v = OUTFLANK_3[PExt(O, 0x0002020202020200ULL)] & PExt(P, 0x0202020202020202ULL);
 	#else
@@ -831,11 +831,11 @@ namespace Flip_Fast
 		outflank_v = OUTFLANK_3[PExt(O, 0x0010080402040800ULL)] & PExt(P, 0x2010080402040810ULL);
 		flipped |= FLIPPED_3_V[outflank_v] & 0x0010080402040800ULL;
 	#else
-		flip_d7 = O & 0x0000000000040000ULL;
+		uint64_t flip_d7 = O & 0x0000000000040000ULL;
 		flip_d7 |= (flip_d7 >> 7) & O;
 		flipped |= flip_d7 & -(flip_d7 & (P << 7));
 
-		outflank_d9 = GetLSB(~O & 0x2010080400000000ULL) & P;
+		uint64_t outflank_d9 = GetLSB(~O & 0x2010080400000000ULL) & P;
 		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x2010080400000000ULL;
 	#endif
 
@@ -845,7 +845,7 @@ namespace Flip_Fast
 	uint64_t flip_C4(const uint64_t P, const uint64_t O)
 	{
 		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, flip_d7, outflank_d9;
+		uint64_t flipped, outflank_d9;
 	#ifdef USE_PEXT
 		outflank_v = OUTFLANK_3[PExt(O, 0x0004040404040400ULL)] & PExt(P, 0x0404040404040404ULL);
 	#else
@@ -864,7 +864,7 @@ namespace Flip_Fast
 		outflank_d9 = OUTFLANK_3[PExt(O, 0x0020100804081000ULL)] & PExt(P, 0x4020100804081020ULL);
 		flipped |= FLIPPED_3_V[outflank_d9] & 0x0020100804081000ULL;
 	#else
-		flip_d7 = O & 0x0000000000080000ULL;
+		uint64_t flip_d7 = O & 0x0000000000080000ULL;
 		flip_d7 |= (flip_d7 >> 7) & O;
 		flipped |= flip_d7 & -(flip_d7 & (P << 7));
 
@@ -946,7 +946,7 @@ namespace Flip_Fast
 	uint64_t flip_F4(const uint64_t P, const uint64_t O)
 	{
 		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, outflank_d7, flip_d9;
+		uint64_t flipped, outflank_d7;
 
 	#ifdef USE_PEXT
 		outflank_v = OUTFLANK_3[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
@@ -969,7 +969,7 @@ namespace Flip_Fast
 		outflank_d7 = ((O | ~0x0204081000000000ULL) + 0x0000001000000000ULL) & P & 0x0204081000000000ULL;
 		flipped |= (outflank_d7 - (outflank_d7 >> 32)) & 0x0204081000000000ULL;
 
-		flip_d9 = O & 0x0000000000100000ULL;
+		uint64_t flip_d9 = O & 0x0000000000100000ULL;
 		flip_d9 |= (flip_d9 >> 9) & O;
 		flipped |= flip_d9 & -(flip_d9 & (P << 9));
 	#endif
@@ -982,7 +982,7 @@ namespace Flip_Fast
 	uint64_t flip_G4(const uint64_t P, const uint64_t O)
 	{
 		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, outflank_d7, flip_d9;
+		uint64_t flipped, outflank_d7;
 
 	#ifdef USE_PEXT
 		outflank_v = OUTFLANK_3[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
@@ -1001,7 +1001,7 @@ namespace Flip_Fast
 		outflank_d7 = ((O | ~0x0408102000000000ULL) + 0x0000002000000000ULL) & P & 0x0408102000000000ULL;
 		flipped |= (outflank_d7 - (outflank_d7 >> 32)) & 0x0408102000000000ULL;
 
-		flip_d9 = O & 0x0000000000200000ULL;
+		uint64_t flip_d9 = O & 0x0000000000200000ULL;
 		flip_d9 |= (flip_d9 >> 9) & O;
 		flipped |= flip_d9 & -(flip_d9 & (P << 9));
 	#endif
@@ -1012,7 +1012,7 @@ namespace Flip_Fast
 	uint64_t flip_H4(const uint64_t P, const uint64_t O)
 	{
 		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, outflank_d7, flip_d9;
+		uint64_t flipped, outflank_d7;
 
 	#ifdef USE_PEXT
 		outflank_v = OUTFLANK_3[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
@@ -1035,7 +1035,7 @@ namespace Flip_Fast
 		outflank_d7 = ((O | ~0x0810204000000000ULL) + 0x0000004000000000ULL) & P & 0x0810204000000000ULL;
 		flipped |= (outflank_d7 - (outflank_d7 >> 32)) & 0x0810204000000000ULL;
 
-		flip_d9 = O & 0x0000000000400000ULL;
+		uint64_t flip_d9 = O & 0x0000000000400000ULL;
 		flip_d9 |= (flip_d9 >> 9) & O;
 		flipped |= flip_d9 & -(flip_d9 & (P << 9));
 	#endif
