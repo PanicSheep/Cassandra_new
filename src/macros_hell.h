@@ -4,7 +4,7 @@
 #include <string>
 
 #if !(defined(_M_X64) || defined(__x86_64))
-#error "This code only works on x64!"
+	#error "This code only works on x64!"
 #endif
 
 #if defined(_MSC_VER)
