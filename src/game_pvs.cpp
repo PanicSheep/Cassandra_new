@@ -167,7 +167,7 @@ namespace PVS
 		}
 
 		if (pline && StabilityCutoff_PVS(P, O, alpha, score)) return score;
-		if (USE_PV_TTCUT && !pline)
+		if (PVS::USE_PV_TTCUT && !pline)
 			if (LookUpTTPV(P, O, ttValue) || LookUpTT(P, O, ttValue))
 				if (UseTTValue(ttValue, alpha, beta, depth, selectivity, score))
 					return score;
