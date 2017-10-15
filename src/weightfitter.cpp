@@ -14,9 +14,9 @@ void print_help()
 	std::cout << "Makes matrices and a vectors out of positions.\n" <<
 		"Arguments:\n" <<
 		" In detail specification:\n" <<
-		" -mat abc.xyz def.uvw ... (NxM)    Matrix filenames.\n" <<
-		" -vec abc.xyz def.uvw ... (N  )    Vector filenames.\n" <<
-		" -wei abc.xyz def.uvw ... (  M)    Weights filenames.\n" <<
+		" -mat abc.xyz def.uvw ...  (NxM)   Matrix filenames.\n" <<
+		" -vec abc.xyz def.uvw ...  (N  )   Vector filenames.\n" <<
+		" -wei abc.xyz def.uvw ...  (  M)   Weights filenames.\n" <<
 		" -wei0 abc.xyz def.uvw ... (  M)   Initial-weights filenames.\n" <<
 		" Batch processing:\n" <<
 		" -p abc abc                        Position filename prefix.\n" <<
@@ -25,81 +25,158 @@ void print_help()
 		" -w \abc                           Weights filename prefix.\n" <<
 		" -w0 \abc                          Initial-weights filename prefix.\n" <<
 		" -pattern name1 name2 name3        Pattern.\n" <<
-		"-maxit 123                         Maximum iterations to use.\n"
+		"-maxit 123                         Maximum iterations to use.\n" <<
+		"-default							Creates default weights.\n" <<
 		"-h                                 Display help." << std::endl;
+}
+
+class CommandlineArguments
+{
+	static const char NextTokenIndicator = '-';
+	std::vector<std::string> args;
+public:
+	CommandlineArguments(int argc, char* argv[]) : args(argv, argv + argc) {}
+
+	bool						ContainsToken (const std::string& token) const;
+
+	CPath						ExtractPath   (const std::string& token);
+	std::vector<CPath>			ExtractPaths  (const std::string& token);
+	std::string					ExtractString (const std::string& token);
+	std::vector<std::string>	ExtractStrings(const std::string& token);
+	bool						ExtractToken  (const std::string& token);
+	int							ExtractInt    (const std::string& token);
+	std::string					TryExtractString(const std::string& token, const std::string& default);
+};
+
+bool CommandlineArguments::ContainsToken(const std::string& token) const
+{
+	const auto it = std::find(args.cbegin(), args.cend(), token);
+	return (it != args.cend());
+}
+
+bool CommandlineArguments::ExtractToken(const std::string& token)
+{
+	auto it = std::find(args.begin(), args.end(), token);
+	if (it != args.end()) {
+		args.erase(it); // Removes token.
+		return true;
+	}
+	else
+		return false;
+}
+
+int CommandlineArguments::ExtractInt(const std::string& token)
+{
+	int ret = 0;
+
+	auto it = std::find(args.begin(), args.end(), token);
+	if (it != args.end()) {
+		args.erase(it); // Removes token.
+		if (it != args.end()) {
+			ret = std::stoi(*it);
+			args.erase(it);
+		}
+		else
+			assert(false);
+	}
+	return ret;
+}
+
+std::vector<std::string> CommandlineArguments::ExtractStrings(const std::string& token)
+{
+	std::vector<std::string> ret;
+
+	auto it = std::find(args.begin(), args.end(), token);
+	if (it != args.end())
+	{
+		it = args.erase(it); // Removes token.
+		while ((it != args.end()) && (it->at(0) != NextTokenIndicator))
+		{
+			ret.emplace_back(*it);
+			it = args.erase(it);
+		}
+	}
+	return ret;
+}
+
+std::vector<CPath> CommandlineArguments::ExtractPaths(const std::string& token)
+{
+	std::vector<CPath> ret;
+
+	auto it = std::find(args.begin(), args.end(), token);
+	if (it != args.end())
+	{
+		it = args.erase(it); // Removes token.
+		while ((it != args.end()) && (it->at(0) != NextTokenIndicator))
+		{
+			ret.emplace_back(*it);
+			it = args.erase(it);
+		}
+	}
+	return ret;
+}
+
+std::string CommandlineArguments::ExtractString(const std::string& token)
+{
+	const auto s = ExtractStrings(token);
+	if (s.size())
+		return s[0];
+	else
+		throw std::out_of_range("Index out of range.");
+}
+
+std::string CommandlineArguments::TryExtractString(const std::string& token, const std::string& default)
+{
+	try
+	{
+		return ExtractString(token);
+	}
+	catch (std::out_of_range err)
+	{
+		return default;
+	}
+}
+
+
+CPath CommandlineArguments::ExtractPath(const std::string& token)
+{
+	const auto s = ExtractPaths(token);
+	if (s.size())
+		return s[0];
+	throw std::out_of_range("Index out of range.");
 }
 
 int main(int argc, char* argv[])
 {
 	std::size_t maxIt = 100;
-	std::string matrix;
-	std::string vector;
-	std::string weight;
-	std::string weight0;
-	std::vector<std::string> position;
-	std::vector<std::string> pattern;
-	std::vector<CPath> matrix_filename;
-	std::vector<CPath> vector_filename;
-	std::vector<CPath> weight_filename;
-	std::vector<CPath> weight0_filename;
-	std::chrono::high_resolution_clock::time_point startTime, endTime;
 	
 	Configfile::Initialize(argv[0]);
 	Pattern::Initialize(false, false);
 
-	for (int i = 0; i < argc; ++i)
-	{
-		if (std::string(argv[i]) == "-pattern") {
-			++i;
-			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
-				pattern.push_back(std::string(argv[i++]));
-			--i;
-		}
-		else if (std::string(argv[i]) == "-p") {
-			++i;
-			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
-				position.push_back(std::string(argv[i++]));
-			--i;
-		}
-		else if (std::string(argv[i]) == "-m") matrix = std::string(argv[++i]);
-		else if (std::string(argv[i]) == "-v") vector = std::string(argv[++i]);
-		else if (std::string(argv[i]) == "-w") weight = std::string(argv[++i]);
-		else if (std::string(argv[i]) == "-w0") weight0 = std::string(argv[++i]);
-		else if (std::string(argv[i]) == "-mat") {
-			++i;
-			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
-				matrix_filename.push_back(std::string(argv[i++]));
-			--i;
-		}
-		else if (std::string(argv[i]) == "-vec") {
-			++i;
-			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
-				vector_filename.push_back(std::string(argv[i++]));
-			--i;
-		}
-		else if (std::string(argv[i]) == "-wei") {
-			++i;
-			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
-				weight_filename.push_back(std::string(argv[i++]));
-			--i;
-		}
-		else if (std::string(argv[i]) == "-wei0") {
-			++i;
-			while ((i < argc) && (static_cast<char>(*argv[i]) != '-'))
-				weight_filename.push_back(std::string(argv[i++]));
-			--i;
-		}
-		else if (std::string(argv[i]) == "-maxit") maxIt = atoi(argv[++i]);
-		else if (std::string(argv[i]) == "-h") { print_help(); return 0; }
+	CommandlineArguments Args(argc, argv);
+	std::vector<std::string> pattern  = Args.ExtractStrings("-pattern");
+	std::vector<std::string> position = Args.ExtractStrings("-p");
+	std::string matrix  = Args.TryExtractString("-m", "");
+	std::string vector  = Args.TryExtractString("-v", "");
+	std::string weight  = Args.TryExtractString("-w", "");
+	std::string weight0 = Args.TryExtractString("-w0", "");
+	std::vector<CPath> matrix_filename	= Args.ExtractPaths("-mat");
+	std::vector<CPath> vector_filename	= Args.ExtractPaths("-vec");
+	std::vector<CPath> weight_filename	= Args.ExtractPaths("-wei");
+	std::vector<CPath> weight0_filename = Args.ExtractPaths("-wei0");
+	bool bDefaults = Args.ContainsToken("-default");
+
+	if (Args.ContainsToken("-maxit"))
+		maxIt = Args.ExtractInt("-maxit");
+
+	if (Args.ContainsToken("-h")) { 
+		print_help(); 
+		return 0;
 	}
 	
 	// If no pattern provided, use pattern from config file.
 	if (pattern.empty())
-	{
-		std::vector<std::string> ActivePattern = Pattern::GetActivePattern();
-		for (const auto& it : ActivePattern)
-			pattern.push_back(it);
-	}
+		pattern = Pattern::GetActivePattern();
 	
 	if (!pattern.empty())
 	{
@@ -118,8 +195,22 @@ int main(int argc, char* argv[])
 				weight0_filename.push_back(weight0 + "_" + pat + ".w");
 	}
 
-	startTime = std::chrono::high_resolution_clock::now();
+	if (bDefaults)
+	{
+		std::vector<std::size_t> ms;
+		for (const auto& pat : pattern) {
+			Pattern::CPattern * Pattern = Pattern::NewPattern(pat);
+			ms.push_back(Pattern->ReducedSize());
+			delete Pattern;
+		}
 
+		Vecvec<float> x0(ms, 0);
+		for (std::size_t j = 0; j < pattern.size(); j++)
+			write_to_file(weight_filename[j], x0(j));
+
+		return 0;
+	}
+	
 	const std::size_t n = vector_filename.size();
 	const std::size_t m = weight_filename.size();
 	
@@ -132,22 +223,22 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Matrices:" << std::endl;
 	for (const auto& it : matrix_filename)
-		std::cout << it.GetAbsoluteFilePath() << ", ";
+		std::cout << it.GetRelativeFilePath() << ", ";
 	std::cout << std::endl;
 	
 	std::cout << "Vectors:" << std::endl;
 	for (const auto& it : vector_filename)
-		std::cout << it.GetAbsoluteFilePath() << ", ";
+		std::cout << it.GetRelativeFilePath() << ", ";
 	std::cout << std::endl;
 	
 	std::cout << "Weights:" << std::endl;
 	for (const auto& it : weight_filename)
-		std::cout << it.GetAbsoluteFilePath() << ", ";
+		std::cout << it.GetRelativeFilePath() << ", ";
 	std::cout << std::endl;
 	
 	std::cout << "Initial-Weights:" << std::endl;
 	for (const auto& it : weight0_filename)
-		std::cout << it.GetAbsoluteFilePath() << ", ";
+		std::cout << it.GetRelativeFilePath() << ", ";
 	std::cout << std::endl;
 	
 	if (matrix_filename.size() != n*m)
@@ -156,7 +247,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	
-	
+
 	Array2D<std::string> arr_matrix_filename(n,m);
 	for (std::size_t i = 0; i < n; i++)
 		for (std::size_t j = 0; j < m; j++)
@@ -165,14 +256,14 @@ int main(int argc, char* argv[])
 	// Loading data
 	// ------------------------
 	std::cout << "Loading data...";
-	startTime = std::chrono::high_resolution_clock::now();
+	auto startTime = std::chrono::high_resolution_clock::now();
 	
 	auto A = CMatrix_CSR_Grid<uint8_t, uint32_t>(arr_matrix_filename);
 	auto b = Vecvec<float>(n);
 	for (std::size_t i = 0; i < n; i++)
 		b(i) = read_vector<float>(vector_filename[i]);
 	
-	endTime = std::chrono::high_resolution_clock::now();
+	auto endTime = std::chrono::high_resolution_clock::now();
 	std::cout << "done. " << time_format(endTime - startTime) << std::endl;
 	// ------------------------
 	
