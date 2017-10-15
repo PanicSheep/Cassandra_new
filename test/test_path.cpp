@@ -1,5 +1,6 @@
 #include "path.h"
 #include "macros_hell.h"
+#include "configfile.h"
 #include "gtest/gtest.h"
 
 TEST (PathTest, RelativeFolder1)

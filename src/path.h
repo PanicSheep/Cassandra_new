@@ -1,6 +1,5 @@
 #pragma once
 #include "macros_hell.h"
-#include "configfile.h"
 #include "utility.h"
 #include <string>
 

@@ -115,7 +115,7 @@ bin/test_positiontomatrix: obj/test_positiontomatrix.o obj/configfile.o obj/patt
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_positiontomatrix
 
-bin/test_weightfitter: obj/test_weightfitter.o obj/configfile.o obj/generatepositions.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o  obj/game_IDAB.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/gtest-all.o
+bin/test_weightfitter: obj/test_weightfitter.o obj/configfile.o obj/generatepositions.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o obj/game_IDAB.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/path.o obj/gtest-all.o
 	$(CC) $(LDFLAGS) $^ -o $@
 	./bin/test_weightfitter
 
@@ -131,7 +131,7 @@ bin/positionmanager: obj/positionmanager.o obj/position.o obj/possiblemoves.o ob
 bin/positiontomatrix: obj/positiontomatrix.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/path.o obj/utility.o obj/generatepositions.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
-bin/weightfitter: obj/weightfitter.o obj/utility.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/configfile.o
+bin/weightfitter: obj/weightfitter.o obj/utility.o obj/configfile.o obj/pattern.o obj/position.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/configfile.o obj/path.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 bin/PCfitter: obj/PCfitter.o obj/configfile.o obj/pattern.o obj/position.o obj/game_endgame_negamax.o obj/game_endgame_alphabeta.o obj/game_endgame_pvs.o obj/game_midgame_pvs.o obj/game_pvs.o  obj/game_IDAB.o obj/count_last_flip.o obj/possiblemoves.o obj/possiblemoves_sse2.o obj/possiblemoves_avx2.o obj/possiblemoves_avx512.o obj/flip_fast.o obj/utility.o obj/hashtable.o obj/move.o obj/configfile.o obj/generatepositions.o
