@@ -7,7 +7,7 @@
 	#define USE_F3
 	#define USE_ABGH6
 	#define USE_CLZ
-	#define USE_BEXTR
+	//#define USE_BEXTR
 #endif
 
 namespace Flip_Fast
