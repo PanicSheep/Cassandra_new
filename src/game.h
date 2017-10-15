@@ -61,7 +61,7 @@ namespace Midgame_PVS
 
 namespace PVS
 {
-	const bool USE_PV_TTCUT = false;
+	const bool USE_PV_TTCUT = true;
 	
 	/// Evaluates a position with PVS.
 	int Eval(const uint64_t P, const uint64_t O, uint64_t& NodeCounter, const int alpha, const int beta, const int selectivity, const unsigned int depth, CLine* pline = nullptr);
@@ -152,7 +152,7 @@ inline bool LookUpTT(const uint64_t P, const uint64_t O, CHashTableValueType& tt
 
 // Look Up Transposition Table
 inline bool LookUpTTPV(const uint64_t P, const uint64_t O, CHashTableValueType& ttValue)
-{ 
+{
 	return gTTPV.LookUp(P, O, ttValue);
 }
 
