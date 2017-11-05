@@ -15,8 +15,7 @@ install:
 
 script: 
   - $CXX --version
-  - make
-  - make test
+  - ./configure --enable-gcov && make && make test
 
 after_success:
-  - coveralls -E ".*external.*" -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*"
+  - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
