@@ -65,7 +65,7 @@ TEST (PositionTest, board1D) {
 	ASSERT_EQ (board1D(0xFFULL, 0xFF00000000000001ULL), "OOOOOOOO------------------------------------------------XXXXXXX#");
 }
 
-TEST (PositionTest, board2D) {
+TEST (PositionTest, board2D_PM) {
 	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL, 0x100ULL), 
 			   "  H G F E D C B A  \n"
 			   "8 O O O O O O O O 8\n"
@@ -75,6 +75,20 @@ TEST (PositionTest, board2D) {
 			   "4 - - - - - - - - 4\n"
 			   "3 - - - - - - - - 3\n"
 			   "2 - - - - - - - + 2\n"
+			   "1 X X X X X X X # 1\n"
+			   "  H G F E D C B A  ");
+}
+
+TEST (PositionTest, board2D) {
+	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8\n"
+			   "7 - - - - - - - - 7\n"
+			   "6 - - - - - - - - 6\n"
+			   "5 - - - - - - - - 5\n"
+			   "4 - - - - - - - - 4\n"
+			   "3 - - - - - - - - 3\n"
+			   "2 - - - - - - - - 2\n"
 			   "1 X X X X X X X # 1\n"
 			   "  H G F E D C B A  ");
 }
