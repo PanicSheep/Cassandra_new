@@ -112,7 +112,7 @@ std::string board2D(const uint64_t P, const uint64_t O, const uint64_t possibleM
 			     if (b_P && b_O) s.append(" #");
 			else if (b_P)        s.append(" X");
 			else if (b_O)        s.append(" O");
-			else if (b_M)        s.append(" .");
+			else if (b_M)        s.append(" +");
 			else                 s.append(" -");
 		}
 		s.append(" " + std::to_string(8-i) + "\n");
