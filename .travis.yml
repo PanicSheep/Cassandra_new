@@ -12,9 +12,11 @@ install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50
   - export CXX="g++-5"
   - sudo pip install cpp-coveralls
+  - autoconf
 
 script: 
   - $CXX --version
+  - ./configure --enable-gcov
   - make
   - make test
 
