@@ -261,6 +261,57 @@ TEST (CPositionTest, FlipToMin) {
 	ASSERT_EQ (pos1, pos8);
 }
 
+TEST (CPositionTest, to_string_1D) {
+	const uint64_t P = 0xFFULL;
+	const uint64_t O = 0xFF00000000000001ULL;
+	ASSERT_EQ (CPosition(P, O).to_string_1D(), board1D(P, O));
+}
+
+TEST (CPositionTest, to_string_2D) {
+	const uint64_t P = 0xFFULL;
+	const uint64_t O = 0xFF00000000000001ULL;
+	ASSERT_EQ (CPosition(P, O).to_string_2D(), board2D(P, O));
+}
+
+TEST (CPositionTest, to_string_2D_PM) {
+	const uint64_t P = 0xFFULL;
+	const uint64_t O = 0xFF00000000000001ULL;
+	const uint64_t PM = PossibleMoves(P, O);
+	ASSERT_EQ (CPosition(P, O).to_string_2D_PM(), board2D(P, O, PM));
+}
+
+TEST (PositionTest, board1D) {
+	ASSERT_EQ (board1D(0xFFULL, 0xFF00000000000001ULL), "OOOOOOOO------------------------------------------------XXXXXXX#");
+}
+
+TEST (PositionTest, board2D_PM) {
+	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL, 0x100ULL), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8\n"
+			   "7 - - - - - - - - 7\n"
+			   "6 - - - - - - - - 6\n"
+			   "5 - - - - - - - - 5\n"
+			   "4 - - - - - - - - 4\n"
+			   "3 - - - - - - - - 3\n"
+			   "2 - - - - - - - + 2\n"
+			   "1 X X X X X X X # 1\n"
+			   "  H G F E D C B A  ");
+}
+
+TEST (PositionTest, board2D) {
+	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8\n"
+			   "7 - - - - - - - - 7\n"
+			   "6 - - - - - - - - 6\n"
+			   "5 - - - - - - - - 5\n"
+			   "4 - - - - - - - - 4\n"
+			   "3 - - - - - - - - 3\n"
+			   "2 - - - - - - - - 2\n"
+			   "1 X X X X X X X # 1\n"
+			   "  H G F E D C B A  ");
+}
+
 TEST (CPositionTest, ctorCPositionScore) {
 	CPositionScore pos(false);
 	ASSERT_EQ (CPosition(false), static_cast<CPosition>(pos));
