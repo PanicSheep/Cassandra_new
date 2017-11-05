@@ -112,7 +112,7 @@ TEST (PositionTest, EmptyCount) {
 
 TEST (PositionTest, Paritiy1) {
 	static auto rnd = std::bind(std::uniform_int_distribution<uint64_t>(0,0xFFFFFFFFFFFFFFFFULL), std::mt19937_64(11));
-	for (std::size_t i = 0; i < 1000000; i++)
+	for (std::size_t i = 0; i < 100000; i++)
 	{
 		uint64_t E = rnd();
 		uint64_t parity1 = Parity(E);
@@ -278,38 +278,6 @@ TEST (CPositionTest, to_string_2D_PM) {
 	const uint64_t O = 0xFF00000000000001ULL;
 	const uint64_t PM = PossibleMoves(P, O);
 	ASSERT_EQ (CPosition(P, O).to_string_2D_PM(), board2D(P, O, PM));
-}
-
-TEST (PositionTest, board1D) {
-	ASSERT_EQ (board1D(0xFFULL, 0xFF00000000000001ULL), "OOOOOOOO------------------------------------------------XXXXXXX#");
-}
-
-TEST (PositionTest, board2D_PM) {
-	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL, 0x100ULL), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8\n"
-			   "7 - - - - - - - - 7\n"
-			   "6 - - - - - - - - 6\n"
-			   "5 - - - - - - - - 5\n"
-			   "4 - - - - - - - - 4\n"
-			   "3 - - - - - - - - 3\n"
-			   "2 - - - - - - - + 2\n"
-			   "1 X X X X X X X # 1\n"
-			   "  H G F E D C B A  ");
-}
-
-TEST (PositionTest, board2D) {
-	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8\n"
-			   "7 - - - - - - - - 7\n"
-			   "6 - - - - - - - - 6\n"
-			   "5 - - - - - - - - 5\n"
-			   "4 - - - - - - - - 4\n"
-			   "3 - - - - - - - - 3\n"
-			   "2 - - - - - - - - 2\n"
-			   "1 X X X X X X X # 1\n"
-			   "  H G F E D C B A  ");
 }
 
 TEST (CPositionTest, ctorCPositionScore) {
@@ -527,34 +495,6 @@ TEST (CPositionFullScoreTest, ctorCPositionScoreDepth2) {
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
-
-// TODO: quadrant_mask
-// TODO: quadrant
-// TODO: PlayStone
-// TODO: StableStonesCornerAndCo
-// TODO: StableStonesFullEdges
-// TODO: StableStonesFullEdgesSecondOrder
-// TODO: StableStonesTriangles
-// TODO: StableEdges
-// TODO: StableStonesPlayer
-// TODO: StableStones
-// TODO: FullLineHorizontal
-// TODO: FullLineVertival
-// TODO: FullLineDiagonal
-// TODO: FullLineCodiagonal
-// TODO: PlayersBoarder
-// TODO: OpponentsBoarder
-// TODO: Borders
-// TODO: PlayersExposed
-// TODO: OpponentsExposed
-// TODO: Exposeds
-// TODO: CPositionScoreDepth
-// TODO: CPositionAllScore
-// TODO: read_vector_OBF
-// TODO: LoadVector
-// TODO: SaveVector
-// TODO: SaveTransform
-// TODO: LoadTransform
 
 int main(int argc, char **argv)
 {
