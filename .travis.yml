@@ -12,12 +12,12 @@ install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90
   - export CXX="g++-5"
-  - autoconf
 
 script: 
   - $CXX --version
   - make
   - make test
+  - ./get_code_cov.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
