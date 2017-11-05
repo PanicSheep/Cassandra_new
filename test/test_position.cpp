@@ -10,9 +10,9 @@
 // ------------------------------------------------------------------------------------------------
 TEST (PositionTest, SignedInt) {
 	ASSERT_EQ (SignedInt(-10), "-10");
-	ASSERT_EQ (SignedInt(-1), "-01");
-	ASSERT_EQ (SignedInt(+0), "+00");
-	ASSERT_EQ (SignedInt(+1), "+01");
+	ASSERT_EQ (SignedInt( -1), "-01");
+	ASSERT_EQ (SignedInt( +0), "+00");
+	ASSERT_EQ (SignedInt( +1), "+01");
 	ASSERT_EQ (SignedInt(+10), "+10");
 }
 
@@ -59,6 +59,24 @@ TEST (PositionTest, FlipHorizontal) {
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			ASSERT_EQ (FlipHorizontal(1ULL << (i * 8 + j)), 1ULL << (i * 8 + (7 - j)));
+}
+
+TEST (PositionTest, board1D) {
+	ASSERT_EQ (board1D(0xFFULL, 0xFF00000000000001ULL), "OOOOOOOO------------------------------------------------XXXXXXX#");
+}
+
+TEST (PositionTest, board2D) {
+	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL, 0x100ULL), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8\n"
+			   "7 - - - - - - - - 7\n"
+			   "6 - - - - - - - - 6\n"
+			   "5 - - - - - - - - 5\n"
+			   "4 - - - - - - - - 4\n"
+			   "3 - - - - - - - - 3\n"
+			   "2 - - - - - - - + 2\n"
+			   "1 X X X X X X X # 1\n"
+			   "  H G F E D C B A  ");
 }
 
 TEST (PositionTest, EmptyCount) {
