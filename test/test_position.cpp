@@ -242,25 +242,6 @@ TEST (CPositionTest, FlipVertical) {
 	ASSERT_EQ (pos1, pos4);
 }
 
-TEST (CPositionTest, FlipToMin) {
-	CPosition pos1(0x000000000000000FULL, 0x0ULL); pos1.FlipToMin();
-	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();
-	CPosition pos3(0xF000000000000000ULL, 0x0ULL); pos3.FlipToMin();
-	CPosition pos4(0x0F00000000000000ULL, 0x0ULL); pos4.FlipToMin();
-	CPosition pos5(0x8080808000000000ULL, 0x0ULL); pos5.FlipToMin();
-	CPosition pos6(0x0101010100000000ULL, 0x0ULL); pos6.FlipToMin();
-	CPosition pos7(0x0000000001010101ULL, 0x0ULL); pos7.FlipToMin();
-	CPosition pos8(0x0000000080808080ULL, 0x0ULL); pos8.FlipToMin();
-	
-	ASSERT_EQ (pos1, pos2);
-	ASSERT_EQ (pos1, pos3);
-	ASSERT_EQ (pos1, pos4);
-	ASSERT_EQ (pos1, pos5);
-	ASSERT_EQ (pos1, pos6);
-	ASSERT_EQ (pos1, pos7);
-	ASSERT_EQ (pos1, pos8);
-}
-
 TEST (CPositionTest, to_string_1D) {
 	const uint64_t P = 0xFFULL;
 	const uint64_t O = 0xFF00000000000001ULL;
@@ -278,6 +259,25 @@ TEST (CPositionTest, to_string_2D_PM) {
 	const uint64_t O = 0xFF00000000000001ULL;
 	const uint64_t PM = PossibleMoves(P, O);
 	ASSERT_EQ (CPosition(P, O).to_string_2D_PM(), board2D(P, O, PM));
+}
+
+TEST (CPositionTest, FlipToMin) {
+	CPosition pos1(0x000000000000000FULL, 0x0ULL); pos1.FlipToMin();
+	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();
+	CPosition pos3(0xF000000000000000ULL, 0x0ULL); pos3.FlipToMin();
+	CPosition pos4(0x0F00000000000000ULL, 0x0ULL); pos4.FlipToMin();
+	CPosition pos5(0x8080808000000000ULL, 0x0ULL); pos5.FlipToMin();
+	CPosition pos6(0x0101010100000000ULL, 0x0ULL); pos6.FlipToMin();
+	CPosition pos7(0x0000000001010101ULL, 0x0ULL); pos7.FlipToMin();
+	CPosition pos8(0x0000000080808080ULL, 0x0ULL); pos8.FlipToMin();
+	
+	ASSERT_EQ (pos1, pos2);
+	ASSERT_EQ (pos1, pos3);
+	ASSERT_EQ (pos1, pos4);
+	ASSERT_EQ (pos1, pos5);
+	ASSERT_EQ (pos1, pos6);
+	ASSERT_EQ (pos1, pos7);
+	ASSERT_EQ (pos1, pos8);
 }
 
 TEST (CPositionTest, ctorCPositionScore) {
@@ -413,6 +413,44 @@ TEST (CPositionScoreTest, ctorCPositionAllScore) {
 	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
 	ASSERT_EQ (pos_cast.score, 3); // Highest score is copied
 }
+
+TEST (CPositionScoreTest, to_string_1D) {
+	const uint64_t P = 0xFFULL;
+	const uint64_t O = 0xFF00000000000001ULL;
+	ASSERT_EQ (CPositionScore(P, O, 2).to_string_1D(), board1D(P, O) + " +02");
+}
+
+TEST (CPositionScoreTest, to_string_2D) {
+	const uint64_t P = 0xFFULL;
+	const uint64_t O = 0xFF00000000000001ULL;
+	ASSERT_EQ (CPositionScore(P, O, 2).to_string_2D(), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8  score: +02\n"
+			   "7 - - - - - - - - 7\n"
+			   "6 - - - - - - - - 6\n"
+			   "5 - - - - - - - - 5\n"
+			   "4 - - - - - - - - 4\n"
+			   "3 - - - - - - - - 3\n"
+			   "2 - - - - - - - - 2\n"
+			   "1 X X X X X X X # 1\n"
+			   "  H G F E D C B A  ");
+}
+
+TEST (CPositionScoreTest, to_string_2D_PM) {
+	const uint64_t P = 0xFFULL;
+	const uint64_t O = 0xFF00000000000001ULL;
+	ASSERT_EQ (CPositionScore(P, O, 2).to_string_2D_PM(), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8  score: +02\n"
+			   "7 - - - - - - - - 7\n"
+			   "6 - - - - - - - - 6\n"
+			   "5 - - - - - - - - 5\n"
+			   "4 - - - - - - - - 4\n"
+			   "3 - - - - - - - - 3\n"
+			   "2 - - - - - - - - 2\n"
+			   "1 X X X X X X X # 1\n"
+			   "  H G F E D C B A  ");
+}
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 
@@ -492,6 +530,46 @@ TEST (CPositionFullScoreTest, ctorCPositionScoreDepth2) {
 	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
 	for (unsigned int i = 0; i < 61; i++)
 		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+}
+
+TEST (CPositionFullScoreTest, to_string_1D) {
+	const uint64_t P = 0x00000000000000F3ULL;
+	const uint64_t O = 0xFFFFFFFFFFFFFF00ULL;
+	ASSERT_EQ (CPositionFullScore(P, O).to_string_1D(), board1D(P, O) + " -99 -99 -99");
+}
+
+TEST (CPositionFullScoreTest, to_string_2D) {
+	const uint64_t P = 0x00000000000000F3ULL;
+	const uint64_t O = 0xFFFFFFFFFFFFFF00ULL;
+	ASSERT_EQ (CPositionFullScore(P, O).to_string_2D(), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8\n"
+			   "7 O O O O O O O O 7\n"
+			   "6 O O O O O O O O 6\n"
+			   "5 O O O O O O O O 5\n"
+			   "4 O O O O O O O O 4\n"
+			   "3 O O O O O O O O 3\n"
+			   "2 O O O O O O O O 2\n"
+			   "1 X X X X - - X X 1\n"
+			   "  H G F E D C B A  \n"
+			   "score: -99 -99 -99");
+}
+
+TEST (CPositionFullScoreTest, to_string_2D_PM) {
+	const uint64_t P = 0x00000000000000F3ULL;
+	const uint64_t O = 0xFFFFFFFFFFFFFF00ULL;
+	ASSERT_EQ (CPositionFullScore(P, O).to_string_2D_PM(), 
+			   "  H G F E D C B A  \n"
+			   "8 O O O O O O O O 8\n"
+			   "7 O O O O O O O O 7\n"
+			   "6 O O O O O O O O 6\n"
+			   "5 O O O O O O O O 5\n"
+			   "4 O O O O O O O O 4\n"
+			   "3 O O O O O O O O 3\n"
+			   "2 O O O O O O O O 2\n"
+			   "1 X X X X - - X X 1\n"
+			   "  H G F E D C B A  \n"
+			   "score: -99 -99 -99");
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
