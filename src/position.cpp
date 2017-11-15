@@ -121,67 +121,87 @@ std::string board2D(const uint64_t P, const uint64_t O, const uint64_t possibleM
 }
 std::string board2D(const uint64_t P, const uint64_t O) { return board2D(P, O, 0); }
 
+inline bool TestBits(const uint64_t bitfield, const uint64_t mask) { return (bitfield & mask) == mask; }
+
 uint64_t StableStonesFullEdges(const uint64_t P, const uint64_t O)
 {
 	uint64_t mask = 0;
-    uint64_t Occ = P | O;
-    if ((Occ & 0x00000000000000FFULL) == 0x00000000000000FFULL) mask |= 0x00000000000000FFULL;
-    if ((Occ & 0x0101010101010101ULL) == 0x0101010101010101ULL) mask |= 0x0101010101010101ULL;
-    if ((Occ & 0xFF00000000000000ULL) == 0xFF00000000000000ULL) mask |= 0xFF00000000000000ULL;
-    if ((Occ & 0x8080808080808080ULL) == 0x8080808080808080ULL) mask |= 0x8080808080808080ULL;
+    const uint64_t Occ = P | O;
+	const uint64_t L0_bot = 0x00000000000000FFULL;
+	const uint64_t L0_top = 0xFF00000000000000ULL;
+	const uint64_t L0_lhs = 0x8080808080808080ULL;
+	const uint64_t L0_rhs = 0x0101010101010101ULL;
+    if (TestBits(Occ, L0_bot)) mask |= L0_bot;
+    if (TestBits(Occ, L0_top)) mask |= L0_top;
+    if (TestBits(Occ, L0_lhs)) mask |= L0_lhs;
+    if (TestBits(Occ, L0_rhs)) mask |= L0_rhs;
     return O & mask;
 }
 uint64_t StableStonesFullEdgesSecondOrder(const uint64_t P, const uint64_t O)
 {
 	uint64_t mask = 0;
 	uint64_t Occ = P | O;
-	if ((Occ & 0x000000000000FFFFULL) == 0x000000000000FFFFULL) mask |= (O << 7) & (O << 8) & (O << 9) & 0x0000000000007E00ULL;
-	if ((Occ & 0x0303030303030303ULL) == 0x0303030303030303ULL) mask |= (O << 9) & (O << 1) & (O >> 7) & 0x0002020202020200ULL;
-	if ((Occ & 0xFFFF000000000000ULL) == 0xFFFF000000000000ULL) mask |= (O >> 7) & (O >> 8) & (O >> 9) & 0x007E000000000000ULL;
-	if ((Occ & 0xC0C0C0C0C0C0C0C0ULL) == 0xC0C0C0C0C0C0C0C0ULL) mask |= (O << 7) & (O >> 1) & (O >> 9) & 0x0040404040404000ULL;
+	if (TestBits(Occ, 0x000000000000FFFFULL)) mask |= (O << 7) & (O << 8) & (O << 9) & 0x0000000000007E00ULL;
+	if (TestBits(Occ, 0x0303030303030303ULL)) mask |= (O << 9) & (O << 1) & (O >> 7) & 0x0002020202020200ULL;
+	if (TestBits(Occ, 0xFFFF000000000000ULL)) mask |= (O >> 7) & (O >> 8) & (O >> 9) & 0x007E000000000000ULL;
+	if (TestBits(Occ, 0xC0C0C0C0C0C0C0C0ULL)) mask |= (O << 7) & (O >> 1) & (O >> 9) & 0x0040404040404000ULL;
     return O & mask;
+}
+
+uint64_t OneQuadrantTriangleTest(uint64_t O, uint64_t T1, uint64_t T2, uint64_t T3, uint64_t T4, uint64_t T5, uint64_t T6, uint64_t T7, uint64_t T8)
+{
+	if (!TestBits(O, T1)) return 0;
+	if (!TestBits(O, T2)) return T1;
+	if (!TestBits(O, T3)) return T2;
+	if (!TestBits(O, T4)) return T3;
+	if (!TestBits(O, T5)) return T4;
+	if (!TestBits(O, T6)) return T5;
+	if (!TestBits(O, T7)) return T6;
+	if (!TestBits(O, T8)) return T7;
+	return T8;
 }
 
 uint64_t StableStonesTriangles(const uint64_t O)
 {
-	// Room for optimization: put this in a decision tree
-    uint64_t ret = 0;
-	if ((O & 0x0000000000000001ULL) == 0x0000000000000001ULL) ret |= 0x0000000000000001ULL;
-	if ((O & 0x0000000000000103ULL) == 0x0000000000000103ULL) ret |= 0x0000000000000103ULL;
-	if ((O & 0x0000000000010307ULL) == 0x0000000000010307ULL) ret |= 0x0000000000010307ULL;
-	if ((O & 0x000000000103070FULL) == 0x000000000103070FULL) ret |= 0x000000000103070FULL;
-	if ((O & 0x0000000103070F1FULL) == 0x0000000103070F1FULL) ret |= 0x0000000103070F1FULL;
-	if ((O & 0x00000103070F1F3FULL) == 0x00000103070F1F3FULL) ret |= 0x00000103070F1F3FULL;
-	if ((O & 0x000103070F1F3F7FULL) == 0x000103070F1F3F7FULL) ret |= 0x000103070F1F3F7FULL;
-	if ((O & 0x0103070F1F3F7FFFULL) == 0x0103070F1F3F7FFFULL) ret |= 0x0103070F1F3F7FFFULL;
+	const uint64_t Q0T1 = 0x0000000000000001ULL;
+	const uint64_t Q0T2 = 0x0000000000000103ULL;
+	const uint64_t Q0T3 = 0x0000000000010307ULL;
+	const uint64_t Q0T4 = 0x000000000103070FULL;
+	const uint64_t Q0T5 = 0x0000000103070F1FULL;
+	const uint64_t Q0T6 = 0x00000103070F1F3FULL;
+	const uint64_t Q0T7 = 0x000103070F1F3F7FULL;
+	const uint64_t Q0T8 = 0x0103070F1F3F7FFFULL;
+	const uint64_t Q1T1 = 0x0000000000000080ULL;
+	const uint64_t Q1T2 = 0x00000000000080C0ULL;
+	const uint64_t Q1T3 = 0x000000000080C0E0ULL;
+	const uint64_t Q1T4 = 0x0000000080C0E0F0ULL;
+	const uint64_t Q1T5 = 0x00000080C0E0F0F8ULL;
+	const uint64_t Q1T6 = 0x000080C0E0F0F8FCULL;
+	const uint64_t Q1T7 = 0x0080C0E0F0F8FCFEULL;
+	const uint64_t Q1T8 = 0x80C0E0F0F8FCFEFFULL;
+	const uint64_t Q2T1 = 0x8000000000000000ULL;
+	const uint64_t Q2T2 = 0xC080000000000000ULL;
+	const uint64_t Q2T3 = 0xE0C0800000000000ULL;
+	const uint64_t Q2T4 = 0xF0E0C08000000000ULL;
+	const uint64_t Q2T5 = 0xF8F0E0C080000000ULL;
+	const uint64_t Q2T6 = 0xFCF8F0E0C0800000ULL;
+	const uint64_t Q2T7 = 0xFEFCF8F0E0C08000ULL;
+	const uint64_t Q2T8 = 0xFFFEFCF8F0E0C080ULL;
+	const uint64_t Q3T1 = 0x0100000000000000ULL;
+	const uint64_t Q3T2 = 0x0301000000000000ULL;
+	const uint64_t Q3T3 = 0x0703010000000000ULL;
+	const uint64_t Q3T4 = 0x0F07030100000000ULL;
+	const uint64_t Q3T5 = 0x1F0F070301000000ULL;
+	const uint64_t Q3T6 = 0x3F1F0F0703010000ULL;
+	const uint64_t Q3T7 = 0x7F3F1F0F07030100ULL;
+	const uint64_t Q3T8 = 0xFF7F3F1F0F070301ULL;
+	
+    const auto Q0 = OneQuadrantTriangleTest(O, Q0T1, Q0T2, Q0T3, Q0T4, Q0T5, Q0T6, Q0T7, Q0T8);
+	const auto Q1 = OneQuadrantTriangleTest(O, Q1T1, Q1T2, Q1T3, Q1T4, Q1T5, Q1T6, Q1T7, Q1T8);
+	const auto Q2 = OneQuadrantTriangleTest(O, Q2T1, Q2T2, Q2T3, Q2T4, Q2T5, Q2T6, Q2T7, Q2T8);
+	const auto Q3 = OneQuadrantTriangleTest(O, Q3T1, Q3T2, Q3T3, Q3T4, Q3T5, Q3T6, Q3T7, Q3T8);
 
-	if ((O & 0x0000000000000080ULL) == 0x0000000000000080ULL) ret |= 0x0000000000000080ULL;
-	if ((O & 0x00000000000080C0ULL) == 0x00000000000080C0ULL) ret |= 0x00000000000080C0ULL;
-	if ((O & 0x000000000080C0E0ULL) == 0x000000000080C0E0ULL) ret |= 0x000000000080C0E0ULL;
-	if ((O & 0x0000000080C0E0F0ULL) == 0x0000000080C0E0F0ULL) ret |= 0x0000000080C0E0F0ULL;
-	if ((O & 0x00000080C0E0F0F8ULL) == 0x00000080C0E0F0F8ULL) ret |= 0x00000080C0E0F0F8ULL;
-	if ((O & 0x000080C0E0F0F8FCULL) == 0x000080C0E0F0F8FCULL) ret |= 0x000080C0E0F0F8FCULL;
-	if ((O & 0x0080C0E0F0F8FCFEULL) == 0x0080C0E0F0F8FCFEULL) ret |= 0x0080C0E0F0F8FCFEULL;
-	if ((O & 0x80C0E0F0F8FCFEFFULL) == 0x80C0E0F0F8FCFEFFULL) ret |= 0x80C0E0F0F8FCFEFFULL;
-
-	if ((O & 0x8000000000000000ULL) == 0x8000000000000000ULL) ret |= 0x8000000000000000ULL;
-	if ((O & 0xC080000000000000ULL) == 0xC080000000000000ULL) ret |= 0xC080000000000000ULL;
-	if ((O & 0xE0C0800000000000ULL) == 0xE0C0800000000000ULL) ret |= 0xE0C0800000000000ULL;
-	if ((O & 0xF0E0C08000000000ULL) == 0xF0E0C08000000000ULL) ret |= 0xF0E0C08000000000ULL;
-	if ((O & 0xF8F0E0C080000000ULL) == 0xF8F0E0C080000000ULL) ret |= 0xF8F0E0C080000000ULL;
-	if ((O & 0xFCF8F0E0C0800000ULL) == 0xFCF8F0E0C0800000ULL) ret |= 0xFCF8F0E0C0800000ULL;
-	if ((O & 0xFEFCF8F0E0C08000ULL) == 0xFEFCF8F0E0C08000ULL) ret |= 0xFEFCF8F0E0C08000ULL;
-	if ((O & 0xFFFEFCF8F0E0C080ULL) == 0xFFFEFCF8F0E0C080ULL) ret |= 0xFFFEFCF8F0E0C080ULL;
-
-	if ((O & 0x0100000000000000ULL) == 0x0100000000000000ULL) ret |= 0x0100000000000000ULL;
-	if ((O & 0x0301000000000000ULL) == 0x0301000000000000ULL) ret |= 0x0301000000000000ULL;
-	if ((O & 0x0703010000000000ULL) == 0x0703010000000000ULL) ret |= 0x0703010000000000ULL;
-	if ((O & 0x0F07030100000000ULL) == 0x0F07030100000000ULL) ret |= 0x0F07030100000000ULL;
-	if ((O & 0x1F0F070301000000ULL) == 0x1F0F070301000000ULL) ret |= 0x1F0F070301000000ULL;
-	if ((O & 0x3F1F0F0703010000ULL) == 0x3F1F0F0703010000ULL) ret |= 0x3F1F0F0703010000ULL;
-	if ((O & 0x7F3F1F0F07030100ULL) == 0x7F3F1F0F07030100ULL) ret |= 0x7F3F1F0F07030100ULL;
-	if ((O & 0xFF7F3F1F0F070301ULL) == 0xFF7F3F1F0F070301ULL) ret |= 0xFF7F3F1F0F070301ULL;
-	return ret;
+	return Q0 | Q1 | Q2 | Q3;
 }
 
 namespace Stability
@@ -223,7 +243,7 @@ namespace Stability
 						edge_stables[P][O] = stables;
 					}
 				}
-		assert(edge_stables[0x80][0x01] == 0x81);
+		assert(edge_stables[0x80][0x01] == 0x81); // TODO: Move to test.
 		assert(edge_stables[0xC0][0x00] == 0xC0);
 		assert(edge_stables[0x03][0x00] == 0x03);
 		assert(edge_stables[0x00][0xC0] == 0xC0);
@@ -238,12 +258,12 @@ namespace Stability
 	{
 		// 6 x AND, 6 x CMP, 6 x OR
 		uint64_t full = 0;
-		if ((discs & 0x00FF000000000000ULL) == 0x00FF000000000000ULL) full |= 0x00FF000000000000ULL;
-		if ((discs & 0x0000FF0000000000ULL) == 0x0000FF0000000000ULL) full |= 0x0000FF0000000000ULL;
-		if ((discs & 0x000000FF00000000ULL) == 0x000000FF00000000ULL) full |= 0x000000FF00000000ULL;
-		if ((discs & 0x00000000FF000000ULL) == 0x00000000FF000000ULL) full |= 0x00000000FF000000ULL;
-		if ((discs & 0x0000000000FF0000ULL) == 0x0000000000FF0000ULL) full |= 0x0000000000FF0000ULL;
-		if ((discs & 0x000000000000FF00ULL) == 0x000000000000FF00ULL) full |= 0x000000000000FF00ULL;
+		if (TestBits(discs, 0x00FF000000000000ULL)) full |= 0x00FF000000000000ULL;
+		if (TestBits(discs, 0x0000FF0000000000ULL)) full |= 0x0000FF0000000000ULL;
+		if (TestBits(discs, 0x000000FF00000000ULL)) full |= 0x000000FF00000000ULL;
+		if (TestBits(discs, 0x00000000FF000000ULL)) full |= 0x00000000FF000000ULL;
+		if (TestBits(discs, 0x0000000000FF0000ULL)) full |= 0x0000000000FF0000ULL;
+		if (TestBits(discs, 0x000000000000FF00ULL)) full |= 0x000000000000FF00ULL;
 		return full;
 	}
 	
@@ -251,12 +271,12 @@ namespace Stability
 	{
 		// 6 x AND, 6 x CMP, 6 x OR
 		uint64_t full = 0;
-		if ((discs & 0x4040404040404040ULL) == 0x4040404040404040ULL) full |= 0x4040404040404040ULL;
-		if ((discs & 0x2020202020202020ULL) == 0x2020202020202020ULL) full |= 0x2020202020202020ULL;
-		if ((discs & 0x1010101010101010ULL) == 0x1010101010101010ULL) full |= 0x1010101010101010ULL;
-		if ((discs & 0x0808080808080808ULL) == 0x0808080808080808ULL) full |= 0x0808080808080808ULL;
-		if ((discs & 0x0404040404040404ULL) == 0x0404040404040404ULL) full |= 0x0404040404040404ULL;
-		if ((discs & 0x0202020202020202ULL) == 0x0202020202020202ULL) full |= 0x0202020202020202ULL;
+		if (TestBits(discs, 0x4040404040404040ULL)) full |= 0x4040404040404040ULL;
+		if (TestBits(discs, 0x2020202020202020ULL)) full |= 0x2020202020202020ULL;
+		if (TestBits(discs, 0x1010101010101010ULL)) full |= 0x1010101010101010ULL;
+		if (TestBits(discs, 0x0808080808080808ULL)) full |= 0x0808080808080808ULL;
+		if (TestBits(discs, 0x0404040404040404ULL)) full |= 0x0404040404040404ULL;
+		if (TestBits(discs, 0x0202020202020202ULL)) full |= 0x0202020202020202ULL;
 		return full;
 	}
 	
@@ -264,17 +284,17 @@ namespace Stability
 	{
 		// 11 x AND, 11 x CMP, 11 x OR
 		uint64_t full = 0;
-		if ((discs & 0x0402010000000000ULL) == 0x0402010000000000ULL) full |= 0x0402010000000000ULL;
-		if ((discs & 0x0804020100000000ULL) == 0x0804020100000000ULL) full |= 0x0804020100000000ULL;
-		if ((discs & 0x1008040201000000ULL) == 0x1008040201000000ULL) full |= 0x1008040201000000ULL;
-		if ((discs & 0x2010080402010000ULL) == 0x2010080402010000ULL) full |= 0x2010080402010000ULL;
-		if ((discs & 0x4020100804020100ULL) == 0x4020100804020100ULL) full |= 0x4020100804020100ULL;
-		if ((discs & 0x8040201008040201ULL) == 0x8040201008040201ULL) full |= 0x8040201008040201ULL;
-		if ((discs & 0x0080402010080402ULL) == 0x0080402010080402ULL) full |= 0x0080402010080402ULL;
-		if ((discs & 0x0000804020100804ULL) == 0x0000804020100804ULL) full |= 0x0000804020100804ULL;
-		if ((discs & 0x0000008040201008ULL) == 0x0000008040201008ULL) full |= 0x0000008040201008ULL;
-		if ((discs & 0x0000000080402010ULL) == 0x0000000080402010ULL) full |= 0x0000000080402010ULL;
-		if ((discs & 0x0000000000804020ULL) == 0x0000000000804020ULL) full |= 0x0000000000804020ULL;
+		if (TestBits(discs, 0x0402010000000000ULL)) full |= 0x0402010000000000ULL;
+		if (TestBits(discs, 0x0804020100000000ULL)) full |= 0x0804020100000000ULL;
+		if (TestBits(discs, 0x1008040201000000ULL)) full |= 0x1008040201000000ULL;
+		if (TestBits(discs, 0x2010080402010000ULL)) full |= 0x2010080402010000ULL;
+		if (TestBits(discs, 0x4020100804020100ULL)) full |= 0x4020100804020100ULL;
+		if (TestBits(discs, 0x8040201008040201ULL)) full |= 0x8040201008040201ULL;
+		if (TestBits(discs, 0x0080402010080402ULL)) full |= 0x0080402010080402ULL;
+		if (TestBits(discs, 0x0000804020100804ULL)) full |= 0x0000804020100804ULL;
+		if (TestBits(discs, 0x0000008040201008ULL)) full |= 0x0000008040201008ULL;
+		if (TestBits(discs, 0x0000000080402010ULL)) full |= 0x0000000080402010ULL;
+		if (TestBits(discs, 0x0000000000804020ULL)) full |= 0x0000000000804020ULL;
 		return full;
 	}
 	
@@ -282,35 +302,39 @@ namespace Stability
 	{
 		// 11 x AND, 11 x CMP, 11 x OR
 		uint64_t full = 0;
-		if ((discs & 0x2040800000000000ULL) == 0x2040800000000000ULL) full |= 0x2040800000000000ULL;
-		if ((discs & 0x1020408000000000ULL) == 0x1020408000000000ULL) full |= 0x1020408000000000ULL;
-		if ((discs & 0x0810204080000000ULL) == 0x0810204080000000ULL) full |= 0x0810204080000000ULL;
-		if ((discs & 0x0408102040800000ULL) == 0x0408102040800000ULL) full |= 0x0408102040800000ULL;
-		if ((discs & 0x0204081020408000ULL) == 0x0204081020408000ULL) full |= 0x0204081020408000ULL;
-		if ((discs & 0x0102040810204080ULL) == 0x0102040810204080ULL) full |= 0x0102040810204080ULL;
-		if ((discs & 0x0001020408102040ULL) == 0x0001020408102040ULL) full |= 0x0001020408102040ULL;
-		if ((discs & 0x0000010204081020ULL) == 0x0000010204081020ULL) full |= 0x0000010204081020ULL;
-		if ((discs & 0x0000000102040810ULL) == 0x0000000102040810ULL) full |= 0x0000000102040810ULL;
-		if ((discs & 0x0000000001020408ULL) == 0x0000000001020408ULL) full |= 0x0000000001020408ULL;
-		if ((discs & 0x0000000000010204ULL) == 0x0000000000010204ULL) full |= 0x0000000000010204ULL;
+		if (TestBits(discs, 0x2040800000000000ULL)) full |= 0x2040800000000000ULL;
+		if (TestBits(discs, 0x1020408000000000ULL)) full |= 0x1020408000000000ULL;
+		if (TestBits(discs, 0x0810204080000000ULL)) full |= 0x0810204080000000ULL;
+		if (TestBits(discs, 0x0408102040800000ULL)) full |= 0x0408102040800000ULL;
+		if (TestBits(discs, 0x0204081020408000ULL)) full |= 0x0204081020408000ULL;
+		if (TestBits(discs, 0x0102040810204080ULL)) full |= 0x0102040810204080ULL;
+		if (TestBits(discs, 0x0001020408102040ULL)) full |= 0x0001020408102040ULL;
+		if (TestBits(discs, 0x0000010204081020ULL)) full |= 0x0000010204081020ULL;
+		if (TestBits(discs, 0x0000000102040810ULL)) full |= 0x0000000102040810ULL;
+		if (TestBits(discs, 0x0000000001020408ULL)) full |= 0x0000000001020408ULL;
+		if (TestBits(discs, 0x0000000000010204ULL)) full |= 0x0000000000010204ULL;
 		return full;
 	}
 }
 
 uint64_t StableEdges(const uint64_t P, const uint64_t O)
 {
-	return Stability::edge_stables[P & 0xFF][O & 0xFF]
-		| (static_cast<uint64_t>(Stability::edge_stables[P >> 56][O >> 56]) << 56)
-		| PDep(Stability::edge_stables[PExt(P, 0x8080808080808080ULL)][PExt(O, 0x8080808080808080ULL)], 0x8080808080808080ULL)
-		| PDep(Stability::edge_stables[PExt(P, 0x0101010101010101ULL)][PExt(O, 0x0101010101010101ULL)], 0x0101010101010101ULL);
+	// 2 x AND, 2 X SHIFT, 3 x OR, 4 x PEXT, 2 X PDEP
+	const uint64_t L0_Left = 0x8080808080808080ULL;
+	const uint64_t L0_Right = 0x0101010101010101ULL;
+	const auto StableL0_Bottom = Stability::edge_stables[P & 0xFF][O & 0xFF];
+	const auto StableL0_Top = static_cast<uint64_t>(Stability::edge_stables[P >> 56][O >> 56]) << 56;
+	const auto StableL0_Left  = PDep(Stability::edge_stables[PExt(P, L0_Left )][PExt(O, L0_Left )], L0_Left );
+	const auto StableL0_Right = PDep(Stability::edge_stables[PExt(P, L0_Right)][PExt(O, L0_Right)], L0_Right);
+	return StableL0_Bottom | StableL0_Top | StableL0_Left | StableL0_Right;
 }
 
 uint64_t StableStonesPlayer(const uint64_t P, const uint64_t O)
 {
 	const uint64_t discs = P | O;
 	const uint64_t full_h = Stability::FullLineHorizontal(discs);
-	const uint64_t full_v = Stability::FullLineVertival(discs);
-	const uint64_t full_d = Stability::FullLineDiagonal(discs);
+	const uint64_t full_v = Stability::FullLineVertival  (discs);
+	const uint64_t full_d = Stability::FullLineDiagonal  (discs);
 	const uint64_t full_c = Stability::FullLineCodiagonal(discs);
 	uint64_t new_stables = StableEdges(P, O) & P;
 	new_stables |= full_h & full_v & full_d & full_c & P & 0x007E7E7E7E7E7E00ULL;
