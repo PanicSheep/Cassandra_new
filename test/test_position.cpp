@@ -100,6 +100,19 @@ TEST (PositionTest, StableStonesFullEdges) {
 	ASSERT_EQ (StableStonesFullEdges(0xFFFFFFFFFFFFFFFFULL, 0x0000000000000000ULL), 0x0000000000000000ULL);
 }
 
+TEST (PositionTest, Stability_Initialize) {
+	
+	ASSERT_EQ (StableEdges(0xC0, 0x00), 0xC0);
+	ASSERT_EQ (StableEdges(0x80, 0x01), 0x81);
+	ASSERT_EQ (StableEdges(0x03, 0x00), 0x03);
+	ASSERT_EQ (StableEdges(0x00, 0xC0), 0xC0);
+	ASSERT_EQ (StableEdges(0x00, 0x03), 0x03);
+	ASSERT_EQ (StableEdges(0xC0, 0x03), 0xC3);
+	ASSERT_EQ (StableEdges(0xC7, 0x28), 0xC7);
+	ASSERT_EQ (StableEdges(0xA8, 0x50), 0xC0);
+	ASSERT_EQ (StableEdges(0x16, 0x28), 0x08);
+}
+
 TEST (PositionTest, EmptyCount) {
 	ASSERT_EQ (EmptyCount(0x0000000000000000ULL, 0x0000000000000000ULL), 64u);
 	ASSERT_EQ (EmptyCount(0x0000000000000001ULL, 0x0000000000000000ULL), 63u);

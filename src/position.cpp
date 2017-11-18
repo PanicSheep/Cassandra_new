@@ -210,74 +210,56 @@ namespace Stability
 
 	void Initialize()
 	{
-		unsigned long move;
-		unsigned int stables;
-		uint64_t flipped;
-
 		memset(edge_stables, 0, 256 * 256 * sizeof(uint8_t));
 
 		for (unsigned int empty = 0; empty < 9; empty++)
 			for (unsigned int P = 0; P < 256; P++)
 				for (unsigned int O = 0; O < 256; O++)
 				{
-					if (P & O) continue;
+					if (P & O)
+						continue;
+					
 					unsigned int empties = (P | O) ^ 0xFF;
 					if (PopCount(empties) == empty)
 					{
-						stables = 0xFF;
+						unsigned int stables = 0xFF;
 						while (empties)
 						{
-							move = BitScanLSB(empties); 
+							const auto move = BitScanLSB(empties);
+							const auto moveBit = MakeBit(move);
 							empties &= empties - 1; // RemoveLSB
 
-							// Player plays
-							flipped = flip(P, O, move) & 0xFFULL;
-							stables &= edge_stables[P ^ flipped ^ MakeBit(move)][O ^ flipped] & ~flipped & ~MakeBit(move);
+							const uint64_t flipped_P = flip(P, O, move) & 0xFFULL;
+							const uint64_t flipped_O = flip(O, P, move) & 0xFFULL;
+							stables &= edge_stables[P ^ flipped_P ^ moveBit][O ^ flipped_P          ] & ~flipped_P & ~moveBit;
+							stables &= edge_stables[P ^ flipped_O          ][O ^ flipped_O ^ moveBit] & ~flipped_O & ~moveBit;
 
-							// Opponent plays
-							flipped = flip(O, P, move) & 0xFFULL;
-							stables &= edge_stables[P ^ flipped][O ^ flipped ^ MakeBit(move)] & ~flipped & ~MakeBit(move);
-
-							if (stables == 0) continue;
+							if (stables == 0)
+								continue;
 						}
 						edge_stables[P][O] = stables;
 					}
 				}
-		assert(edge_stables[0x80][0x01] == 0x81); // TODO: Move to test.
-		assert(edge_stables[0xC0][0x00] == 0xC0);
-		assert(edge_stables[0x03][0x00] == 0x03);
-		assert(edge_stables[0x00][0xC0] == 0xC0);
-		assert(edge_stables[0x00][0x03] == 0x03);
-		assert(edge_stables[0xC0][0x03] == 0xC3);
-		assert(edge_stables[0xC7][0x28] == 0xC7);
-		assert(edge_stables[0xA8][0x50] == 0xC0);
-		assert(edge_stables[0x16][0x28] == 0x08);
 	}
 	
-	uint64_t FullLineHorizontal(const uint64_t discs)
+	uint64_t FullLineHorizontal(uint64_t discs)
 	{
-		// 6 x AND, 6 x CMP, 6 x OR
-		uint64_t full = 0;
-		if (TestBits(discs, 0x00FF000000000000ULL)) full |= 0x00FF000000000000ULL;
-		if (TestBits(discs, 0x0000FF0000000000ULL)) full |= 0x0000FF0000000000ULL;
-		if (TestBits(discs, 0x000000FF00000000ULL)) full |= 0x000000FF00000000ULL;
-		if (TestBits(discs, 0x00000000FF000000ULL)) full |= 0x00000000FF000000ULL;
-		if (TestBits(discs, 0x0000000000FF0000ULL)) full |= 0x0000000000FF0000ULL;
-		if (TestBits(discs, 0x000000000000FF00ULL)) full |= 0x000000000000FF00ULL;
-		return full;
+		// 4 x AND, 3 x SHIFT, 1 x MUL
+		discs &= discs >> 4;
+		discs &= discs >> 2;
+		discs &= discs >> 1;
+		discs &= 0x0001010101010100ULL;
+		return discs * 0xFFULL;
 	}
 	
-	uint64_t FullLineVertival(const uint64_t discs)
+	uint64_t FullLineVertival(uint64_t discs)
 	{
-		// 6 x AND, 6 x CMP, 6 x OR
-		uint64_t full = 0;
-		if (TestBits(discs, 0x4040404040404040ULL)) full |= 0x4040404040404040ULL;
-		if (TestBits(discs, 0x2020202020202020ULL)) full |= 0x2020202020202020ULL;
-		if (TestBits(discs, 0x1010101010101010ULL)) full |= 0x1010101010101010ULL;
-		if (TestBits(discs, 0x0808080808080808ULL)) full |= 0x0808080808080808ULL;
-		if (TestBits(discs, 0x0404040404040404ULL)) full |= 0x0404040404040404ULL;
-		if (TestBits(discs, 0x0202020202020202ULL)) full |= 0x0202020202020202ULL;
-		return full;
+		// 4 x AND, 3 x SHIFT, 1 x MUL
+		discs &= discs >> 32;
+		discs &= discs >> 16;
+		discs &= discs >>  8;
+		discs &= 0x7EULL;
+		return discs * 0x0101010101010101ULL;
 	}
 	
 	uint64_t FullLineDiagonal(const uint64_t discs)
