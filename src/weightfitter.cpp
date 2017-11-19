@@ -34,7 +34,7 @@ void print_help()
 
 class CommandlineArguments
 {
-	static const char NextTokenIndicator = '-';
+	static const char TokenPrefix = '-';
 	std::vector<std::string> args;
 public:
 	CommandlineArguments(int argc, char* argv[]) : args(argv, argv + argc) {}
@@ -93,7 +93,7 @@ std::vector<std::string> CommandlineArguments::ExtractStrings(const std::string&
 	if (it != args.end())
 	{
 		it = args.erase(it); // Removes token.
-		while ((it != args.end()) && (it->at(0) != NextTokenIndicator))
+		while ((it != args.end()) && (it->at(0) != TokenPrefix))
 		{
 			ret.emplace_back(*it);
 			it = args.erase(it);
@@ -110,7 +110,7 @@ std::vector<CPath> CommandlineArguments::ExtractPaths(const std::string& token)
 	if (it != args.end())
 	{
 		it = args.erase(it); // Removes token.
-		while ((it != args.end()) && (it->at(0) != NextTokenIndicator))
+		while ((it != args.end()) && (it->at(0) != TokenPrefix))
 		{
 			ret.emplace_back(*it);
 			it = args.erase(it);
@@ -139,7 +139,6 @@ std::string CommandlineArguments::TryExtractString(const std::string& token, con
 		return def;
 	}
 }
-
 
 CPath CommandlineArguments::ExtractPath(const std::string& token)
 {
