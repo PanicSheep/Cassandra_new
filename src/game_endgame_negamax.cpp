@@ -60,7 +60,7 @@ namespace Endgame_NegaMax
 			const auto Move = BitScanLSB(BitBoardPossible);
 			RemoveLSB(BitBoardPossible);
 			const uint64_t flipped = flip(P, O, Move);
-			score = MAX(score, -Eval(O ^ flipped, P ^ (1ULL << Move) ^ flipped, NodeCounter));
+			score = std::max(score, -Eval(O ^ flipped, P ^ (1ULL << Move) ^ flipped, NodeCounter));
 		}
 
 		return score;
@@ -157,11 +157,11 @@ namespace Endgame_NegaMax
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
-			score = MAX(score, -Eval_1(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
+			score = std::max(score, -Eval_1(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
 
 		//Play on x2
 		if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
-			score = MAX(score, -Eval_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
+			score = std::max(score, -Eval_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
 
 		if (score != -128) {
 			NodeCounter++;
@@ -171,12 +171,12 @@ namespace Endgame_NegaMax
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
-			score = MIN(score, Eval_1(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
+			score = std::min(score, Eval_1(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2));
 			
 
 		//Play on x2
 		if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
-			score = MIN(score, Eval_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
+			score = std::min(score, Eval_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1));
 
 		if (score != 128) {
 			NodeCounter += 2; // One for this, one for passing.
@@ -195,15 +195,15 @@ namespace Endgame_NegaMax
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
-			score = MAX(score, -Eval_2(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
+			score = std::max(score, -Eval_2(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
 
 		//Play on x2
 		if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
-			score = MAX(score, -Eval_2(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
+			score = std::max(score, -Eval_2(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
 
 		//Play on x3
 		if ((O & neighbour[x3]) && (flipped = flip(P, O, x3)))
-			score = MAX(score, -Eval_2(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
+			score = std::max(score, -Eval_2(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
 
 		if (score != -128) {
 			NodeCounter++;
@@ -213,15 +213,15 @@ namespace Endgame_NegaMax
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
-			score = MIN(score, Eval_2(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
+			score = std::min(score, Eval_2(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3));
 
 		//Play on x2
 		if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
-			score = MIN(score, Eval_2(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
+			score = std::min(score, Eval_2(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3));
 
 		//Play on x3
 		if ((P & neighbour[x3]) && (flipped = flip(O, P, x3)))
-			score = MIN(score, Eval_2(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
+			score = std::min(score, Eval_2(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2));
 
 		if (score != 128) {
 			NodeCounter += 2; // One for this, one for passing.
@@ -240,19 +240,19 @@ namespace Endgame_NegaMax
 
 		//Play on x1
 		if ((O & neighbour[x1]) && (flipped = flip(P, O, x1)))
-			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
+			score = std::max(score, -Eval_3(O ^ flipped, P ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
 
 		//Play on x2
 		if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
-			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
+			score = std::max(score, -Eval_3(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
 
 		//Play on x3
 		if ((O & neighbour[x3]) && (flipped = flip(P, O, x3)))
-			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
+			score = std::max(score, -Eval_3(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
 
 		//Play on x4
 		if ((O & neighbour[x4]) && (flipped = flip(P, O, x4)))
-			score = MAX(score, -Eval_3(O ^ flipped, P ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
+			score = std::max(score, -Eval_3(O ^ flipped, P ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
 
 		if (score != -128) {
 			NodeCounter++;
@@ -262,19 +262,19 @@ namespace Endgame_NegaMax
 
 		//Play on x1
 		if ((P & neighbour[x1]) && (flipped = flip(O, P, x1)))
-			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
+			score = std::min(score, Eval_3(P ^ flipped, O ^ (1ULL << x1) ^ flipped, NodeCounter, x2, x3, x4));
 
 		//Play on x2
 		if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
-			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
+			score = std::min(score, Eval_3(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, x1, x3, x4));
 
 		//Play on x3
 		if ((P & neighbour[x3]) && (flipped = flip(O, P, x3)))
-			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
+			score = std::min(score, Eval_3(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, x1, x2, x4));
 
 		//Play on x4
 		if ((P & neighbour[x4]) && (flipped = flip(O, P, x4)))
-			score = MIN(score, Eval_3(P ^ flipped, O ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
+			score = std::min(score, Eval_3(P ^ flipped, O ^ (1ULL << x4) ^ flipped, NodeCounter, x1, x2, x3));
 
 		if (score != 128) {
 			NodeCounter += 2; // One for this, one for passing.

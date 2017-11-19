@@ -18,9 +18,6 @@
 #endif
 
 // TODO: Remove!
-template <typename T> inline T ABS(const T & a) { return a > 0 ? a : -a; }
-template <typename A, typename B> inline A MIN(const A & a, const B & b) { return a < b ? a : b; }
-template <typename A, typename B> inline B MAX(const A & a, const B & b) { return a > b ? a : b; }
 template <typename S, typename T, typename U> inline S CLAMP(const S & value, const T & min, const U & max) { return value < min ? min : (value > max ? max : value); }
 
 inline int RoundInt(const double d) { return static_cast<int>(std::round(d)); }

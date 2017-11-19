@@ -43,7 +43,7 @@ CMoveList::CMoveList(uint64_t P, uint64_t O, uint64_t& NodeCounter, uint64_t Bit
 	else
         sort_depth = -1;
 
-	int sort_alpha = MAX(-64, alpha - 8);
+	int sort_alpha = std::max(-64, alpha - 8);
 
 	// Fill MoveList
 	while (BitBoardPossible)

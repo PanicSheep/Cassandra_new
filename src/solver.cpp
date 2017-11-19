@@ -111,11 +111,11 @@ int main(int argc, char* argv[])
 			if (!(bSkipSolved && vec[j].IsSolved()))
 				break;
 		#pragma omp parallel for schedule(static,1) reduction(+:superNC)
-		for (int64_t i = j; i < static_cast<int64_t>(MIN(vec.size(), j + n)); i++)
+		for (int64_t i = j; i < static_cast<int64_t>(std::min(vec.size(), j + n)); i++)
 		{
 			uint64_t NC = 0;
 			if (!(bSkipSolved && vec[i].IsSolved()))
-				vec[i].score = Eval(vec[i].P, vec[i].O, NC, selectivity, MIN(vec[i].EmptyCount(), depth));
+				vec[i].score = Eval(vec[i].P, vec[i].O, NC, selectivity, std::min(vec[i].EmptyCount(), static_cast<uint64_t>(depth)));
 			superNC += NC;
 		}
 		std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 		{
 			uint64_t NC = 0;
 			std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-			auto score = Eval(vec[i].P, vec[i].O, NC, selectivity, MIN(vec[i].EmptyCount(), depth));
+			auto score = Eval(vec[i].P, vec[i].O, NC, selectivity, std::min(vec[i].EmptyCount(), static_cast<uint64_t>(depth)));
 			std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
 			if (score == vec[i].MaxScore())
 				std::cout << SignedInt(score) << " " << ThousandsSeparator(NC) << "\t\t(" << ThousandsSeparator(NC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;

@@ -408,7 +408,7 @@ namespace Endgame_PVS
 
 		//Play on x2
 		if ((O & neighbour[x2]) && (flipped = flip(P, O, x2)))
-			return MAX(bestscore, -ZWS_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, -alpha - 1, x1));
+			return std::max(bestscore, -ZWS_1(O ^ flipped, P ^ (1ULL << x2) ^ flipped, NodeCounter, -alpha - 1, x1));
 
 		if (bestscore != -65) return bestscore;
 		bestscore = 65;
@@ -423,7 +423,7 @@ namespace Endgame_PVS
 
 		//Play on x2
 		if ((P & neighbour[x2]) && (flipped = flip(O, P, x2)))
-			return MIN(bestscore, ZWS_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, alpha, x1));
+			return std::min(bestscore, ZWS_1(P ^ flipped, O ^ (1ULL << x2) ^ flipped, NodeCounter, alpha, x1));
 
 		if (bestscore != 65) return bestscore;
 		
@@ -467,7 +467,7 @@ namespace Endgame_PVS
 
 		//Play on x3
 		if ((O & neighbour[x3]) && (flipped = flip(P, O, x3)))
-			return MAX(bestscore, -ZWS_2(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, -alpha - 1, x1, x2));
+			return std::max(bestscore, -ZWS_2(O ^ flipped, P ^ (1ULL << x3) ^ flipped, NodeCounter, -alpha - 1, x1, x2));
 
 		if (bestscore != -65) return bestscore;
 		bestscore = 65;
@@ -490,7 +490,7 @@ namespace Endgame_PVS
 
 		//Play on x3
 		if ((P & neighbour[x3]) && (flipped = flip(O, P, x3)))
-			return MIN(bestscore, ZWS_2(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, alpha, x1, x2));
+			return std::min(bestscore, ZWS_2(P ^ flipped, O ^ (1ULL << x3) ^ flipped, NodeCounter, alpha, x1, x2));
 
 		if (bestscore != 65) return bestscore;
 		
@@ -560,7 +560,7 @@ namespace Endgame_PVS
 
 		//Play on x4
 		if ((O & neighbour[x4]) && (flipped = flip(P, O, x4)))
-			return MAX(bestscore, -ZWS_3(O ^ flipped, P ^ (1ULL << x4) ^ flipped, NodeCounter, -alpha - 1, x1, x2, x3));
+			return std::max(bestscore, -ZWS_3(O ^ flipped, P ^ (1ULL << x4) ^ flipped, NodeCounter, -alpha - 1, x1, x2, x3));
 
 		if (bestscore != -65) return bestscore;
 		bestscore = 65;
@@ -591,7 +591,7 @@ namespace Endgame_PVS
 
 		//Play on x4
 		if ((P & neighbour[x4]) && (flipped = flip(O, P, x4)))
-			return MIN(bestscore, ZWS_3(P ^ flipped, O ^ (1ULL << x4) ^ flipped, NodeCounter, alpha, x1, x2, x3));
+			return std::min(bestscore, ZWS_3(P ^ flipped, O ^ (1ULL << x4) ^ flipped, NodeCounter, alpha, x1, x2, x3));
 
 		if (bestscore != 65) return bestscore;
 		
