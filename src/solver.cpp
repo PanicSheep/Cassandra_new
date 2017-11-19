@@ -33,16 +33,16 @@ void PrintHelp()
 
 int main(int argc, char* argv[])
 {	
-	std::string filename;									// Name of file to process
-	std::size_t n = 0xFFFFFFFFFFFFFFFFULL;					// Number of positions to process
-	std::size_t t = std::thread::hardware_concurrency();	// Number of threads to use
+	std::string filename;										// Name of file to process
+	std::size_t n = std::numeric_limits<std::size_t>::max();	// Number of positions to process
+	std::size_t t = std::thread::hardware_concurrency();		// Number of threads to use
 	int selectivity = NO_SELECTIVITY;
 	unsigned int depth = 99;
-	std::string RAM = "1GB";								// Amount of RAM to use for hashtable
-	bool bTest = false;										// This run is a test
-	bool bSkipSolved = true;								// Skip positions already solved
-	bool bSave = true;										// Save results
-	int verbosity = 0;										// Verbosity of output
+	std::string RAM = "1GB";									// Amount of RAM to use for hashtable
+	bool bTest = false;											// This run is a test
+	bool bSkipSolved = true;									// Skip positions already solved
+	bool bSave = true;											// Save results
+	int verbosity = 0;											// Verbosity of output
 	
 	// Parse input
 	//------------------------------------
