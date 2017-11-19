@@ -28,8 +28,8 @@ public:
 	inline std::vector<CMove>::const_iterator   cend() const { return m_Moves.cend(); }
 	inline std::size_t size() const { return m_Moves.size(); }
 
-	inline unsigned long BestMove() { return size() ? m_Moves[0].move : FIELD_PASS; }
-	inline unsigned long NextBestMove() { return size() > 1 ? m_Moves[1].move : FIELD_PASS; }
+	inline unsigned long BestMove() { return size() ? m_Moves[0].move : Field::pass; }
+	inline unsigned long NextBestMove() { return size() > 1 ? m_Moves[1].move : Field::pass; }
 
 	inline void sort() { std::sort(m_Moves.begin(), m_Moves.end(), [](const CMove& Move1, const CMove& Move2){ return Move1.Value > Move2.Value; }); }
 
