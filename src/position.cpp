@@ -402,7 +402,7 @@ bool CPositionFullScore::Test() const
 	if ((P & O) != 0) return false;
 
 	const uint64_t emptyCount = EmptyCount();
-	for (uint64_t i = 0; i <= std::min(emptyCount, 60Ui64); i++)
+	for (uint64_t i = 0; i <= std::min(emptyCount, 60ULL); i++)
 		if (!(((score[i] >= -64) && (score[i] <= 64)) || (score[i] == DEFAULT_SCORE)))
 			return false;
 	for (uint64_t i = emptyCount + 1; i < 61; i++)
