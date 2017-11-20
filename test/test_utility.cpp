@@ -1,23 +1,6 @@
 #include "utility.h"
 #include "gtest/gtest.h"
 
-TEST (UtilityTest, ABS) {
-	ASSERT_EQ (ABS(-1), 1);
-	ASSERT_EQ (ABS(-2), 2);
-	ASSERT_EQ (ABS(-0), 0);
-	ASSERT_EQ (ABS(+0), 0);
-	ASSERT_EQ (ABS(+1), 1);
-	ASSERT_EQ (ABS(+2), 2);
-}
-
-TEST (UtilityTest, MIN) {
-	ASSERT_EQ (MIN(0, 1), 0);
-}
-
-TEST (UtilityTest, MAX) {
-	ASSERT_EQ (MAX(0, 1), 1);
-}
-
 TEST (UtilityTest, CLAMP) {
 	ASSERT_EQ (CLAMP(-2, -1, +1), -1);
 	ASSERT_EQ (CLAMP(-1, -1, +1), -1);
