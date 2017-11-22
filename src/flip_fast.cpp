@@ -7,7 +7,7 @@
 	#define USE_F3
 	#define USE_ABGH6
 	#define USE_CLZ
-	//#define USE_BEXTR
+	#define USE_BEXTR
 #endif
 
 namespace Flip_Fast
@@ -259,1704 +259,1525 @@ namespace Flip_Fast
 	};
 
 
-	uint64_t flip_A1(const uint64_t P, const uint64_t O)
+	uint64_t A1(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d9;
+		const uint64_t outflank_v = GetLSB(~O & 0x0101010101010100ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010100ULL;
 
-		outflank_v = GetLSB(~O & 0x0101010101010100ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0101010101010100ULL;
+		const uint64_t outflank_h = ((O & 0x000000000000007eULL) + 0x0000000000000002ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x000000000000007eULL;
 
-		outflank_h = ((O & 0x000000000000007eULL) + 0x0000000000000002ULL) & P;
-		flipped |= (outflank_h - (outflank_h != 0)) & 0x000000000000007eULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x8040201008040200ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008040200ULL;
 
-		outflank_d9 = GetLSB(~O & 0x8040201008040200ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x8040201008040200ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_B1(const uint64_t P, const uint64_t O)
+	uint64_t B1(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d9;
+		const uint64_t outflank_v = GetLSB(~O & 0x0202020202020200ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020200ULL;
 
-		outflank_v = GetLSB(~O & 0x0202020202020200ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0202020202020200ULL;
+		const uint64_t outflank_h = ((O & 0x000000000000007cULL) + 0x0000000000000004ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x000000000000007cULL;
 
-		outflank_h = ((O & 0x000000000000007cULL) + 0x0000000000000004ULL) & P;
-		flipped |= (outflank_h - (outflank_h != 0)) & 0x000000000000007cULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x0080402010080400ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0080402010080400ULL;
 
-		outflank_d9 = GetLSB(~O & 0x0080402010080400ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0080402010080400ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_C1(const uint64_t P, const uint64_t O)
+	uint64_t C1(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d9;
-
-		outflank_v = GetLSB(~O & 0x0404040404040400ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0404040404040400ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x0404040404040400ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040400ULL;
 
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_2[BExtr(O, 1, 6)] & P;
+		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 1, 6)] & P;
 	#else
-		outflank_h = OUTFLANK_2[(O >> 1) & 0x3F] & P;
+		const uint64_t outflank_h = OUTFLANK_2[(O >> 1) & 0x3F] & P;
 	#endif
-		flipped |= static_cast<uint8_t>(FLIPPED_2_H[outflank_h]);
+		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_2_H[outflank_h]);
 
-		flipped |= (P >> 7) & 0x0000000000000200ULL & O;
+		const uint64_t flipped_c = (P >> 7) & 0x0000000000000200ULL & O;
 
-		outflank_d9 = GetLSB(~O & 0x0000804020100800ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0000804020100800ULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x0000804020100800ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000804020100800ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_D1(const uint64_t P, const uint64_t O)
+	uint64_t D1(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7, outflank_d9;
-		
-		outflank_v = GetLSB(~O & 0x0808080808080800ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0808080808080800ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x0808080808080800ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080800ULL;
 
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 1, 6)] & P;
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 1, 6)] & P;
 	#else
-		outflank_h = OUTFLANK_3[(O >> 1) & 0x3F] & P;
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 1) & 0x3F] & P;
 	#endif
-		flipped |= static_cast<uint8_t>(FLIPPED_3_H[outflank_h]);
+		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_3_H[outflank_h]);
 		
-		outflank_d7 = GetLSB(~O & 0x0000000001020400ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0000000001020400ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0000000001020400ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000001020400ULL;
 		
-		outflank_d9 = GetLSB(~O & 0x0000008040201000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0000008040201000ULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x0000008040201000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000008040201000ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_E1(const uint64_t P, const uint64_t O)
+	uint64_t E1(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7, outflank_d9;
-
-		outflank_v = GetLSB(~O & 0x1010101010101000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x1010101010101000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x1010101010101000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010101000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 1, 6)] & P;
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 1, 6)] & P;
 	#else
-		outflank_h = OUTFLANK_4[(O >> 1) & 0x3F] & P;
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 1) & 0x3F] & P;
 	#endif
-		flipped |= static_cast<uint8_t>(FLIPPED_4_H[outflank_h]);
+		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_4_H[outflank_h]);
 
-		outflank_d7 = GetLSB(~O & 0x0000000102040800ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0000000102040800ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0000000102040800ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000102040800ULL;
 
-		outflank_d9 = GetLSB(~O & 0x0000000080402000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0000000080402000ULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x0000000080402000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000000080402000ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_F1(const uint64_t P, const uint64_t O)
+	uint64_t F1(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
-
-		outflank_v = GetLSB(~O & 0x2020202020202000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x2020202020202000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x2020202020202000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020202000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 1, 6)] & P;
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 1, 6)] & P;
 	#else
-		outflank_h = OUTFLANK_5[(O >> 1) & 0x3F] & P;
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 1) & 0x3F] & P;
 	#endif
-		flipped |= static_cast<uint8_t>(FLIPPED_5_H[outflank_h]);
+		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_5_H[outflank_h]);
 
-		outflank_d7 = GetLSB(~O & 0x0000010204081000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0000010204081000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0000010204081000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000010204081000ULL;
 
-		flipped |= ((P >> 9) & 0x0000000000004000ULL & O);
+		const uint64_t flipped_d = ((P >> 9) & 0x0000000000004000ULL & O);
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_G1(const uint64_t P, const uint64_t O)
+	uint64_t G1(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
+		const uint64_t outflank_v = GetLSB(~O & 0x4040404040404000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040404000ULL;
 
-		outflank_v = GetLSB(~O & 0x4040404040404000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x4040404040404000ULL;
+		const uint64_t outflank_h = OUTFLANK_7[O & 0x3E] & (P << 1);
+		const uint64_t flipped_h = ((-outflank_h) & 0x3E);
 
-		outflank_h = OUTFLANK_7[O & 0x3E] & (P << 1);
-		flipped |= ((-outflank_h) & 0x3E);
+		const uint64_t outflank_c = GetLSB(~O & 0x0001020408102000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0001020408102000ULL;
 
-		outflank_d7 = GetLSB(~O & 0x0001020408102000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0001020408102000ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_c;
 	}
 
-	uint64_t flip_H1(const uint64_t P, const uint64_t O)
+	uint64_t H1(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
-
-		outflank_v = GetLSB(~O & 0x8080808080808000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x8080808080808000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x8080808080808000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080808000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 1, 6)] & P;
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 1, 6)] & P;
 	#else
-		outflank_h = OUTFLANK_7[(O >> 1) & 0x3F] & P;
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 1) & 0x3F] & P;
 	#endif
-		flipped |= ((-outflank_h) & 0x3F) << 1;
+		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 1;
 
-		outflank_d7 = GetLSB(~O & 0x0102040810204000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0102040810204000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0102040810204000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810204000ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c;
 	}
 
-	uint64_t flip_A2(const uint64_t P, const uint64_t O)
+	uint64_t A2(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d9;
+		const uint64_t outflank_v = ((O | ~0x0101010101010000ULL) + 0x0000000000010000ULL) & P & 0x0101010101010000ULL;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010000ULL;
 
-		outflank_v = ((O | ~0x0101010101010000ULL) + 0x0000000000010000ULL) & P & 0x0101010101010000ULL;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0101010101010000ULL;
+		const uint64_t outflank_h = ((O & 0x0000000000007e00ULL) + 0x0000000000000200ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007e00ULL;
 
-		outflank_h = ((O & 0x0000000000007e00ULL) + 0x0000000000000200ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x0000000000007e00ULL;
+		const uint64_t outflank_d = ((O | ~0x4020100804020000ULL) + 0x0000000000020000ULL) & P & 0x4020100804020000ULL;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x4020100804020000ULL;
 
-		outflank_d9 = ((O | ~0x4020100804020000ULL) + 0x0000000000020000ULL) & P & 0x4020100804020000ULL;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x4020100804020000ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_B2(const uint64_t P, const uint64_t O)
+	uint64_t B2(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d9;
+		const uint64_t outflank_v = ((O | ~0x0202020202020000ULL) + 0x0000000000020000ULL) & P & 0x0202020202020000ULL;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020000ULL;
+		
+		const uint64_t outflank_h = ((O & 0x0000000000007c00ULL) + 0x0000000000000400ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007c00ULL;
+		
+		const uint64_t outflank_d = ((O | ~0x8040201008040000ULL) + 0x0000000000040000ULL) & P & 0x8040201008040000ULL;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008040000ULL;
 
-		outflank_v = ((O | ~0x0202020202020000ULL) + 0x0000000000020000ULL) & P & 0x0202020202020000ULL;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0202020202020000ULL;
-
-		outflank_h = ((O & 0x0000000000007c00ULL) + 0x0000000000000400ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x0000000000007c00ULL;
-
-		outflank_d9 = ((O | ~0x8040201008040000ULL) + 0x0000000000040000ULL) & P & 0x8040201008040000ULL;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x8040201008040000ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_C2(const uint64_t P, const uint64_t O)
+	uint64_t C2(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d9;
-
-		outflank_v = GetLSB(~O & 0x0404040404040000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0404040404040000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x0404040404040000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_2[BExtr(O, 9, 6)] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 9, 6)] & (P >> 8);
 	#else
-		outflank_h = OUTFLANK_2[(O >> 9) & 0x3F] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_2[(O >> 9) & 0x3F] & (P >> 8);
 	#endif
-		flipped |= FLIPPED_2_H[outflank_h] & 0x000000000000FF00ULL;
+		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x000000000000FF00ULL;
 
-		flipped |= ((P >> 7) & 0x0000000000020000ULL & O);
+		const uint64_t flipped_c = ((P >> 7) & 0x0000000000020000ULL & O);
 
-		outflank_d9 = GetLSB(~O & 0x0080402010080000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0080402010080000ULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x0080402010080000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0080402010080000ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_D2(const uint64_t P, const uint64_t O)
+	uint64_t D2(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7, outflank_d9;
-
-		outflank_v = GetLSB(~O & 0x0808080808080000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0808080808080000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x0808080808080000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 9, 6)] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 9, 6)] & (P >> 8);
 	#else
-		outflank_h = OUTFLANK_3[(O >> 9) & 0x3F] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 9) & 0x3F] & (P >> 8);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_h] & 0x000000000000FF00ULL;
+		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x000000000000FF00ULL;
 
-		outflank_d7 = GetLSB(~O & 0x0000000102040000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0000000102040000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0000000102040000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000102040000ULL;
 
-		outflank_d9 = GetLSB(~O & 0x0000804020100000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0000804020100000ULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x0000804020100000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000804020100000ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_E2(const uint64_t P, const uint64_t O)
+	uint64_t E2(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7, outflank_d9;
-
-		outflank_v = GetLSB(~O & 0x1010101010100000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x1010101010100000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x1010101010100000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010100000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 9, 6)] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 9, 6)] & (P >> 8);
 	#else
-		outflank_h = OUTFLANK_4[(O >> 9) & 0x3F] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 9) & 0x3F] & (P >> 8);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_h] & 0x000000000000FF00ULL;
+		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x000000000000FF00ULL;
 
-		outflank_d7 = GetLSB(~O & 0x0000010204080000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0000010204080000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0000010204080000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000010204080000ULL;
+		
+		const uint64_t outflank_d = GetLSB(~O & 0x0000008040200000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000008040200000ULL;
 
-		outflank_d9 = GetLSB(~O & 0x0000008040200000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0000008040200000ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_F2(const uint64_t P, const uint64_t O)
+	uint64_t F2(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
-
-		outflank_v = GetLSB(~O & 0x2020202020200000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x2020202020200000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x2020202020200000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020200000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 9, 6)] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 9, 6)] & (P >> 8);
 	#else
-		outflank_h = OUTFLANK_5[(O >> 9) & 0x3F] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 9) & 0x3F] & (P >> 8);
 	#endif
-		flipped |= FLIPPED_5_H[outflank_h] & 0x000000000000FF00ULL;
+		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x000000000000FF00ULL;
 
-		outflank_d7 = GetLSB(~O & 0x0001020408100000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0001020408100000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0001020408100000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0001020408100000ULL;
 
-		flipped |= ((P >> 9) & 0x0000000000400000ULL & O);
+		const uint64_t flipped_d = ((P >> 9) & 0x0000000000400000ULL & O);
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_G2(const uint64_t P, const uint64_t O)
+	uint64_t G2(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
-
-		outflank_v = GetLSB(~O & 0x4040404040400000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x4040404040400000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x4040404040400000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040400000ULL;
 		
-		outflank_h = OUTFLANK_7[(O >> 8) & 0x3E] & (P >> 7);
-		flipped |= ((-outflank_h) & 0x3E) << 8;
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 8) & 0x3E] & (P >> 7);
+		const uint64_t flipped_h = ((-outflank_h) & 0x3E) << 8;
 
-		outflank_d7 = GetLSB(~O & 0x0102040810200000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0102040810200000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0102040810200000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810200000ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c;
 	}
 
-	uint64_t flip_H2(const uint64_t P, const uint64_t O)
+	uint64_t H2(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
-
-		outflank_v = GetLSB(~O & 0x8080808080800000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x8080808080800000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x8080808080800000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080800000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 9, 6)] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 9, 6)] & (P >> 8);
 	#else
-		outflank_h = OUTFLANK_7[(O >> 9) & 0x3F] & (P >> 8);
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 9) & 0x3F] & (P >> 8);
 	#endif
-		flipped |= ((-outflank_h) & 0x3F) << 9;
+		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 9;
 
-		outflank_d7 = GetLSB(~O & 0x0204081020400000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0204081020400000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0204081020400000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0204081020400000ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_c;
 	}
 
-	uint64_t flip_A3(const uint64_t P, const uint64_t O)
+	uint64_t A3(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d9;
+		const uint64_t outflank_v = ((O | ~0x0101010101000000ULL) + 0x0000000001000000ULL) & P & 0x0101010101000000ULL;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101000000ULL;
+		
+		const uint64_t outflank_h = ((O & 0x00000000007e0000ULL) + 0x0000000000020000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x00000000007e0000ULL;
+		
+		const uint64_t outflank_d = ((O | ~0x2010080402000000ULL) + 0x0000000002000000ULL) & P & 0x2010080402000000ULL;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x2010080402000000ULL;
+		
+		const uint64_t flipped_c = (((P << 8) & 0x0000000000000100ULL) | ((P << 7) & 0x0000000000000200ULL)) & O;
 
-		outflank_v = ((O | ~0x0101010101000000ULL) + 0x0000000001000000ULL) & P & 0x0101010101000000ULL;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0101010101000000ULL;
-
-		outflank_h = ((O & 0x00000000007e0000ULL) + 0x0000000000020000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x00000000007e0000ULL;
-
-		outflank_d9 = ((O | ~0x2010080402000000ULL) + 0x0000000002000000ULL) & P & 0x2010080402000000ULL;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x2010080402000000ULL;
-
-		flipped |= (((P << 8) & 0x0000000000000100ULL) | ((P << 7) & 0x0000000000000200ULL)) & O;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_d | flipped_c;
 	}
 
-	uint64_t flip_B3(const uint64_t P, const uint64_t O)
+	uint64_t B3(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d9;
+		const uint64_t outflank_v = ((O | ~0x0202020202000000ULL) + 0x0000000002000000ULL) & P & 0x0202020202000000ULL;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202000000ULL;
 
-		outflank_v = ((O | ~0x0202020202000000ULL) + 0x0000000002000000ULL) & P & 0x0202020202000000ULL;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0202020202000000ULL;
+		const uint64_t outflank_h = ((O & 0x00000000007c0000ULL) + 0x0000000000040000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x00000000007c0000ULL;
 
-		outflank_h = ((O & 0x00000000007c0000ULL) + 0x0000000000040000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x00000000007c0000ULL;
+		const uint64_t outflank_d = ((O | ~0x4020100804000000ULL) + 0x0000000004000000ULL) & P & 0x4020100804000000ULL;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x4020100804000000ULL;
 
-		outflank_d9 = ((O | ~0x4020100804000000ULL) + 0x0000000004000000ULL) & P & 0x4020100804000000ULL;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x4020100804000000ULL;
+		const uint64_t flipped_c = (((P << 8) & 0x0000000000000200ULL) | ((P << 7) & 0x0000000000000400ULL)) & O;
 
-		flipped |= (((P << 8) & 0x0000000000000200ULL) | ((P << 7) & 0x0000000000000400ULL)) & O;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_d | flipped_c;
 	}
 
-	uint64_t flip_C3(const uint64_t P, const uint64_t O)
+	uint64_t C3(const uint64_t P, const uint64_t O)
 	{
-	#ifdef USE_C3
-		uint64_t outflank_h;
-	#else
-		uint8_t outflank_h;
-	#endif
-		uint64_t flipped, outflank_v, outflank_d9;
-
-		outflank_v = ((O | ~0x0404040404000000ULL) + 0x0000000004000000ULL) & P & 0x0404040404000000ULL;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0404040404000000ULL;
+		const uint64_t outflank_v = ((O | ~0x0404040404000000ULL) + 0x0000000004000000ULL) & P & 0x0404040404000000ULL;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404000000ULL;
 	
 	#ifdef USE_C3
-		outflank_h = ((O & 0x0000000000780000ULL) + 0x0000000000080000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x0000000000780000ULL;
+		const uint64_t outflank_h = ((O & 0x0000000000780000ULL) + 0x0000000000080000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000780000ULL;
 	#else
-		outflank_h = OUTFLANK_2[(O >> 17) & 0x3F] & (P >> 16);
-		flipped |= FLIPPED_2_H[outflank_h] & 0x0000000000FF0000ULL;
+		const uint64_t outflank_h = static_cast<uint8_t>(OUTFLANK_2[(O >> 17) & 0x3F] & (P >> 16));
+		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x0000000000FF0000ULL;
 	#endif
 
-		outflank_d9 = ((O | ~0x8040201008000000ULL) + 0x0000000008000000ULL) & P & 0x8040201008000000ULL;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x8040201008000000ULL;
+		const uint64_t outflank_d = ((O | ~0x8040201008000000ULL) + 0x0000000008000000ULL) & P & 0x8040201008000000ULL;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008000000ULL;
 
 	#ifdef USE_C3
-		flipped |= PDep(PExt(P, 0x0000000100010015ULL), 0x0000000002020E00ULL) & O;
+		const uint64_t flipped_r = PDep(PExt(P, 0x0000000100010015ULL), 0x0000000002020E00ULL) & O;
 	#else
-		flipped |= (((P << 8) & 0x0000000000000400ULL) | ((P << 9) & 0x0000000000000200ULL) | (((P >> 7) | (P << 7)) & 0x000000002000800ULL)) & O;
+		const uint64_t flipped_r = (((P << 8) & 0x0000000000000400ULL) | ((P << 9) & 0x0000000000000200ULL) | (((P >> 7) | (P << 7)) & 0x000000002000800ULL)) & O;
 	#endif
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_d | flipped_r;
 	}
 
-	uint64_t flip_D3(const uint64_t P, const uint64_t O)
+	uint64_t D3(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7, outflank_d9;
-
-		outflank_v = GetLSB(~O & 0x0808080808000000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x0808080808000000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x0808080808000000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808000000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 17, 6)] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 17, 6)] & (P >> 16);
 	#else
-		outflank_h = OUTFLANK_3[(O >> 17) & 0x3F] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 17) & 0x3F] & (P >> 16);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_h] & 0x0000000000FF0000ULL;
+		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x0000000000FF0000ULL;
 
-		outflank_d7 = GetLSB(~O & 0x0000010204000000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0000010204000000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0000010204000000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000010204000000ULL;
 
-		outflank_d9 = GetLSB(~O & 0x0080402010000000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0080402010000000ULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x0080402010000000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0080402010000000ULL;
 
 	#ifdef USE_PEXT
-		flipped |= (PExt(P, 0x000000000000002AULL) << 10) & O;
+		const uint64_t flipped_r = (PExt(P, 0x000000000000002AULL) << 10) & O;
 	#else
-		flipped |= (((P << 8) & 0x0000000000000800ULL) | ((P << 7) & 0x0000000000001000ULL) | ((P << 9) & 0x000000000000400ULL)) & O;
+		const uint64_t flipped_r = (((P << 8) & 0x0000000000000800ULL) | ((P << 7) & 0x0000000000001000ULL) | ((P << 9) & 0x000000000000400ULL)) & O;
 	#endif
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_d | flipped_c | flipped_r;
 	}
 
-	uint64_t flip_E3(const uint64_t P, const uint64_t O)
+	uint64_t E3(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7, outflank_d9;
-
-		outflank_v = GetLSB(~O & 0x1010101010000000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x1010101010000000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x1010101010000000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010000000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 17, 6)] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 17, 6)] & (P >> 16);
 	#else
-		outflank_h = OUTFLANK_4[(O >> 17) & 0x3F] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 17) & 0x3F] & (P >> 16);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_h] & 0x0000000000FF0000ULL;
+		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x0000000000FF0000ULL;
 
-		outflank_d7 = GetLSB(~O & 0x0001020408000000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0001020408000000ULL;
-
-		outflank_d9 = GetLSB(~O & 0x0000804020000000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x0000804020000000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0001020408000000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0001020408000000ULL;
+		
+		const uint64_t outflank_d = GetLSB(~O & 0x0000804020000000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000804020000000ULL;
 
 	#ifdef USE_PEXT
-		flipped |= (PExt(P, 0x0000000000000054ULL) << 11) & O;
+		const uint64_t flipped_r = (PExt(P, 0x0000000000000054ULL) << 11) & O;
 	#else
-		flipped |= (((P << 8) & 0x0000000000001000ULL) | ((P << 7) & 0x0000000000002000ULL) | ((P << 9) & 0x000000000000800ULL)) & O;
+		const uint64_t flipped_r = (((P << 8) & 0x0000000000001000ULL) | ((P << 7) & 0x0000000000002000ULL) | ((P << 9) & 0x000000000000800ULL)) & O;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_d | flipped_c | flipped_r;
 	}
 
-	uint64_t flip_F3(const uint64_t P, const uint64_t O)
+	uint64_t F3(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
-
-		outflank_v = GetLSB(~O & 0x2020202020000000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x2020202020000000ULL;
+		const uint64_t outflank_v = GetLSB(~O & 0x2020202020000000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020000000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 17, 6)] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 17, 6)] & (P >> 16);
 	#else
-		outflank_h = OUTFLANK_5[(O >> 17) & 0x3F] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 17) & 0x3F] & (P >> 16);
 	#endif
-		flipped |= FLIPPED_5_H[outflank_h] & 0x0000000000FF0000ULL;
+		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x0000000000FF0000ULL;
 
-		outflank_d7 = GetLSB(~O & 0x0102040810000000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0102040810000000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0102040810000000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810000000ULL;
 
 	#ifdef USE_F3
-		flipped |= PDep(PExt(P, 0x00000080008000A8ULL), 0x0000000040407000ULL) & O;
+		const uint64_t flipped_r = PDep(PExt(P, 0x00000080008000A8ULL), 0x0000000040407000ULL) & O;
 	#else
-		flipped |= (((P << 8) & 0x0000000000002000ULL) | ((P << 7) & 0x0000000000004000ULL) | (((P >> 9) | (P << 9)) & 0x0000000040001000ULL)) & O;
+		const uint64_t flipped_r = (((P << 8) & 0x0000000000002000ULL) | ((P << 7) & 0x0000000000004000ULL) | (((P >> 9) | (P << 9)) & 0x0000000040001000ULL)) & O;
 	#endif
-
-		return flipped;
-	}
-
-	uint64_t flip_G3(const uint64_t P, const uint64_t O)
-	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
-
-		outflank_v = GetLSB(~O & 0x4040404040000000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x4040404040000000ULL;
 		
-		outflank_h = OUTFLANK_7[(O >> 16) & 0x3E] & (P >> 15);
-		flipped |= ((-outflank_h) & 0x3E) << 16;
-
-		outflank_d7 = GetLSB(~O & 0x0204081020000000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0204081020000000ULL;
-
-		flipped |= (((P << 8) & 0x0000000000004000ULL) | ((P << 9) & 0x0000000000002000ULL)) & O;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_c | flipped_r;
 	}
 
-	uint64_t flip_H3(const uint64_t P, const uint64_t O)
+	uint64_t G3(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d7;
+		const uint64_t outflank_v = GetLSB(~O & 0x4040404040000000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040000000ULL;
+		
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 16) & 0x3E] & (P >> 15);
+		const uint64_t flipped_h = ((-outflank_h) & 0x3E) << 16;
+		
+		const uint64_t outflank_c = GetLSB(~O & 0x0204081020000000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0204081020000000ULL;
+		
+		const uint64_t flipped_r = (((P << 8) & 0x0000000000004000ULL) | ((P << 9) & 0x0000000000002000ULL)) & O;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_r;
+	}
 
-		outflank_v = GetLSB(~O & 0x8080808080000000ULL) & P;
-		flipped = (outflank_v - (outflank_v != 0)) & 0x8080808080000000ULL;
+	uint64_t H3(const uint64_t P, const uint64_t O)
+	{
+		const uint64_t outflank_v = GetLSB(~O & 0x8080808080000000ULL) & P;
+		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080000000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 17, 6)] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 17, 6)] & (P >> 16);
 	#else
-		outflank_h = OUTFLANK_7[(O >> 17) & 0x3F] & (P >> 16);
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 17) & 0x3F] & (P >> 16);
 	#endif
-		flipped |= ((-outflank_h) & 0x3F) << 17;
+		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 17;
 
-		outflank_d7 = GetLSB(~O & 0x0408102040000000ULL) & P;
-		flipped |= (outflank_d7 - (outflank_d7 != 0)) & 0x0408102040000000ULL;
+		const uint64_t outflank_c = GetLSB(~O & 0x0408102040000000ULL) & P;
+		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0408102040000000ULL;
 
-		flipped |= (((P << 8) & 0x0000000000008000ULL) | ((P << 9) & 0x0000000000004000ULL)) & O;
-
-		return flipped;
+		const uint64_t flipped_r = (((P << 8) & 0x0000000000008000ULL) | ((P << 9) & 0x0000000000004000ULL)) & O;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_r;
 	}
 
-	uint64_t flip_A4(const uint64_t P, const uint64_t O)
+	uint64_t A4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_v;
-		uint64_t flipped, outflank_h;
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0001010101010100ULL)] & PExt(P, 0x0101010101010101ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0001010101010100ULL)] & PExt(P, 0x0101010101010101ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0001010101010100ULL) * 0x0102040810204080ULL) >> 57] & (((P & 0x0101010101010101ULL) * 0x0102040810204080ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0001010101010100ULL) * 0x0102040810204080ULL) >> 57] & (((P & 0x0101010101010101ULL) * 0x0102040810204080ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0001010101010100ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0001010101010100ULL;
 
-		outflank_h = ((O & 0x000000007e000000ULL) + 0x0000000002000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x000000007e000000ULL;
+		const uint64_t outflank_h = ((O & 0x000000007e000000ULL) + 0x0000000002000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x000000007e000000ULL;
 		
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0008040201020400ULL)] & PExt(P, 0x1008040201020408ULL);
-		flipped |= FLIPPED_3_V[outflank_v] & 0x0008040201020400ULL;
+		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0008040201020400ULL)] & PExt(P, 0x1008040201020408ULL);
+		const uint64_t flipped_x = FLIPPED_3_V[outflank_x] & 0x0008040201020400ULL;
 	#else
-		uint64_t flip_d7 = O & 0x0000000000020000ULL;
-		flip_d7 |= (flip_d7 >> 7) & O;
-		flipped |= flip_d7 & -(flip_d7 & (P << 7));
+		uint64_t flip_c = O & 0x0000000000020000ULL;
+		flip_c |= (flip_c >> 7) & O;
+		const uint64_t flipped_c = flip_c & -(flip_c & (P << 7));
 
-		uint64_t outflank_d9 = ((O | ~0x1008040200000000ULL) + 0x0000000200000000ULL) & P & 0x1008040200000000ULL;
-		flipped |= (outflank_d9 - (outflank_d9 >> 32)) & 0x1008040200000000ULL;
+		const uint64_t outflank_d = ((O | ~0x1008040200000000ULL) + 0x0000000200000000ULL) & P & 0x1008040200000000ULL;
+		const uint64_t flipped_d = (outflank_d - (outflank_d >> 32)) & 0x1008040200000000ULL;
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_B4(const uint64_t P, const uint64_t O)
+	uint64_t B4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_v;
-		uint64_t flipped, outflank_h;
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0002020202020200ULL)] & PExt(P, 0x0202020202020202ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0002020202020200ULL)] & PExt(P, 0x0202020202020202ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0002020202020200ULL) * 0x0081020408102040ULL) >> 57] & (((P & 0x0202020202020202ULL) * 0x0081020408102040ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0002020202020200ULL) * 0x0081020408102040ULL) >> 57] & (((P & 0x0202020202020202ULL) * 0x0081020408102040ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0002020202020200ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0002020202020200ULL;
 
-		outflank_h = ((O & 0x000000007c000000ULL) + 0x0000000004000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h != 0)) & 0x000000007c000000ULL;
+		const uint64_t outflank_h = ((O & 0x000000007c000000ULL) + 0x0000000004000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x000000007c000000ULL;
 
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0010080402040800ULL)] & PExt(P, 0x2010080402040810ULL);
-		flipped |= FLIPPED_3_V[outflank_v] & 0x0010080402040800ULL;
+		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0010080402040800ULL)] & PExt(P, 0x2010080402040810ULL);
+		const uint64_t flipped_x = FLIPPED_3_V[outflank_x] & 0x0010080402040800ULL;
 	#else
-		uint64_t flip_d7 = O & 0x0000000000040000ULL;
-		flip_d7 |= (flip_d7 >> 7) & O;
-		flipped |= flip_d7 & -(flip_d7 & (P << 7));
+		uint64_t flip_c = O & 0x0000000000040000ULL;
+		flip_c |= (flip_c >> 7) & O;
+		const uint64_t flipped_c = flip_c & -(flip_c & (P << 7));
 
-		uint64_t outflank_d9 = GetLSB(~O & 0x2010080400000000ULL) & P;
-		flipped |= (outflank_d9 - (outflank_d9 != 0)) & 0x2010080400000000ULL;
+		const uint64_t outflank_d = GetLSB(~O & 0x2010080400000000ULL) & P;
+		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x2010080400000000ULL;
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_C4(const uint64_t P, const uint64_t O)
+	uint64_t C4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, outflank_d9;
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0004040404040400ULL)] & PExt(P, 0x0404040404040404ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0004040404040400ULL)] & PExt(P, 0x0404040404040404ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0004040404040400ULL) * 0x0040810204081020ULL) >> 57] & (((P & 0x0404040404040404ULL) * 0x0040810204081020ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0004040404040400ULL) * 0x0040810204081020ULL) >> 57] & (((P & 0x0404040404040404ULL) * 0x0040810204081020ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0004040404040400ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0004040404040400ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_2[BExtr(O, 25, 6)] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 25, 6)] & (P >> 24);
 	#else
-		outflank_h = OUTFLANK_2[(O >> 25) & 0x3F] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_2[(O >> 25) & 0x3F] & (P >> 24);
 	#endif
-		flipped |= FLIPPED_2_H[outflank_h] & 0x00000000FF000000ULL;
+		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x00000000FF000000ULL;
 
 	#ifdef USE_PEXT
-		outflank_d9 = OUTFLANK_3[PExt(O, 0x0020100804081000ULL)] & PExt(P, 0x4020100804081020ULL);
-		flipped |= FLIPPED_3_V[outflank_d9] & 0x0020100804081000ULL;
+		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0020100804081000ULL)] & PExt(P, 0x4020100804081020ULL);
+		const uint64_t flipped_x = FLIPPED_3_V[outflank_x] & 0x0020100804081000ULL;
 	#else
-		uint64_t flip_d7 = O & 0x0000000000080000ULL;
-		flip_d7 |= (flip_d7 >> 7) & O;
-		flipped |= flip_d7 & -(flip_d7 & (P << 7));
+		uint64_t flip_c = O & 0x0000000000080000ULL;
+		flip_c |= (flip_c >> 7) & O;
+		const uint64_t flipped_c = flip_c & -(flip_c & (P << 7));
 
-		outflank_d9 = ((O | ~0x4020100800000000ULL) + 0x0000000800000000ULL) & P & 0x4020100800000000ULL;
-		flipped |= (outflank_d9 - (outflank_d9 >> 32)) & 0x4020100800000000ULL;
+		const uint64_t outflank_d = ((O | ~0x4020100800000000ULL) + 0x0000000800000000ULL) & P & 0x4020100800000000ULL;
+		const uint64_t flipped_d = (outflank_d - (outflank_d >> 32)) & 0x4020100800000000ULL;
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
 
-		flipped |= (((P << 9) & 0x00000000000020000ULL) | ((P >> 7) & 0x00000000200000000ULL)) & O;
-
-		return flipped;
+		const uint64_t flipped_r = (((P << 9) & 0x00000000000020000ULL) | ((P >> 7) & 0x00000000200000000ULL)) & O;
+		
+		return flipped_v | flipped_h | flipped_x | flipped_r;
 	}
 
-	uint64_t flip_D4(const uint64_t P, const uint64_t O)
+	uint64_t D4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d7, outflank_d9;
-		uint64_t flipped;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57] & (((P & 0x0808080808080808ULL) * 0x0020408102040810ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57] & (((P & 0x0808080808080808ULL) * 0x0020408102040810ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0008080808080800ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0008080808080800ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 25, 6)] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 25, 6)] & (P >> 24);
 	#else
-		outflank_h = OUTFLANK_3[(O >> 25) & 0x3F] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 25) & 0x3F] & (P >> 24);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_h] & 0x00000000FF000000ULL;
+		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x00000000FF000000ULL;
 
-		outflank_d7 = OUTFLANK_3[((O & 0x0000020408102000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0001020408102040ULL) * 0x0101010101010101ULL) >> 56);
-		
-		flipped |= FLIPPED_3_H[outflank_d7] & 0x0000020408102000ULL;
+		const uint64_t outflank_c = OUTFLANK_3[((O & 0x0000020408102000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0001020408102040ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_c = FLIPPED_3_H[outflank_c] & 0x0000020408102000ULL;
 
 	#ifdef USE_PEXT
-		outflank_d9 = OUTFLANK_3[PExt(O, 0x0040201008040200ULL)] & PExt(P, 0x8040201008040201ULL);
+		const uint64_t outflank_d = OUTFLANK_3[PExt(O, 0x0040201008040200ULL)] & PExt(P, 0x8040201008040201ULL);
 	#else
-		outflank_d9 = OUTFLANK_3[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x8040201008040201ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x8040201008040201ULL) * 0x0101010101010101ULL) >> 56);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_d9] & 0x0040201008040200ULL;
-
-		return flipped;
+		const uint64_t flipped_d = FLIPPED_3_H[outflank_d] & 0x0040201008040200ULL;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_E4(const uint64_t P, const uint64_t O)
+	uint64_t E4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d7, outflank_d9;
-		uint64_t flipped;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57] & (((P & 0x1010101010101010ULL) * 0x0010204081020408ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57] & (((P & 0x1010101010101010ULL) * 0x0010204081020408ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0010101010101000ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0010101010101000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 25, 6)] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 25, 6)] & (P >> 24);
 	#else
-		outflank_h = OUTFLANK_4[(O >> 25) & 0x3F] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 25) & 0x3F] & (P >> 24);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_h] & 0x00000000FF000000ULL;
+		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x00000000FF000000ULL;
 
-		outflank_d7 = OUTFLANK_4[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
-		
-		flipped |= FLIPPED_4_H[outflank_d7] & 0x0002040810204000ULL;
+		const uint64_t outflank_c = OUTFLANK_4[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_c = FLIPPED_4_H[outflank_c] & 0x0002040810204000ULL;
 
 	#ifdef USE_PEXT
-		outflank_d9 = (OUTFLANK_3[PExt(O, 0x0000402010080400ULL)] & PExt(P, 0x0080402010080402ULL)) << 1;
+		const uint64_t outflank_d = (OUTFLANK_3[PExt(O, 0x0000402010080400ULL)] & PExt(P, 0x0080402010080402ULL)) << 1;
 	#else
-		outflank_d9 = OUTFLANK_4[((O & 0x0000402010080400ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0080402010080402ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0000402010080400ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0080402010080402ULL) * 0x0101010101010101ULL) >> 56);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_d9] & 0x0000402010080400ULL;
-
-		return flipped;
+		const uint64_t flipped_d = FLIPPED_4_H[outflank_d] & 0x0000402010080400ULL;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_F4(const uint64_t P, const uint64_t O)
+	uint64_t F4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, outflank_d7;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0020202020202000ULL) * 0x0008102040810204ULL) >> 57] & (((P & 0x2020202020202020ULL) * 0x0008102040810204ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0020202020202000ULL) * 0x0008102040810204ULL) >> 57] & (((P & 0x2020202020202020ULL) * 0x0008102040810204ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0020202020202000ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0020202020202000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 25, 6)] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 25, 6)] & (P >> 24);
 	#else
-		outflank_h = OUTFLANK_5[(O >> 25) & 0x3F] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 25) & 0x3F] & (P >> 24);
 	#endif
-		flipped |= FLIPPED_5_H[outflank_h] & 0x00000000FF000000ULL;
+		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x00000000FF000000ULL;
 		
 	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_3[PExt(O, 0x0004081020100800ULL)] & PExt(P, 0x0204081020100804ULL);
-		flipped |= FLIPPED_3_V[outflank_d7] & 0x0004081020100800ULL;
+		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0004081020100800ULL)] & PExt(P, 0x0204081020100804ULL);
+		const uint64_t flipped_x = FLIPPED_3_V[outflank_x] & 0x0004081020100800ULL;
 	#else
-		outflank_d7 = ((O | ~0x0204081000000000ULL) + 0x0000001000000000ULL) & P & 0x0204081000000000ULL;
-		flipped |= (outflank_d7 - (outflank_d7 >> 32)) & 0x0204081000000000ULL;
+		const uint64_t outflank_c = ((O | ~0x0204081000000000ULL) + 0x0000001000000000ULL) & P & 0x0204081000000000ULL;
+		const uint64_t flipped_c = (outflank_c - (outflank_c >> 32)) & 0x0204081000000000ULL;
 
-		uint64_t flip_d9 = O & 0x0000000000100000ULL;
-		flip_d9 |= (flip_d9 >> 9) & O;
-		flipped |= flip_d9 & -(flip_d9 & (P << 9));
+		uint64_t flip_d = O & 0x0000000000100000ULL;
+		flip_d |= (flip_d >> 9) & O;
+		const uint64_t flipped_d = flip_d & -(flip_d & (P << 9));
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
 
-		flipped |= (((P << 7) & 0x0000000000400000ULL) | ((P >> 9) & 0x0000004000000000ULL)) & O;
-
-		return flipped;
+		const uint64_t flipped_r = (((P << 7) & 0x0000000000400000ULL) | ((P >> 9) & 0x0000004000000000ULL)) & O;
+		
+		return flipped_v | flipped_h | flipped_x | flipped_r;
 	}
 
-	uint64_t flip_G4(const uint64_t P, const uint64_t O)
+	uint64_t G4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, outflank_d7;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0040404040404000ULL) * 0x0004081020408102ULL) >> 57] & (((P & 0x4040404040404040ULL) * 0x0004081020408102ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0040404040404000ULL) * 0x0004081020408102ULL) >> 57] & (((P & 0x4040404040404040ULL) * 0x0004081020408102ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0040404040404000ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0040404040404000ULL;
 
-		outflank_h = OUTFLANK_7[(O >> 24) & 0x3E] & (P >> 23);
-		flipped |= ((-outflank_h) & 0x3E) << 24;
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 24) & 0x3E] & (P >> 23);
+		const uint64_t flipped_h = ((-outflank_h) & 0x3E) << 24;
 		
 	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_3[PExt(O, 0x0008102040201000ULL)] & PExt(P, 0x0408102040201008ULL);
-		flipped |= FLIPPED_3_V[outflank_d7] & 0x0008102040201000ULL;
+		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0008102040201000ULL)] & PExt(P, 0x0408102040201008ULL);
+		const uint64_t flipped_x = FLIPPED_3_V[outflank_x] & 0x0008102040201000ULL;
 	#else
-		outflank_d7 = ((O | ~0x0408102000000000ULL) + 0x0000002000000000ULL) & P & 0x0408102000000000ULL;
-		flipped |= (outflank_d7 - (outflank_d7 >> 32)) & 0x0408102000000000ULL;
+		const uint64_t outflank_c = ((O | ~0x0408102000000000ULL) + 0x0000002000000000ULL) & P & 0x0408102000000000ULL;
+		const uint64_t flipped_c = (outflank_c - (outflank_c >> 32)) & 0x0408102000000000ULL;
 
-		uint64_t flip_d9 = O & 0x0000000000200000ULL;
-		flip_d9 |= (flip_d9 >> 9) & O;
-		flipped |= flip_d9 & -(flip_d9 & (P << 9));
+		uint64_t flip_d = O & 0x0000000000200000ULL;
+		flip_d |= (flip_d >> 9) & O;
+		const uint64_t flipped_d = flip_d & -(flip_d & (P << 9));
+		
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_H4(const uint64_t P, const uint64_t O)
+	uint64_t H4(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, outflank_d7;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_3[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
+		const uint64_t outflank_v = OUTFLANK_3[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
 	#else
-		outflank_v = OUTFLANK_3[((O & 0x0080808080808000ULL) * 0x0002040810204081ULL) >> 57] & (((P & 0x8080808080808080ULL) * 0x0002040810204081ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_3[((O & 0x0080808080808000ULL) * 0x0002040810204081ULL) >> 57] & (((P & 0x8080808080808080ULL) * 0x0002040810204081ULL) >> 56);
 	#endif
-		flipped = FLIPPED_3_V[outflank_v] & 0x0080808080808000ULL;
+		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0080808080808000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 25, 6)] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 25, 6)] & (P >> 24);
 	#else
-		outflank_h = OUTFLANK_7[(O >> 25) & 0x3F] & (P >> 24);
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 25) & 0x3F] & (P >> 24);
 	#endif
-		flipped |= ((-outflank_h) & 0x3F) << 25;
+		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 25;
 		
 	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_3[PExt(O, 0x0010204080402000ULL)] & PExt(P, 0x0810204080402010ULL);
-		flipped |= FLIPPED_3_V[outflank_d7] & 0x0010204080402000ULL;
+		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0010204080402000ULL)] & PExt(P, 0x0810204080402010ULL);
+		const uint64_t flipped_x = FLIPPED_3_V[outflank_x] & 0x0010204080402000ULL;
 	#else
-		outflank_d7 = ((O | ~0x0810204000000000ULL) + 0x0000004000000000ULL) & P & 0x0810204000000000ULL;
-		flipped |= (outflank_d7 - (outflank_d7 >> 32)) & 0x0810204000000000ULL;
+		const uint64_t outflank_c = ((O | ~0x0810204000000000ULL) + 0x0000004000000000ULL) & P & 0x0810204000000000ULL;
+		const uint64_t flipped_c = (outflank_c - (outflank_c >> 32)) & 0x0810204000000000ULL;
 
-		uint64_t flip_d9 = O & 0x0000000000400000ULL;
-		flip_d9 |= (flip_d9 >> 9) & O;
-		flipped |= flip_d9 & -(flip_d9 & (P << 9));
+		uint64_t flip_d = O & 0x0000000000400000ULL;
+		flip_d |= (flip_d >> 9) & O;
+		const uint64_t flipped_d = flip_d & -(flip_d & (P << 9));
+		
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_A5(const uint64_t P, const uint64_t O)
+	uint64_t A5(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_a1a5d8, outflank_a8a5e1;
-		uint64_t flipped, outflank_h;
+	#ifdef USE_PEXT
+		const uint64_t outflank_a1a5d8 = OUTFLANK_4[PExt(O, 0x0004020101010100ULL)] & PExt(P, 0x0804020101010101ULL);
+	#else
+		const uint64_t outflank_a1a5d8 = OUTFLANK_4[((O & 0x0004020101010100ULL) * 0x0102040810101010ULL) >> 57] & (((P & 0x0804020101010101ULL) * 0x0102040810101010ULL) >> 56);
+	#endif
+		const uint64_t flipped_a1a5d8 = FLIPPED_4_V[outflank_a1a5d8] & 0x0004020101010100ULL;
 
 	#ifdef USE_PEXT
-		outflank_a1a5d8 = OUTFLANK_4[PExt(O, 0x0004020101010100ULL)] & PExt(P, 0x0804020101010101ULL);
+		const uint64_t outflank_a8a5e1 = OUTFLANK_4[PExt(O, 0x0001010102040800ULL)] & PExt(P, 0x0101010102040810ULL);
+		const uint64_t flipped_a8a5e1 = FLIPPED_4_V[outflank_a8a5e1] & 0x0001010102040800ULL;
 	#else
-		outflank_a1a5d8 = OUTFLANK_4[((O & 0x0004020101010100ULL) * 0x0102040810101010ULL) >> 57] & (((P & 0x0804020101010101ULL) * 0x0102040810101010ULL) >> 56);
-	#endif
-		flipped = FLIPPED_4_V[outflank_a1a5d8] & 0x0004020101010100ULL;
-
-	#ifdef USE_PEXT
-		outflank_a8a5e1 = OUTFLANK_4[PExt(O, 0x0001010102040800ULL)] & PExt(P, 0x0101010102040810ULL);
-		flipped |= FLIPPED_4_V[outflank_a8a5e1] & 0x0001010102040800ULL;
-	#else
-		outflank_a8a5e1 = OUTFLANK_3[((O & 0x0001010102040800ULL) * 0x0808080808040201ULL) >> 57] & (((P & 0x0101010102040810ULL) * 0x0808080808040201ULL) >> 56);
-		flipped |= FLIPPED_3_U[outflank_a8a5e1] & 0x0001010102040800ULL;
+		const uint64_t outflank_a8a5e1 = OUTFLANK_3[((O & 0x0001010102040800ULL) * 0x0808080808040201ULL) >> 57] & (((P & 0x0101010102040810ULL) * 0x0808080808040201ULL) >> 56);
+		const uint64_t flipped_a8a5e1 = FLIPPED_3_U[outflank_a8a5e1] & 0x0001010102040800ULL;
 	#endif
 
-		outflank_h = ((O & 0x0000007e00000000ULL) + 0x0000000200000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h != 0)) & 0x0000007e00000000ULL;
+		const uint64_t outflank_h = ((O & 0x0000007e00000000ULL) + 0x0000000200000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x0000007e00000000ULL;
 
-		return flipped;
+		return flipped_a1a5d8 | flipped_a8a5e1 | flipped_h;
 	}
 
-	uint64_t flip_B5(const uint64_t P, const uint64_t O)
+	uint64_t B5(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_b1b5e8, outflank_b8b5f1;
-		uint64_t flipped, outflank_h;
+	#ifdef USE_PEXT
+		const uint64_t outflank_b1b5e8 = OUTFLANK_4[PExt(O, 0x0008040202020200ULL)] & PExt(P, 0x1008040202020202ULL);
+	#else
+		const uint64_t outflank_b1b5e8 = OUTFLANK_4[((O & 0x0008040202020200ULL) * 0x0081020408080808ULL) >> 57] & (((P & 0x1008040202020202ULL) * 0x0081020408080808ULL) >> 56);
+	#endif
+		const uint64_t flipped_b1b5e8 = FLIPPED_4_V[outflank_b1b5e8] & 0x0008040202020200ULL;
 
 	#ifdef USE_PEXT
-		outflank_b1b5e8 = OUTFLANK_4[PExt(O, 0x0008040202020200ULL)] & PExt(P, 0x1008040202020202ULL);
+		const uint64_t outflank_b8b5f1 = OUTFLANK_4[PExt(O, 0x0002020204081000ULL)] & PExt(P, 0x0202020204081020ULL);
+		const uint64_t flipped_b8b5f1 = FLIPPED_4_V[outflank_b8b5f1] & 0x0002020204081000ULL;
 	#else
-		outflank_b1b5e8 = OUTFLANK_4[((O & 0x0008040202020200ULL) * 0x0081020408080808ULL) >> 57] & (((P & 0x1008040202020202ULL) * 0x0081020408080808ULL) >> 56);
-	#endif
-		flipped = FLIPPED_4_V[outflank_b1b5e8] & 0x0008040202020200ULL;
-
-	#ifdef USE_PEXT
-		outflank_b8b5f1 = OUTFLANK_4[PExt(O, 0x0002020204081000ULL)] & PExt(P, 0x0202020204081020ULL);
-		flipped |= FLIPPED_4_V[outflank_b8b5f1] & 0x0002020204081000ULL;
-	#else
-		outflank_b8b5f1 = OUTFLANK_3[((O & 0x0002020204081000ULL) * 0x0808080808040201ULL) >> 58] & ((((P & 0x0202020204081020ULL) >> 1) * 0x0808080808040201ULL) >> 56);
-		flipped |= FLIPPED_3_U[outflank_b8b5f1] & 0x0002020204081000ULL;
+		const uint64_t outflank_b8b5f1 = OUTFLANK_3[((O & 0x0002020204081000ULL) * 0x0808080808040201ULL) >> 58] & ((((P & 0x0202020204081020ULL) >> 1) * 0x0808080808040201ULL) >> 56);
+		const uint64_t flipped_b8b5f1 = FLIPPED_3_U[outflank_b8b5f1] & 0x0002020204081000ULL;
 	#endif
 
-		outflank_h = ((O & 0x0000007c00000000ULL) + 0x0000000400000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h != 0)) & 0x0000007c00000000ULL;
-
-		return flipped;
+		const uint64_t outflank_h = ((O & 0x0000007c00000000ULL) + 0x0000000400000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x0000007c00000000ULL;
+		
+		return flipped_b1b5e8 | flipped_b8b5f1 | flipped_h;
 	}
 
-	uint64_t flip_C5(const uint64_t P, const uint64_t O)
+	uint64_t C5(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_c1c5f8, outflank_c8c5g1;
-		uint64_t flipped, outflank_h;
-
 	#ifdef USE_PEXT
-		outflank_c1c5f8 = OUTFLANK_4[PExt(O, 0x0010080404040400ULL)] & PExt(P, 0x2010080404040404ULL);
+		const uint64_t outflank_c1c5f8 = OUTFLANK_4[PExt(O, 0x0010080404040400ULL)] & PExt(P, 0x2010080404040404ULL);
 	#else
-		outflank_c1c5f8 = OUTFLANK_4[((O & 0x0010080404040400ULL) * 0x0040810204040404ULL) >> 57] & (((P & 0x2010080404040404ULL) * 0x0040810204040404ULL) >> 56);
+		const uint64_t outflank_c1c5f8 = OUTFLANK_4[((O & 0x0010080404040400ULL) * 0x0040810204040404ULL) >> 57] & (((P & 0x2010080404040404ULL) * 0x0040810204040404ULL) >> 56);
 	#endif
-		flipped = FLIPPED_4_V[outflank_c1c5f8] & 0x0010080404040400ULL;
+		const uint64_t flipped_c1c5f8 = FLIPPED_4_V[outflank_c1c5f8] & 0x0010080404040400ULL;
 
 	#ifdef USE_PEXT
-		outflank_c8c5g1 = OUTFLANK_4[PExt(O, 0x0004040408102000ULL)] & PExt(P, 0x0404040408102040ULL);
-		flipped |= FLIPPED_4_V[outflank_c8c5g1] & 0x0004040408102000ULL;
+		const uint64_t outflank_c8c5g1 = OUTFLANK_4[PExt(O, 0x0004040408102000ULL)] & PExt(P, 0x0404040408102040ULL);
+		const uint64_t flipped_c8c5g1 = FLIPPED_4_V[outflank_c8c5g1] & 0x0004040408102000ULL;
 	#else
-		outflank_c8c5g1 = OUTFLANK_3[((O & 0x0004040408102000ULL) * 0x0002020202010080ULL) >> 57] & ((((P & 0x0404040408102040ULL) >> 2) * 0x0808080808040201ULL) >> 56);
-		flipped |= FLIPPED_3_U[outflank_c8c5g1] & 0x0004040408102000ULL;
+		const uint64_t outflank_c8c5g1 = OUTFLANK_3[((O & 0x0004040408102000ULL) * 0x0002020202010080ULL) >> 57] & ((((P & 0x0404040408102040ULL) >> 2) * 0x0808080808040201ULL) >> 56);
+		const uint64_t flipped_c8c5g1 = FLIPPED_3_U[outflank_c8c5g1] & 0x0004040408102000ULL;
 	#endif
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_2[BExtr(O, 33, 6)] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 33, 6)] & (P >> 32);
 	#else
-		outflank_h = OUTFLANK_2[(O >> 33) & 0x3F] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_2[(O >> 33) & 0x3F] & (P >> 32);
 	#endif
-		flipped |= FLIPPED_2_H[outflank_h] & 0x000000FF00000000ULL;
+		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x000000FF00000000ULL;
 
-		flipped |= (((P << 9) & 0x0000000002000000ULL) | ((P >> 7) & 0x0000020000000000ULL)) & O;
+		const uint64_t flipped_r = (((P << 9) & 0x0000000002000000ULL) | ((P >> 7) & 0x0000020000000000ULL)) & O;
 
-		return flipped;
+		return flipped_c1c5f8 | flipped_c8c5g1 | flipped_h | flipped_r;
 	}
 
-	uint64_t flip_D5(const uint64_t P, const uint64_t O)
+	uint64_t D5(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d7, outflank_d9;
-		uint64_t flipped;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_4[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
+		const uint64_t outflank_v = OUTFLANK_4[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
 	#else
-		outflank_v = OUTFLANK_4[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57] & (((P & 0x0808080808080808ULL) * 0x0020408102040810ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_4[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57] & (((P & 0x0808080808080808ULL) * 0x0020408102040810ULL) >> 56);
 	#endif
-		flipped = FLIPPED_4_V[outflank_v] & 0x0008080808080800ULL;
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_v] & 0x0008080808080800ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 33, 6)] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 33, 6)] & (P >> 32);
 	#else
-		outflank_h = OUTFLANK_3[(O >> 33) & 0x3F] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 33) & 0x3F] & (P >> 32);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_h] & 0x000000FF00000000ULL;
+		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x000000FF00000000ULL;
 
-		outflank_d7 = OUTFLANK_3[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
-		
-		flipped |= FLIPPED_3_H[outflank_d7] & 0x0002040810204000ULL;
+		const uint64_t outflank_c = OUTFLANK_3[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_c = FLIPPED_3_H[outflank_c] & 0x0002040810204000ULL;
 
 	#ifdef USE_PEXT
-		outflank_d9 = OUTFLANK_3[PExt(O, 0x0020100804020000ULL)] & PExt(P, 0x4020100804020100ULL);
+		const uint64_t outflank_d = OUTFLANK_3[PExt(O, 0x0020100804020000ULL)] & PExt(P, 0x4020100804020100ULL);
 	#else
-		outflank_d9 = OUTFLANK_3[((O & 0x0020100804020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x4020100804020100ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0020100804020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x4020100804020100ULL) * 0x0101010101010101ULL) >> 56);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_d9] & 0x0020100804020000ULL;
-
-		return flipped;
+		const uint64_t flipped_d = FLIPPED_3_H[outflank_d] & 0x0020100804020000ULL;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_E5(const uint64_t P, const uint64_t O)
+	uint64_t E5(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d7, outflank_d9;
-		uint64_t flipped;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_4[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
+		const uint64_t outflank_v = OUTFLANK_4[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
 	#else
-		outflank_v = OUTFLANK_4[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57] & (((P & 0x1010101010101010ULL) * 0x0010204081020408ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_4[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57] & (((P & 0x1010101010101010ULL) * 0x0010204081020408ULL) >> 56);
 	#endif
-		flipped = FLIPPED_4_V[outflank_v] & 0x0010101010101000ULL;
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_v] & 0x0010101010101000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 33, 6)] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 33, 6)] & (P >> 32);
 	#else
-		outflank_h = OUTFLANK_4[(O >> 33) & 0x3F] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 33) & 0x3F] & (P >> 32);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_h] & 0x000000FF00000000ULL;
+		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x000000FF00000000ULL;
 		
-		outflank_d7 = OUTFLANK_4[((O & 0x0004081020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0204081020408000ULL) * 0x0101010101010101ULL) >> 56);
-		
-		flipped |= FLIPPED_4_H[outflank_d7] & 0x0004081020400000ULL;
+		const uint64_t outflank_c = OUTFLANK_4[((O & 0x0004081020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0204081020408000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_c = FLIPPED_4_H[outflank_c] & 0x0004081020400000ULL;
 
 	#ifdef USE_PEXT
-		outflank_d9 = OUTFLANK_4[PExt(O, 0x0040201008040200ULL)] & PExt(P, 0x8040201008040201ULL);
+		const uint64_t outflank_d = OUTFLANK_4[PExt(O, 0x0040201008040200ULL)] & PExt(P, 0x8040201008040201ULL);
 	#else
-		outflank_d9 = OUTFLANK_4[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x8040201008040201ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x8040201008040201ULL) * 0x0101010101010101ULL) >> 56);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_d9] & 0x0040201008040200ULL;
-
-		return flipped;
+		const uint64_t flipped_d = FLIPPED_4_H[outflank_d] & 0x0040201008040200ULL;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_F5(const uint64_t P, const uint64_t O)
+	uint64_t F5(const uint64_t P, const uint64_t O)
 	{
 	#ifdef USE_PEXT
-		uint8_t outflank_h, outflank_v, outflank_d;
+		const uint64_t outflank_v = OUTFLANK_4[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_v] & 0x0020202020202000ULL;
 	#else
-		uint8_t outflank_h, outflank_b1f5f8, outflank_c8f5f1;
-	#endif
-		uint64_t flipped;
-
-	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_4[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
-		flipped = FLIPPED_4_V[outflank_v] & 0x0020202020202000ULL;
-	#else
-		outflank_b1f5f8 = OUTFLANK_4[((O & 0x0020202010080400ULL) * 0x0080808080810204ULL) >> 57] & (((P & 0x2020202010080402ULL) * 0x0080808080810204ULL) >> 56);
-		flipped = FLIPPED_4_V[outflank_b1f5f8] & 0x0020202010080400ULL;
-	#endif
-		
-	#ifdef USE_PEXT
-		outflank_d = OUTFLANK_4[PExt(O, 0x0008102010080400ULL)] & PExt(P, 0x0408102010080402ULL);
-		flipped |= FLIPPED_4_V[outflank_d] & 0x0008102010080400ULL;
-	#else
-		outflank_c8f5f1 = OUTFLANK_3[((O & 0x0008102020202000ULL) * 0x0002010080404040ULL) >> 57] & ((((P & 0x0408102020202020ULL) >> 2) * 0x1008040201010101ULL) >> 56);
-		flipped |= FLIPPED_3_U[outflank_c8f5f1] & 0x0008102020202000ULL;
+		const uint64_t outflank_b1f5f8 = OUTFLANK_4[((O & 0x0020202010080400ULL) * 0x0080808080810204ULL) >> 57] & (((P & 0x2020202010080402ULL) * 0x0080808080810204ULL) >> 56);
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_b1f5f8] & 0x0020202010080400ULL;
 	#endif
 				
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 33, 6)] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 33, 6)] & (P >> 32);
 	#else
-		outflank_h = OUTFLANK_5[(O >> 33) & 0x3F] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 33) & 0x3F] & (P >> 32);
 	#endif
-		flipped |= FLIPPED_5_H[outflank_h] & 0x000000FF00000000ULL;
+		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x000000FF00000000ULL;
+		
+	#ifdef USE_PEXT
+		const uint64_t outflank_d = OUTFLANK_4[PExt(O, 0x0008102010080400ULL)] & PExt(P, 0x0408102010080402ULL);
+		const uint64_t flipped_d = FLIPPED_4_V[outflank_d] & 0x0008102010080400ULL;
+	#else
+		const uint64_t outflank_c8f5f1 = OUTFLANK_3[((O & 0x0008102020202000ULL) * 0x0002010080404040ULL) >> 57] & ((((P & 0x0408102020202020ULL) >> 2) * 0x1008040201010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_3_U[outflank_c8f5f1] & 0x0008102020202000ULL;
+	#endif
 
-		flipped |= (((P << 7) & 0x0000000040000000ULL) | ((P >> 9) & 0x0000400000000000ULL)) & O;
-
-		return flipped;
+		const uint64_t flipped_r = (((P << 7) & 0x0000000040000000ULL) | ((P >> 9) & 0x0000400000000000ULL)) & O;
+		
+		return flipped_v | flipped_h | flipped_d | flipped_r;
 	}
 
-	uint64_t flip_G5(const uint64_t P, const uint64_t O)
+	uint64_t G5(const uint64_t P, const uint64_t O)
 	{
 	#ifdef USE_PEXT
-		uint8_t outflank_h, outflank_v, outflank_d;
+		const uint64_t outflank_v = OUTFLANK_4[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_v] & 0x0040404040404000ULL;
 	#else
-		uint8_t outflank_h, outflank_c1g5g8, outflank_d8g5g1;
-	#endif
-		uint64_t flipped;
-
-	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_4[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
-		flipped = FLIPPED_4_V[outflank_v] & 0x0040404040404000ULL;
-	#else
-		outflank_c1g5g8 = OUTFLANK_4[((O & 0x0040404020100800ULL) * 0x0040404040408102ULL) >> 57] & (((P & 0x4040404020100804ULL) * 0x0040404040408102ULL) >> 56);
-		flipped = FLIPPED_4_V[outflank_c1g5g8] & 0x0040404020100800ULL;
+		const uint64_t outflank_c1g5g8 = OUTFLANK_4[((O & 0x0040404020100800ULL) * 0x0040404040408102ULL) >> 57] & (((P & 0x4040404020100804ULL) * 0x0040404040408102ULL) >> 56);
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_c1g5g8] & 0x0040404020100800ULL;
 	#endif
 		
-		outflank_h = OUTFLANK_7[(O >> 32) & 0x3E] & (P >> 31);
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3E) << 32;
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 32) & 0x3E] & (P >> 31);
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 32;
 		
 	#ifdef USE_PEXT
-		outflank_d = OUTFLANK_4[PExt(O, 0x0010204020100800ULL)] & PExt(P, 0x0810204020100804ULL);
-		flipped |= FLIPPED_4_V[outflank_d] & 0x0010204020100800ULL;
+		const uint64_t outflank_d = OUTFLANK_4[PExt(O, 0x0010204020100800ULL)] & PExt(P, 0x0810204020100804ULL);
+		const uint64_t flipped_d = FLIPPED_4_V[outflank_d] & 0x0010204020100800ULL;
 	#else
-		outflank_d8g5g1 = OUTFLANK_3[((O & 0x0010204040404000ULL) * 0x0001008040202020ULL) >> 57] & ((((P & 0x0810204040404040ULL) >> 3) * 0x1008040201010101ULL) >> 56);
-		flipped |= FLIPPED_3_U[outflank_d8g5g1] & 0x0010204040404000ULL;
+		const uint64_t outflank_d8g5g1 = OUTFLANK_3[((O & 0x0010204040404000ULL) * 0x0001008040202020ULL) >> 57] & ((((P & 0x0810204040404040ULL) >> 3) * 0x1008040201010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_3_U[outflank_d8g5g1] & 0x0010204040404000ULL;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_H5(const uint64_t P, const uint64_t O)
+	uint64_t H5(const uint64_t P, const uint64_t O)
 	{
 	#ifdef USE_PEXT
-		uint8_t outflank_h, outflank_v, outflank_d;
+		const uint64_t outflank_v = OUTFLANK_4[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_v] & 0x0080808080808000ULL;
 	#else
-		uint8_t outflank_h, outflank_d1h5h8, outflank_e8h5h1;
-	#endif
-		uint64_t flipped;
-
-	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_4[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
-		flipped = FLIPPED_4_V[outflank_v] & 0x0080808080808000ULL;
-	#else
-		outflank_d1h5h8 = OUTFLANK_4[((O & 0x0080808040201000ULL) * 0x0020202020204081ULL) >> 57] & (((P & 0x8080808040201008ULL) * 0x0020202020204081ULL) >> 56);
-		flipped = FLIPPED_4_V[outflank_d1h5h8] & 0x0080808040201000ULL;
-	#endif
-		
-	#ifdef USE_PEXT
-		outflank_d = OUTFLANK_4[PExt(O, 0x0020408040201000ULL)] & PExt(P, 0x1020408040201008ULL);
-		flipped |= FLIPPED_4_V[outflank_d] & 0x0020408040201000ULL;
-	#else
-		outflank_e8h5h1 = OUTFLANK_3[((O & 0x0020408080808000ULL) * 0x0000804020101010ULL) >> 57] & ((((P & 0x1020408080808080ULL) >> 4) * 0x1008040201010101ULL) >> 56);
-		flipped |= FLIPPED_3_U[outflank_e8h5h1] & 0x0020408080808000ULL;
+		const uint64_t outflank_d1h5h8 = OUTFLANK_4[((O & 0x0080808040201000ULL) * 0x0020202020204081ULL) >> 57] & (((P & 0x8080808040201008ULL) * 0x0020202020204081ULL) >> 56);
+		const uint64_t flipped_v = FLIPPED_4_V[outflank_d1h5h8] & 0x0080808040201000ULL;
 	#endif
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 33, 6)] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 33, 6)] & (P >> 32);
 	#else
-		outflank_h = OUTFLANK_7[(O >> 33) & 0x3F] & (P >> 32);
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 33) & 0x3F] & (P >> 32);
 	#endif
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3F) << 33;
-
-		return flipped;
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 33;
+		
+	#ifdef USE_PEXT
+		const uint64_t outflank_d = OUTFLANK_4[PExt(O, 0x0020408040201000ULL)] & PExt(P, 0x1020408040201008ULL);
+		const uint64_t flipped_d = FLIPPED_4_V[outflank_d] & 0x0020408040201000ULL;
+	#else
+		const uint64_t outflank_e8h5h1 = OUTFLANK_3[((O & 0x0020408080808000ULL) * 0x0000804020101010ULL) >> 57] & ((((P & 0x1020408080808080ULL) >> 4) * 0x1008040201010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_3_U[outflank_e8h5h1] & 0x0020408080808000ULL;
+	#endif
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_A6(const uint64_t P, const uint64_t O)
+	uint64_t A6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_v;
-		uint64_t flipped, outflank_h, flip_d7;
-
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0001010101010100ULL)] & PExt(P, 0x0101010101010101ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0001010101010100ULL)] & PExt(P, 0x0101010101010101ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0001010101010100ULL) * 0x0102040810204080ULL) >> 57] & (((P & 0x0101010101010101ULL) * 0x0102040810204080ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0001010101010100ULL) * 0x0102040810204080ULL) >> 57] & (((P & 0x0101010101010101ULL) * 0x0102040810204080ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0001010101010100ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0001010101010100ULL;
 
-		outflank_h = ((O & 0x00007e0000000000ULL) + 0x0000020000000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x00007e0000000000ULL;
+		const uint64_t outflank_h = ((O & 0x00007e0000000000ULL) + 0x0000020000000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x00007e0000000000ULL;
 
 	#ifdef USE_ABGH6
-		flip_d7 = OUTFLANK_5[PExt(O, 0x0002010204081000ULL)] & PExt(P, 0x0402010204081020ULL);
-		flipped |= FLIPPED_5_V[flip_d7] & 0x0402010204081020ULL;
+		const uint64_t flip_c = OUTFLANK_5[PExt(O, 0x0002010204081000ULL)] & PExt(P, 0x0402010204081020ULL);
+		const uint64_t flipped_x = FLIPPED_5_V[flip_c] & 0x0402010204081020ULL;
 	#else
-		flip_d7 = O | 0x0040810000000000ULL;
-		flip_d7 &= flip_d7 >> 7;
-		flip_d7 &= (flip_d7 >> 14) & 0x0000000204081000ULL;
-		flipped |= flip_d7 & -(flip_d7 & (P << 7));
+		uint64_t flip_c = O | 0x0040810000000000ULL;
+		flip_c &= flip_c >> 7;
+		flip_c &= (flip_c >> 14) & 0x0000000204081000ULL;
+		const uint64_t flipped_c |= flip_c & -(flip_c & (P << 7));
 
-		flipped |= (P >> 9) & 0x0002000000000000ULL & O;
+		const uint64_t flipped_d = (P >> 9) & 0x0002000000000000ULL & O;
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_B6(const uint64_t P, const uint64_t O)
+	uint64_t B6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_v;
-		uint64_t flipped, outflank_h, flip_d7;
-	
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0002020202020200ULL)] & PExt(P, 0x0202020202020202ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0002020202020200ULL)] & PExt(P, 0x0202020202020202ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0002020202020200ULL) * 0x0081020408102040ULL) >> 57] & (((P & 0x0202020202020202ULL) * 0x0081020408102040ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0002020202020200ULL) * 0x0081020408102040ULL) >> 57] & (((P & 0x0202020202020202ULL) * 0x0081020408102040ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0002020202020200ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0002020202020200ULL;
 
-		outflank_h = ((O & 0x00007c0000000000ULL) + 0x0000040000000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x00007c0000000000ULL;
+		const uint64_t outflank_h = ((O & 0x00007c0000000000ULL) + 0x0000040000000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x00007c0000000000ULL;
 		
 	#ifdef USE_ABGH6
-		flip_d7 = OUTFLANK_5[PExt(O, 0x0004020408102000ULL)] & PExt(P, 0x0804020408102040ULL);
-		flipped |= FLIPPED_5_V[flip_d7] & 0x0804020408102040ULL;
+		const uint64_t flip_c = OUTFLANK_5[PExt(O, 0x0004020408102000ULL)] & PExt(P, 0x0804020408102040ULL);
+		const uint64_t flipped_x = FLIPPED_5_V[flip_c] & 0x0804020408102040ULL;
 	#else
-		flip_d7 = O | 0x0081020000000000ULL;
-		flip_d7 &= flip_d7 >> 7;
-		flip_d7 &= (flip_d7 >> 14) & 0x0000000408102000ULL;
-		flipped |= flip_d7 & -(flip_d7 & (P << 7));
+		flip_c = O | 0x0081020000000000ULL;
+		flip_c &= flip_c >> 7;
+		flip_c &= (flip_c >> 14) & 0x0000000408102000ULL;
+		const uint64_t flipped_c = flip_c & -(flip_c & (P << 7));
 
-		flipped |= (P >> 9) & 0x0004000000000000ULL & O;
+		const uint64_t flipped_d = (P >> 9) & 0x0004000000000000ULL & O;
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_C6(const uint64_t P, const uint64_t O)
+	uint64_t C6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d7;
-		uint64_t flipped;
-	
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0004040404040400ULL)] & PExt(P, 0x0404040404040404ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0004040404040400ULL)] & PExt(P, 0x0404040404040404ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0004040404040400ULL) * 0x0040810204081020ULL) >> 57] & (((P & 0x0404040404040404ULL) * 0x0040810204081020ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0004040404040400ULL) * 0x0040810204081020ULL) >> 57] & (((P & 0x0404040404040404ULL) * 0x0040810204081020ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0004040404040400ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0004040404040400ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_2[BExtr(O, 41, 6)] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 41, 6)] & (P >> 40);
 	#else
-		outflank_h = OUTFLANK_2[(O >> 41) & 0x3F] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_2[(O >> 41) & 0x3F] & (P >> 40);
 	#endif
-		flipped |= FLIPPED_2_H[outflank_h] & 0x0000FF0000000000ULL;
+		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x0000FF0000000000ULL;
 		
 	#ifdef USE_PEXT
-		outflank_d7 = OUTFLANK_5[PExt(O, 0x0002040810204000ULL)] & PExt(P, 0x0102040810204080ULL);
-		flipped |= FLIPPED_5_V[outflank_d7] & 0x0002040810204000ULL;
+		const uint64_t outflank_c = OUTFLANK_5[PExt(O, 0x0002040810204000ULL)] & PExt(P, 0x0102040810204080ULL);
+		const uint64_t flipped_c = FLIPPED_5_V[outflank_c] & 0x0002040810204000ULL;
 	#else
-		outflank_d7 = OUTFLANK_2[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_2_H[outflank_d7] & 0x0002040810204000ULL;
+		const uint64_t outflank_c = OUTFLANK_2[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_c = FLIPPED_2_H[outflank_c] & 0x0002040810204000ULL;
 	#endif
 
-		flipped |= ((P >> 9) | (P << 9)) & 0x0008000200000000ULL & O;
-
-		return flipped;
+		const uint64_t flipped_d = ((P >> 9) | (P << 9)) & 0x0008000200000000ULL & O;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_D6(const uint64_t P, const uint64_t O)
+	uint64_t D6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d;
-		uint64_t flipped;
-	
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57] & (((P & 0x0808080808080808ULL) * 0x0020408102040810ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57] & (((P & 0x0808080808080808ULL) * 0x0020408102040810ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0008080808080800ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0008080808080800ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 41, 6)] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 41, 6)] & (P >> 40);
 	#else
-		outflank_h = OUTFLANK_3[(O >> 41) & 0x3F] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 41) & 0x3F] & (P >> 40);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_h] & 0x0000FF0000000000ULL;
+		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x0000FF0000000000ULL;
 
-		outflank_d = OUTFLANK_3[((O & 0x0000001422400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000001422418000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_3_H[outflank_d] & 0x0000001422400000ULL;	// A3D6H2
+		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0000001422400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000001422418000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_3_H[outflank_d] & 0x0000001422400000ULL;	// A3D6H2
 
-		flipped |= (((P >> 9) & 0x0010000000000000ULL) | ((P >> 7) & 0x0004000000000000ULL)) & O;
-
-		return flipped;
+		const uint64_t flipped_r = (((P >> 9) & 0x0010000000000000ULL) | ((P >> 7) & 0x0004000000000000ULL)) & O;
+		
+		return flipped_v | flipped_h | flipped_d | flipped_r;
 	}
 
-	uint64_t flip_E6(const uint64_t P, const uint64_t O)
+	uint64_t E6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d;
-		uint64_t flipped;
-	
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57] & (((P & 0x1010101010101010ULL) * 0x0010204081020408ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57] & (((P & 0x1010101010101010ULL) * 0x0010204081020408ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0010101010101000ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0010101010101000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 41, 6)] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 41, 6)] & (P >> 40);
 	#else
-		outflank_h = OUTFLANK_4[(O >> 41) & 0x3F] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 41) & 0x3F] & (P >> 40);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_h] & 0x0000FF0000000000ULL;
+		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x0000FF0000000000ULL;
 
-		outflank_d = OUTFLANK_4[((O & 0x0000002844020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000002844820100ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_4_H[outflank_d] & 0x0000002844020000ULL;	// A2E6H3
+		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0000002844020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000002844820100ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_4_H[outflank_d] & 0x0000002844020000ULL;	// A2E6H3
 
-		flipped |= (((P >> 9) & 0x0020000000000000ULL) | ((P >> 7) & 0x0008000000000000ULL)) & O;
-
-		return flipped;
+		const uint64_t flipped_r = (((P >> 9) & 0x0020000000000000ULL) | ((P >> 7) & 0x0008000000000000ULL)) & O;
+		
+		return flipped_v | flipped_h | flipped_d | flipped_r;
 	}
 
-	uint64_t flip_F6(const uint64_t P, const uint64_t O)
+	uint64_t F6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v, outflank_d9;
-		uint64_t flipped;
-	
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0020202020202000ULL) * 0x0008102040810204ULL) >> 57] & (((P & 0x2020202020202020ULL) * 0x0008102040810204ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0020202020202000ULL) * 0x0008102040810204ULL) >> 57] & (((P & 0x2020202020202020ULL) * 0x0008102040810204ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0020202020202000ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0020202020202000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 41, 6)] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 41, 6)] & (P >> 40);
 	#else
-		outflank_h = OUTFLANK_5[(O >> 41) & 0x3F] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 41) & 0x3F] & (P >> 40);
 	#endif
-		flipped |= FLIPPED_5_H[outflank_h] & 0x0000FF0000000000ULL;
+		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x0000FF0000000000ULL;
 
-		flipped |= ((P >> 7) | (P << 7)) & 0x0010004000000000ULL & O;
+		const uint64_t flipped_c = ((P >> 7) | (P << 7)) & 0x0010004000000000ULL & O;
 
 	#ifdef USE_PEXT
-		outflank_d9 = OUTFLANK_5[PExt(O, 0x0040201008040200ULL)] & PExt(P, 0x8040201008040201ULL);
+		const uint64_t outflank_d = OUTFLANK_5[PExt(O, 0x0040201008040200ULL)] & PExt(P, 0x8040201008040201ULL);
 	#else
-		outflank_d9 = OUTFLANK_5[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x8040201008040201ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t outflank_d = OUTFLANK_5[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x8040201008040201ULL) * 0x0101010101010101ULL) >> 56);
 	#endif
-		flipped |= FLIPPED_5_H[outflank_d9] & 0x0040201008040200ULL;
-
-		return flipped;
+		const uint64_t flipped_d = FLIPPED_5_H[outflank_d] & 0x0040201008040200ULL;
+		
+		return flipped_v | flipped_h | flipped_c | flipped_d;
 	}
 
-	uint64_t flip_G6(const uint64_t P, const uint64_t O)
+	uint64_t G6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, flip_d9;
-	
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0040404040404000ULL) * 0x0004081020408102ULL) >> 57] & (((P & 0x4040404040404040ULL) * 0x0004081020408102ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0040404040404000ULL) * 0x0004081020408102ULL) >> 57] & (((P & 0x4040404040404040ULL) * 0x0004081020408102ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0040404040404000ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0040404040404000ULL;
 
-		outflank_h = OUTFLANK_7[(O >> 40) & 0x3E] & (P >> 39);
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3E) << 40;
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 40) & 0x3E] & (P >> 39);
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 40;
 
 	#ifdef USE_ABGH6
-		flip_d9 = OUTFLANK_5[PExt(O, 0x0020402010080400ULL)] & PExt(P, 0x1020402010080402ULL);
-		flipped |= FLIPPED_5_V[flip_d9] & 0x1020402010080402ULL;
+		const uint64_t flip_x = OUTFLANK_5[PExt(O, 0x0020402010080400ULL)] & PExt(P, 0x1020402010080402ULL);
+		const uint64_t flipped_x = FLIPPED_5_V[flip_x] & 0x1020402010080402ULL;
 	#else
-		flipped |= (P >> 7) & 0x0020000000000000ULL & O;
+		const uint64_t flipped_c = (P >> 7) & 0x0020000000000000ULL & O;
 
-		flip_d9 = O & ((O >> 9) | 0x0000002000000000ULL);
-		flip_d9 &= (((flip_d9 & 0x0000002010000000ULL) >> 18) | 0x0000002010000000ULL);
-		flipped |= flip_d9 & -(flip_d9 & (P << 9));
+		uint64_t flip_d = O & ((O >> 9) | 0x0000002000000000ULL);
+		flip_d &= (((flip_d & 0x0000002010000000ULL) >> 18) | 0x0000002010000000ULL);
+		const uint64_t flipped_d = flip_d & -(flip_d & (P << 9));
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_H6(const uint64_t P, const uint64_t O)
+	uint64_t H6(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_v;
-		uint64_t flipped, flip_d9;
-	
 	#ifdef USE_PEXT
-		outflank_v = OUTFLANK_5[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
+		const uint64_t outflank_v = OUTFLANK_5[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
 	#else
-		outflank_v = OUTFLANK_5[((O & 0x0080808080808000ULL) * 0x0002040810204081ULL) >> 57] & (((P & 0x8080808080808080ULL) * 0x0002040810204081ULL) >> 56);
+		const uint64_t outflank_v = OUTFLANK_5[((O & 0x0080808080808000ULL) * 0x0002040810204081ULL) >> 57] & (((P & 0x8080808080808080ULL) * 0x0002040810204081ULL) >> 56);
 	#endif
-		flipped = FLIPPED_5_V[outflank_v] & 0x0080808080808000ULL;
+		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0080808080808000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 41, 6)] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 41, 6)] & (P >> 40);
 	#else
-		outflank_h = OUTFLANK_7[(O >> 41) & 0x3F] & (P >> 40);
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 41) & 0x3F] & (P >> 40);
 	#endif
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3F) << 41;
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 41;
 
 	#ifdef USE_ABGH6
-		flip_d9 = OUTFLANK_5[PExt(O, 0x0040804020100800ULL)] & PExt(P, 0x2040804020100804ULL);
-		flipped |= FLIPPED_5_V[flip_d9] & 0x2040804020100804ULL;
+		const uint64_t flip_x = OUTFLANK_5[PExt(O, 0x0040804020100800ULL)] & PExt(P, 0x2040804020100804ULL);
+		const uint64_t flipped_x = FLIPPED_5_V[flip_x] & 0x2040804020100804ULL;
 	#else
-		flipped |= (P >> 7) & 0x0040000000000000ULL & O;
+		const uint64_t flipped_c = (P >> 7) & 0x0040000000000000ULL & O;
 
-		flip_d9 = O & ((O >> 9) | 0x0000004000000000ULL);
-		flip_d9 &= (((flip_d9 & 0x0000004020000000ULL) >> 18) | 0x0000004020000000ULL);
-		flipped |= flip_d9 & -(flip_d9 & (P << 9));
+		uint64_t flip_d = O & ((O >> 9) | 0x0000004000000000ULL);
+		flip_d &= (((flip_d & 0x0000004020000000ULL) >> 18) | 0x0000004020000000ULL);
+		const uint64_t flipped_d = flip_d & -(flip_d & (P << 9));
+
+		const uint64_t flipped_x = flipped_c | flipped_d;
 	#endif
-
-		return flipped;
+		
+		return flipped_v | flipped_h | flipped_x;
 	}
 
-	uint64_t flip_A7(const uint64_t P, const uint64_t O)
+	uint64_t A7(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d7;
+	#ifdef USE_CLZ
+		const uint64_t outflank_v = GetMSB(~O & 0x0000010101010101ULL) & P;
+	#else
+		const uint64_t outflank_v = (0x0000010000000000ULL >> CONTIG_UP[((O & 0x0000010101010100ULL) * 0x0102040810204080ULL) >> 56]) & P;
+	#endif
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000010101010100ULL;
+
+		const uint64_t outflank_h = ((O & 0x007e000000000000ULL) + 0x0002000000000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x007e000000000000ULL;
 		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000010101010101ULL) & P;
+		const uint64_t outflank_c = GetMSB(~O & 0x0000020408102040ULL) & P;
 	#else
-		outflank_v = (0x0000010000000000ULL >> CONTIG_UP[((O & 0x0000010101010100ULL) * 0x0102040810204080ULL) >> 56]) & P;
+		const uint64_t outflank_c = (0x0000020000000000ULL >> CONTIG_UPRIGHT[((O & 0x0000020408102000ULL) * 0x0101010101010101ULL) >> 57]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0000010101010100ULL;
-
-		outflank_h = ((O & 0x007e000000000000ULL) + 0x0002000000000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x007e000000000000ULL;
+		const uint64_t flipped_c = (-outflank_c * 2) & 0x0000020408102000ULL;
 		
-	#ifdef USE_CLZ
-		outflank_d7 = GetMSB(~O & 0x0000020408102040ULL) & P;
-	#else
-		outflank_d7 = (0x0000020000000000ULL >> CONTIG_UPRIGHT[((O & 0x0000020408102000ULL) * 0x0101010101010101ULL) >> 57]) & P;
-	#endif
-		flipped |= (-outflank_d7 * 2) & 0x0000020408102000ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_c;
 	}
 
-	uint64_t flip_B7(const uint64_t P, const uint64_t O)
+	uint64_t B7(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d7;
+	#ifdef USE_CLZ
+		const uint64_t outflank_v = GetMSB(~O & 0x0000020202020202ULL) & P;
+	#else
+		const uint64_t outflank_v = (0x0000020000000000ULL >> CONTIG_UP[((O & 0x0000020202020200ULL) * 0x0081020408102040ULL) >> 56]) & P;
+	#endif
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000020202020200ULL;
+
+		const uint64_t outflank_h = ((O & 0x007c000000000000ULL) + 0x0004000000000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x007c000000000000ULL;
 		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000020202020202ULL) & P;
+		const uint64_t outflank_c = GetMSB(~O & 0x0000040810204080ULL) & P;
 	#else
-		outflank_v = (0x0000020000000000ULL >> CONTIG_UP[((O & 0x0000020202020200ULL) * 0x0081020408102040ULL) >> 56]) & P;
+		const uint64_t outflank_c = (0x0000040000000000ULL >> CONTIG_UPRIGHT[((O & 0x0000040810204000ULL) * 0x0101010101010101ULL) >> 58]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0000020202020200ULL;
-
-		outflank_h = ((O & 0x007c000000000000ULL) + 0x0004000000000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x007c000000000000ULL;
+		const uint64_t flipped_c = (-outflank_c * 2) & 0x0000040810204000ULL;
 		
-	#ifdef USE_CLZ
-		outflank_d7 = GetMSB(~O & 0x0000040810204080ULL) & P;
-	#else
-		outflank_d7 = (0x0000040000000000ULL >> CONTIG_UPRIGHT[((O & 0x0000040810204000ULL) * 0x0101010101010101ULL) >> 58]) & P;
-	#endif
-		flipped |= (-outflank_d7 * 2) & 0x0000040810204000ULL;
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_c;
 	}
 
-	uint64_t flip_C7(const uint64_t P, const uint64_t O)
+	uint64_t C7(const uint64_t P, const uint64_t O)
 	{
 		// ############ Room for optimization ############
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000040404040404ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0000040404040404ULL) & P;
 	#else
-		outflank_v = (0x0000040000000000ULL >> CONTIG_UP[((O & 0x0000040404040400ULL) * 0x0040810204081020ULL) >> 56]) & P;
+		const uint64_t outflank_v = (0x0000040000000000ULL >> CONTIG_UP[((O & 0x0000040404040400ULL) * 0x0040810204081020ULL) >> 56]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0000040404040400ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000040404040400ULL;
 
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_2[BExtr(O, 49, 6)] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 49, 6)] & (P >> 48);
 	#else
-		outflank_h = OUTFLANK_2[(O >> 49) & 0x3F] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_2[(O >> 49) & 0x3F] & (P >> 48);
 	#endif
-		flipped |= FLIPPED_2_H[outflank_h] & 0x00FF000000000000ULL;
+		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x00FF000000000000ULL;
 
-		outflank_d = OUTFLANK_2[((O & 0x00000a1020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x00000a1120408000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_2_H[outflank_d] & 0x00000a1020400000ULL;	// A5C7H2
-
-		return flipped;
+		const uint64_t outflank_d = OUTFLANK_2[((O & 0x00000a1020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x00000a1120408000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_2_H[outflank_d] & 0x00000a1020400000ULL;	// A5C7H2
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_D7(const uint64_t P, const uint64_t O)
+	uint64_t D7(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000080808080808ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0000080808080808ULL) & P;
 	#else
-		outflank_v = (0x0000080000000000ULL >> CONTIG_UP[((O & 0x0000080808080800ULL) * 0x0020408102040810ULL) >> 56]) & P;
+		const uint64_t outflank_v = (0x0000080000000000ULL >> CONTIG_UP[((O & 0x0000080808080800ULL) * 0x0020408102040810ULL) >> 56]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0000080808080800ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000080808080800ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 49, 6)] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 49, 6)] & (P >> 48);
 	#else
-		outflank_h = OUTFLANK_3[(O >> 49) & 0x3F] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 49) & 0x3F] & (P >> 48);
 	#endif
-		flipped |= FLIPPED_3_H[outflank_h] & 0x00FF000000000000ULL;
+		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x00FF000000000000ULL;
 
-		outflank_d = OUTFLANK_3[((O & 0x0000142240000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000142241800000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_3_H[outflank_d] & 0x0000142240000000ULL;	// A4D7H3
-
-		return flipped;
+		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0000142240000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000142241800000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_3_H[outflank_d] & 0x0000142240000000ULL;	// A4D7H3
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_E7(const uint64_t P, const uint64_t O)
+	uint64_t E7(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000101010101010ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0000101010101010ULL) & P;
 	#else
-		outflank_v = (0x0000100000000000ULL >> CONTIG_UP[((O & 0x0000101010101000ULL) * 0x0010204081020408ULL) >> 56]) & P;
+		const uint64_t outflank_v = (0x0000100000000000ULL >> CONTIG_UP[((O & 0x0000101010101000ULL) * 0x0010204081020408ULL) >> 56]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0000101010101000ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000101010101000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 49, 6)] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 49, 6)] & (P >> 48);
 	#else
-		outflank_h = OUTFLANK_4[(O >> 49) & 0x3F] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 49) & 0x3F] & (P >> 48);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_h] & 0x00FF000000000000ULL;
+		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x00FF000000000000ULL;
 
-		outflank_d = OUTFLANK_4[((O & 0x0000284402000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000284482010000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_4_H[outflank_d] & 0x0000284402000000ULL;	// A3E7H4
-
-		return flipped;
+		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0000284402000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000284482010000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_4_H[outflank_d] & 0x0000284402000000ULL; // A3E7H4
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_F7(const uint64_t P, const uint64_t O)
+	uint64_t F7(const uint64_t P, const uint64_t O)
+	{
+		// ############ Room for optimization ############		
+	#ifdef USE_CLZ
+		const uint64_t outflank_v = GetMSB(~O & 0x0000202020202020ULL) & P;
+	#else
+		const uint64_t outflank_v = (0x0000200000000000ULL >> CONTIG_UP[((O & 0x0000202020202000ULL) * 0x0008102040810204ULL) >> 56]) & P;
+	#endif
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000202020202000ULL;
+		
+	#ifdef USE_BEXTR
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 49, 6)] & (P >> 48);
+	#else
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 49) & 0x3F] & (P >> 48);
+	#endif
+		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x00FF000000000000ULL;
+
+		const uint64_t outflank_d = OUTFLANK_5[((O & 0x0000500804020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000508804020100ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_5_H[outflank_d] & 0x0000500804020000ULL;	// A2F7H5
+		
+		return flipped_v | flipped_h | flipped_d;
+	}
+
+	uint64_t G7(const uint64_t P, const uint64_t O)
+	{
+	#ifdef USE_CLZ
+		const uint64_t outflank_v = GetMSB(~O & 0x0000404040404040ULL) & P;
+	#else
+		const uint64_t outflank_v = (0x0000400000000000ULL >> CONTIG_UP[((O & 0x0000404040404000ULL) * 0x0004081020408102ULL) >> 56]) & P;
+	#endif
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000404040404000ULL;
+
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 48) & 0x3E] & (P >> 47);
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 48;
+		
+	#ifdef USE_CLZ
+		const uint64_t outflank_d = GetMSB(~O & 0x0000201008040201ULL) & P;
+	#else
+		const uint64_t outflank_d = (0x0000200000000000ULL >> CONTIG_UPLEFT[((O & 0x0000201008040200ULL) * 0x0101010101010101ULL) >> 56]) & P;
+	#endif
+		const uint64_t flipped_d = (-outflank_d * 2) & 0x0000201008040200ULL;
+		
+		return flipped_v | flipped_h | flipped_d;
+	}
+
+	uint64_t H7(const uint64_t P, const uint64_t O)
+	{
+	#ifdef USE_CLZ
+		const uint64_t outflank_v = GetMSB(~O & 0x0000808080808080ULL) & P;
+	#else
+		const uint64_t outflank_v = (0x0000800000000000ULL >> CONTIG_UP[((O & 0x0000808080808000ULL) * 0x0002040810204081ULL) >> 56]) & P;
+	#endif
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000808080808000ULL;
+		
+	#ifdef USE_BEXTR
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 49, 6)] & (P >> 48);
+	#else
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 49) & 0x3F] & (P >> 48);
+	#endif
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 49;
+		
+	#ifdef USE_CLZ
+		const uint64_t outflank_d = GetMSB(~O & 0x0000402010080402ULL) & P;
+	#else
+		const uint64_t outflank_d = (0x0000400000000000ULL >> CONTIG_UPLEFT[((O & 0x0000402010080400ULL) * 0x0101010101010101ULL) >> 57]) & P;
+	#endif
+		const uint64_t flipped_d = (-outflank_d * 2) & 0x0000402010080400ULL;
+		
+		return flipped_v | flipped_h | flipped_d;
+	}
+
+	uint64_t A8(const uint64_t P, const uint64_t O)
+	{
+	#ifdef USE_CLZ
+		const uint64_t outflank_v = GetMSB(~O & 0x0001010101010101ULL) & P;
+	#else
+		const uint64_t outflank_v = (0x0001000000000000ULL >> CONTIG_UP[((O & 0x0001010101010100ULL) * 0x0102040810204080ULL) >> 57]) & P;
+	#endif
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0001010101010100ULL;
+
+		const uint64_t outflank_h = ((O & 0x7e00000000000000ULL) + 0x0200000000000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x7e00000000000000ULL;
+		
+	#ifdef USE_CLZ
+		const uint64_t outflank_c = GetMSB(~O & 0x0002040810204080ULL) & P;
+	#else
+		const uint64_t outflank_c = (0x0002000000000000ULL >> CONTIG_UPRIGHT[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57]) & P;
+	#endif
+		const uint64_t flipped_c = (-outflank_c * 2) & 0x0002040810204000ULL;
+		
+		return flipped_v | flipped_h | flipped_c;
+	}
+
+	uint64_t B8(const uint64_t P, const uint64_t O)
+	{
+	#ifdef USE_CLZ
+		const uint64_t outflank_v = GetMSB(~O & 0x0002020202020202ULL) & P;
+	#else
+		const uint64_t outflank_v = (0x0002000000000000ULL >> CONTIG_UP[((O & 0x0002020202020200ULL) * 0x0081020408102040ULL) >> 57]) & P;
+	#endif
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0002020202020200ULL;
+
+		const uint64_t outflank_h = ((O & 0x7c00000000000000ULL) + 0x0400000000000000ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x7c00000000000000ULL;
+		
+	#ifdef USE_CLZ
+		const uint64_t outflank_c = GetMSB(~O & 0x0004081020408000ULL) & P;
+	#else
+		const uint64_t outflank_c = (0x0004000000000000ULL >> CONTIG_UPRIGHT[((O & 0x0004081020400000ULL) * 0x0101010101010101ULL) >> 58]) & P;
+	#endif
+		const uint64_t flipped_c = (-outflank_c * 2) & 0x0004081020400000ULL;
+		
+		return flipped_v | flipped_h | flipped_c;
+	}
+
+	uint64_t C8(const uint64_t P, const uint64_t O)
 	{
 		// ############ Room for optimization ############
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000202020202020ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0004040404040404ULL) & P;
 	#else
-		outflank_v = (0x0000200000000000ULL >> CONTIG_UP[((O & 0x0000202020202000ULL) * 0x0008102040810204ULL) >> 56]) & P;
+		const uint64_t outflank_v = (0x0004000000000000ULL >> CONTIG_UP[((O & 0x0004040404040400ULL) * 0x0040810204081020ULL) >> 57]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0000202020202000ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0004040404040400ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 49, 6)] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 57, 6)] & (P >> 56);
 	#else
-		outflank_h = OUTFLANK_5[(O >> 49) & 0x3F] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_2[(O >> 57) & 0x3F] & (P >> 56);
 	#endif
-		flipped |= FLIPPED_5_H[outflank_h] & 0x00FF000000000000ULL;
+		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0xFF00000000000000ULL;
 
-		outflank_d = OUTFLANK_5[((O & 0x0000500804020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000508804020100ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_5_H[outflank_d] & 0x0000500804020000ULL;	// A2F7H5
-
-		return flipped;
+		const uint64_t outflank_d = OUTFLANK_2[((O & 0x000a102040000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x000a112040800000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_2_H[outflank_d] & 0x000a102040000000ULL;	// A6C8H3
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_G7(const uint64_t P, const uint64_t O)
+	uint64_t D8(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d9;
-		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000404040404040ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0008080808080808ULL) & P;
 	#else
-		outflank_v = (0x0000400000000000ULL >> CONTIG_UP[((O & 0x0000404040404000ULL) * 0x0004081020408102ULL) >> 56]) & P;
+		const uint64_t outflank_v = (0x0008000000000000ULL >> CONTIG_UP[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0000404040404000ULL;
-
-		outflank_h = OUTFLANK_7[(O >> 48) & 0x3E] & (P >> 47);
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3E) << 48;
-		
-	#ifdef USE_CLZ
-		outflank_d9 = GetMSB(~O & 0x0000201008040201ULL) & P;
-	#else
-		outflank_d9 = (0x0000200000000000ULL >> CONTIG_UPLEFT[((O & 0x0000201008040200ULL) * 0x0101010101010101ULL) >> 56]) & P;
-	#endif
-		flipped |= (-outflank_d9 * 2) & 0x0000201008040200ULL;
-
-		return flipped;
-	}
-
-	uint64_t flip_H7(const uint64_t P, const uint64_t O)
-	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d9;
-		
-	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0000808080808080ULL) & P;
-	#else
-		outflank_v = (0x0000800000000000ULL >> CONTIG_UP[((O & 0x0000808080808000ULL) * 0x0002040810204081ULL) >> 56]) & P;
-	#endif
-		flipped  = (-outflank_v * 2) & 0x0000808080808000ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0008080808080800ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 49, 6)] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 57, 6)] & (P >> 56);
 	#else
-		outflank_h = OUTFLANK_7[(O >> 49) & 0x3F] & (P >> 48);
+		const uint64_t outflank_h = OUTFLANK_3[(O >> 57) & 0x3F] & (P >> 56);
 	#endif
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3F) << 49;
-		
-	#ifdef USE_CLZ
-		outflank_d9 = GetMSB(~O & 0x0000402010080402ULL) & P;
-	#else
-		outflank_d9 = (0x0000400000000000ULL >> CONTIG_UPLEFT[((O & 0x0000402010080400ULL) * 0x0101010101010101ULL) >> 57]) & P;
-	#endif
-		flipped |= (-outflank_d9 * 2) & 0x0000402010080400ULL;
+		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0xFF00000000000000ULL;
 
-		return flipped;
+		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0014224000000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0014224180000000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_3_H[outflank_d] & 0x0014224000000000ULL;	// A5D8H4
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_A8(const uint64_t P, const uint64_t O)
+	uint64_t E8(const uint64_t P, const uint64_t O)
 	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d7;
-
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0001010101010101ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0010101010101010ULL) & P;
 	#else
-		outflank_v = (0x0001000000000000ULL >> CONTIG_UP[((O & 0x0001010101010100ULL) * 0x0102040810204080ULL) >> 57]) & P;
+		const uint64_t outflank_v = (0x0010000000000000ULL >> CONTIG_UP[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0001010101010100ULL;
-
-		outflank_h = ((O & 0x7e00000000000000ULL) + 0x0200000000000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x7e00000000000000ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0010101010101000ULL;
 		
-	#ifdef USE_CLZ
-		outflank_d7 = GetMSB(~O & 0x0002040810204080ULL) & P;
+	#ifdef USE_BEXTR
+		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 57, 6)] & (P >> 56);
 	#else
-		outflank_d7 = (0x0002000000000000ULL >> CONTIG_UPRIGHT[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57]) & P;
+		const uint64_t outflank_h = OUTFLANK_4[(O >> 57) & 0x3F] & (P >> 56);
 	#endif
-		flipped |= (-outflank_d7 * 2) & 0x0002040810204000ULL;
+		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0xFF00000000000000ULL;
 
-		return flipped;
+		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0028440200000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0028448201000000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_4_H[outflank_d] & 0x0028440200000000ULL;	// A4E8H5
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_B8(const uint64_t P, const uint64_t O)
-	{
-		uint64_t flipped, outflank_v, outflank_h, outflank_d7;
-		
-	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0002020202020202ULL) & P;
-	#else
-		outflank_v = (0x0002000000000000ULL >> CONTIG_UP[((O & 0x0002020202020200ULL) * 0x0081020408102040ULL) >> 57]) & P;
-	#endif
-		flipped  = (-outflank_v * 2) & 0x0002020202020200ULL;
-
-		outflank_h = ((O & 0x7c00000000000000ULL) + 0x0400000000000000ULL) & P;
-		flipped |= (outflank_h - (outflank_h >> 8)) & 0x7c00000000000000ULL;
-		
-	#ifdef USE_CLZ
-		outflank_d7 = GetMSB(~O & 0x0004081020408000ULL) & P;
-	#else
-		outflank_d7 = (0x0004000000000000ULL >> CONTIG_UPRIGHT[((O & 0x0004081020400000ULL) * 0x0101010101010101ULL) >> 58]) & P;
-	#endif
-		flipped |= (-outflank_d7 * 2) & 0x0004081020400000ULL;
-
-		return flipped;
-	}
-
-	uint64_t flip_C8(const uint64_t P, const uint64_t O)
+	uint64_t F8(const uint64_t P, const uint64_t O)
 	{
 		// ############ Room for optimization ############
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0004040404040404ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0020202020202020ULL) & P;
 	#else
-		outflank_v = (0x0004000000000000ULL >> CONTIG_UP[((O & 0x0004040404040400ULL) * 0x0040810204081020ULL) >> 57]) & P;
+		const uint64_t outflank_v = (0x0020000000000000ULL >> CONTIG_UP[((O & 0x0020202020202000ULL) * 0x0008102040810204ULL) >> 57]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0004040404040400ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0020202020202000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_2[BExtr(O, 57, 6)] & (P >> 56);
+		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 57, 6)] & (P >> 56);
 	#else
-		outflank_h = OUTFLANK_2[(O >> 57) & 0x3F] & (P >> 56);
+		const uint64_t outflank_h = OUTFLANK_5[(O >> 57) & 0x3F] & (P >> 56);
 	#endif
-		flipped |= FLIPPED_2_H[outflank_h] & 0xFF00000000000000ULL;
+		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0xFF00000000000000ULL;
 
-		outflank_d = OUTFLANK_2[((O & 0x000a102040000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x000a112040800000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_2_H[outflank_d] & 0x000a102040000000ULL;	// A6C8H3
-
-		return flipped;
+		const uint64_t outflank_d = OUTFLANK_5[((O & 0x0050080402000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0050880402010000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_5_H[outflank_d] & 0x0050080402000000ULL;	// A3F8H6
+		
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_D8(const uint64_t P, const uint64_t O)
+	uint64_t G8(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-		
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0008080808080808ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0040404040404040ULL) & P;
 	#else
-		outflank_v = (0x0008000000000000ULL >> CONTIG_UP[((O & 0x0008080808080800ULL) * 0x0020408102040810ULL) >> 57]) & P;
+		const uint64_t outflank_v = (0x0040000000000000ULL >> CONTIG_UP[((O & 0x0040404040404000ULL) * 0x0004081020408102ULL) >> 57]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0008080808080800ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0040404040404000ULL;
+
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 56) & 0x3E] & (P >> 55);
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 56;
+
+	#ifdef USE_CLZ
+		const uint64_t outflank_d = GetMSB(~O & 0x0020100804020100ULL) & P;
+	#else
+		const uint64_t outflank_d = (0x0020000000000000ULL >> CONTIG_UPLEFT[((O & 0x0020100804020000ULL) * 0x0101010101010101ULL) >> 56]) & P;
+	#endif
+		const uint64_t flipped_d = (-outflank_d * 2) & 0x0020100804020000ULL;
 		
-	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_3[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		outflank_h = OUTFLANK_3[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
-		flipped |= FLIPPED_3_H[outflank_h] & 0xFF00000000000000ULL;
-
-		outflank_d = OUTFLANK_3[((O & 0x0014224000000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0014224180000000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_3_H[outflank_d] & 0x0014224000000000ULL;	// A5D8H4
-
-		return flipped;
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_E8(const uint64_t P, const uint64_t O)
+	uint64_t H8(const uint64_t P, const uint64_t O)
 	{
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-
 	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0010101010101010ULL) & P;
+		const uint64_t outflank_v = GetMSB(~O & 0x0080808080808080ULL) & P;
 	#else
-		outflank_v = (0x0010000000000000ULL >> CONTIG_UP[((O & 0x0010101010101000ULL) * 0x0010204081020408ULL) >> 57]) & P;
+		const uint64_t outflank_v = (0x0080000000000000ULL >> CONTIG_UP[((O & 0x0080808080808000ULL) * 0x0002040810204081ULL) >> 57]) & P;
 	#endif
-		flipped  = (-outflank_v * 2) & 0x0010101010101000ULL;
+		const uint64_t flipped_v = (-outflank_v * 2) & 0x0080808080808000ULL;
 		
 	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_4[BExtr(O, 57, 6)] & (P >> 56);
+		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 57, 6)] & (P >> 56);
 	#else
-		outflank_h = OUTFLANK_4[(O >> 57) & 0x3F] & (P >> 56);
+		const uint64_t outflank_h = OUTFLANK_7[(O >> 57) & 0x3F] & (P >> 56);
 	#endif
-		flipped |= FLIPPED_4_H[outflank_h] & 0xFF00000000000000ULL;
+		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 57;
 
-		outflank_d = OUTFLANK_4[((O & 0x0028440200000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0028448201000000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_4_H[outflank_d] & 0x0028440200000000ULL;	// A4E8H5
+	#ifdef USE_CLZ
+		const uint64_t outflank_d = GetMSB(~O & 0x0040201008040201ULL) & P;
+	#else
+		const uint64_t outflank_d = (0x0040000000000000ULL >> CONTIG_UPLEFT[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57]) & P;
+	#endif
+		const uint64_t flipped_d = (-outflank_d * 2) & 0x0040201008040200ULL;
 
-		return flipped;
+		return flipped_v | flipped_h | flipped_d;
 	}
 
-	uint64_t flip_F8(const uint64_t P, const uint64_t O)
-	{
-		// ############ Room for optimization ############
-		uint8_t outflank_h, outflank_d;
-		uint64_t flipped, outflank_v;
-
-	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0020202020202020ULL) & P;
-	#else
-		outflank_v = (0x0020000000000000ULL >> CONTIG_UP[((O & 0x0020202020202000ULL) * 0x0008102040810204ULL) >> 57]) & P;
-	#endif
-		flipped  = (-outflank_v * 2) & 0x0020202020202000ULL;
-		
-	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_5[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		outflank_h = OUTFLANK_5[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
-		flipped |= FLIPPED_5_H[outflank_h] & 0xFF00000000000000ULL;
-
-		outflank_d = OUTFLANK_5[((O & 0x0050080402000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0050880402010000ULL) * 0x0101010101010101ULL) >> 56);
-		flipped |= FLIPPED_5_H[outflank_d] & 0x0050080402000000ULL;	// A3F8H6
-
-		return flipped;
-	}
-
-	uint64_t flip_G8(const uint64_t P, const uint64_t O)
-	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d9;
-
-	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0040404040404040ULL) & P;
-	#else
-		outflank_v = (0x0040000000000000ULL >> CONTIG_UP[((O & 0x0040404040404000ULL) * 0x0004081020408102ULL) >> 57]) & P;
-	#endif
-		flipped  = (-outflank_v * 2) & 0x0040404040404000ULL;
-
-		outflank_h = OUTFLANK_7[(O >> 56) & 0x3E] & (P >> 55);
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3E) << 56;
-
-	#ifdef USE_CLZ
-		outflank_d9 = GetMSB(~O & 0x0020100804020100ULL) & P;
-	#else
-		outflank_d9 = (0x0020000000000000ULL >> CONTIG_UPLEFT[((O & 0x0020100804020000ULL) * 0x0101010101010101ULL) >> 56]) & P;
-	#endif
-		flipped |= (-outflank_d9 * 2) & 0x0020100804020000ULL;
-
-		return flipped;
-	}
-
-	uint64_t flip_H8(const uint64_t P, const uint64_t O)
-	{
-		uint8_t outflank_h;
-		uint64_t flipped, outflank_v, outflank_d9;
-
-	#ifdef USE_CLZ
-		outflank_v = GetMSB(~O & 0x0080808080808080ULL) & P;
-	#else
-		outflank_v = (0x0080000000000000ULL >> CONTIG_UP[((O & 0x0080808080808000ULL) * 0x0002040810204081ULL) >> 57]) & P;
-	#endif
-		flipped  = (-outflank_v * 2) & 0x0080808080808000ULL;
-		
-	#ifdef USE_BEXTR
-		outflank_h = OUTFLANK_7[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		outflank_h = OUTFLANK_7[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
-		flipped |= static_cast<uint64_t>((-outflank_h) & 0x3F) << 57;
-
-	#ifdef USE_CLZ
-		outflank_d9 = GetMSB(~O & 0x0040201008040201ULL) & P;
-	#else
-		outflank_d9 = (0x0040000000000000ULL >> CONTIG_UPLEFT[((O & 0x0040201008040200ULL) * 0x0101010101010101ULL) >> 57]) & P;
-	#endif
-		flipped |= (-outflank_d9 * 2) & 0x0040201008040200ULL;
-
-		return flipped;
-	}
-
-	uint64_t flip_pass(const uint64_t P, const uint64_t O)
+	uint64_t pass(const uint64_t P, const uint64_t O)
 	{
 		return 0;
 	}
 
 
 	uint64_t (*flip_fp[65])(const uint64_t, const uint64_t) = {
-		flip_A1, flip_B1, flip_C1, flip_D1, flip_E1, flip_F1, flip_G1, flip_H1,
-		flip_A2, flip_B2, flip_C2, flip_D2, flip_E2, flip_F2, flip_G2, flip_H2,
-		flip_A3, flip_B3, flip_C3, flip_D3, flip_E3, flip_F3, flip_G3, flip_H3,
-		flip_A4, flip_B4, flip_C4, flip_D4, flip_E4, flip_F4, flip_G4, flip_H4,
-		flip_A5, flip_B5, flip_C5, flip_D5, flip_E5, flip_F5, flip_G5, flip_H5,
-		flip_A6, flip_B6, flip_C6, flip_D6, flip_E6, flip_F6, flip_G6, flip_H6,
-		flip_A7, flip_B7, flip_C7, flip_D7, flip_E7, flip_F7, flip_G7, flip_H7,
-		flip_A8, flip_B8, flip_C8, flip_D8, flip_E8, flip_F8, flip_G8, flip_H8, flip_pass
+		A1, B1, C1, D1, E1, F1, G1, H1,
+		A2, B2, C2, D2, E2, F2, G2, H2,
+		A3, B3, C3, D3, E3, F3, G3, H3,
+		A4, B4, C4, D4, E4, F4, G4, H4,
+		A5, B5, C5, D5, E5, F5, G5, H5,
+		A6, B6, C6, D6, E6, F6, G6, H6,
+		A7, B7, C7, D7, E7, F7, G7, H7,
+		A8, B8, C8, D8, E8, F8, G8, H8, pass
 	};
 }
