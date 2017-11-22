@@ -2,31 +2,15 @@
 
 #ifdef HAS_BMI2
 	#define USE_PEXT
-	#define USE_PDEP
 	#define USE_C3
 	#define USE_F3
 	#define USE_ABGH6
 	#define USE_CLZ
-	#define USE_BEXTR
 #endif
 
 namespace Flip_Fast
 {
-	/** outflank array (indexed with inner 6 bits) */
-	/* const uint8_t OUTFLANK_0[64] = {
-		0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x10, 0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x20,
-		0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x10, 0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x40,
-		0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x10, 0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x20,
-		0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x10, 0x00, 0x04, 0x00, 0x08, 0x00, 0x04, 0x00, 0x80
-	}; */
-
-	/* const uint8_t OUTFLANK_1[64] = {
-		0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x20, 0x00,
-		0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x40, 0x00,
-		0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x20, 0x00,
-		0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x80, 0x00
-	}; */
-
+	// outflank array (indexed with inner 6 bits)
 	const uint8_t OUTFLANK_2[64] = {
 		0x00, 0x01, 0x00, 0x00, 0x10, 0x11, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x20, 0x21, 0x00, 0x00,
 		0x00, 0x01, 0x00, 0x00, 0x10, 0x11, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x40, 0x41, 0x00, 0x00,
@@ -54,13 +38,6 @@ namespace Flip_Fast
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x88, 0x88, 0x88, 0x88, 0x84, 0x84, 0x82, 0x81,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 	};
-
-	/* const uint8_t OUTFLANK_6[64] = {
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x08, 0x08, 0x08, 0x08, 0x04, 0x04, 0x02, 0x01,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-	}; */
 
 	const uint8_t OUTFLANK_7[64] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -137,7 +114,7 @@ namespace Flip_Fast
 	};
 
 	const uint64_t FLIPPED_4_H[133] = {
-		0x0000000000000000ULL, 0x0e0e0e0e0e0e0e0eULL, 0x0c0c0c0c0c0c0c0cULL, 0x0000000000000000ULL, 0x0808080808080808ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
+		0x0000000000000000ULL, 0x0e0e0e0e0e0e0e0EULL, 0x0c0c0c0c0c0c0c0cULL, 0x0000000000000000ULL, 0x0808080808080808ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
 		0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
 		0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
 		0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL, 0x0000000000000000ULL,
@@ -264,8 +241,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x0101010101010100ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010100ULL;
 
-		const uint64_t outflank_h = ((O & 0x000000000000007eULL) + 0x0000000000000002ULL) & P;
-		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x000000000000007eULL;
+		const uint64_t outflank_h = ((O & 0x7E) + 0x02) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x7E;
 
 		const uint64_t outflank_d = GetLSB(~O & 0x8040201008040200ULL) & P;
 		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008040200ULL;
@@ -278,8 +255,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x0202020202020200ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020200ULL;
 
-		const uint64_t outflank_h = ((O & 0x000000000000007cULL) + 0x0000000000000004ULL) & P;
-		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x000000000000007cULL;
+		const uint64_t outflank_h = ((O & 0x7C) + 0x04) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h != 0)) & 0x7C;
 
 		const uint64_t outflank_d = GetLSB(~O & 0x0080402010080400ULL) & P;
 		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x0080402010080400ULL;
@@ -292,12 +269,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x0404040404040400ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040400ULL;
 
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 1, 6)] & P;
-	#else
-		const uint64_t outflank_h = OUTFLANK_2[(O >> 1) & 0x3F] & P;
-	#endif
-		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_2_H[outflank_h]);
+		const uint8_t  flipped_h = FLIPPED_2_H[outflank_h];
 
 		const uint64_t flipped_c = (P >> 7) & 0x0000000000000200ULL & O;
 
@@ -312,12 +285,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x0808080808080800ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080800ULL;
 
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 1, 6)] & P;
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 1) & 0x3F] & P;
-	#endif
-		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_3_H[outflank_h]);
+		const uint8_t  flipped_h = FLIPPED_3_H[outflank_h];
 		
 		const uint64_t outflank_c = GetLSB(~O & 0x0000000001020400ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000001020400ULL;
@@ -333,12 +302,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x1010101010101000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010101000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 1, 6)] & P;
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 1) & 0x3F] & P;
-	#endif
-		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_4_H[outflank_h]);
+		const uint8_t  flipped_h = FLIPPED_4_H[outflank_h];
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0000000102040800ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000102040800ULL;
@@ -354,12 +319,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x2020202020202000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020202000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 1, 6)] & P;
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 1) & 0x3F] & P;
-	#endif
-		const uint64_t flipped_h = static_cast<uint8_t>(FLIPPED_5_H[outflank_h]);
+		const uint8_t  flipped_h = FLIPPED_5_H[outflank_h];
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0000010204081000ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000010204081000ULL;
@@ -375,7 +336,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040404000ULL;
 
 		const uint64_t outflank_h = OUTFLANK_7[O & 0x3E] & (P << 1);
-		const uint64_t flipped_h = ((-outflank_h) & 0x3E);
+		const uint64_t flipped_h = (-outflank_h & 0x3E);
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0001020408102000ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0001020408102000ULL;
@@ -388,12 +349,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x8080808080808000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080808000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 1, 6)] & P;
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 1) & 0x3F] & P;
-	#endif
-		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 1;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 1;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0102040810204000ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810204000ULL;
@@ -406,8 +363,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = ((O | ~0x0101010101010000ULL) + 0x0000000000010000ULL) & P & 0x0101010101010000ULL;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010000ULL;
 
-		const uint64_t outflank_h = ((O & 0x0000000000007e00ULL) + 0x0000000000000200ULL) & P;
-		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007e00ULL;
+		const uint64_t outflank_h = ((O & 0x0000000000007E00ULL) + 0x0000000000000200ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007E00ULL;
 
 		const uint64_t outflank_d = ((O | ~0x4020100804020000ULL) + 0x0000000000020000ULL) & P & 0x4020100804020000ULL;
 		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x4020100804020000ULL;
@@ -420,8 +377,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = ((O | ~0x0202020202020000ULL) + 0x0000000000020000ULL) & P & 0x0202020202020000ULL;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020000ULL;
 		
-		const uint64_t outflank_h = ((O & 0x0000000000007c00ULL) + 0x0000000000000400ULL) & P;
-		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007c00ULL;
+		const uint64_t outflank_h = ((O & 0x0000000000007C00ULL) + 0x0000000000000400ULL) & P;
+		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007C00ULL;
 		
 		const uint64_t outflank_d = ((O | ~0x8040201008040000ULL) + 0x0000000000040000ULL) & P & 0x8040201008040000ULL;
 		const uint64_t flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008040000ULL;
@@ -434,11 +391,7 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x0404040404040000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 9, 6)] & (P >> 8);
-	#else
-		const uint64_t outflank_h = OUTFLANK_2[(O >> 9) & 0x3F] & (P >> 8);
-	#endif
 		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x000000000000FF00ULL;
 
 		const uint64_t flipped_c = ((P >> 7) & 0x0000000000020000ULL & O);
@@ -454,11 +407,7 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x0808080808080000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 9, 6)] & (P >> 8);
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 9) & 0x3F] & (P >> 8);
-	#endif
 		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x000000000000FF00ULL;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0000000102040000ULL) & P;
@@ -475,11 +424,7 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x1010101010100000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010100000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 9, 6)] & (P >> 8);
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 9) & 0x3F] & (P >> 8);
-	#endif
 		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x000000000000FF00ULL;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0000010204080000ULL) & P;
@@ -496,11 +441,7 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x2020202020200000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020200000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 9, 6)] & (P >> 8);
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 9) & 0x3F] & (P >> 8);
-	#endif
 		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x000000000000FF00ULL;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0001020408100000ULL) & P;
@@ -517,7 +458,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040400000ULL;
 		
 		const uint64_t outflank_h = OUTFLANK_7[(O >> 8) & 0x3E] & (P >> 7);
-		const uint64_t flipped_h = ((-outflank_h) & 0x3E) << 8;
+		const uint64_t flipped_h = (-outflank_h & 0x3E) << 8;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0102040810200000ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810200000ULL;
@@ -530,12 +471,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x8080808080800000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080800000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 9, 6)] & (P >> 8);
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 9) & 0x3F] & (P >> 8);
-	#endif
-		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 9;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 9;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0204081020400000ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0204081020400000ULL;
@@ -584,7 +521,7 @@ namespace Flip_Fast
 		const uint64_t outflank_h = ((O & 0x0000000000780000ULL) + 0x0000000000080000ULL) & P;
 		const uint64_t flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000780000ULL;
 	#else
-		const uint64_t outflank_h = static_cast<uint8_t>(OUTFLANK_2[(O >> 17) & 0x3F] & (P >> 16));
+		const uint8_t  outflank_h = OUTFLANK_2[(O >> 17) & 0x3F] & (P >> 16);
 		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x0000000000FF0000ULL;
 	#endif
 
@@ -605,11 +542,7 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x0808080808000000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808000000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 17, 6)] & (P >> 16);
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 17) & 0x3F] & (P >> 16);
-	#endif
 		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x0000000000FF0000ULL;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0000010204000000ULL) & P;
@@ -632,11 +565,7 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x1010101010000000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010000000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 17, 6)] & (P >> 16);
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 17) & 0x3F] & (P >> 16);
-	#endif
 		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x0000000000FF0000ULL;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0001020408000000ULL) & P;
@@ -659,11 +588,7 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x2020202020000000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020000000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 17, 6)] & (P >> 16);
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 17) & 0x3F] & (P >> 16);
-	#endif
 		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x0000000000FF0000ULL;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0102040810000000ULL) & P;
@@ -684,7 +609,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040000000ULL;
 		
 		const uint64_t outflank_h = OUTFLANK_7[(O >> 16) & 0x3E] & (P >> 15);
-		const uint64_t flipped_h = ((-outflank_h) & 0x3E) << 16;
+		const uint64_t flipped_h = (-outflank_h & 0x3E) << 16;
 		
 		const uint64_t outflank_c = GetLSB(~O & 0x0204081020000000ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0204081020000000ULL;
@@ -699,12 +624,8 @@ namespace Flip_Fast
 		const uint64_t outflank_v = GetLSB(~O & 0x8080808080000000ULL) & P;
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080000000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 17, 6)] & (P >> 16);
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 17) & 0x3F] & (P >> 16);
-	#endif
-		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 17;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 17;
 
 		const uint64_t outflank_c = GetLSB(~O & 0x0408102040000000ULL) & P;
 		const uint64_t flipped_c = (outflank_c - (outflank_c != 0)) & 0x0408102040000000ULL;
@@ -781,11 +702,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0004040404040400ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 25, 6)] & (P >> 24);
-	#else
-		const uint64_t outflank_h = OUTFLANK_2[(O >> 25) & 0x3F] & (P >> 24);
-	#endif
 		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x00000000FF000000ULL;
 
 	#ifdef USE_PEXT
@@ -816,11 +733,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0008080808080800ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 25, 6)] & (P >> 24);
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 25) & 0x3F] & (P >> 24);
-	#endif
 		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x00000000FF000000ULL;
 
 		const uint64_t outflank_c = OUTFLANK_3[((O & 0x0000020408102000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0001020408102040ULL) * 0x0101010101010101ULL) >> 56);
@@ -845,11 +758,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0010101010101000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 25, 6)] & (P >> 24);
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 25) & 0x3F] & (P >> 24);
-	#endif
 		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x00000000FF000000ULL;
 
 		const uint64_t outflank_c = OUTFLANK_4[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
@@ -874,11 +783,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0020202020202000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 25, 6)] & (P >> 24);
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 25) & 0x3F] & (P >> 24);
-	#endif
 		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x00000000FF000000ULL;
 		
 	#ifdef USE_PEXT
@@ -910,7 +815,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0040404040404000ULL;
 
 		const uint64_t outflank_h = OUTFLANK_7[(O >> 24) & 0x3E] & (P >> 23);
-		const uint64_t flipped_h = ((-outflank_h) & 0x3E) << 24;
+		const uint64_t flipped_h = (-outflank_h & 0x3E) << 24;
 		
 	#ifdef USE_PEXT
 		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0008102040201000ULL)] & PExt(P, 0x0408102040201008ULL);
@@ -938,12 +843,8 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_3_V[outflank_v] & 0x0080808080808000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 25, 6)] & (P >> 24);
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 25) & 0x3F] & (P >> 24);
-	#endif
-		const uint64_t flipped_h = ((-outflank_h) & 0x3F) << 25;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 25;
 		
 	#ifdef USE_PEXT
 		const uint64_t outflank_x = OUTFLANK_3[PExt(O, 0x0010204080402000ULL)] & PExt(P, 0x0810204080402010ULL);
@@ -1025,11 +926,7 @@ namespace Flip_Fast
 		const uint64_t flipped_c8c5g1 = FLIPPED_3_U[outflank_c8c5g1] & 0x0004040408102000ULL;
 	#endif
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 33, 6)] & (P >> 32);
-	#else
-		const uint64_t outflank_h = OUTFLANK_2[(O >> 33) & 0x3F] & (P >> 32);
-	#endif
 		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x000000FF00000000ULL;
 
 		const uint64_t flipped_r = (((P << 9) & 0x0000000002000000ULL) | ((P >> 7) & 0x0000020000000000ULL)) & O;
@@ -1046,11 +943,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_4_V[outflank_v] & 0x0008080808080800ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 33, 6)] & (P >> 32);
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 33) & 0x3F] & (P >> 32);
-	#endif
 		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x000000FF00000000ULL;
 
 		const uint64_t outflank_c = OUTFLANK_3[((O & 0x0002040810204000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0102040810204080ULL) * 0x0101010101010101ULL) >> 56);
@@ -1075,11 +968,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_4_V[outflank_v] & 0x0010101010101000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 33, 6)] & (P >> 32);
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 33) & 0x3F] & (P >> 32);
-	#endif
 		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x000000FF00000000ULL;
 		
 		const uint64_t outflank_c = OUTFLANK_4[((O & 0x0004081020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0204081020408000ULL) * 0x0101010101010101ULL) >> 56);
@@ -1104,12 +993,8 @@ namespace Flip_Fast
 		const uint64_t outflank_b1f5f8 = OUTFLANK_4[((O & 0x0020202010080400ULL) * 0x0080808080810204ULL) >> 57] & (((P & 0x2020202010080402ULL) * 0x0080808080810204ULL) >> 56);
 		const uint64_t flipped_v = FLIPPED_4_V[outflank_b1f5f8] & 0x0020202010080400ULL;
 	#endif
-				
-	#ifdef USE_BEXTR
+		
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 33, 6)] & (P >> 32);
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 33) & 0x3F] & (P >> 32);
-	#endif
 		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x000000FF00000000ULL;
 		
 	#ifdef USE_PEXT
@@ -1136,7 +1021,7 @@ namespace Flip_Fast
 	#endif
 		
 		const uint64_t outflank_h = OUTFLANK_7[(O >> 32) & 0x3E] & (P >> 31);
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 32;
+		const uint64_t flipped_h = (-outflank_h & 0x3E) << 32;
 		
 	#ifdef USE_PEXT
 		const uint64_t outflank_d = OUTFLANK_4[PExt(O, 0x0010204020100800ULL)] & PExt(P, 0x0810204020100804ULL);
@@ -1159,12 +1044,8 @@ namespace Flip_Fast
 		const uint64_t flipped_v = FLIPPED_4_V[outflank_d1h5h8] & 0x0080808040201000ULL;
 	#endif
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 33, 6)] & (P >> 32);
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 33) & 0x3F] & (P >> 32);
-	#endif
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 33;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 33;
 		
 	#ifdef USE_PEXT
 		const uint64_t outflank_d = OUTFLANK_4[PExt(O, 0x0020408040201000ULL)] & PExt(P, 0x1020408040201008ULL);
@@ -1244,11 +1125,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0004040404040400ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 41, 6)] & (P >> 40);
-	#else
-		const uint64_t outflank_h = OUTFLANK_2[(O >> 41) & 0x3F] & (P >> 40);
-	#endif
 		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x0000FF0000000000ULL;
 		
 	#ifdef USE_PEXT
@@ -1273,11 +1150,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0008080808080800ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 41, 6)] & (P >> 40);
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 41) & 0x3F] & (P >> 40);
-	#endif
 		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x0000FF0000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0000001422400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000001422418000ULL) * 0x0101010101010101ULL) >> 56);
@@ -1297,11 +1170,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0010101010101000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 41, 6)] & (P >> 40);
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 41) & 0x3F] & (P >> 40);
-	#endif
 		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x0000FF0000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0000002844020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000002844820100ULL) * 0x0101010101010101ULL) >> 56);
@@ -1321,11 +1190,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0020202020202000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 41, 6)] & (P >> 40);
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 41) & 0x3F] & (P >> 40);
-	#endif
 		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x0000FF0000000000ULL;
 
 		const uint64_t flipped_c = ((P >> 7) | (P << 7)) & 0x0010004000000000ULL & O;
@@ -1350,7 +1215,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0040404040404000ULL;
 
 		const uint64_t outflank_h = OUTFLANK_7[(O >> 40) & 0x3E] & (P >> 39);
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 40;
+		const uint64_t flipped_h = (-outflank_h & 0x3E) << 40;
 
 	#ifdef USE_ABGH6
 		const uint64_t flip_x = OUTFLANK_5[PExt(O, 0x0020402010080400ULL)] & PExt(P, 0x1020402010080402ULL);
@@ -1377,12 +1242,8 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = FLIPPED_5_V[outflank_v] & 0x0080808080808000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 41, 6)] & (P >> 40);
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 41) & 0x3F] & (P >> 40);
-	#endif
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 41;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 41;
 
 	#ifdef USE_ABGH6
 		const uint64_t flip_x = OUTFLANK_5[PExt(O, 0x0040804020100800ULL)] & PExt(P, 0x2040804020100804ULL);
@@ -1454,15 +1315,11 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000040404040400ULL;
 
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 49, 6)] & (P >> 48);
-	#else
-		const uint64_t outflank_h = OUTFLANK_2[(O >> 49) & 0x3F] & (P >> 48);
-	#endif
 		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0x00FF000000000000ULL;
 
-		const uint64_t outflank_d = OUTFLANK_2[((O & 0x00000a1020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x00000a1120408000ULL) * 0x0101010101010101ULL) >> 56);
-		const uint64_t flipped_d = FLIPPED_2_H[outflank_d] & 0x00000a1020400000ULL;	// A5C7H2
+		const uint64_t outflank_d = OUTFLANK_2[((O & 0x00000A1020400000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x00000a1120408000ULL) * 0x0101010101010101ULL) >> 56);
+		const uint64_t flipped_d = FLIPPED_2_H[outflank_d] & 0x00000A1020400000ULL;	// A5C7H2
 		
 		return flipped_v | flipped_h | flipped_d;
 	}
@@ -1476,11 +1333,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000080808080800ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 49, 6)] & (P >> 48);
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 49) & 0x3F] & (P >> 48);
-	#endif
 		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0x00FF000000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0000142240000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000142241800000ULL) * 0x0101010101010101ULL) >> 56);
@@ -1498,11 +1351,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000101010101000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 49, 6)] & (P >> 48);
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 49) & 0x3F] & (P >> 48);
-	#endif
 		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0x00FF000000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0000284402000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000284482010000ULL) * 0x0101010101010101ULL) >> 56);
@@ -1521,11 +1370,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000202020202000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 49, 6)] & (P >> 48);
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 49) & 0x3F] & (P >> 48);
-	#endif
 		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0x00FF000000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_5[((O & 0x0000500804020000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0000508804020100ULL) * 0x0101010101010101ULL) >> 56);
@@ -1544,7 +1389,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000404040404000ULL;
 
 		const uint64_t outflank_h = OUTFLANK_7[(O >> 48) & 0x3E] & (P >> 47);
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 48;
+		const uint64_t flipped_h = (-outflank_h & 0x3E) << 48;
 		
 	#ifdef USE_CLZ
 		const uint64_t outflank_d = GetMSB(~O & 0x0000201008040201ULL) & P;
@@ -1565,12 +1410,8 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0000808080808000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 49, 6)] & (P >> 48);
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 49) & 0x3F] & (P >> 48);
-	#endif
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 49;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 49;
 		
 	#ifdef USE_CLZ
 		const uint64_t outflank_d = GetMSB(~O & 0x0000402010080402ULL) & P;
@@ -1636,15 +1477,11 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0004040404040400ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		const uint64_t outflank_h = OUTFLANK_2[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
 		const uint64_t flipped_h = FLIPPED_2_H[outflank_h] & 0xFF00000000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_2[((O & 0x000a102040000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x000a112040800000ULL) * 0x0101010101010101ULL) >> 56);
-		const uint64_t flipped_d = FLIPPED_2_H[outflank_d] & 0x000a102040000000ULL;	// A6C8H3
+		const uint64_t flipped_d = FLIPPED_2_H[outflank_d] & 0x000A102040000000ULL;	// A6C8H3
 		
 		return flipped_v | flipped_h | flipped_d;
 	}
@@ -1658,11 +1495,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0008080808080800ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_3[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		const uint64_t outflank_h = OUTFLANK_3[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
 		const uint64_t flipped_h = FLIPPED_3_H[outflank_h] & 0xFF00000000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_3[((O & 0x0014224000000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0014224180000000ULL) * 0x0101010101010101ULL) >> 56);
@@ -1680,11 +1513,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0010101010101000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_4[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		const uint64_t outflank_h = OUTFLANK_4[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
 		const uint64_t flipped_h = FLIPPED_4_H[outflank_h] & 0xFF00000000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_4[((O & 0x0028440200000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0028448201000000ULL) * 0x0101010101010101ULL) >> 56);
@@ -1703,11 +1532,7 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0020202020202000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_5[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		const uint64_t outflank_h = OUTFLANK_5[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
 		const uint64_t flipped_h = FLIPPED_5_H[outflank_h] & 0xFF00000000000000ULL;
 
 		const uint64_t outflank_d = OUTFLANK_5[((O & 0x0050080402000000ULL) * 0x0101010101010101ULL) >> 57] & (((P & 0x0050880402010000ULL) * 0x0101010101010101ULL) >> 56);
@@ -1726,7 +1551,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0040404040404000ULL;
 
 		const uint64_t outflank_h = OUTFLANK_7[(O >> 56) & 0x3E] & (P >> 55);
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3E) << 56;
+		const uint64_t flipped_h = (-outflank_h & 0x3E) << 56;
 
 	#ifdef USE_CLZ
 		const uint64_t outflank_d = GetMSB(~O & 0x0020100804020100ULL) & P;
@@ -1747,12 +1572,8 @@ namespace Flip_Fast
 	#endif
 		const uint64_t flipped_v = (-outflank_v * 2) & 0x0080808080808000ULL;
 		
-	#ifdef USE_BEXTR
 		const uint64_t outflank_h = OUTFLANK_7[BExtr(O, 57, 6)] & (P >> 56);
-	#else
-		const uint64_t outflank_h = OUTFLANK_7[(O >> 57) & 0x3F] & (P >> 56);
-	#endif
-		const uint64_t flipped_h = static_cast<uint64_t>((-outflank_h) & 0x3F) << 57;
+		const uint64_t flipped_h = (-outflank_h & 0x3F) << 57;
 
 	#ifdef USE_CLZ
 		const uint64_t outflank_d = GetMSB(~O & 0x0040201008040201ULL) & P;
