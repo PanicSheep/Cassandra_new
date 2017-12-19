@@ -8,6 +8,10 @@
 	#define USE_CLZ
 #endif
 
+#pragma warning(push)
+#pragma warning(disable:4146) // unary minus operator applied to unsigned type, result still unsigned.
+
+
 namespace Flip_Fast
 {
 	// outflank array (indexed with inner 6 bits)
@@ -270,7 +274,7 @@ namespace Flip_Fast
 		const uint64_t flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040400ULL;
 
 		const uint64_t outflank_h = OUTFLANK_2[BExtr(O, 1, 6)] & P;
-		const uint8_t  flipped_h = FLIPPED_2_H[outflank_h];
+		const uint8_t  flipped_h = static_cast<uint8_t>(FLIPPED_2_H[outflank_h]);
 
 		const uint64_t flipped_c = (P >> 7) & 0x0000000000000200ULL & O;
 
@@ -1602,3 +1606,5 @@ namespace Flip_Fast
 		A8, B8, C8, D8, E8, F8, G8, H8, pass
 	};
 }
+
+#pragma warning(pop)
