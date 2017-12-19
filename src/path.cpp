@@ -22,7 +22,6 @@ CPath::CPath(std::string path)
 {
 	replace_all(path, WRONG_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
 
-	const std::string NETWORK_SEPARATOR = FOLDER_SEPARATOR + FOLDER_SEPARATOR;
 	if (IsAbsolutePath(path))
 		m_fullpath = path;
 	else // relative path
@@ -56,7 +55,18 @@ std::string CPath::GetAbsoluteFilePath() const
 	return m_fullpath;
 }
 
-std::string CPath::GetFileName() const
+std::string CPath::GetRawFileName() const
+{
+	assert(IsFile());
+	const auto FolderSeparatorPos = m_fullpath.rfind(FOLDER_SEPARATOR);
+	const auto DotPos = m_fullpath.rfind(".");
+	if ((DotPos > FolderSeparatorPos) && (DotPos != std::string::npos))
+		return m_fullpath.substr(FolderSeparatorPos + 1, DotPos - FolderSeparatorPos - 1);
+	else
+		return m_fullpath.substr(FolderSeparatorPos + 1);
+}
+
+std::string CPath::GetFullFileName() const
 {
 	assert(IsFile());
 	return m_fullpath.substr(m_fullpath.rfind(FOLDER_SEPARATOR) + 1);
@@ -69,7 +79,7 @@ std::string CPath::GetFolderName() const
 	return m_fullpath.substr(pos + 1, m_fullpath.length() - pos - 2);
 }
 
-std::string CPath::GetFileNameExtension() const
+std::string CPath::GetExtension() const
 {
 	assert(IsFile());
 	return m_fullpath.substr(m_fullpath.rfind('.') + 1);
@@ -77,18 +87,24 @@ std::string CPath::GetFileNameExtension() const
 
 bool CPath::IsFile() const
 {
-	return m_fullpath.substr(m_fullpath.length() - 1) != FOLDER_SEPARATOR;
+	if (m_fullpath.length() > 0)
+		return m_fullpath.substr(m_fullpath.length() - 1) != FOLDER_SEPARATOR;
+	else
+		return false;
 }
 
 bool CPath::IsFolder() const
 {
-	return m_fullpath.substr(m_fullpath.length() - 1) == FOLDER_SEPARATOR;
+	if (m_fullpath.length() > 0)
+		return m_fullpath.substr(m_fullpath.length() - 1) == FOLDER_SEPARATOR;
+	else
+		return false;
 }
 
 void CPath::ProcessFolderUps()
 {
 	std::string Token = FOLDER_SEPARATOR + "..";
-	std::size_t TokenPos;;
+	std::size_t TokenPos;
 	while ((TokenPos = m_fullpath.find(Token)) != std::string::npos)
 	{
 		std::size_t FolderStartPos = m_fullpath.rfind(FOLDER_SEPARATOR, TokenPos - 1);

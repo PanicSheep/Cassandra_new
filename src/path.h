@@ -16,8 +16,9 @@ public:
 	std::string GetRelativeFolderPath() const;
 	
 	bool IsFile() const;
-	std::string GetFileName() const;
-	std::string GetFileNameExtension() const;
+	std::string GetRawFileName() const;
+	std::string GetFullFileName() const;
+	std::string GetExtension() const;
 	std::string GetAbsoluteFilePath() const;
 	std::string GetRelativeFilePath() const;
 private:
