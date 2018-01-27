@@ -232,7 +232,7 @@ FORCE_INLINE uint64_t GetMSB(const uint64_t b) { return b ? 0x8000000000000000UL
 FORCE_INLINE void RemoveMSB(uint64_t & b) { b ^= GetMSB(b); }
 
 FORCE_INLINE void      SetBit(      uint64_t& b, const uint8_t pos) { assert(pos < 64);         b |= 1ULL << pos; }
-FORCE_INLINE bool      GetBit(const uint64_t  b, const uint8_t pos) { assert(pos < 64); return (b & (1ULL << pos)) != 0; }
+FORCE_INLINE bool     TestBit(const uint64_t  b, const uint8_t pos) { assert(pos < 64); return (b & (1ULL << pos)) != 0; }
 FORCE_INLINE uint64_t MakeBit(                   const uint8_t pos) { return pos < 64 ? 1ULL << pos : 0ULL; }
 
 // PopCount
