@@ -33,31 +33,31 @@ CPath::CPath(std::string path)
 
 std::string CPath::GetRelativeFolderPath() const
 {
-	assert(IsFolder());
+	if (!IsFolder()) throw std::logic_error("Not a folder!");
 	return GetRelativePath();
 }
 
 std::string CPath::GetRelativeFilePath() const
 {
-	assert(IsFile());
+	if (!IsFile()) throw std::logic_error("Not a file!");
 	return GetRelativePath();
 }
 
 std::string CPath::GetAbsoluteFolderPath() const
 {
-	assert(IsFolder());
+	if (!IsFolder()) throw std::logic_error("Not a folder!");
 	return m_fullpath;
 }
 
 std::string CPath::GetAbsoluteFilePath() const
 {
-	assert(IsFile());
+	if (!IsFile()) throw std::logic_error("Not a file!");
 	return m_fullpath;
 }
 
 std::string CPath::GetRawFileName() const
 {
-	assert(IsFile());
+	if (!IsFile()) throw std::logic_error("Not a file!");
 	const auto FolderSeparatorPos = m_fullpath.rfind(FOLDER_SEPARATOR);
 	const auto DotPos = m_fullpath.rfind(".");
 	if ((DotPos > FolderSeparatorPos) && (DotPos != std::string::npos))
@@ -68,20 +68,20 @@ std::string CPath::GetRawFileName() const
 
 std::string CPath::GetFullFileName() const
 {
-	assert(IsFile());
+	if (!IsFile()) throw std::logic_error("Not a file!");
 	return m_fullpath.substr(m_fullpath.rfind(FOLDER_SEPARATOR) + 1);
 }
 
 std::string CPath::GetFolderName() const
 {
-	assert(IsFolder());
+	if (!IsFolder()) throw std::logic_error("Not a folder!");
 	std::size_t pos = m_fullpath.rfind(FOLDER_SEPARATOR, m_fullpath.length() - 2);
 	return m_fullpath.substr(pos + 1, m_fullpath.length() - pos - 2);
 }
 
 std::string CPath::GetExtension() const
 {
-	assert(IsFile());
+	if (!IsFile()) throw std::logic_error("Not a file!");
 	return m_fullpath.substr(m_fullpath.rfind('.') + 1);
 }
 
