@@ -3,12 +3,12 @@
 
 TEST (PerftTest, Basic) {
 	for (uint8_t depth = 0; depth < 11; depth++)
-		ASSERT_EQ (Perft_Basic::perft(START_POSITION_P, START_POSITION_O, depth), Perft::Correct(depth));
+		ASSERT_EQ (Perft_Basic::perft(CPosition::StartPosition().P, CPosition::StartPosition().O, depth), Perft::Correct(depth));
 }
 
 TEST (PerftTest, Unroll2) {
 	for (uint8_t depth = 2; depth < 12; depth++)
-		ASSERT_EQ (Perft_Unroll2::perft(START_POSITION_P, START_POSITION_O, depth), Perft::Correct(depth));
+		ASSERT_EQ (Perft_Unroll2::perft(CPosition::StartPosition().P, CPosition::StartPosition().O, depth), Perft::Correct(depth));
 }
 
 

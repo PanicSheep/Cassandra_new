@@ -15,55 +15,49 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\possiblemoves_avx512.cpp">
+    <ClCompile Include="..\..\src\position.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\possiblemoves_sse2.cpp">
+    <ClCompile Include="..\..\src\PCfitter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\utility.cpp">
+    <ClCompile Include="..\..\src\possiblemoves_avx2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\flip_fast.cpp">
+    <ClCompile Include="..\..\src\possiblemoves_avx512.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\perft_haswell.cpp">
+    <ClCompile Include="..\..\src\possiblemoves_sse2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\position.cpp">
+    <ClCompile Include="..\..\src\utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\possiblemoves.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\possiblemoves_avx2.cpp">
+    <ClCompile Include="..\..\src\flip_fast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\selectivity.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\src\flip_fast.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\utility.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\src\macros_hell.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\datamanipulation.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\src\position.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\flip_fast.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\src\possiblemoves.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\hashtable_perft.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\src\selectivity.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\macros_hell.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\src\statistics.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\position.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\possiblemoves.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\src\utility.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

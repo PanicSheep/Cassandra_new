@@ -5,9 +5,8 @@ namespace Perft_Basic
 	void perft(const uint8_t depth)
 	{
 		std::chrono::high_resolution_clock::time_point startTime, endTime;
-		uint64_t P = START_POSITION_P;
-		uint64_t O = START_POSITION_O;
-		PlayStone(P, O, BitScanLSB(PossibleMoves(P, O)));
+		CPosition pos = CPosition::StartPosition();
+		pos.PlayStone(BitScanLSB(pos.PossibleMoves()));
 		uint64_t result;
 
 		std::cout << "depth|       Positions        |correct|      Time      " << std::endl;
@@ -16,7 +15,7 @@ namespace Perft_Basic
 		for (uint8_t d = 1; d <= depth; ++d)
 		{
 			startTime = std::chrono::high_resolution_clock::now();
-			result = 4ULL * perft(P, O, d-1);
+			result = 4ULL * perft(pos.P, pos.O, d-1);
 			endTime = std::chrono::high_resolution_clock::now();
 			
 			printf(" %3u | %22s |%7s| %14s\n", d, ThousandsSeparator(result).c_str(), (Perft::Correct(d) == result ? "  true " : " false "), time_format(endTime - startTime).c_str());
@@ -58,9 +57,8 @@ namespace Perft_Unroll2
 	void perft(const uint8_t depth)
 	{
 		std::chrono::high_resolution_clock::time_point startTime, endTime;
-		uint64_t P = START_POSITION_P;
-		uint64_t O = START_POSITION_O;
-		PlayStone(P, O, BitScanLSB(PossibleMoves(P, O)));
+		CPosition pos = CPosition::StartPosition();
+		pos.PlayStone(BitScanLSB(pos.PossibleMoves()));
 		uint64_t result;
 
 		std::cout << "depth|       Positions        |correct|      Time      " << std::endl;
@@ -69,7 +67,7 @@ namespace Perft_Unroll2
 		for (uint8_t d = 3; d <= depth; ++d)
 		{
 			startTime = std::chrono::high_resolution_clock::now();
-			result = 4ULL * perft(P, O, d-1);
+			result = 4ULL * perft(pos.P, pos.O, d-1);
 			endTime = std::chrono::high_resolution_clock::now();
 			
 			printf(" %3u | %22s |%7s| %14s\n", d, ThousandsSeparator(result).c_str(), (Perft::Correct(d) == result ? "  true " : " false "), time_format(endTime - startTime).c_str());

@@ -4,7 +4,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, BitScanLSB_1) {
-	ASSERT_DEATH (BitScanLSB(0), "(.*?)");
+#ifndef NDEBUG
+	ASSERT_DEATH (BitScanLSB(0), ".*");
+#endif
 	ASSERT_EQ (BitScanLSB(1), 0u);
 	ASSERT_EQ (BitScanLSB(2), 1u);
 	ASSERT_EQ (BitScanLSB(3), 0u);
@@ -55,7 +57,9 @@ TEST (MacrosHellTest, BitScanLSB_6) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, BitScanMSB_1) {
-	ASSERT_DEATH (BitScanMSB(0), "(.*?)");
+#ifndef NDEBUG
+	ASSERT_DEATH (BitScanMSB(0), ".*");
+#endif
 	ASSERT_EQ (BitScanMSB(1), 0u);
 	ASSERT_EQ (BitScanMSB(2), 1u);
 	ASSERT_EQ (BitScanMSB(3), 1u);
@@ -106,7 +110,9 @@ TEST (MacrosHellTest, BitScanMSB_6) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
 TEST (MacrosHellTest, CountLeadingZerosTest) {
-	ASSERT_DEATH (CountLeadingZeros(0), "(.*?)");
+#ifndef NDEBUG
+	ASSERT_DEATH (CountLeadingZeros(0), ".*");
+#endif
 	ASSERT_EQ (CountLeadingZeros(1), 63u);
 	ASSERT_EQ (CountLeadingZeros(2), 62u);
 	ASSERT_EQ (CountLeadingZeros(3), 62u);
@@ -114,7 +120,9 @@ TEST (MacrosHellTest, CountLeadingZerosTest) {
 }
 
 TEST (MacrosHellTest, CountTrailingZerosTest) {
-	ASSERT_DEATH (CountTrailingZeros(0), "(.*?)");
+#ifndef NDEBUG
+	ASSERT_DEATH (CountTrailingZeros(0), ".*");
+#endif
 	ASSERT_EQ (CountTrailingZeros(1), 0u);
 	ASSERT_EQ (CountTrailingZeros(2), 1u);
 	ASSERT_EQ (CountTrailingZeros(3), 0u);
@@ -172,7 +180,9 @@ TEST (MacrosHellTest, SetBitTest) {
 	}
 	{
 		uint64_t a = 0ULL;
-		ASSERT_DEATH (SetBit(a, 64);, "(.*?)");
+#ifndef NDEBUG
+		ASSERT_DEATH (SetBit(a, 64);, ".*");
+#endif
 	}
 }
 
@@ -182,8 +192,9 @@ TEST (MacrosHellTest, GetBitTest) {
 	ASSERT_EQ (GetBit(a, 63), true);
 	for (uint8_t i = 1; i < 63; i++)
 		ASSERT_EQ (GetBit(a, i), false);
-	
-	ASSERT_DEATH (GetBit(a, 64);, "(.*?)");
+#ifndef NDEBUG
+	ASSERT_DEATH (GetBit(a, 64);, ".*");
+#endif
 }
 
 TEST (MacrosHellTest, MakeBitTest) {

@@ -43,3 +43,20 @@ std::string GetCurrentWorkingDirectory();
 
 std::vector<std::string> split(const std::string& src, const std::string& deli);
 std::string join(const std::vector<std::string>& parts, const std::string& deli);
+
+// Returns an int with either a '+' or a '-' prefix. Zero is represented '+0'.
+inline std::string SignedInt(int score)
+{
+	const std::string Sign = (score >= 0) ? "+" : "-";
+	const std::string Number = std::to_string(std::abs(score));
+	return Sign + Number;
+}
+
+// Returns a double digit int with either a '+' or a '-' prefix. Zero is represented '+00'.
+inline std::string DoubleDigitSignedInt(int score)
+{
+	const std::string Sign = (score >= 0) ? "+" : "-";
+	const std::string FillingZero = (std::abs(score) < 10) ? "0" : "";
+	const std::string Number = std::to_string(std::abs(score));
+	return Sign + FillingZero + Number;
+}

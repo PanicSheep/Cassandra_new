@@ -5,6 +5,12 @@
 #include "selectivity.h"
 #include "utility.h"
 #include "macros_hell.h"
+#include "StreamSerializables.h"
+#include "ObjectSerializables.h"
+#include "FileStreamArchive.h"
+#include "StreamConverter.h"
+#include "SingleLineStreamDecorator.h"
+#include "MultiLineStreamDecorator.h"
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -13,12 +19,7 @@
 #include <utility>
 #include <vector>
 
-#define PLAY_STONE_SWAP
-
-/// Returns an int with either a '+' or a '-' prefix. Zero is represented '+0'.
-inline std::string SignedInt(int score) { return std::string((score >= 0) ? "+" : "-") + std::string((std::abs(score) < 10) ? "0" : "") + std::to_string(std::abs(score)); }
-
-inline std::string field_name(const uint8_t move)
+inline std::string Move(const uint8_t move)
 {
 	assert(move <= 64);
 	static const std::string name[65] = {
@@ -34,6 +35,29 @@ inline std::string field_name(const uint8_t move)
 	return name[move];
 }
 
+inline uint8_t Move(const std::string& field_name)
+{
+	if (field_name == "--")
+		return 64;
+
+	auto letter = field_name.substr(0, 1);
+	auto number = field_name.substr(1, 1);
+
+	uint8_t letter_index;
+	if (letter == "A") letter_index = 0;
+	else if (letter == "B") letter_index = 1;
+	else if (letter == "C") letter_index = 2;
+	else if (letter == "D") letter_index = 3;
+	else if (letter == "E") letter_index = 4;
+	else if (letter == "F") letter_index = 5;
+	else if (letter == "G") letter_index = 6;
+	else if (letter == "H") letter_index = 7;
+
+	uint8_t number_index = std::stoi(number) - 1;
+
+	return number_index * 8 + letter_index;
+}
+
 enum Field : uint8_t
 {
 	A1, B1, C1, D1, E1, F1, G1, H1,
@@ -47,6 +71,87 @@ enum Field : uint8_t
 	pass
 };
 
+inline uint64_t FlipCodiagonal(uint64_t b)
+{	// 9 x XOR, 6 x SHIFT, 3 x AND
+	// 18 OPs
+	
+	// # # # # # # # /
+	// # # # # # # / #
+	// # # # # # / # #
+	// # # # # / # # #
+	// # # # / # # # #
+	// # # / # # # # #
+	// # / # # # # # #
+	// / # # # # # # #<-LSB
+	uint64_t t;
+	t  =  b ^ (b << 36);
+	b ^= (t ^ (b >> 36)) & 0xF0F0F0F00F0F0F0FULL;
+	t  = (b ^ (b << 18)) & 0xCCCC0000CCCC0000ULL;
+	b ^=  t ^ (t >> 18);
+	t  = (b ^ (b <<  9)) & 0xAA00AA00AA00AA00ULL;
+	b ^=  t ^ (t >>  9);
+	return b;
+}
+
+inline uint64_t FlipDiagonal(uint64_t b)
+{	// 9 x XOR, 6 x SHIFT, 3 x AND
+	// 18 OPs
+	
+	// \ # # # # # # #
+	// # \ # # # # # #
+	// # # \ # # # # #
+	// # # # \ # # # #
+	// # # # # \ # # #
+	// # # # # # \ # #
+	// # # # # # # \ #
+	// # # # # # # # \.<-LSB
+	uint64_t t;
+	t  = (b ^ (b >>  7)) & 0x00AA00AA00AA00AAULL;
+	b ^=  t ^ (t <<  7);
+	t  = (b ^ (b >> 14)) & 0x0000CCCC0000CCCCULL;
+	b ^=  t ^ (t << 14);
+	t  = (b ^ (b >> 28)) & 0x00000000F0F0F0F0ULL;
+	b ^=  t ^ (t << 28);
+	return b;
+}
+
+inline uint64_t FlipHorizontal(uint64_t b)
+{	// 6 x SHIFT, 6 x AND, 3 x OR
+	// 15 OPs
+	
+	// # # # #|# # # #
+	// # # # #|# # # #
+	// # # # #|# # # #
+	// # # # #|# # # #
+	// # # # #|# # # #
+	// # # # #|# # # #
+	// # # # #|# # # #
+	// # # # #|# # # #<-LSB
+	b = ((b >> 1) & 0x5555555555555555ULL) | ((b << 1) & 0xAAAAAAAAAAAAAAAAULL);
+	b = ((b >> 2) & 0x3333333333333333ULL) | ((b << 2) & 0xCCCCCCCCCCCCCCCCULL);
+	b = ((b >> 4) & 0x0F0F0F0F0F0F0F0FULL) | ((b << 4) & 0xF0F0F0F0F0F0F0F0ULL);
+	return b;
+}
+
+inline uint64_t FlipVertical(uint64_t b)
+{	// 1 x BSwap
+	// 1 OPs
+	
+	// # # # # # # # #
+	// # # # # # # # #
+	// # # # # # # # #
+	// # # # # # # # #
+	// ---------------
+	// # # # # # # # #
+	// # # # # # # # #
+	// # # # # # # # #
+	// # # # # # # # #<-LSB
+	return BSwap(b);
+	//b = ((b >>  8) & 0x00FF00FF00FF00FFULL) | ((b <<  8) & 0xFF00FF00FF00FF00ULL);
+	//b = ((b >> 16) & 0x0000FFFF0000FFFFULL) | ((b << 16) & 0xFFFF0000FFFF0000ULL);
+	//b = ((b >> 32) & 0x00000000FFFFFFFFULL) | ((b << 32) & 0xFFFFFFFF00000000ULL);
+	//return b;
+}
 
 const uint64_t neighbour[64] = { // Neighbours to the input-field
 	0x0000000000000302ULL, 0x0000000000000705ULL, 0x0000000000000e0aULL, 0x0000000000001c14ULL,	0x0000000000003828ULL, 0x0000000000007050ULL, 0x000000000000e0a0ULL, 0x000000000000c040ULL,
@@ -57,16 +162,6 @@ const uint64_t neighbour[64] = { // Neighbours to the input-field
 	0x0003020300000000ULL, 0x0007050700000000ULL, 0x000e0a0e00000000ULL, 0x001c141c00000000ULL,	0x0038283800000000ULL, 0x0070507000000000ULL, 0x00e0a0e000000000ULL, 0x00c040c000000000ULL,
 	0x0302030000000000ULL, 0x0705070000000000ULL, 0x0e0a0e0000000000ULL, 0x1c141c0000000000ULL,	0x3828380000000000ULL, 0x7050700000000000ULL, 0xe0a0e00000000000ULL, 0xc040c00000000000ULL,
 	0x0203000000000000ULL, 0x0507000000000000ULL, 0x0a0e000000000000ULL, 0x141c000000000000ULL,	0x2838000000000000ULL, 0x5070000000000000ULL, 0xa0e0000000000000ULL, 0x40c0000000000000ULL
-};
-const uint8_t quadrant_id_2_bit[64] = {   
-	0, 0, 0, 0, 1, 1, 1, 1,
-	0, 0, 0, 0, 1, 1, 1, 1,
-	0, 0, 0, 0, 1, 1, 1, 1,
-	0, 0, 0, 0, 1, 1, 1, 1,
-	2, 2, 2, 2, 3, 3, 3, 3,
-	2, 2, 2, 2, 3, 3, 3, 3,
-	2, 2, 2, 2, 3, 3, 3, 3,
-	2, 2, 2, 2, 3, 3, 3, 3
 };
 const uint8_t quadrant_id_4_bit[64] = {   
 	1, 1, 1, 1, 2, 2, 2, 2,
@@ -112,98 +207,24 @@ namespace Stability
 	void Initialize();
 }
 
-uint64_t FlipDiagonal  (uint64_t b);
-uint64_t FlipCodiagonal(uint64_t b);
-uint64_t FlipVertical  (uint64_t b);
-uint64_t FlipHorizontal(uint64_t b);
-
-std::string board1D(const uint64_t P, const uint64_t O);
-std::string board2D(const uint64_t P, const uint64_t O);
-std::string board2D(const uint64_t P, const uint64_t O, const uint64_t possibleMoves);
-
-
-const uint64_t START_POSITION_P = 0x0000000810000000ULL;
-const uint64_t START_POSITION_O = 0x0000001008000000ULL;
-const uint64_t START_POSITION_ETH_P = 0x0000001800000000ULL;
-const uint64_t START_POSITION_ETH_O = 0x0000000018000000ULL;
-
-inline uint64_t StartPositionP(const bool ETH) { return ETH ? START_POSITION_ETH_P : START_POSITION_P; }
-inline uint64_t StartPositionO(const bool ETH) { return ETH ? START_POSITION_ETH_O : START_POSITION_O; }
-
-inline void ResetPosition(uint64_t & P, uint64_t & O, const bool ETH)
-{
-	P = StartPositionP(ETH);
-	O = StartPositionO(ETH);
-}
-
-FORCE_INLINE uint64_t EmptyCount(const uint64_t P, const uint64_t O) { return PopCount(~(P | O)); }
-
-inline uint64_t Parity(uint64_t E)
-{
-	#ifdef HAS_PEXT
-		// 4 x SHIFT, 4 x XOR, 1 x PEXT
-		// = 9 OPs
-		E ^= E >>  1;
-		E ^= E >>  2;
-		E ^= E >>  8;
-		E ^= E >> 16;
-		return PExt(E, 0x0000001100000011ULL);
-	#else
-		// 6 x SHIFT, 4 x XOR, 2 x AND, 2 x OR 
-		// = 14 OPs
-		E ^= E >>  1;
-		E ^= E >>  2;
-		E ^= E >>  8;
-		E ^= E >> 16;
-		E &= 0x0000001100000011ULL;
-		E |= E >>  3;
-		E |= E >> 30;
-		return E & 0xFULL;
-	#endif
-}
-inline uint64_t Parity(const uint64_t P, const uint64_t O) { return Parity(~(P | O)); }
-
-inline void PlayStone(uint64_t & P, uint64_t & O, const int move)
-{
-#ifdef PLAY_STONE_SWAP
-	if (move < 64)
-	{
-		const uint64_t flipped = flip(P, O, move);
-		P ^= flipped ^ (1ULL << move);
-		O ^= flipped;
-	}
-	std::swap(P, O);
-#else
-	if (move < 64)
-	{
-		const uint64_t flipped = flip(P, O, move);
-		O ^= P;                   // O' == O ^ (P)
-		P ^= O ^ flipped;         // P' == P ^ (O ^ P ^ flipped) == O ^ flipped
-		O ^= P ^ (1ULL << move);  // O' == O' ^ (P' ^ (1ULL << move)) == (O ^ P) ^ (O ^ flipped) ^ (1ULL << move) == P ^ flipped ^ (1ULL << move)
-	}
-	else
-		std::swap(P, O);
-#endif
-}
-
 inline uint64_t StableStonesCornerAndCo(const uint64_t O)
 {
-	#ifdef HAS_PEXT
-		// 1 x AND, 1 x OR, 1 x PEXT, 2 x PDEP
-		// = 5 OPs
-		const uint64_t tmp = PExt(O, 0x8100000000000081ULL);
-		return (PDep(tmp, 0x4200000000000042ULL) | PDep(tmp, 0x0081000000008100ULL)) & O;
-	#else
-		// 5x AND, 4x SHIFT, 4x OR
-		// = 13 OPs
-		return (
-				((O & 0x0100000000000001ULL) << 1) |
-				((O & 0x8000000000000080ULL) >> 1) |
-				((O & 0x8100000000000081ULL) << 8) |
-				((O & 0x8100000000000081ULL) >> 8) |
-					  0x8100000000000081ULL
-				) & O;
-	#endif
+#ifdef HAS_PEXT
+	// 1 x AND, 1 x OR, 1 x PEXT, 2 x PDEP
+	// = 5 OPs
+	const uint64_t tmp = PExt(O, 0x8100000000000081ULL);
+	return (PDep(tmp, 0x4200000000000042ULL) | PDep(tmp, 0x0081000000008100ULL)) & O;
+#else
+	// 5x AND, 4x SHIFT, 4x OR
+	// = 13 OPs
+	return (
+		((O & 0x0100000000000001ULL) << 1) |
+		((O & 0x8000000000000080ULL) >> 1) |
+		((O & 0x8100000000000081ULL) << 8) |
+		((O & 0x8100000000000081ULL) >> 8) |
+		0x8100000000000081ULL
+		) & O;
+#endif
 }
 uint64_t StableStonesFullEdges(const uint64_t P, const uint64_t O);
 uint64_t StableStonesFullEdgesSecondOrder(const uint64_t P, const uint64_t O);
@@ -219,71 +240,217 @@ FORCE_INLINE uint64_t SMEAR_BITBOARD(uint64_t B)
 	return B | (B >> 8) | (B << 8);
 }
 
-inline uint64_t   PlayersBoarder (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(P    ) & ~(P | O); } // 13 OPs
-inline uint64_t OpponentsBoarder (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(    O) & ~(P | O); } // 13 OPs
+inline uint64_t   PlayersBoarder (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(P) & ~(P | O); } // 13 OPs
+inline uint64_t OpponentsBoarder (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(O) & ~(P | O); } // 13 OPs
 inline uint64_t          Boarders(const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(P | O) & ~(P | O); } // 14 OPs
 
-inline uint64_t   PlayersExposed (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) &  P     ; } // 13 OPs
-inline uint64_t OpponentsExposed (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) &      O ; } // 13 OPs
+inline uint64_t   PlayersExposed (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) &  P; } // 13 OPs
+inline uint64_t OpponentsExposed (const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) &      O; } // 13 OPs
 inline uint64_t          Exposeds(const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) & (P | O); } // 14 OPs
 
-inline bool comp (const uint64_t P1, const uint64_t O1, const uint64_t P2, const uint64_t O2) { return (P1 < P2) || ((P1 == P2) && (O1 < O2)); }
-inline bool equiv(const uint64_t P1, const uint64_t O1, const uint64_t P2, const uint64_t O2) { return (P1 == P2) && (O1 == O2); }
 
-// forward declaration
-class CPosition;
-class CPositionScore;
-class CPositionFullScore;
-class CPositionScoreDepth;
-class CPositionAllScore;
+inline uint64_t Empties(uint64_t P, uint64_t O) { return ~(P | O); } // TODO: Delete!
+inline uint64_t EmptyCount(uint64_t P, uint64_t O) { return PopCount(Empties(P, O)); } // TODO: Delete!
+inline uint64_t Parity(uint64_t P, uint64_t O) // TODO: Delete!
+{
+	uint64_t E = Empties(P, O);
+	E ^= E >> 1;
+	E ^= E >> 2;
+	E ^= E >> 8;
+	E ^= E >> 16;
+	#ifdef HAS_PEXT
+		return PExt(E, 0x0000001100000011ULL);
+	#else
+		E &= 0x0000001100000011ULL;
+		E |= E >> 3;
+		E |= E >> 30;
+		return E & 0xFULL;
+	#endif
+}
 
-class CPosition
+class CPosition : public ObjectSerializable, public Streamable
 {
 public:
-	static const std::string FILENAME_EXTENSION; // .pos
-
+	static const uint8_t classId = 1;
 	uint64_t P, O;
 	
-	inline CPosition();
-	inline CPosition(uint64_t P, uint64_t O);
-	inline CPosition(const bool ETH);
-	inline explicit CPosition(const CPositionScore& o);
-	inline explicit CPosition(const CPositionFullScore& o);
-	inline explicit CPosition(const CPositionScoreDepth& o);
-	inline explicit CPosition(const CPositionAllScore& o);
+	CPosition() : CPosition(0, 0) {}
+	CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
+	CPosition(iStreamArchive& arch) { deserialize(arch); }
 	
-	inline void Reset();
-	inline void Reset(const bool ETH);
-	inline bool Test() const;
+	static CPosition StartPosition   () { return CPosition(0x0000000810000000ULL, 0x0000001008000000ULL); }
+	static CPosition StartPositionETH() { return CPosition(0x0000001800000000ULL, 0x0000000018000000ULL); }
+	
+	uint64_t Parity() const;
+	uint64_t Empties() const       { return ~(P | O); }
+	uint64_t EmptyCount() const    { return PopCount(Empties()); }
+	uint64_t PossibleMoves() const { return ::PossibleMoves(P, O); }
+	bool     HasMoves() const      { return ::HasMoves(P, O); }
+	
+	virtual uint8_t ClassId() const { return classId; }
+	virtual CPosition* Clone() const { return new CPosition(*this); }
+	virtual void PlayStone(uint8_t move);
+	virtual bool Test() const { return (P & O) == 0; }
+	virtual bool IsSolved() const { return false; }
+	
+	bool operator==(const CPosition& o) const { return (P == o.P) && (O == o.O); }
+	bool operator!=(const CPosition& o) const { return (P != o.P) || (O != o.O); }
+	bool operator<=(const CPosition& o) const { return (P <= o.P) || ((P == o.P) && (O <= o.O)); }
+	bool operator>=(const CPosition& o) const { return (P >= o.P) || ((P == o.P) && (O >= o.O)); }
+	bool operator< (const CPosition& o) const { return (P <  o.P) || ((P == o.P) && (O <  o.O)); }
+	bool operator> (const CPosition& o) const { return (P >  o.P) || ((P == o.P) && (O >  o.O)); }
 
-	inline uint64_t Empties() const;
-	inline uint64_t EmptyCount() const;
-	inline uint64_t Parity() const;
-	inline uint64_t PossibleMoves() const;
-	inline bool HasMoves() const;
-	inline void PlayStone(const int move);
+	bool comp (const CPosition& o) const { return this->operator< (o); }
+	bool equiv(const CPosition& o) const { return this->operator==(o); }
 	
-	std::string to_string_1D() const;
-	std::string to_string_2D() const;
-	std::string to_string_2D_PM() const;
+	void FlipCodiagonal() { P = ::FlipCodiagonal(P); O = ::FlipCodiagonal(O); }
+	void FlipDiagonal  () { P = ::FlipDiagonal  (P); O = ::FlipDiagonal  (O); }
+	void FlipHorizontal() { P = ::FlipHorizontal(P); O = ::FlipHorizontal(O); }
+	void FlipVertical  () { P = ::FlipVertical  (P); O = ::FlipVertical  (O); }
 	
-	inline bool operator==(const CPosition& other) const;
-	inline bool operator!=(const CPosition& other) const;
-	inline bool operator<=(const CPosition& other) const;
-	inline bool operator>=(const CPosition& other) const;
-	inline bool operator< (const CPosition& other) const;
-	inline bool operator> (const CPosition& other) const;
-	
-	inline bool  comp(const CPosition& other) const { return ::comp (P, O, other.P, other.O); }
-	inline bool equiv(const CPosition& other) const { return ::equiv(P, O, other.P, other.O); }
-		
-	inline void FlipCodiagonal();
-	inline void FlipDiagonal();
-	inline void FlipHorizontal();
-	inline void FlipVertical();
-	
-	void FlipToMin(); ///< Flip to minimum of all flips
+	void FlipToMin(); // Flip to minimum of all flips.
+
+	void Serialize(oArchive&) const override { throw std::logic_error("Archive not supported"); } // TODO: Get rid of this!
+	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
+	void Serialize(oPositionArchive& arch) const override { arch.Serialize(*this); }
+	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+
+protected:
+	void serialize(oStreamArchive& arch) const { arch << P << O; }
+	void deserialize(iStreamArchive& arch) { arch >> P >> O; }
 };
+
+/// Position with score
+class CPositionScore : public CPosition
+{
+	static const int8_t DEFAULT_SCORE = -99;
+public:
+	static const uint8_t classId = 2;
+	int8_t score;
+	
+	CPositionScore() : CPosition(), score(DEFAULT_SCORE) {}
+	CPositionScore(uint64_t P, uint64_t O, int8_t score) : CPosition(P, O), score(score) {}
+	CPositionScore(CPosition pos, int8_t score) : CPosition(pos), score(score) {}
+	CPositionScore(iStreamArchive& arch) : CPosition(arch) { deserialize(arch); }
+	explicit CPositionScore(const CPosition& pos) : CPosition(pos), score(DEFAULT_SCORE) {}
+
+	virtual uint8_t ClassId() const { return classId; }
+	virtual CPositionScore* Clone() const { return new CPositionScore(*this); }
+	virtual void ResetInformation() { score = DEFAULT_SCORE; }
+	virtual void PlayStone(uint8_t move) override { CPosition::PlayStone(move); ResetInformation(); }
+	virtual bool Test() const override { return CPosition::Test() && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
+	virtual bool IsSolved() const override { return score != DEFAULT_SCORE; }
+
+	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
+	void Serialize(oPositionArchive& arch) const override { arch.Serialize(*this); }
+	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+
+protected:
+	void serialize(oStreamArchive& arch) const { CPosition::serialize(arch); arch << score; }
+	void deserialize(iStreamArchive& arch) { arch >> score; }
+};
+
+/// Position with score, depth and selectivity
+class CPositionScoreDepth : public CPositionScore
+{
+	static const  int8_t DEFAULT_DEPTH = -1;
+	static const uint8_t DEFAULT_SELECTIVITY = 0;
+public:
+	static const uint8_t classId = 3;
+	 int8_t depth;
+	uint8_t selectivity;
+	
+	CPositionScoreDepth() : CPositionScore(), depth(DEFAULT_DEPTH), selectivity(DEFAULT_SELECTIVITY) {}
+	CPositionScoreDepth(uint64_t P, uint64_t O, int8_t score, int8_t depth, uint8_t selectivity) : CPositionScore(P, O, score), depth(depth), selectivity(selectivity) {}
+	CPositionScoreDepth(iStreamArchive& arch) : CPositionScore(arch) { deserialize(arch); }
+	explicit CPositionScoreDepth(const CPosition& pos) : CPositionScore(pos), depth(DEFAULT_DEPTH), selectivity(DEFAULT_SELECTIVITY) {}
+	explicit CPositionScoreDepth(const CPositionScore& pos) : CPositionScore(pos), depth(DEFAULT_DEPTH), selectivity(DEFAULT_SELECTIVITY) {}
+
+	virtual uint8_t ClassId() const { return classId; }
+	virtual CPositionScoreDepth* Clone() const { return new CPositionScoreDepth(*this); }
+	virtual void ResetInformation() override { CPositionScore::ResetInformation(); depth = DEFAULT_DEPTH; selectivity = DEFAULT_SELECTIVITY; }
+	virtual void PlayStone(uint8_t move) override { CPositionScore::PlayStone(move); ResetInformation(); }
+	virtual bool Test() const override { return CPositionScore::Test() && (depth >= DEFAULT_DEPTH); }
+	virtual bool IsSolved() const override { return (depth == static_cast<int8_t>(EmptyCount())) && (selectivity == 0); }
+	virtual bool IsSolved(int8_t Depth, uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
+
+	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
+	void Serialize(oPositionArchive& arch) const override { arch.Serialize(*this); }
+	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+
+protected:
+	void serialize(oStreamArchive& arch) const { CPositionScore::serialize(arch); arch << depth << selectivity; }
+	void deserialize(iStreamArchive& arch) { arch >> depth >> selectivity; }
+};
+
+/// Position with score for each depth
+class CPositionFullScore : public CPosition
+{
+	static const int8_t DEFAULT_SCORE = -99;
+public:
+	static const uint8_t classId = 4;
+	int8_t score[61];
+
+	CPositionFullScore() : CPosition() { ResetInformation(); }
+	CPositionFullScore(uint64_t P, uint64_t O) : CPosition(P, O) { ResetInformation(); }
+	CPositionFullScore(iStreamArchive& arch) : CPosition(arch) { deserialize(arch); }
+	explicit CPositionFullScore(const CPosition& pos) : CPosition(pos) { ResetInformation(); }
+
+	virtual uint8_t ClassId() const { return classId; }
+	virtual CPositionFullScore* Clone() const { return new CPositionFullScore(*this); }
+	virtual void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
+	virtual void PlayStone(uint8_t move) override { CPosition::PlayStone(move); ResetInformation(); }
+	virtual bool Test() const override;
+
+	virtual bool IsSolved() const override;
+	virtual bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
+	int8_t MaxSolvedDepth() const;
+
+	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
+	void Serialize(oPositionArchive& arch) const override { arch.Serialize(*this); }
+	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+
+protected:
+	void serialize(oStreamArchive& arch) const { CPosition::serialize(arch); for (const auto& it : score) arch << it; }
+	void deserialize(iStreamArchive& arch) { for (auto& it : score) arch >> it; }
+};
+
+/// Position with score for each move
+class CPositionAllScore :  public CPosition
+{
+	static const int8_t DEFAULT_SCORE = -99;
+public:
+	static const uint8_t classId = 5;
+	int8_t score[64];
+	
+	CPositionAllScore() : CPosition() { ResetInformation(); }
+	CPositionAllScore(uint64_t P, uint64_t O) : CPosition(P, O) { ResetInformation(); }
+	CPositionAllScore(iStreamArchive& arch) : CPosition(arch) { deserialize(arch); }
+	explicit CPositionAllScore(const CPosition& pos) : CPosition(pos) { ResetInformation(); }
+
+	virtual uint8_t ClassId() const { return classId; }
+	virtual CPositionAllScore* Clone() const { return new CPositionAllScore(*this); }
+	virtual void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
+	virtual void PlayStone(uint8_t move) override { CPosition::PlayStone(move); ResetInformation(); }
+	virtual bool Test() const override;
+
+	virtual bool IsSolved() const override;
+	int8_t MaxScore() const { return *std::max_element(std::begin(score), std::end(score)); }
+
+	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
+	void Serialize(oPositionArchive& arch) const override { arch.Serialize(*this); }
+	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+
+protected:
+	void serialize(oStreamArchive& arch) const { CPosition::serialize(arch); for (const auto& it : score) arch << it; }
+	void deserialize(iStreamArchive& arch) { for (auto& it : score) arch >> it; }
+	
+private:
+	std::vector<std::pair<int,int>> GetMoves() const; ///< std::pair(move, score)
+};
+
+inline bool comp (const CPosition& lhs, const CPosition& rhs) { return lhs.comp (rhs); }
+inline bool equiv(const CPosition& lhs, const CPosition& rhs) { return lhs.equiv(rhs); }
 
 namespace std
 {
@@ -296,419 +463,86 @@ namespace std
 	};
 }
 
-/// Position with score
-class CPositionScore
+inline void CPosition::PlayStone(uint8_t move)
 {
-public:
-	static const std::string FILENAME_EXTENSION; // .psc
-	static const int8_t DEFAULT_SCORE = -99;
-
-	uint64_t P, O;
-	int8_t score;
-	
-	inline CPositionScore();
-	inline CPositionScore(uint64_t P, uint64_t O, int8_t score);
-	inline CPositionScore(const bool ETH);
-	inline explicit CPositionScore(const CPosition& o);
-	inline explicit CPositionScore(const CPositionFullScore& o);
-	inline explicit CPositionScore(const CPositionScoreDepth& o);
-	inline explicit CPositionScore(const CPositionAllScore& o);
-		
-	inline void Reset();
-	inline void Reset(const bool ETH);
-	inline void ResetInformation();
-	inline bool Test() const;
-
-	inline uint64_t Empties() const;
-	inline uint64_t EmptyCount() const;
-	inline uint64_t Parity() const;
-	inline uint64_t PossibleMoves() const;
-	inline bool HasMoves() const;
-	inline void PlayStone(const int move, const int8_t newScore = DEFAULT_SCORE);
-
-	inline bool IsSolved() const;
-	
-	inline bool  comp(const CPositionScore& other) const { return ::comp (P, O, other.P, other.O); }
-	inline bool equiv(const CPositionScore& other) const { return ::equiv(P, O, other.P, other.O); }
-	
-	std::string to_string_1D() const;
-	std::string to_string_2D() const;
-	std::string to_string_2D_PM() const;
-};
-
-/// Position with score for each depth
-class CPositionFullScore
-{
-public:
-	static const std::string FILENAME_EXTENSION; // .pfs
-	static const int8_t DEFAULT_SCORE = -99;
-
-	uint64_t P, O;
-	int8_t score[61];
-	
-	inline CPositionFullScore();
-	inline CPositionFullScore(uint64_t P, uint64_t O);
-	inline CPositionFullScore(const bool ETH);
-	inline explicit CPositionFullScore(const CPosition& o);
-	inline explicit CPositionFullScore(const CPositionScore& o);
-	inline explicit CPositionFullScore(const CPositionScoreDepth& o);
-	inline explicit CPositionFullScore(const CPositionAllScore& o);
-
-	inline void Reset();
-	inline void Reset(const bool ETH);
-	inline void ResetInformation();
-	bool Test() const;
-
-	inline uint64_t Empties() const;
-	inline uint64_t EmptyCount() const;
-	inline uint64_t Parity() const;
-	inline uint64_t PossibleMoves() const;
-	inline bool HasMoves() const;
-	inline void PlayStone(const int move);
-
-	bool IsSolved() const;
-	bool IsSolved(const int8_t depth) const;
-	int8_t MaxSolvedDepth() const;
-	
-	inline bool  comp(const CPositionFullScore& other) const { return ::comp (P, O, other.P, other.O); }
-	inline bool equiv(const CPositionFullScore& other) const { return ::equiv(P, O, other.P, other.O); }
-	
-	std::string to_string_1D() const;
-	std::string to_string_2D() const;
-	std::string to_string_2D_PM() const;
-};
-
-/// Position with score, depth and selectivity
-class CPositionScoreDepth
-{
-public:
-	static const std::string FILENAME_EXTENSION; // .psd
-	static const  int8_t DEFAULT_SCORE = -99;
-	static const  int8_t DEFAULT_DEPTH = -1;
-	static const uint8_t DEFAULT_SELECTIVITY = 0;
-
-	uint64_t P, O;
-	 int8_t score;
-	 int8_t depth;
-	uint8_t selectivity;
-	
-	inline CPositionScoreDepth(uint64_t P, uint64_t O, int8_t score, int8_t depth, uint8_t selectivity);
-	inline CPositionScoreDepth();
-	inline CPositionScoreDepth(const bool ETH);
-	inline explicit CPositionScoreDepth(const CPosition& o);
-	inline explicit CPositionScoreDepth(const CPositionScore& o);
-	inline explicit CPositionScoreDepth(const CPositionFullScore& o);
-	inline explicit CPositionScoreDepth(const CPositionAllScore& o);
-	
-	inline void Reset();
-	inline void Reset(const bool ETH);
-	inline void ResetInformation();
-	inline bool Test() const;
-
-	inline uint64_t Empties() const;
-	inline uint64_t EmptyCount() const;
-	inline uint64_t Parity() const;
-	inline uint64_t PossibleMoves() const;
-	inline bool HasMoves() const;
-	inline void PlayStone(const int move, const int8_t newScore = DEFAULT_SCORE, const int8_t newDepth = DEFAULT_DEPTH, const uint8_t newSelectivity = DEFAULT_SELECTIVITY);
-
-	inline bool IsSolved() const;
-	inline bool IsSolved(const int8_t Depth, const uint8_t Selectivity) const;
-	
-	inline bool  comp(const CPositionScoreDepth& other) const { return ::comp (P, O, other.P, other.O); }
-	inline bool equiv(const CPositionScoreDepth& other) const { return ::equiv(P, O, other.P, other.O); }
-	
-	std::string to_string_1D() const;
-	std::string to_string_2D() const;
-	std::string to_string_2D_PM() const;
-	
-	std::string GetDepthSelectivity() const;
-	std::string GetScoreDepthSelectivity() const;
-};
-
-/// Position with score for each move
-class CPositionAllScore
-{
-public:
-	static const std::string FILENAME_EXTENSION; // .pas
-	static const int8_t DEFAULT_SCORE = -99;
-
-	uint64_t P, O;
-	int8_t score[64];
-	
-	inline CPositionAllScore();
-	inline CPositionAllScore(uint64_t P, uint64_t O);
-	inline CPositionAllScore(const bool ETH);
-	       CPositionAllScore(std::string s);
-	inline explicit CPositionAllScore(const CPosition& o);
-	inline explicit CPositionAllScore(const CPositionScore& o);
-	inline explicit CPositionAllScore(const CPositionFullScore& o);
-	inline explicit CPositionAllScore(const CPositionScoreDepth& o);
-	
-	inline void Reset();
-	inline void Reset(const bool ETH);
-	inline void ResetInformation();
-	bool Test() const;
-
-	inline uint64_t Empties() const;
-	inline uint64_t EmptyCount() const;
-	inline uint64_t Parity() const;
-	inline uint64_t PossibleMoves() const;
-	inline bool HasMoves() const;
-	inline void PlayStone(const int move);
-
-	inline bool IsSolved() const;
-	inline int8_t MaxScore() const;
-	
-	inline bool  comp(const CPositionAllScore& other) const { return ::comp (P, O, other.P, other.O); }
-	inline bool equiv(const CPositionAllScore& other) const { return ::equiv(P, O, other.P, other.O); }
-
-	std::string to_string_1D() const;
-	std::string to_string_2D() const;
-	std::string to_string_2D_PM() const;
-		
-private:
-	std::vector<std::pair<int,int>> GetMoves() const; ///< std::pair(move, score)
-};
-
-inline bool  comp(const CPosition& lhs, const CPosition& rhs) { return  ::comp(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool equiv(const CPosition& lhs, const CPosition& rhs) { return ::equiv(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool  comp(const CPositionScore& lhs, const CPositionScore& rhs) { return  ::comp(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool equiv(const CPositionScore& lhs, const CPositionScore& rhs) { return ::equiv(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool  comp(const CPositionFullScore& lhs, const CPositionFullScore& rhs) { return  ::comp(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool equiv(const CPositionFullScore& lhs, const CPositionFullScore& rhs) { return ::equiv(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool  comp(const CPositionScoreDepth& lhs, const CPositionScoreDepth& rhs) { return  ::comp(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool equiv(const CPositionScoreDepth& lhs, const CPositionScoreDepth& rhs) { return ::equiv(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool  comp(const CPositionAllScore& lhs, const CPositionAllScore& rhs) { return  ::comp(lhs.P, lhs.O, rhs.P, rhs.O); }
-inline bool equiv(const CPositionAllScore& lhs, const CPositionAllScore& rhs) { return ::equiv(lhs.P, lhs.O, rhs.P, rhs.O); }
-
-bool HasValidFilenameExtension(const std::string& filename);
-
-
-std::vector<CPositionAllScore> read_vector_OBF(const std::string& filename, std::size_t size = 0xFFFFFFFFFFFFFFFFULL);
-
-
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-/// Loads a vector of type T from 'filename'. Displays a warning if they don't match.
-template <typename T> std::vector<T> LoadVector(const std::string& filename, std::size_t size = 0xFFFFFFFFFFFFFFFFULL)
-{
-	if (filename.substr(filename.rfind(".") + 1) != T::FILENAME_EXTENSION)
-		std::cerr << "WARNING: Filename extension does not match data type when loading." << std::endl;
-
-	return read_vector<T>(filename, size);
+	const auto flipped = flip(P, O, move);
+	P ^= flipped ^ MakeBit(move);
+	O ^= flipped;
+	std::swap(P, O);
 }
 
-template <> std::vector<CPositionAllScore> LoadVector(const std::string& filename, std::size_t size);
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-/// Saves a vector of type T to 'filename'. Displays a warning if they don't match.
-template <typename T> void SaveVector(const std::string& filename, const std::vector<T>& vec)
+inline uint64_t CPosition::Parity() const
 {
-	if (filename.substr(filename.rfind(".") + 1) != T::FILENAME_EXTENSION)
-		std::cerr << "WARNING: Filename extension does not match data type when saving." << std::endl;
-
-	write_to_file(filename, vec);
+	uint64_t E = Empties();
+	E ^= E >>  1;
+	E ^= E >>  2;
+	E ^= E >>  8;
+	E ^= E >> 16;
+	#ifdef HAS_PEXT
+		return PExt(E, 0x0000001100000011ULL);
+	#else
+		E &= 0x0000001100000011ULL;
+		E |= E >>  3;
+		E |= E >> 30;
+		return E & 0xFULL;
+	#endif
 }
 
-template <> void SaveVector<CPositionAllScore>(const std::string& filename, const std::vector<CPositionAllScore>& vec);
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
+std::vector<std::unique_ptr<CPosition>> LoadVector(const CPath& filename, std::size_t size = std::numeric_limits<std::size_t>::max());
+
+void Save(const CPath& filename, const std::vector<std::unique_ptr<CPosition>>& positions);
 
 template <typename ITERATOR>
-void SaveTransform(const std::string& filename, ITERATOR begin, ITERATOR end)
+inline void Save(const CPath& filename, ITERATOR begin, ITERATOR end)
 {
-	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
+	std::unique_ptr<oPositionArchive> archive;
+	oArchive& fstream = fstreamArchive(filename);
+	const auto ext = filename.GetExtension();
 
-	if (filename_extension == CPosition          ::FILENAME_EXTENSION)		SaveVector(filename, std::vector<CPosition          >(begin, end));
-	if (filename_extension == CPositionScore     ::FILENAME_EXTENSION)		SaveVector(filename, std::vector<CPositionScore     >(begin, end));
-	if (filename_extension == CPositionFullScore ::FILENAME_EXTENSION)		SaveVector(filename, std::vector<CPositionFullScore >(begin, end));
-	if (filename_extension == CPositionScoreDepth::FILENAME_EXTENSION)		SaveVector(filename, std::vector<CPositionScoreDepth>(begin, end));
-	if (filename_extension == CPositionAllScore  ::FILENAME_EXTENSION)		SaveVector(filename, std::vector<CPositionAllScore  >(begin, end));
-	if (filename_extension == "obf")										SaveVector(filename, std::vector<CPositionAllScore  >(begin, end));
+	if (ext == "pos")		archive = std::make_unique<StreamConverter>(fstream);
+	if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(fstream);
+	if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(fstream);
+	if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(fstream);
+
+	for (auto it = begin; it != end; ++it)
+		*archive << *it;
 }
 
-/// Saves a vector to 'filename' and transforms it if needed.
-template <typename T> void SaveTransform(const std::string& filename, const std::vector<T>& vec) { SaveTransform(filename, vec.begin(), vec.end()); }
-
-/// Loads a vector from 'filename' and transforms it to type T if needed.
-template <typename T> std::vector<T> LoadTransform(const std::string& filename)
+template <typename T>
+inline std::vector<std::unique_ptr<T>> Transform(const std::vector<std::unique_ptr<CPosition>>& positions)
 {
-	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
-
-	if (filename_extension == CPosition          ::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPosition          >(filename); return std::vector<T>(vec.begin(), vec.end()); }
-	if (filename_extension == CPositionScore     ::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPositionScore     >(filename); return std::vector<T>(vec.begin(), vec.end()); } 
-	if (filename_extension == CPositionFullScore ::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPositionFullScore >(filename); return std::vector<T>(vec.begin(), vec.end()); } 
-	if (filename_extension == CPositionScoreDepth::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPositionScoreDepth>(filename); return std::vector<T>(vec.begin(), vec.end()); } 
-	if (filename_extension == CPositionAllScore  ::FILENAME_EXTENSION)		{ auto vec = LoadVector<CPositionAllScore  >(filename); return std::vector<T>(vec.begin(), vec.end()); } 
-	if (filename_extension == "obf")										{ auto vec = LoadVector<CPositionAllScore  >(filename); return std::vector<T>(vec.begin(), vec.end()); }
-	throw "Not implemented yet";
+	std::vector<std::unique_ptr<CPosition>> ret;
+	for (const auto& it : positions)
+	{
+		switch (T::classId) {
+			case CPosition           ::classId: ret.push_back(std::make_unique<CPosition>(*it)); break;
+			case CPositionScore      ::classId: ret.push_back(std::make_unique<CPositionScore>(*it)); break;
+			case CPositionScoreDepth ::classId: ret.push_back(std::make_unique<CPositionScoreDepth>(*it)); break;
+			case CPositionFullScore  ::classId: ret.push_back(std::make_unique<CPositionFullScore>(*it)); break;
+			case CPositionAllScore   ::classId: ret.push_back(std::make_unique<CPositionAllScore>(*it)); break;
+			default: throw std::runtime_error("Invalid class name");
+		}
+	}
+	return ret;
 }
 
+template <typename T, typename ITERATOR>
+inline void SaveTransform(const CPath& filename, ITERATOR begin, ITERATOR end)
+{
+	std::unique_ptr<oStreamArchive> archive;
+	const auto ext = filename.GetExtension();
 
-// ################################################################################################
-// Inline section
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
+	if (ext == "pos") archive = std::make_unique<fstreamArchive>(filename);
 
-// ################################################################################################
-//  CPosition
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-CPosition::CPosition() : CPosition(0, 0) {}
-CPosition::CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
-CPosition::CPosition(const bool ETH) : CPosition(StartPositionP(ETH), StartPositionO(ETH)) {}
-CPosition::CPosition(const CPositionScore& o) : CPosition(o.P, o.O) {}
-CPosition::CPosition(const CPositionFullScore& o) : CPosition(o.P, o.O) {}
-CPosition::CPosition(const CPositionScoreDepth& o) : CPosition(o.P, o.O) {}
-CPosition::CPosition(const CPositionAllScore& o) : CPosition(o.P, o.O) {}
-
-void CPosition::Reset() { P = 0; O = 0; }
-void CPosition::Reset(const bool ETH) { ResetPosition(P, O, ETH); }
-bool CPosition::Test() const { return (P & O) == 0; }
-
-uint64_t CPosition::Empties() const { return ~(P | O); }
-uint64_t CPosition::EmptyCount() const { return PopCount(Empties()); }
-uint64_t CPosition::Parity() const { return ::Parity(Empties()); }
-uint64_t CPosition::PossibleMoves() const { return ::PossibleMoves(P, O); }
-bool CPosition::HasMoves() const { return ::HasMoves(P, O); }
-void CPosition::PlayStone(const int move) { ::PlayStone(P, O, move); }
-
-bool CPosition::operator==(const CPosition& other) const { return (this->P == other.P) && (this->O == other.O); }
-bool CPosition::operator!=(const CPosition& other) const { return (this->P != other.P) || (this->O != other.O); }
-bool CPosition::operator<=(const CPosition& other) const { return (this->P <= other.P) || ((this->P == other.P) && (this->O <= other.O)); }
-bool CPosition::operator>=(const CPosition& other) const { return (this->P >= other.P) || ((this->P == other.P) && (this->O >= other.O)); }
-bool CPosition::operator< (const CPosition& other) const { return (this->P <  other.P) || ((this->P == other.P) && (this->O <  other.O)); }
-bool CPosition::operator> (const CPosition& other) const { return (this->P >  other.P) || ((this->P == other.P) && (this->O >  other.O)); }
-
-void CPosition::FlipCodiagonal() { P = ::FlipCodiagonal(P); O = ::FlipCodiagonal(O); }
-void CPosition::FlipDiagonal() { P = ::FlipDiagonal(P); O = ::FlipDiagonal(O); }
-void CPosition::FlipHorizontal() { P = ::FlipHorizontal(P); O = ::FlipHorizontal(O); }
-void CPosition::FlipVertical() { P = ::FlipVertical(P); O = ::FlipVertical(O); }
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-// ################################################################################################
-//  CPositionScore
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-CPositionScore::CPositionScore() : CPositionScore(0, 0, DEFAULT_SCORE) {}
-CPositionScore::CPositionScore(uint64_t P, uint64_t O, int8_t score) : P(P), O(O), score(score) {}
-CPositionScore::CPositionScore(const bool ETH) : CPositionScore(StartPositionP(ETH), StartPositionO(ETH), DEFAULT_SCORE) {}
-CPositionScore::CPositionScore(const CPosition& o) : CPositionScore(o.P, o.O, DEFAULT_SCORE) {}
-CPositionScore::CPositionScore(const CPositionFullScore& o) : CPositionScore(o.P, o.O, o.score[o.MaxSolvedDepth()]) {}
-CPositionScore::CPositionScore(const CPositionScoreDepth& o) : CPositionScore(o.P, o.O, o.score) {}
-CPositionScore::CPositionScore(const CPositionAllScore& o) : CPositionScore(o.P, o.O, o.MaxScore()) {}
-
-void CPositionScore::Reset() { P = 0; O = 0; }
-void CPositionScore::Reset(const bool ETH) { ResetPosition(P, O, ETH); ResetInformation(); }
-void CPositionScore::ResetInformation() { score = DEFAULT_SCORE; }
-bool CPositionScore::Test() const { return ((P & O) == 0) && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
-
-uint64_t CPositionScore::Empties() const { return ~(P | O); }
-uint64_t CPositionScore::EmptyCount() const { return PopCount(Empties()); }
-uint64_t CPositionScore::Parity() const { return ::Parity(Empties()); }
-uint64_t CPositionScore::PossibleMoves() const { return ::PossibleMoves(P, O); }
-bool CPositionScore::HasMoves() const { return ::HasMoves(P, O); }
-void CPositionScore::PlayStone(const int move, const int8_t newScore) { ::PlayStone(P, O, move); score = newScore; }
-
-bool CPositionScore::IsSolved() const { return score != DEFAULT_SCORE; }
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-// ################################################################################################
-//  CPositionFullScore
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-CPositionFullScore::CPositionFullScore() : CPositionFullScore(0, 0) {}
-CPositionFullScore::CPositionFullScore(uint64_t P, uint64_t O) : P(P), O(O) { ResetInformation(); }
-CPositionFullScore::CPositionFullScore(const bool ETH) : CPositionFullScore(StartPositionP(ETH), StartPositionO(ETH)) {}
-CPositionFullScore::CPositionFullScore(const CPosition& o) : CPositionFullScore(o.P, o.O) {}
-CPositionFullScore::CPositionFullScore(const CPositionScore& o) : CPositionFullScore(o.P, o.O) { assert(o.EmptyCount() < 61); score[o.EmptyCount()] = o.score; }
-CPositionFullScore::CPositionFullScore(const CPositionScoreDepth& o) : CPositionFullScore(o.P, o.O) { if (o.selectivity == 0) score[o.depth] = o.score; }
-CPositionFullScore::CPositionFullScore(const CPositionAllScore& o) : CPositionFullScore(o.P, o.O) { assert(o.EmptyCount() < 61); score[o.EmptyCount()] = o.MaxScore(); }
-
-void CPositionFullScore::Reset() { P = 0; O = 0; ResetInformation(); }
-void CPositionFullScore::Reset(const bool ETH) { ResetPosition(P, O, ETH); ResetInformation(); }
-
-inline void CPositionFullScore::ResetInformation() { for (int i = 0; i < 61; i++) score[i] = DEFAULT_SCORE; }
-
-uint64_t CPositionFullScore::Empties() const { return ~(P | O); }
-uint64_t CPositionFullScore::EmptyCount() const { return PopCount(Empties()); }
-uint64_t CPositionFullScore::Parity() const { return ::Parity(Empties()); }
-uint64_t CPositionFullScore::PossibleMoves() const { return ::PossibleMoves(P, O); }
-bool CPositionFullScore::HasMoves() const { return ::HasMoves(P, O); }
-void CPositionFullScore::PlayStone(const int move) { ::PlayStone(P, O, move); ResetInformation(); }
-
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-
-// ################################################################################################
-//  CPositionScoreDepth
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-CPositionScoreDepth::CPositionScoreDepth() : CPositionScoreDepth(0, 0, DEFAULT_SCORE, DEFAULT_DEPTH, DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(uint64_t P, uint64_t O, int8_t score, int8_t depth, uint8_t selectivity) : P(P), O(O), score(score), depth(depth), selectivity(selectivity) {}
-CPositionScoreDepth::CPositionScoreDepth(const bool ETH) : CPositionScoreDepth(StartPositionP(ETH), StartPositionO(ETH), DEFAULT_SCORE, DEFAULT_DEPTH, DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(const CPosition& o) : CPositionScoreDepth(o.P, o.O, DEFAULT_SCORE, DEFAULT_DEPTH, DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(const CPositionScore& o) : CPositionScoreDepth(o.P, o.O, o.score, o.IsSolved() ? static_cast<int8_t>(o.EmptyCount()) : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(const CPositionFullScore& o) : CPositionScoreDepth(o.P, o.O, o.IsSolved() ? o.score[o.MaxSolvedDepth()] : DEFAULT_SCORE, o.IsSolved() ? static_cast<int8_t>(o.EmptyCount()) : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
-CPositionScoreDepth::CPositionScoreDepth(const CPositionAllScore& o) : CPositionScoreDepth(o.P, o.O, o.IsSolved() ? o.MaxScore() : DEFAULT_SCORE, o.IsSolved() ? static_cast<int8_t>(o.EmptyCount()) : DEFAULT_DEPTH, o.IsSolved() ? 0 : DEFAULT_SELECTIVITY) {}
-
-void CPositionScoreDepth::Reset() { P = 0; O = 0; ResetInformation(); }
-void CPositionScoreDepth::Reset(const bool ETH) { ResetPosition(P, O, ETH); ResetInformation(); }
-void CPositionScoreDepth::ResetInformation() { score = DEFAULT_SCORE; depth = DEFAULT_DEPTH; selectivity = DEFAULT_SELECTIVITY; }
-bool CPositionScoreDepth::Test() const { return ((P & O) == 0) && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)) && (depth >= DEFAULT_DEPTH); }
-
-uint64_t CPositionScoreDepth::Empties() const { return ~(P | O); }
-uint64_t CPositionScoreDepth::EmptyCount() const { return PopCount(Empties()); }
-uint64_t CPositionScoreDepth::Parity() const { return ::Parity(Empties()); }
-uint64_t CPositionScoreDepth::PossibleMoves() const { return ::PossibleMoves(P, O); }
-bool CPositionScoreDepth::HasMoves() const { return ::HasMoves(P, O); }
-void CPositionScoreDepth::PlayStone(const int move, const int8_t newScore, const int8_t newDepth, const uint8_t newSelectivity) { ::PlayStone(P, O, move); score = newScore; depth = newDepth; selectivity = newSelectivity; }
-
-bool CPositionScoreDepth::IsSolved() const { return (depth == static_cast<int8_t>(EmptyCount())) && (selectivity == 0); }
-bool CPositionScoreDepth::IsSolved(const int8_t Depth, const uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-
-// ################################################################################################
-//  CPositionAllScore
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-CPositionAllScore::CPositionAllScore() : CPositionAllScore(0, 0) {}
-CPositionAllScore::CPositionAllScore(uint64_t P, uint64_t O) : P(P), O(O) { ResetInformation(); }
-CPositionAllScore::CPositionAllScore(const bool ETH) : CPositionAllScore(StartPositionP(ETH), StartPositionO(ETH)) {}
-CPositionAllScore::CPositionAllScore(const CPosition& o) : CPositionAllScore(o.P, o.O) {}
-CPositionAllScore::CPositionAllScore(const CPositionScore& o) : CPositionAllScore(o.P, o.O) {}
-CPositionAllScore::CPositionAllScore(const CPositionFullScore& o) : CPositionAllScore(o.P, o.O) {}
-CPositionAllScore::CPositionAllScore(const CPositionScoreDepth& o) : CPositionAllScore(o.P, o.O) {}
-
-void CPositionAllScore::Reset() { P = 0; O = 0; ResetInformation(); }
-void CPositionAllScore::Reset(const bool ETH) { ResetPosition(P, O, ETH); ResetInformation(); }
-void CPositionAllScore::ResetInformation() { for (int i = 0; i < 64; i++) score[i] = DEFAULT_SCORE; }
-
-uint64_t CPositionAllScore::Empties() const { return ~(P | O); }
-uint64_t CPositionAllScore::EmptyCount() const { return PopCount(Empties()); }
-uint64_t CPositionAllScore::Parity() const { return ::Parity(Empties()); }
-uint64_t CPositionAllScore::PossibleMoves() const { return ::PossibleMoves(P, O); }
-bool CPositionAllScore::HasMoves() const { return ::HasMoves(P, O); }
-void CPositionAllScore::PlayStone(const int move) { ::PlayStone(P, O, move); ResetInformation(); }
-
-bool CPositionAllScore::IsSolved() const { uint64_t pm = PossibleMoves(); while (pm) { if (score[BitScanLSB(pm)] == DEFAULT_SCORE) return false; RemoveLSB(pm); } return true; }
-int8_t CPositionAllScore::MaxScore() const { return *std::max_element(score, score + 64); }
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
+	for (auto it = begin; it != end; ++it)
+	{
+		switch (T::classId) {
+			case CPosition           ::classId: *archive << CPosition(*it); break;
+			case CPositionScore      ::classId: *archive << CPositionScore(*it); break;
+			case CPositionScoreDepth ::classId: *archive << CPositionScoreDepth(*it); break;
+			case CPositionFullScore  ::classId: *archive << CPositionFullScore(*it); break;
+			case CPositionAllScore   ::classId: *archive << CPositionAllScore(*it); break;
+			default: throw std::runtime_error("Invalid class name");
+		}
+	}
+}

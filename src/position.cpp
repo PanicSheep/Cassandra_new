@@ -1,126 +1,5 @@
 #include "position.h"
 
-uint64_t FlipDiagonal(uint64_t b)
-{	// 9 x XOR, 6 x SHIFT, 3 x AND
-	// 18 OPs
-	
-	// \ # # # # # # #
-	// # \ # # # # # #
-	// # # \ # # # # #
-	// # # # \ # # # #
-	// # # # # \ # # #
-	// # # # # # \ # #
-	// # # # # # # \ #
-	// # # # # # # # \.<-LSB
-	uint64_t t;
-	t  = (b ^ (b >>  7)) & 0x00AA00AA00AA00AAULL;
-	b ^=  t ^ (t <<  7);
-	t  = (b ^ (b >> 14)) & 0x0000CCCC0000CCCCULL;
-	b ^=  t ^ (t << 14);
-	t  = (b ^ (b >> 28)) & 0x00000000F0F0F0F0ULL;
-	b ^=  t ^ (t << 28);
-	return b;
-}
-uint64_t FlipCodiagonal(uint64_t b)
-{	// 9 x XOR, 6 x SHIFT, 3 x AND
-	// 18 OPs
-	
-	// # # # # # # # /
-	// # # # # # # / #
-	// # # # # # / # #
-	// # # # # / # # #
-	// # # # / # # # #
-	// # # / # # # # #
-	// # / # # # # # #
-	// / # # # # # # #<-LSB
-	uint64_t t;
-	t  =  b ^ (b << 36);
-	b ^= (t ^ (b >> 36)) & 0xF0F0F0F00F0F0F0FULL;
-	t  = (b ^ (b << 18)) & 0xCCCC0000CCCC0000ULL;
-	b ^=  t ^ (t >> 18);
-	t  = (b ^ (b <<  9)) & 0xAA00AA00AA00AA00ULL;
-	b ^=  t ^ (t >>  9);
-	return b;
-}
-uint64_t FlipVertical(uint64_t b)
-{	// 1 x BSwap
-	// 1 OPs
-	
-	// # # # # # # # #
-	// # # # # # # # #
-	// # # # # # # # #
-	// # # # # # # # #
-	// ---------------
-	// # # # # # # # #
-	// # # # # # # # #
-	// # # # # # # # #
-	// # # # # # # # #<-LSB
-	return BSwap(b);
-	//b = ((b >>  8) & 0x00FF00FF00FF00FFULL) | ((b <<  8) & 0xFF00FF00FF00FF00ULL);
-	//b = ((b >> 16) & 0x0000FFFF0000FFFFULL) | ((b << 16) & 0xFFFF0000FFFF0000ULL);
-	//b = ((b >> 32) & 0x00000000FFFFFFFFULL) | ((b << 32) & 0xFFFFFFFF00000000ULL);
-	//return b;
-}
-uint64_t FlipHorizontal(uint64_t b)
-{	// 6 x SHIFT, 6 x AND, 3 x OR
-	// 15 OPs
-	
-	// # # # #|# # # #
-	// # # # #|# # # #
-	// # # # #|# # # #
-	// # # # #|# # # #
-	// # # # #|# # # #
-	// # # # #|# # # #
-	// # # # #|# # # #
-	// # # # #|# # # #<-LSB
-	b = ((b >> 1) & 0x5555555555555555ULL) | ((b << 1) & 0xAAAAAAAAAAAAAAAAULL);
-	b = ((b >> 2) & 0x3333333333333333ULL) | ((b << 2) & 0xCCCCCCCCCCCCCCCCULL);
-	b = ((b >> 4) & 0x0F0F0F0F0F0F0F0FULL) | ((b << 4) & 0xF0F0F0F0F0F0F0F0ULL);
-	return b;
-}
-
-std::string board1D(const uint64_t P, const uint64_t O)
-{
-	std::string s;
-	for (unsigned int i = 0; i < 8; i++)
-		for (unsigned int j = 0; j < 8; j++)
-		{
-			const uint64_t bitMask = 0x8000000000000000ULL >> (i * 8 + j);
-			bool b_P = ((P & bitMask) != 0);
-			bool b_O = ((O & bitMask) != 0);
-			     if (b_P && b_O) s.append("#");
-			else if (b_P)        s.append("X");
-			else if (b_O)        s.append("O");
-			else                 s.append("-");
-		}
-	return s;
-}
-
-
-std::string board2D(const uint64_t P, const uint64_t O, const uint64_t possibleMoves)
-{
-	std::string s = "  H G F E D C B A  \n";
-	for (unsigned int i = 0; i < 8; i++)
-	{
-		s.append(std::to_string(8-i));
-		for (unsigned int j = 0; j < 8; j++)
-		{
-			const uint64_t bitMask = 0x8000000000000000ULL >> (i * 8 + j);
-			bool b_P = ((P & bitMask) != 0);
-			bool b_O = ((O & bitMask) != 0);
-			bool b_M = ((possibleMoves & bitMask) != 0);
-			     if (b_P && b_O) s.append(" #");
-			else if (b_P)        s.append(" X");
-			else if (b_O)        s.append(" O");
-			else if (b_M)        s.append(" +");
-			else                 s.append(" -");
-		}
-		s.append(" " + std::to_string(8-i) + "\n");
-	}
-	return s.append("  H G F E D C B A  ");
-}
-std::string board2D(const uint64_t P, const uint64_t O) { return board2D(P, O, 0); }
-
 inline bool TestBits(const uint64_t bitfield, const uint64_t mask) { return (bitfield & mask) == mask; }
 
 uint64_t StableStonesFullEdges(const uint64_t P, const uint64_t O)
@@ -243,8 +122,8 @@ namespace Stability
 	}
 	
 	uint64_t FullLineHorizontal(uint64_t discs)
-	{
-		// 4 x AND, 3 x SHIFT, 1 x MUL
+	{	// 4 x AND, 3 x SHIFT, 1 x MUL
+		// 8 OPs
 		discs &= discs >> 4;
 		discs &= discs >> 2;
 		discs &= discs >> 1;
@@ -253,8 +132,8 @@ namespace Stability
 	}
 	
 	uint64_t FullLineVertival(uint64_t discs)
-	{
-		// 4 x AND, 3 x SHIFT, 1 x MUL
+	{	// 4 x AND, 3 x SHIFT, 1 x MUL
+		// 8 OPs
 		discs &= discs >> 32;
 		discs &= discs >> 16;
 		discs &= discs >>  8;
@@ -263,8 +142,8 @@ namespace Stability
 	}
 	
 	uint64_t FullLineDiagonal(const uint64_t discs)
-	{
-		// 11 x AND, 11 x CMP, 11 x OR
+	{	// 11 x AND, 11 x CMP, 11 x OR
+		// 33 OPs
 		uint64_t full = 0;
 		if (TestBits(discs, 0x0402010000000000ULL)) full |= 0x0402010000000000ULL;
 		if (TestBits(discs, 0x0804020100000000ULL)) full |= 0x0804020100000000ULL;
@@ -281,8 +160,8 @@ namespace Stability
 	}
 	
 	uint64_t FullLineCodiagonal(const uint64_t discs)
-	{
-		// 11 x AND, 11 x CMP, 11 x OR
+	{	// 11 x AND, 11 x CMP, 11 x OR
+		// 33 OPs
 		uint64_t full = 0;
 		if (TestBits(discs, 0x2040800000000000ULL)) full |= 0x2040800000000000ULL;
 		if (TestBits(discs, 0x1020408000000000ULL)) full |= 0x1020408000000000ULL;
@@ -300,8 +179,8 @@ namespace Stability
 }
 
 uint64_t StableEdges(const uint64_t P, const uint64_t O)
-{
-	// 2 x AND, 2 X SHIFT, 3 x OR, 4 x PEXT, 2 X PDEP
+{	// 2 x AND, 2 X SHIFT, 3 x OR, 4 x PEXT, 2 X PDEP
+	// 13 OPs
 	const uint64_t L0_Left = 0x8080808080808080ULL;
 	const uint64_t L0_Right = 0x0101010101010101ULL;
 	const auto StableL0_Bottom = Stability::edge_stables[P & 0xFF][O & 0xFF];
@@ -334,18 +213,6 @@ uint64_t StableStonesPlayer(const uint64_t P, const uint64_t O)
 	return stables;
 }
 
-
-
-// ################################################################################################
-//  CPosition
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-const std::string CPosition::FILENAME_EXTENSION = "pos";
-
-std::string CPosition::to_string_1D() const { return board1D(P, O); }
-std::string CPosition::to_string_2D() const { return board2D(P, O); }
-std::string CPosition::to_string_2D_PM() const { return board2D(P, O, PossibleMoves()); }
-
 void CPosition::FlipToMin()
 {
 	CPosition pos = *this;
@@ -358,54 +225,19 @@ void CPosition::FlipToMin()
 	pos.FlipHorizontal();	if (pos < *this) *this = pos;
 	pos.FlipVertical();		if (pos < *this) *this = pos;
 }
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-
-// ################################################################################################
-//  CPositionScore
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-const std::string CPositionScore::FILENAME_EXTENSION = "psc";
-
-std::string CPositionScore::to_string_1D() const { return board1D(P, O) + " " + SignedInt(score); }
-std::string CPositionScore::to_string_2D() const
-{
-	std::string str = board2D(P, O);
-	std::size_t found1 = str.find("\n");
-	std::size_t found2 = str.find("\n", found1 + 1);
-	str.replace(found2, 0, "  score: " + SignedInt(score));
-	return str;
-}
-std::string CPositionScore::to_string_2D_PM() const
-{
-	std::string str = board2D(P, O, PossibleMoves());
-	std::size_t found1 = str.find("\n");
-	std::size_t found2 = str.find("\n", found1 + 1);
-	str.replace(found2, 0, "  score: " + SignedInt(score));
-	return str;
-}
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-
-// ################################################################################################
-//  CPositionFullScore
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-const std::string CPositionFullScore::FILENAME_EXTENSION = "pfs";
 
 bool CPositionFullScore::Test() const 
 { 
-	if ((P & O) != 0) return false;
+	if (CPosition::Test() == false)
+		return false;
 
-	const uint64_t emptyCount = EmptyCount();
-	for (uint64_t i = 0; i <= std::min(emptyCount, static_cast<uint64_t>(60)); i++)
+	const auto emptyCount = EmptyCount();
+	const uint64_t size = std::distance(std::begin(score), std::end(score));
+	const auto UpperLimit = std::min(emptyCount, size-1);
+	for (uint64_t i = 0; i <= UpperLimit; i++)
 		if (!(((score[i] >= -64) && (score[i] <= 64)) || (score[i] == DEFAULT_SCORE)))
 			return false;
-	for (uint64_t i = emptyCount + 1; i < 61; i++)
+	for (uint64_t i = emptyCount + 1; i < size; i++)
 		if (score[i] != DEFAULT_SCORE)
 			return false;
 	return true;
@@ -419,151 +251,57 @@ bool CPositionFullScore::IsSolved() const
 	return true; 
 }
 
-bool CPositionFullScore::IsSolved(const int8_t depth) const
-{
-	return MaxSolvedDepth() >= depth;
-}
+template <typename T>
+struct reversion_wrapper { T& iterable; };
+
+template <typename T>
+auto begin(reversion_wrapper<T> w) { return std::rbegin(w.iterable); }
+
+template <typename T>
+auto end(reversion_wrapper<T> w) { return std::rend(w.iterable); }
+
+template <typename T>
+reversion_wrapper<T> reverse(T&& iterable) { return { iterable }; }
 
 int8_t CPositionFullScore::MaxSolvedDepth() const
 {
-	int8_t ret = -1;
-	for (int i = 0; i < 61; i++)
-		if (score[i] != DEFAULT_SCORE)
-			ret = i;
-	return ret;
-}
-
-std::string CPositionFullScore::to_string_1D() const
-{
-	std::string ret = board1D(P, O);
-	for (uint64_t i = 0; i <= EmptyCount(); i++)
-		ret += " " + SignedInt(score[i]);
-	return ret;
-}
-std::string CPositionFullScore::to_string_2D() const
-{
-	std::string ret = board2D(P, O) + "\nscore:";
-	for (uint64_t i = 0; i <= EmptyCount(); i++)
-		ret += " " + SignedInt(score[i]);
-	return ret;
-}
-std::string CPositionFullScore::to_string_2D_PM() const
-{
-	std::string ret = board2D(P, O, PossibleMoves()) + "\nscore:";
-	for (uint64_t i = 0; i <= EmptyCount(); i++)
-		ret += " " + SignedInt(score[i]);
-	return ret;
-}
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-
-// ################################################################################################
-//  CPositionScoreDepth
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-const std::string CPositionScoreDepth::FILENAME_EXTENSION = "psd";
-
-std::string CPositionScoreDepth::GetDepthSelectivity() const
-{
-	return "d" + std::to_string(depth) + "@" + std::to_string(Selectivity::GetPercentile(selectivity)) + "%";
-}
-
-std::string CPositionScoreDepth::GetScoreDepthSelectivity() const
-{
-	if (depth == static_cast<int8_t>(EmptyCount()))
-	{
-		if (selectivity == NO_SELECTIVITY)
-			return SignedInt(score);
-		else
-			return SignedInt(score) + "@" + std::to_string(Selectivity::GetPercentile(selectivity)) + "%";
-	}
-	else
-	{
-		if (selectivity == NO_SELECTIVITY)
-			return SignedInt(score) + "@d" + std::to_string(depth);
-		else
-			return SignedInt(score) + "@d" + std::to_string(depth) + "@" + std::to_string(Selectivity::GetPercentile(selectivity)) + "%";
-	}
-}
-std::string CPositionScoreDepth::to_string_1D() const 
-{
-	return board1D(P, O) + " " + GetScoreDepthSelectivity();
-}
-std::string CPositionScoreDepth::to_string_2D() const
-{
-	std::string str = board2D(P, O);
-	std::size_t found1 = str.find("\n");
-	std::size_t found2 = str.find("\n", found1 + 1);
-	str.replace(found2, 0, "  score: " + GetScoreDepthSelectivity());
-	return str;
-}
-std::string CPositionScoreDepth::to_string_2D_PM() const
-{
-	std::string str = board2D(P, O, PossibleMoves());
-	std::size_t found1 = str.find("\n");
-	std::size_t found2 = str.find("\n", found1 + 1);
-	str.replace(found2, 0, "  score: " + GetScoreDepthSelectivity());
-	return str;
-}
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
-
-
-
-// ################################################################################################
-//  CPositionAllScore
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-const std::string CPositionAllScore::FILENAME_EXTENSION = "pas";
-
-CPositionAllScore::CPositionAllScore(std::string s) : CPositionAllScore()
-{
-	// ROOM FOR OPTIMIZATION: make argument 'const std::string& s' and replace s.erase(...)
-	assert(P == 0);
-	assert(O == 0);
-	
-	// Read in position
-	for (unsigned int i = 0; i < 64; i++)
-	{
-		     if (s.substr(i, 1) == "X") SetBit(P, 63 - i);
-		else if (s.substr(i, 1) == "O") SetBit(O, 63 - i);
-	}
-	if (s.substr(65, 1) == "O") std::swap(P, O);
-	
-	// parse scores
-	std::string delimiter = ";";
-	std::string token;
-	size_t pos = 0;
-	while ((pos = s.find(delimiter)) != std::string::npos)
-	{
-		token = s.substr(0, pos);
-		s.erase(0, pos + delimiter.length());
-
-		for (int i = 0; i < 64; i++) // ROOM FOR OPTIMIZATION: interpret field and avoid looping
-			if (token.substr(1, 2) == field_name(i))
-				score[i] = std::stoi(token.substr(4, 3));
-	}
+	for (const auto& it : reverse(score))
+		if (it != DEFAULT_SCORE)
+			return std::distance(std::begin(score), &it);
+	return -1;
 }
 
 bool CPositionAllScore::Test() const
 {
-	if ((P & O) != 0) return false;
+	if (CPosition::Test() == false)
+		return false;
 
 	const int possibleMoves = PossibleMoves();
-	for (int i = 0; i <= 64; i++)
+	for (const auto& it : score)
 	{
-		if (GetBit(possibleMoves, i))
+		if (TestBit(possibleMoves, std::distance(std::begin(score), &it)))
 		{
-			if (!(((score[i] >= -64) && (score[i] <= 64)) || (score[i] == DEFAULT_SCORE)))
+			if (!(((it >= -64) && (it <= 64)) || (it == DEFAULT_SCORE)))
 				return false;
 		}
 		else
 		{
-			if (score[i] != DEFAULT_SCORE)
+			if (it != DEFAULT_SCORE)
 				return false;
 		}
+	}
+	return true;
+}
+
+bool CPositionAllScore::IsSolved() const
+{
+	uint64_t pm = PossibleMoves();
+	while (pm)
+	{
+		uint64_t LSB = BitScanLSB(pm);
+		if (score[LSB] == DEFAULT_SCORE)
+			return false;
+		RemoveLSB(pm); 
 	}
 	return true;
 }
@@ -574,7 +312,7 @@ std::vector<std::pair<int,int>> CPositionAllScore::GetMoves() const
 	uint64_t pm = PossibleMoves();
 	while (pm)
 	{
-		uint64_t LSB = BitScanLSB(pm);
+		auto LSB = BitScanLSB(pm);
 		if (score[LSB] != DEFAULT_SCORE)
 			vec.push_back(std::pair<int,int>(LSB, score[LSB]));
 		RemoveLSB(pm);
@@ -582,90 +320,38 @@ std::vector<std::pair<int,int>> CPositionAllScore::GetMoves() const
 	std::sort(vec.begin(), vec.end(), [](const std::pair<int,int>& lhs, const std::pair<int,int>& rhs){ return lhs.second > rhs.second; });
 	return vec;
 }
-std::string CPositionAllScore::to_string_1D() const
+
+std::vector<std::unique_ptr<CPosition>> LoadVector(const CPath& filename, std::size_t size)
 {
-	std::string ret = board1D(P, O) + " X;";
-	for (const auto& it : GetMoves())
-		ret += std::string(" ") + field_name(it.first) + ":" + SignedInt(it.second) + ";";
-	return ret;
-}
-std::string CPositionAllScore::to_string_2D() const
-{
-	std::string ret = board2D(P, O) + "\n";
-	for (const auto& it : GetMoves())
-		ret += std::string(" ") + field_name(it.first) + ":" + SignedInt(it.second) + ";";
-	return ret;
-}
-std::string CPositionAllScore::to_string_2D_PM() const
-{
-	std::string ret = board2D(P, O, PossibleMoves()) + "\n";
-	for (const auto& it : GetMoves())
-		ret += std::string(" ") + field_name(it.first) + ":" + SignedInt(it.second) + ";";
-	return ret;
-}
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################
+	std::unique_ptr<iPositionArchive> archive;
+	StreamArchive& fstream = fstreamArchive(filename);
+	const auto ext = filename.GetExtension();
 
-
-bool HasValidFilenameExtension(const std::string& filename)
-{
-	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
-
-	if (filename_extension == CPosition::FILENAME_EXTENSION)				return true;
-	if (filename_extension == CPositionScore::FILENAME_EXTENSION)			return true;
-	if (filename_extension == CPositionFullScore::FILENAME_EXTENSION)		return true;
-	if (filename_extension == CPositionScoreDepth::FILENAME_EXTENSION)		return true;
-	if (filename_extension == CPositionAllScore::FILENAME_EXTENSION)		return true;
-	if (filename_extension == "obf")										return true;
-	return false;
-}
-
-std::vector<CPositionAllScore> read_vector_OBF(const std::string& filename, std::size_t size)
-{
-	std::fstream file(filename, std::ios::in | std::ios::binary);
-	if (!file.is_open())
-		throw std::iostream::failure("File '" + filename + "' could not be opened.");
-
-	std::vector<CPositionAllScore> vec;
-	std::string line;
-	while (std::getline(file, line))
-		vec.push_back(CPositionAllScore(line));
-
-	file.close();
-	return vec;
-}
-
-void write_to_file_OBF(const std::string& filename, const std::vector<CPositionAllScore>& vec)
-{
-	std::fstream file(filename, std::ios::out | std::ios::binary);
-	if (!file.is_open())
-		throw std::iostream::failure("File '" + filename + "' could not be opened.");
-
-	for (const auto& it : vec)
-		file << it.to_string_1D();
-
-	file.close();
-}
-
-template <> std::vector<CPositionAllScore> LoadVector(const std::string& filename, std::size_t size)
-{
-	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
-	if (filename_extension == "obf")
-		return read_vector_OBF(filename, size);
-	if (filename_extension != CPositionAllScore::FILENAME_EXTENSION)
-		std::cerr << "WARNING: Filename extension '" << filename_extension << "' does not match data type when loading." << std::endl;
-	return read_vector<CPositionAllScore>(filename, size);
-}
-
-template <> void SaveVector<CPositionAllScore>(const std::string& filename, const std::vector<CPositionAllScore>& vec)
-{
-	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
-	if (filename_extension == "obf")
-		write_to_file_OBF(filename, vec);
+	     if (ext == "pos")		archive = std::make_unique<StreamConverter>(fstream);
+	else if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(fstream);
+	else if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(fstream);
+	else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(fstream);
 	else
-	{
-		if (filename_extension != CPositionAllScore::FILENAME_EXTENSION)
-			std::cerr << "WARNING: Filename extension '" << filename_extension << "' does not match data type when saving." << std::endl;
-		write_to_file(filename, vec);
+		return std::vector<std::unique_ptr<CPosition>>();
+
+	std::vector<std::unique_ptr<CPosition>> positions;
+	std::unique_ptr<CPosition> pos;
+	while ((pos = archive->DeserializePosition()) && (size > 0)) {
+		positions.push_back(std::move(pos));
+		size--;
 	}
+
+	return positions;
+}
+
+void Save(const CPath& filename, const std::vector<std::unique_ptr<CPosition>>& positions)
+{
+	std::unique_ptr<oStreamArchive> archive;
+	const auto ext = filename.GetExtension();
+
+	if (ext == "pos") archive = std::make_unique<fstreamArchive>(filename);
+	else return;
+
+	for (auto& it : positions)
+		*archive << *it;
 }

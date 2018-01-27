@@ -2,12 +2,13 @@
 #include "perft_basic.h"
 #include "position.h"
 #include <iostream>
+#include <map>
 #include <unordered_map>
 
 namespace Perft_Haswell
 {
 	CHashTable * hashtable;
-	std::unordered_map<CPosition, std::size_t> PosMap;
+	std::map<CPosition, std::size_t> PosMap;
 	
 	uint64_t perft0(const uint64_t P, const uint64_t O)
 	{
@@ -188,7 +189,7 @@ namespace Perft_Haswell
 	
 	uint64_t perft(const uint8_t depth, const uint64_t RAM)
 	{
-		return perft(START_POSITION_P, START_POSITION_O, depth, RAM);
+		return perft(CPosition::StartPosition().P, CPosition::StartPosition().O, depth, RAM);
 	}
 }
 
@@ -238,7 +239,7 @@ void PrintHelp()
 
 int main(int argc, char* argv[])
 {
-	unsigned int d = 8;
+	unsigned int d = 17;
 	std::size_t RAM = 512 * 1024 * 1024;
 
 	for (int i = 0; i < argc; i++)

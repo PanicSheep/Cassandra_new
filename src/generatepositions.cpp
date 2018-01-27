@@ -35,7 +35,8 @@ void GenerateRandomPositionsThreadFunction(std::size_t SetSize, const uint8_t nu
 
 	while (set.size() < SetSize)
 	{
-		CPosition pos(ETH);
+		CPosition pos = ETH ? CPosition::StartPositionETH() : CPosition::StartPosition();
+
 		unsigned int plies = pos.EmptyCount() - numEmpties;
 		while (plies > 0)
 		{
@@ -46,7 +47,7 @@ void GenerateRandomPositionsThreadFunction(std::size_t SetSize, const uint8_t nu
 				possibles = pos.PossibleMoves();
 				if (!possibles)
 				{
-					pos.Reset(ETH);
+					pos = ETH ? CPosition::StartPositionETH() : CPosition::StartPosition();
 					plies = pos.EmptyCount() - numEmpties;
 					continue;
 				}
@@ -94,7 +95,7 @@ std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, 
 			#pragma omp for
 			for (int64_t i = pos_set_size; i < static_cast<int64_t>(numPos); i++)
 			{
-				CPosition pos(ETH);
+				CPosition pos = ETH ? CPosition::StartPositionETH() : CPosition::StartPosition();
 				unsigned int plies = pos.EmptyCount() - numEmpties;
 				while (plies > 0)
 				{
@@ -105,7 +106,7 @@ std::unordered_set<CPosition> GenerateRandomPositions(const std::size_t numPos, 
 						possibles = pos.PossibleMoves();
 						if (!possibles)
 						{
-							pos.Reset(ETH);
+							pos = ETH ? CPosition::StartPositionETH() : CPosition::StartPosition();
 							plies = pos.EmptyCount() - numEmpties;
 							continue;
 						}
@@ -156,7 +157,7 @@ std::unordered_set<CPosition> GenerateAllPositions(const uint8_t numEmpties, con
 {
 	std::unordered_set<CPosition> pos_set;
 	
-	CPosition pos(ETH);
+	CPosition pos = ETH ? CPosition::StartPositionETH() : CPosition::StartPosition();
 	GenAll(pos, pos_set, pos.EmptyCount() - numEmpties);
 	return pos_set;
 }

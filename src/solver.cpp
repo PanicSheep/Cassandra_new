@@ -3,6 +3,7 @@
 #include <thread>
 #include <iostream>
 #include <chrono>
+#include <numeric>
 #include <omp.h>
 
 std::size_t ParseRAM(const std::string& s)
@@ -32,12 +33,12 @@ void PrintHelp()
 }
 
 int main(int argc, char* argv[])
-{	
-	std::string filename;										// Name of file to process
+{
+	CPath filename = "C:\\Users\\dohof_000\\Documents\\GitHub\\Cassandra_new.git\\pos\\fforum-1-19.obf";												// Name of file to process
 	std::size_t n = std::numeric_limits<std::size_t>::max();	// Number of positions to process
 	std::size_t t = std::thread::hardware_concurrency();		// Number of threads to use
 	int selectivity = NO_SELECTIVITY;
-	unsigned int depth = 99;
+	unsigned int Depth = 99;
 	std::string RAM = "1GB";									// Amount of RAM to use for hashtable
 	bool bTest = false;											// This run is a test
 	bool bSkipSolved = true;									// Skip positions already solved
@@ -51,7 +52,7 @@ int main(int argc, char* argv[])
 		     if (std::string(argv[i]) == "-f") filename = std::string(argv[++i]);
 		else if (std::string(argv[i]) == "-n") n = atoi(argv[++i]);
 		else if (std::string(argv[i]) == "-t") t = atoi(argv[++i]);
-		else if (std::string(argv[i]) == "-d") depth = atoi(argv[++i]);
+		else if (std::string(argv[i]) == "-d") Depth = atoi(argv[++i]);
 		else if (std::string(argv[i]) == "-RAM") RAM = std::string(argv[++i]);
 		else if (std::string(argv[i]) == "-noskip") bSkipSolved = false;
 		else if (std::string(argv[i]) == "-nosave") bSave = false;
@@ -72,80 +73,87 @@ int main(int argc, char* argv[])
 	gTTPV = CHashTable(buckets / 32u);
 	//------------------------------------
 	
-	// Check input
-	//------------------------------------
-	if (HasValidFilenameExtension(filename) == false) {
-		std::cerr << "ERROR: File has no valid filename extension!" << std::endl;
-		return -1;
-	}
-	//------------------------------------
-	
-	// Use input
-	std::string filename_extension = filename.substr(filename.rfind(".") + 1);
-	if (filename_extension == CPosition::FILENAME_EXTENSION)
-	{	// CPosition
-		auto vec = LoadVector<CPosition>(filename);
-		
-		std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-		std::size_t superNC = 0;
-		for (auto& pos : vec)
-		{
-			uint64_t NC = 0;
-			std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-			auto score = Eval(pos.P, pos.O, NC, selectivity, depth);
-			std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-			std::cout << SignedInt(score) << " " << ThousandsSeparator(NC) << "\t\t(" << ThousandsSeparator(NC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
-			superNC += NC;
-		}
-		std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-		std::cout << ThousandsSeparator(superNC) << " in " << time_format(endTime - startTime) << "\t\t(" << ThousandsSeparator(superNC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
-	}
-	else if (filename_extension == CPositionScore::FILENAME_EXTENSION)
-	{	// CPositionScore
-		auto vec = LoadVector<CPositionScore>(filename);
-		
-		std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-		std::size_t superNC = 0;
-		int64_t j = 0;
-		for (; j < static_cast<int64_t>(vec.size()); j++)
-			if (!(bSkipSolved && vec[j].IsSolved()))
-				break;
-		#pragma omp parallel for schedule(static,1) reduction(+:superNC)
-		for (int64_t i = j; i < static_cast<int64_t>(std::min(vec.size(), j + n)); i++)
-		{
-			uint64_t NC = 0;
-			if (!(bSkipSolved && vec[i].IsSolved()))
-				vec[i].score = Eval(vec[i].P, vec[i].O, NC, selectivity, std::min(vec[i].EmptyCount(), static_cast<uint64_t>(depth)));
-			superNC += NC;
-		}
-		std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-		
-		if (bSave) SaveVector(filename, vec);
-		std::cout << ThousandsSeparator(superNC) << " in " << time_format(endTime - startTime) << "\t\t(" << ThousandsSeparator(superNC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
-	}
-	else if (filename_extension == "obf")
-	{	// CPositionAllScore
-		auto vec = LoadVector<CPositionAllScore>(filename);
+	auto Positions = LoadVector(filename);
 
-		std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-		std::size_t superNC = 0;
-		for (std::size_t i = 0; i < vec.size(); i++)
+	std::vector<std::size_t> UnsovedIndex;
+	if (bSkipSolved) {
+		for (std::size_t i = 0; i < Positions.size(); i++)
 		{
-			uint64_t NC = 0;
-			std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-			auto score = Eval(vec[i].P, vec[i].O, NC, selectivity, std::min(vec[i].EmptyCount(), static_cast<uint64_t>(depth)));
-			std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-			if (score == vec[i].MaxScore())
-				std::cout << SignedInt(score) << " " << ThousandsSeparator(NC) << "\t\t(" << ThousandsSeparator(NC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
+			if (Positions[i]->IsSolved())
+				continue;
 			else
-				std::cout << "Wrong value! " << SignedInt(score) << " " << ThousandsSeparator(NC) << "\t\t(" << ThousandsSeparator(NC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
-			superNC += NC;
+				UnsovedIndex.push_back(i);
 		}
-		std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-		std::cout << ThousandsSeparator(superNC) << " in " << time_format(endTime - startTime) << "\t\t(" << ThousandsSeparator(superNC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
 	}
-	
-	gTT.print_stats();
-	gTTPV.print_stats();
+	else {
+		UnsovedIndex.reserve(Positions.size());
+		std::iota(UnsovedIndex.begin(), UnsovedIndex.end(), 0);
+	}
+
+	auto startTime = std::chrono::high_resolution_clock::now();
+	std::size_t superNC = 0;
+	//#pragma omp parallel for schedule(static,1) reduction(+:superNC)
+	for (int64_t i = 0; i < static_cast<int64_t>(std::min(UnsovedIndex.size(), n)); i++)
+	{
+		auto GenericPos = Positions[UnsovedIndex[i]].get();
+		uint64_t NC = 0;
+		switch (GenericPos->ClassId())
+		{
+			case CPosition::classId:
+			{
+				auto pos = dynamic_cast<CPosition*>(GenericPos);
+				auto depth = std::min(pos->EmptyCount(), static_cast<uint64_t>(Depth));
+				auto startTime = std::chrono::high_resolution_clock::now();
+				auto score = Eval(pos->P, pos->O, NC, selectivity, depth);
+				auto endTime = std::chrono::high_resolution_clock::now();
+				std::cout << SignedInt(score) << " " << ThousandsSeparator(NC) << "\t\t(" << ThousandsSeparator(NC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
+				break;
+			}
+			case CPositionScore::classId:
+			{
+				auto pos = dynamic_cast<CPositionScore*>(GenericPos);
+				auto depth = std::min(pos->EmptyCount(), static_cast<uint64_t>(Depth));
+				pos->score = Eval(pos->P, pos->O, NC, selectivity, depth);
+				break;
+			}
+			case CPositionScoreDepth::classId:
+			{
+				auto pos = dynamic_cast<CPositionScoreDepth*>(GenericPos);
+				auto depth = std::min(pos->EmptyCount(), static_cast<uint64_t>(Depth));
+				break;
+			}
+			case CPositionFullScore::classId:
+			{
+				auto pos = dynamic_cast<CPositionFullScore*>(GenericPos);
+				auto depth = std::min(pos->EmptyCount(), static_cast<uint64_t>(Depth));
+				for (unsigned int d = 0; d <= depth; d++)
+					pos->score[d] = Eval(pos->P, pos->O, NC, selectivity, d);
+				break;
+			}
+			case CPositionAllScore::classId:
+			{
+				auto pos = dynamic_cast<CPositionAllScore*>(GenericPos);
+				auto depth = std::min(pos->EmptyCount(), static_cast<uint64_t>(Depth));
+				auto startTime = std::chrono::high_resolution_clock::now();
+				auto score = Eval(pos->P, pos->O, NC, selectivity, depth);
+				auto endTime = std::chrono::high_resolution_clock::now();
+				if (score == pos->MaxScore())
+					std::cout << SignedInt(score) << " " << ThousandsSeparator(NC) << "\t\t(" << ThousandsSeparator(NC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
+				else
+					std::cout << "Wrong value! " << SignedInt(score) << " " << ThousandsSeparator(NC) << "\t\t(" << ThousandsSeparator(NC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
+				break;
+			}
+			default:
+				throw std::runtime_error("Invalid class name");
+		}
+		superNC += NC;
+	}
+	auto endTime = std::chrono::high_resolution_clock::now();
+
+	if (bSave)
+		Save(filename, Positions);
+
+	std::cout << ThousandsSeparator(superNC) << " in " << time_format(endTime - startTime) << "\t\t(" << ThousandsSeparator(superNC * 1000000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
+		
 	return 0;
 }

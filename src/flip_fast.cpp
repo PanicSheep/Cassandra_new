@@ -1081,7 +1081,7 @@ namespace Flip_Fast
 		uint64_t flip_c = O | 0x0040810000000000ULL;
 		flip_c &= flip_c >> 7;
 		flip_c &= (flip_c >> 14) & 0x0000000204081000ULL;
-		const uint64_t flipped_c |= flip_c & -(flip_c & (P << 7));
+		const uint64_t flipped_c = flip_c & -(flip_c & (P << 7));
 
 		const uint64_t flipped_d = (P >> 9) & 0x0002000000000000ULL & O;
 
@@ -1107,7 +1107,7 @@ namespace Flip_Fast
 		const uint64_t flip_c = OUTFLANK_5[PExt(O, 0x0004020408102000ULL)] & PExt(P, 0x0804020408102040ULL);
 		const uint64_t flipped_x = FLIPPED_5_V[flip_c] & 0x0804020408102040ULL;
 	#else
-		flip_c = O | 0x0081020000000000ULL;
+		uint64_t flip_c = O | 0x0081020000000000ULL;
 		flip_c &= flip_c >> 7;
 		flip_c &= (flip_c >> 14) & 0x0000000408102000ULL;
 		const uint64_t flipped_c = flip_c & -(flip_c & (P << 7));

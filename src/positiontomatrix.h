@@ -11,23 +11,6 @@
 #include <cstdint>
 
 template <typename ValueType, typename SizeType, typename VectorValueType>
-std::pair<CMatrix_CSR<ValueType, SizeType>, std::vector<VectorValueType>> PositionToMatrix(const std::vector<CPositionScore>& pos, const std::string& name);
-
-template <typename ValueType, typename SizeType, typename VectorValueType>
-std::pair<CMatrix_CSR<ValueType, SizeType>, std::vector<VectorValueType>> PositionToMatrix(const std::vector<CPositionScore>& pos, const uint64_t pattern);
-
-template <typename ValueType, typename SizeType, typename VectorValueType>
-std::pair<CMatrix_CSR_Grid<ValueType, SizeType>, Vecvec<VectorValueType>> PositionToMatrix(const Array2D<CPositionScore>& pos, const std::vector<std::string>& name);
-
-template <typename ValueType, typename SizeType, typename VectorValueType>
-std::pair<CMatrix_CSR_Grid<ValueType, SizeType>, Vecvec<VectorValueType>> PositionToMatrix(const Array2D<CPositionScore>& pos, const std::vector<uint64_t> pattern);
-
-
-// ################################################################################################
-// Implementation
-// ################################################################################################
-// ------------------------------------------------------------------------------------------------
-template <typename ValueType, typename SizeType, typename VectorValueType>
 std::pair<CMatrix_CSR<ValueType, SizeType>, std::vector<VectorValueType>> PositionToMatrix(const std::vector<CPositionScore>& pos, const std::string& name)
 {
 	const auto pattern = Pattern::LookupPattern(name);
@@ -94,5 +77,3 @@ std::pair<CMatrix_CSR_Grid<ValueType, SizeType>, Vecvec<VectorValueType>> Positi
 	
 	return std::pair<CMatrix_CSR_Grid<ValueType, SizeType>, Vecvec<VectorValueType>>(arr, vecvec);
 }
-// ------------------------------------------------------------------------------------------------
-// ################################################################################################

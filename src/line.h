@@ -47,7 +47,7 @@ public:
 		if (depth >= line.size())
 			return "--";
 		else
-			return field_name(line[depth]);
+			return Move(line[depth]);
 	}
 	inline const std::string GetPV(const int StartDepth, const int Count) const {
 		std::string s;

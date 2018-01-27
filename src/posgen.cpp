@@ -4,25 +4,25 @@
 #include <iostream>
 #include <chrono>
 
-void Next(const std::string& s_input, const std::string& s_output)
+void Next(const CPath& Input, const CPath& Output)
 {
-	const auto vec_in = LoadTransform<CPositionScore>(s_input);
+	const auto vec_in = LoadVector(Input);
 	
-	std::vector<CPositionScore> vec_out;
+	std::vector<std::unique_ptr<CPosition>> vec_out;
 	for (const auto& pos : vec_in)
 	{
-		auto possibleMoves = pos.PossibleMoves();
+		auto possibleMoves = pos.get()->PossibleMoves();
 		while (possibleMoves)
 		{
-			CPositionScore newPos = pos;
-			newPos.PlayStone(BitScanLSB(possibleMoves));
-			vec_out.push_back(newPos);
+			auto newPos = std::make_unique<CPosition>(*pos.get()->Clone());
+			newPos->PlayStone(BitScanLSB(possibleMoves));
+			vec_out.push_back(std::move(newPos));
 			
 			RemoveLSB(possibleMoves);
 		}
 	}
 	
-	SaveTransform<CPositionScore>(s_output, vec_out);
+	Save(Output, vec_out);
 }
 
 void help()
@@ -36,18 +36,19 @@ void help()
 
 int main(int argc, char* argv[])
 {
-	std::string s_input, s_output;
-	std::size_t NumPos = 0;
-	uint8_t NumEmpties = 0;
-	bool rnd = false;
+	CPath Input;
+	CPath Output;
+	std::size_t NumPos;
+	uint8_t NumEmpties;
+	bool rnd = true;
 	bool all = false;
 	bool next = false;
 	bool quiet = false;
 	
 	for (int i = 0; i < argc; i++)
 	{
-		     if (std::string(argv[i]) == "-i") s_input  = std::string(argv[++i]);
-		else if (std::string(argv[i]) == "-o") s_output = std::string(argv[++i]);
+		     if (std::string(argv[i]) == "-i") Input = CPath(argv[++i]);
+		else if (std::string(argv[i]) == "-o") Output = CPath(argv[++i]);
 		else if (std::string(argv[i]) == "-n") NumPos = std::atoi(argv[++i]);
 		else if (std::string(argv[i]) == "-e") NumEmpties = std::atoi(argv[++i]);
 		else if (std::string(argv[i]) == "-rnd") rnd = true;
@@ -55,21 +56,23 @@ int main(int argc, char* argv[])
 		else if (std::string(argv[i]) == "-next") next = true;
 		else if (std::string(argv[i]) == "-q") quiet = true;
 		else if (std::string(argv[i]) == "-h") { help(); return 0; }
-	
 	}
+
+	if (!rnd && !all)
+		throw std::runtime_error("No mode was set. Choose -rnd or -all.");
 	
 	if (next)
 	{
-		Next(s_input, s_output);
+		Next(Input, Output);
 		return 0;
 	}
 	
 	if (!quiet)
 	{
 		if (rnd)
-			std::cout << "Writing " << ThousandsSeparator(NumPos) << " positions with " << std::to_string(NumEmpties) << " empties to " << s_output << " ..." << std::flush;
+			std::cout << "Writing " << ThousandsSeparator(NumPos) << " positions with " << std::to_string(NumEmpties) << " empties to " << Output.GetRelativeFilePath() << " ..." << std::flush;
 		else if (all)
-			std::cout << "Writing all positions with " << std::to_string(NumEmpties) << " empties to " << s_output << " ..." << std::flush;
+			std::cout << "Writing all positions with " << std::to_string(NumEmpties) << " empties to " << Output.GetRelativeFilePath() << " ..." << std::flush;
 	}
 	
 	std::unordered_set<CPosition> posSet;
@@ -78,7 +81,7 @@ int main(int argc, char* argv[])
 	else if (all)
 		posSet = GenerateAllPositions(NumEmpties);
 	
-	SaveTransform(s_output, posSet.begin(), posSet.end());
+	SaveTransform<CPositionScore>(Output, posSet.begin(), posSet.end());
 	
 	if (!quiet)
 	{

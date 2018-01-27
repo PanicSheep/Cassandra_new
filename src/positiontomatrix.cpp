@@ -58,12 +58,16 @@ int main(int argc, char* argv[])
 	}
 	// ------------------------
 
-	std::string pos_name = position_filename.GetFileName(); // filename without path and extension.
-	pos_name = pos_name.substr(0, pos_name.rfind("."));
+	std::string pos_name = position_filename.GetRawFileName(); // filename without path and extension.
 
 	//std::cout << "Loading positions...";
 	//startTime = std::chrono::high_resolution_clock::now();
-	std::vector<CPositionScore> pos = LoadTransform<CPositionScore>(position_filename.GetAbsoluteFilePath());
+	auto Pos = LoadVector(position_filename);
+	std::vector<CPositionScore> PosScore;
+	for (const auto& it : Pos)
+		if (auto tmp = dynamic_cast<CPositionScore*>(it.get()))
+			PosScore.push_back(*tmp);
+
 	//endTime = std::chrono::high_resolution_clock::now();
 	//std::cout << "done. " << time_format(endTime - startTime) << std::endl;
 
@@ -71,17 +75,14 @@ int main(int argc, char* argv[])
 	{
 		//std::cout << "Processing pattern '" << pat << "'...";
 		//startTime = std::chrono::high_resolution_clock::now();
-		std::pair<CMatrix_CSR<uint8_t, uint32_t>, std::vector<float>> ret = PositionToMatrix<uint8_t, uint32_t, float>(pos, pat);
+		std::pair<CMatrix_CSR<uint8_t, uint32_t>, std::vector<float>> ret = PositionToMatrix<uint8_t, uint32_t, float>(PosScore, pat);
 		ret.first.save(matrix_filepath.GetAbsoluteFolderPath() + FOLDER_SEPARATOR + pos_name + "_" + pat + ".m");
 		//endTime = std::chrono::high_resolution_clock::now();
 		//std::cout << "done. " << time_format(endTime - startTime) << std::endl;
 
 		//std::cout << "Processing vector...";
 		//startTime = std::chrono::high_resolution_clock::now();
-		std::vector<float> b;
-		for (const auto& it : pos)
-			b.push_back(it.score);
-		write_to_file(vector_filepath.GetAbsoluteFolderPath() + FOLDER_SEPARATOR + pos_name + ".v", b);
+		write_to_file(vector_filepath.GetAbsoluteFolderPath() + FOLDER_SEPARATOR + pos_name + ".v", ret.second);
 		//endTime = std::chrono::high_resolution_clock::now();
 		//std::cout << "done. " << time_format(endTime - startTime) << std::endl;
 	}

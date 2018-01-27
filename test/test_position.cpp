@@ -10,10 +10,18 @@
 // ------------------------------------------------------------------------------------------------
 TEST (PositionTest, SignedInt) {
 	ASSERT_EQ (SignedInt(-10), "-10");
-	ASSERT_EQ (SignedInt( -1), "-01");
-	ASSERT_EQ (SignedInt( +0), "+00");
-	ASSERT_EQ (SignedInt( +1), "+01");
+	ASSERT_EQ (SignedInt( -1), "-1");
+	ASSERT_EQ (SignedInt( +0), "+0");
+	ASSERT_EQ (SignedInt( +1), "+1");
 	ASSERT_EQ (SignedInt(+10), "+10");
+}
+
+TEST (PositionTest, DoubleDigitSignedInt) {
+	ASSERT_EQ (DoubleDigitSignedInt(-10), "-10");
+	ASSERT_EQ (DoubleDigitSignedInt( -1), "-01");
+	ASSERT_EQ (DoubleDigitSignedInt( +0), "+00");
+	ASSERT_EQ (DoubleDigitSignedInt( +1), "+01");
+	ASSERT_EQ (DoubleDigitSignedInt(+10), "+10");
 }
 
 TEST (PositionTest, SMEAR_BITBOARD) {
@@ -61,38 +69,6 @@ TEST (PositionTest, FlipHorizontal) {
 			ASSERT_EQ (FlipHorizontal(1ULL << (i * 8 + j)), 1ULL << (i * 8 + (7 - j)));
 }
 
-TEST (PositionTest, board1D) {
-	ASSERT_EQ (board1D(0xFFULL, 0xFF00000000000001ULL), "OOOOOOOO------------------------------------------------XXXXXXX#");
-}
-
-TEST (PositionTest, board2D_PM) {
-	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL, 0x100ULL), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8\n"
-			   "7 - - - - - - - - 7\n"
-			   "6 - - - - - - - - 6\n"
-			   "5 - - - - - - - - 5\n"
-			   "4 - - - - - - - - 4\n"
-			   "3 - - - - - - - - 3\n"
-			   "2 - - - - - - - + 2\n"
-			   "1 X X X X X X X # 1\n"
-			   "  H G F E D C B A  ");
-}
-
-TEST (PositionTest, board2D) {
-	ASSERT_EQ (board2D(0xFFULL, 0xFF00000000000001ULL), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8\n"
-			   "7 - - - - - - - - 7\n"
-			   "6 - - - - - - - - 6\n"
-			   "5 - - - - - - - - 5\n"
-			   "4 - - - - - - - - 4\n"
-			   "3 - - - - - - - - 3\n"
-			   "2 - - - - - - - - 2\n"
-			   "1 X X X X X X X # 1\n"
-			   "  H G F E D C B A  ");
-}
-
 TEST (PositionTest, StableStonesFullEdges) {
 	ASSERT_EQ (StableStonesFullEdges(0x0000000000000000ULL, 0x0000000000000000ULL), 0x0000000000000000ULL);
 	ASSERT_EQ (StableStonesFullEdges(0x0000000000000000ULL, 0x00000000000000FFULL), 0x00000000000000FFULL);
@@ -127,8 +103,10 @@ TEST (PositionTest, Paritiy1) {
 	static auto rnd = std::bind(std::uniform_int_distribution<uint64_t>(0,0xFFFFFFFFFFFFFFFFULL), std::mt19937_64(11));
 	for (std::size_t i = 0; i < 100000; i++)
 	{
-		uint64_t E = rnd();
-		uint64_t parity1 = Parity(E);
+		uint64_t P = rnd();
+		uint64_t O = rnd();
+		uint64_t E = Empties(P, O);
+		uint64_t parity1 = Parity(P, O);
 		uint64_t parity2 = 0;
 		while (E)
 		{
@@ -138,19 +116,6 @@ TEST (PositionTest, Paritiy1) {
 		ASSERT_EQ (parity1, parity2);
 	}
 }
-
-TEST (PositionTest, Paritiy2) {
-	for (unsigned int i = 0; i < 64; i++)
-		ASSERT_EQ (quadrant_id_4_bit[i], 1ULL << quadrant_id_2_bit[i]);
-}
-
-TEST (PositionTest, HasValidFilenameExtension) {
-	ASSERT_EQ (HasValidFilenameExtension("tmp.pos"), true);
-	ASSERT_EQ (HasValidFilenameExtension("C:\tmp.psc"), true);
-	ASSERT_EQ (HasValidFilenameExtension("tmp.pfs"), true);
-	ASSERT_EQ (HasValidFilenameExtension("tmp.psd"), true);
-	ASSERT_EQ (HasValidFilenameExtension("tmp.pas"), true);
-}
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 
@@ -159,66 +124,71 @@ TEST (PositionTest, HasValidFilenameExtension) {
 // CPosition Test
 // ################################################################################################
 // ------------------------------------------------------------------------------------------------
-TEST (CPositionTest, Reset1) {
-	CPosition pos = CPosition(false);
-	pos.Reset();
-	ASSERT_EQ (pos, CPosition());
+TEST(CPositionTest, DefaultPosition) {
+	CPosition pos;
+	ASSERT_EQ(pos.EmptyCount(), 64);
 }
 
-TEST (CPositionTest, Reset2) {
-	CPosition pos = CPosition();
-	pos.Reset(true);
-	ASSERT_EQ (pos, CPosition(true));
+TEST (CPositionTest, StartPosition_normal) {
+	CPosition pos = CPosition::StartPosition();
+	pos.FlipDiagonal();
+	ASSERT_EQ(pos, CPosition::StartPosition());
+}
+
+TEST (CPositionTest, StartPosition_ETH) {
+	CPosition pos = CPosition::StartPositionETH();
+	pos.FlipHorizontal();
+	ASSERT_EQ(pos, CPosition::StartPositionETH());
 }
 
 TEST (CPositionTest, Test) {
 	ASSERT_EQ (CPosition().Test(), true);
-	ASSERT_EQ (CPosition(true).Test(), true);
-	ASSERT_EQ (CPosition(false).Test(), true);
+	ASSERT_EQ (CPosition::StartPosition().Test(), true);
+	ASSERT_EQ (CPosition::StartPositionETH().Test(), true);
 	ASSERT_EQ (CPosition(0xFFULL, 0xFFULL).Test(), false);
 }
 
 TEST (CPositionTest, Empties) {
 	ASSERT_EQ (CPosition().Empties(), 0xFFFFFFFFFFFFFFFFULL);
-	ASSERT_EQ (CPosition(true).Empties(), 0xFFFFFFE7E7FFFFFFULL);
-	ASSERT_EQ (CPosition(false).Empties(), 0xFFFFFFE7E7FFFFFFULL);
+	ASSERT_EQ (CPosition::StartPosition().Empties(), 0xFFFFFFE7E7FFFFFFULL);
+	ASSERT_EQ (CPosition::StartPositionETH().Empties(), 0xFFFFFFE7E7FFFFFFULL);
 	ASSERT_EQ (CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).Empties(), 0ULL);
 }
 
 TEST (CPositionTest, EmptyCount) {
 	ASSERT_EQ (CPosition().EmptyCount(), 64u);
-	ASSERT_EQ (CPosition(true).EmptyCount(), 60u);
-	ASSERT_EQ (CPosition(false).EmptyCount(), 60u);
+	ASSERT_EQ (CPosition::StartPosition().EmptyCount(), 60u);
+	ASSERT_EQ (CPosition::StartPositionETH().EmptyCount(), 60u);
 	ASSERT_EQ (CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).EmptyCount(), 0u);
 }
 
 TEST (CPositionTest, Parity) {
 	ASSERT_EQ (CPosition().Parity(), 0u);
-	ASSERT_EQ (CPosition(true).Parity(), 0xFULL);
-	ASSERT_EQ (CPosition(false).Parity(), 0xFULL);
+	ASSERT_EQ (CPosition::StartPosition().Parity(), 0xFULL);
+	ASSERT_EQ (CPosition::StartPositionETH().Parity(), 0xFULL);
 	ASSERT_EQ (CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).Parity(), 0ULL);
 }
 
 TEST (CPositionTest, PossibleMoves) {
 	ASSERT_EQ (CPosition().PossibleMoves(), 0ULL);
-	ASSERT_EQ (CPosition(true).PossibleMoves(), 0x00000000003C0000ULL);
-	ASSERT_EQ (CPosition(false).PossibleMoves(), 0x0000102004080000ULL);
+	ASSERT_EQ (CPosition::StartPosition().PossibleMoves(), 0x0000102004080000ULL);
+	ASSERT_EQ (CPosition::StartPositionETH().PossibleMoves(), 0x00000000003C0000ULL);
 	ASSERT_EQ (CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).PossibleMoves(), 0ULL);
 }
 
 TEST (CPositionTest, HasMoves) {
 	ASSERT_EQ (CPosition().HasMoves(), false);
-	ASSERT_EQ (CPosition(true).HasMoves(), true);
-	ASSERT_EQ (CPosition(false).HasMoves(), true);
+	ASSERT_EQ (CPosition::StartPosition().HasMoves(), true);
+	ASSERT_EQ (CPosition::StartPositionETH().HasMoves(), true);
 	ASSERT_EQ (CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).HasMoves(), false);
 }
 
 TEST (CPositionTest, PlayStone) {
-	CPosition pos(false);
+	CPosition pos = CPosition::StartPosition();
 	pos.PlayStone(64);
-	ASSERT_EQ (pos, CPosition(START_POSITION_O, START_POSITION_P));
+	ASSERT_EQ (pos, CPosition(CPosition::StartPosition().O, CPosition::StartPosition().P));
 	pos.PlayStone(64);
-	ASSERT_EQ (pos, CPosition(false));
+	ASSERT_EQ (pos, CPosition::StartPosition());
 	pos.PlayStone(19);
 	ASSERT_EQ (pos, CPosition(0x0000001000000000ULL, 0x0000000818080000ULL));
 }
@@ -255,25 +225,6 @@ TEST (CPositionTest, FlipVertical) {
 	ASSERT_EQ (pos1, pos4);
 }
 
-TEST (CPositionTest, to_string_1D) {
-	const uint64_t P = 0xFFULL;
-	const uint64_t O = 0xFF00000000000001ULL;
-	ASSERT_EQ (CPosition(P, O).to_string_1D(), board1D(P, O));
-}
-
-TEST (CPositionTest, to_string_2D) {
-	const uint64_t P = 0xFFULL;
-	const uint64_t O = 0xFF00000000000001ULL;
-	ASSERT_EQ (CPosition(P, O).to_string_2D(), board2D(P, O));
-}
-
-TEST (CPositionTest, to_string_2D_PM) {
-	const uint64_t P = 0xFFULL;
-	const uint64_t O = 0xFF00000000000001ULL;
-	const uint64_t PM = PossibleMoves(P, O);
-	ASSERT_EQ (CPosition(P, O).to_string_2D_PM(), board2D(P, O, PM));
-}
-
 TEST (CPositionTest, FlipToMin) {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL); pos1.FlipToMin();
 	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();
@@ -294,23 +245,23 @@ TEST (CPositionTest, FlipToMin) {
 }
 
 TEST (CPositionTest, ctorCPositionScore) {
-	CPositionScore pos(false);
-	ASSERT_EQ (CPosition(false), static_cast<CPosition>(pos));
+	CPositionScore pos(CPosition::StartPosition());
+	ASSERT_EQ (CPosition::StartPosition(), static_cast<CPosition>(pos));
 }
 
 TEST (CPositionTest, ctorCPositionFullScore) {
-	CPositionFullScore pos(false);
-	ASSERT_EQ (CPosition(false), static_cast<CPosition>(pos));
+	CPositionFullScore pos(CPosition::StartPosition());
+	ASSERT_EQ (CPosition::StartPosition(), static_cast<CPosition>(pos));
 }
 
 TEST (CPositionTest, ctorCPositionScoreDepth) {
-	CPositionScoreDepth pos(false);
-	ASSERT_EQ (CPosition(false), static_cast<CPosition>(pos));
+	CPositionScoreDepth pos(CPosition::StartPosition());
+	ASSERT_EQ (CPosition::StartPosition(), static_cast<CPosition>(pos));
 }
 
 TEST (CPositionTest, ctorCPositionAllScore) {
-	CPositionAllScore pos(false);
-	ASSERT_EQ (CPosition(false), static_cast<CPosition>(pos));
+	CPositionAllScore pos(CPosition::StartPosition());
+	ASSERT_EQ (CPosition::StartPosition(), static_cast<CPosition>(pos));
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
@@ -320,20 +271,6 @@ TEST (CPositionTest, ctorCPositionAllScore) {
 // CPositionScore Test
 // ################################################################################################
 // ------------------------------------------------------------------------------------------------
-TEST (CPositionScoreTest, Reset1) {
-	CPositionScore pos = CPositionScore(false);
-	pos.Reset();
-	ASSERT_EQ (equiv(pos, CPositionScore()), true);
-	ASSERT_EQ (pos.score, CPositionScore().score);
-}
-
-TEST (CPositionScoreTest, Reset2) {
-	CPositionScore pos = CPositionScore();
-	pos.Reset(true);
-	ASSERT_EQ (equiv(pos, CPositionScore(true)), true);
-	ASSERT_EQ (pos.score, CPositionScore().score);
-}
-
 TEST (CPositionScoreTest, ResetInformation) {
 	CPositionScore pos = CPositionScore(0, 0, 0);
 	pos.ResetInformation();
@@ -342,128 +279,90 @@ TEST (CPositionScoreTest, ResetInformation) {
 
 TEST (CPositionScoreTest, Test) {
 	ASSERT_EQ (CPositionScore().Test(), true);
-	ASSERT_EQ (CPositionScore(true).Test(), true);
-	ASSERT_EQ (CPositionScore(false).Test(), true);
+	ASSERT_EQ (CPositionScore(CPosition::StartPosition()).Test(), true);
+	ASSERT_EQ (CPositionScore(CPosition::StartPositionETH()).Test(), true);
 	ASSERT_EQ (CPositionScore(0xFFULL, 0xFFULL, 1).Test(), false);
 }
 
 TEST (CPositionScoreTest, Empties) {
 	ASSERT_EQ (CPositionScore().Empties(), 0xFFFFFFFFFFFFFFFFULL);
-	ASSERT_EQ (CPositionScore(true).Empties(), 0xFFFFFFE7E7FFFFFFULL);
-	ASSERT_EQ (CPositionScore(false).Empties(), 0xFFFFFFE7E7FFFFFFULL);
+	ASSERT_EQ (CPositionScore(CPosition::StartPosition()).Empties(), 0xFFFFFFE7E7FFFFFFULL);
+	ASSERT_EQ (CPositionScore(CPosition::StartPositionETH()).Empties(), 0xFFFFFFE7E7FFFFFFULL);
 	ASSERT_EQ (CPositionScore(0xFFFFFFFFFFFFFFFFULL, 0ULL, 1).Empties(), 0ULL);
 }
 
 TEST (CPositionScoreTest, EmptyCount) {
 	ASSERT_EQ (CPositionScore().EmptyCount(), 64u);
-	ASSERT_EQ (CPositionScore(true).EmptyCount(), 60u);
-	ASSERT_EQ (CPositionScore(false).EmptyCount(), 60u);
+	ASSERT_EQ (CPositionScore(CPosition::StartPosition()).EmptyCount(), 60u);
+	ASSERT_EQ (CPositionScore(CPosition::StartPositionETH()).EmptyCount(), 60u);
 	ASSERT_EQ (CPositionScore(0xFFFFFFFFFFFFFFFFULL, 0ULL, 1).EmptyCount(), 0u);
 }
 
 TEST (CPositionScoreTest, Parity) {
 	ASSERT_EQ (CPositionScore().Parity(), 0u);
-	ASSERT_EQ (CPositionScore(true).Parity(), 0xFULL);
-	ASSERT_EQ (CPositionScore(false).Parity(), 0xFULL);
+	ASSERT_EQ (CPositionScore(CPosition::StartPosition()).Parity(), 0xFULL);
+	ASSERT_EQ (CPositionScore(CPosition::StartPositionETH()).Parity(), 0xFULL);
 	ASSERT_EQ (CPositionScore(0xFFFFFFFFFFFFFFFFULL, 0ULL, 1).Parity(), 0ULL);
 }
 
 TEST (CPositionScoreTest, PossibleMoves) {
 	ASSERT_EQ (CPositionScore().PossibleMoves(), 0ULL);
-	ASSERT_EQ (CPositionScore(true).PossibleMoves(), 0x00000000003C0000ULL);
-	ASSERT_EQ (CPositionScore(false).PossibleMoves(), 0x0000102004080000ULL);
+	ASSERT_EQ (CPositionScore(CPosition::StartPosition()).PossibleMoves(), 0x0000102004080000ULL);
+	ASSERT_EQ (CPositionScore(CPosition::StartPositionETH()).PossibleMoves(), 0x00000000003C0000ULL);
 	ASSERT_EQ (CPositionScore(0xFFFFFFFFFFFFFFFFULL, 0ULL, 1).PossibleMoves(), 0ULL);
 }
 
 TEST (CPositionScoreTest, HasMoves) {
 	ASSERT_EQ (CPositionScore().HasMoves(), false);
-	ASSERT_EQ (CPositionScore(true).HasMoves(), true);
-	ASSERT_EQ (CPositionScore(false).HasMoves(), true);
+	ASSERT_EQ (CPositionScore(CPosition::StartPosition()).HasMoves(), true);
+	ASSERT_EQ (CPositionScore(CPosition::StartPositionETH()).HasMoves(), true);
 	ASSERT_EQ (CPositionScore(0xFFFFFFFFFFFFFFFFULL, 0ULL, 1).HasMoves(), false);
 }
 
 TEST (CPositionScoreTest, PlayStone) {
-	CPositionScore pos(false);
+	CPositionScore pos(CPosition::StartPosition(), -1);
 	pos.PlayStone(64);
-	ASSERT_EQ (equiv(pos, CPositionScore(START_POSITION_O, START_POSITION_P, 1)), true);
+	ASSERT_EQ (equiv(pos, CPositionScore(CPosition::StartPosition().O, CPosition::StartPosition().P, 1)), true);
 	pos.PlayStone(64);
-	ASSERT_EQ (equiv(pos, CPositionScore(false)), true);
+	ASSERT_EQ (equiv(pos, CPositionScore(CPosition::StartPosition())), true);
 	pos.PlayStone(19);
 	ASSERT_EQ (equiv(pos, CPositionScore(0x0000001000000000ULL, 0x0000000818080000ULL, 1)), true);
 }
 
 TEST (CPositionScoreTest, ctorCPosition) {
-	CPosition pos(false);
+	CPosition pos = CPosition::StartPositionETH();
 	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
+	ASSERT_EQ (equiv(CPositionScore(CPosition::StartPositionETH()), pos_cast), true); // Position is copied
 	ASSERT_EQ (pos_cast.score, -99); // Score is default
 }
 
-TEST (CPositionScoreTest, ctorCPositionFullScore) {
-	CPositionFullScore pos(false);
-	pos.score[0] = 0; // depth 0, score +0
-	pos.score[1] = 3; // depth 1, score +3
-	pos.score[2] = 2; // depth 2, score +2
-	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
-	ASSERT_EQ (pos_cast.score, 2); // Score of highest depth is copied
-}
+//TEST (CPositionScoreTest, ctorCPositionFullScore) {
+//	CPositionFullScore pos(CPosition::StartPositionETH());
+//	pos.score[0] = 0; // depth 0, score +0
+//	pos.score[1] = 3; // depth 1, score +3
+//	pos.score[2] = 2; // depth 2, score +2
+//	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
+//	ASSERT_EQ (equiv(CPositionScore(CPosition::StartPositionETH()), pos_cast), true); // Position is copied
+//	ASSERT_EQ (pos_cast.score, 2); // Score of highest depth is copied
+//}
 
 TEST (CPositionScoreTest, ctorCPositionScoreDepth) {
-	CPositionScoreDepth pos(false);
+	CPositionScoreDepth pos(CPosition::StartPositionETH());
 	pos.score = 2;
 	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
+	ASSERT_EQ (equiv(CPositionScore(CPosition::StartPositionETH()), pos_cast), true); // Position is copied
 	ASSERT_EQ (pos_cast.score, 2); // Score is copied
 }
 
-TEST (CPositionScoreTest, ctorCPositionAllScore) {
-	CPositionAllScore pos(false);
-	pos.score[0] = 0; // depth 0, score +0
-	pos.score[1] = 3; // depth 1, score +3
-	pos.score[2] = 2; // depth 2, score +2
-	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
-	ASSERT_EQ (equiv(CPositionScore(false), pos_cast), true); // Position is copied
-	ASSERT_EQ (pos_cast.score, 3); // Highest score is copied
-}
-
-TEST (CPositionScoreTest, to_string_1D) {
-	const uint64_t P = 0xFFULL;
-	const uint64_t O = 0xFF00000000000001ULL;
-	ASSERT_EQ (CPositionScore(P, O, 2).to_string_1D(), board1D(P, O) + " +02");
-}
-
-TEST (CPositionScoreTest, to_string_2D) {
-	const uint64_t P = 0xFFULL;
-	const uint64_t O = 0xFF00000000000001ULL;
-	ASSERT_EQ (CPositionScore(P, O, 2).to_string_2D(), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8  score: +02\n"
-			   "7 - - - - - - - - 7\n"
-			   "6 - - - - - - - - 6\n"
-			   "5 - - - - - - - - 5\n"
-			   "4 - - - - - - - - 4\n"
-			   "3 - - - - - - - - 3\n"
-			   "2 - - - - - - - - 2\n"
-			   "1 X X X X X X X # 1\n"
-			   "  H G F E D C B A  ");
-}
-
-TEST (CPositionScoreTest, to_string_2D_PM) {
-	const uint64_t P = 0xFFULL;
-	const uint64_t O = 0xFF00000000000001ULL;
-	ASSERT_EQ (CPositionScore(P, O, 2).to_string_2D_PM(), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8  score: +02\n"
-			   "7 - - - - - - - - 7\n"
-			   "6 - - - - - - - - 6\n"
-			   "5 - - - - - - - - 5\n"
-			   "4 - - - - - - - - 4\n"
-			   "3 - - - - - - - - 3\n"
-			   "2 - - - - - - - - 2\n"
-			   "1 X X X X X X X # 1\n"
-			   "  H G F E D C B A  ");
-}
+//TEST (CPositionScoreTest, ctorCPositionAllScore) {
+//	CPositionAllScore pos(CPosition::StartPositionETH());
+//	pos.score[0] = 0; // depth 0, score +0
+//	pos.score[1] = 3; // depth 1, score +3
+//	pos.score[2] = 2; // depth 2, score +2
+//	CPositionScore pos_cast = static_cast<CPositionScore>(pos);
+//	ASSERT_EQ (equiv(CPositionScore(CPosition::StartPositionETH()), pos_cast), true); // Position is copied
+//	ASSERT_EQ (pos_cast.score, 3); // Highest score is copied
+//}
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################
 
@@ -472,22 +371,6 @@ TEST (CPositionScoreTest, to_string_2D_PM) {
 // CPositionFullScore Test
 // ################################################################################################
 // ------------------------------------------------------------------------------------------------
-TEST (CPositionFullScoreTest, Reset1) {
-	CPositionFullScore pos = CPositionFullScore(false);
-	pos.Reset();
-	ASSERT_EQ (equiv(pos, CPositionFullScore()), true);
-	for (int i = 0; i < 61; i++)
-		ASSERT_EQ (pos.score[i], CPositionFullScore().score[i]);
-}
-
-TEST (CPositionFullScoreTest, Reset2) {
-	CPositionFullScore pos = CPositionFullScore();
-	pos.Reset(true);
-	ASSERT_EQ (equiv(pos, CPositionFullScore(true)), true);
-	for (int i = 0; i < 61; i++)
-		ASSERT_EQ (pos.score[i], CPositionFullScore().score[i]);
-}
-
 TEST (CPositionFullScoreTest, ResetInformation) {
 	CPositionFullScore pos = CPositionFullScore(0, 0);
 	pos.score[3] = 12;
@@ -498,8 +381,8 @@ TEST (CPositionFullScoreTest, ResetInformation) {
 
 TEST (CPositionFullScoreTest, Test1) {
 	ASSERT_EQ (CPositionFullScore().Test(), true);
-	ASSERT_EQ (CPositionFullScore(true).Test(), true);
-	ASSERT_EQ (CPositionFullScore(false).Test(), true);
+	ASSERT_EQ (CPositionFullScore(CPosition::StartPosition()).Test(), true);
+	ASSERT_EQ (CPositionFullScore(CPosition::StartPositionETH()).Test(), true);
 	ASSERT_EQ (CPositionFullScore(0xFFULL, 0xFFULL).Test(), false);
 }
 
@@ -510,32 +393,32 @@ TEST (CPositionFullScoreTest, Test2) {
 }
 
 TEST (CPositionFullScoreTest, ctorCPosition) {
-	CPosition pos(false);
+	CPosition pos = CPosition::StartPositionETH();
 	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
-	ASSERT_EQ (equiv(CPositionFullScore(false), pos_cast), true); // Position is copied
+	ASSERT_EQ (equiv(CPositionFullScore(CPosition::StartPositionETH()), pos_cast), true); // Position is copied
 	for (unsigned int i = 0; i < 61; i++)
 		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
 }
 
-TEST (CPositionFullScoreTest, ctorCPositionScore) {
-	CPositionScore pos(0xFFULL, 0ULL, 10);
-	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
-	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
-	for (unsigned int i = 0; i < 61; i++)
-		if (i != pos.EmptyCount())
-			ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
-	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], pos.score);
-}
+//TEST (CPositionFullScoreTest, ctorCPositionScore) {
+//	CPositionScore pos(0xFFULL, 0ULL, 10);
+//	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
+//	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
+//	for (unsigned int i = 0; i < 61; i++)
+//		if (i != pos.EmptyCount())
+//			ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+//	ASSERT_EQ (pos_cast.score[pos.EmptyCount()], pos.score);
+//}
 
-TEST (CPositionFullScoreTest, ctorCPositionScoreDepth1) {
-	CPositionScoreDepth pos(0xFFULL, 0ULL, 10, 3, 0);
-	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
-	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
-	for (unsigned int i = 0; i < 61; i++)
-		if (i != 3)
-			ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
-	ASSERT_EQ (pos_cast.score[3], pos.score); // copied score
-}
+//TEST (CPositionFullScoreTest, ctorCPositionScoreDepth1) {
+//	CPositionScoreDepth pos(0xFFULL, 0ULL, 10, 3, 0);
+//	CPositionFullScore pos_cast = static_cast<CPositionFullScore>(pos);
+//	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
+//	for (unsigned int i = 0; i < 61; i++)
+//		if (i != 3)
+//			ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
+//	ASSERT_EQ (pos_cast.score[3], pos.score); // copied score
+//}
 
 TEST (CPositionFullScoreTest, ctorCPositionScoreDepth2) {
 	CPositionScoreDepth pos(0xFFULL, 0ULL, 10, 3, 1);
@@ -543,46 +426,6 @@ TEST (CPositionFullScoreTest, ctorCPositionScoreDepth2) {
 	ASSERT_EQ (equiv(CPositionFullScore(0xFFULL, 0ULL), pos_cast), true); // Position is copied
 	for (unsigned int i = 0; i < 61; i++)
 		ASSERT_EQ (pos_cast.score[i], CPositionFullScore().score[i]); // Score is default
-}
-
-TEST (CPositionFullScoreTest, to_string_1D) {
-	const uint64_t P = 0x00000000000000F3ULL;
-	const uint64_t O = 0xFFFFFFFFFFFFFF00ULL;
-	ASSERT_EQ (CPositionFullScore(P, O).to_string_1D(), board1D(P, O) + " -99 -99 -99");
-}
-
-TEST (CPositionFullScoreTest, to_string_2D) {
-	const uint64_t P = 0x00000000000000F3ULL;
-	const uint64_t O = 0xFFFFFFFFFFFFFF00ULL;
-	ASSERT_EQ (CPositionFullScore(P, O).to_string_2D(), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8\n"
-			   "7 O O O O O O O O 7\n"
-			   "6 O O O O O O O O 6\n"
-			   "5 O O O O O O O O 5\n"
-			   "4 O O O O O O O O 4\n"
-			   "3 O O O O O O O O 3\n"
-			   "2 O O O O O O O O 2\n"
-			   "1 X X X X - - X X 1\n"
-			   "  H G F E D C B A  \n"
-			   "score: -99 -99 -99");
-}
-
-TEST (CPositionFullScoreTest, to_string_2D_PM) {
-	const uint64_t P = 0x00000000000000F3ULL;
-	const uint64_t O = 0xFFFFFFFFFFFFFF00ULL;
-	ASSERT_EQ (CPositionFullScore(P, O).to_string_2D_PM(), 
-			   "  H G F E D C B A  \n"
-			   "8 O O O O O O O O 8\n"
-			   "7 O O O O O O O O 7\n"
-			   "6 O O O O O O O O 6\n"
-			   "5 O O O O O O O O 5\n"
-			   "4 O O O O O O O O 4\n"
-			   "3 O O O O O O O O 3\n"
-			   "2 O O O O O O O O 2\n"
-			   "1 X X X X - - X X 1\n"
-			   "  H G F E D C B A  \n"
-			   "score: -99 -99 -99");
 }
 // ------------------------------------------------------------------------------------------------
 // ################################################################################################

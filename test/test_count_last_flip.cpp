@@ -15,14 +15,14 @@ void TestCountLastFlip(const uint8_t move)
 	                    | line(move, +1,  0)
 	                    | line(move, +1, +1);
 	
-	for (unsigned int i = 0; i < 1000000; i++)
+	for (unsigned int i = 0; i < 100'000; i++)
 	{
 		CPosition pos;
 		pos.MakeRandomFull(mask);
 		ASSERT_EQ (PopCount(flip(pos.P, pos.O, move)) * 2, count_last_flip(pos.P, move));
 	}
 	
-	for (unsigned int i = 0; i < 100000; i++)
+	for (unsigned int i = 0; i < 10'000; i++)
 	{
 		CPosition pos;
 		pos.MakeRandomFull(~(1ULL << move));

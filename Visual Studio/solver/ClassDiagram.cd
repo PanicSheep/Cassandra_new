@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CConfigurations" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAACAAAAAAAAAAAEAAAAAAAABAAggAARAAAAAA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\configfile.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CHashTable" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAYAgIAAAAJAAABBQAACAAAAAAAAAAEAAAAhoQBQAAA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\hashtable.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CHashTableValueType" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAABAAAAAAQBAAACAAQIAgAAAA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\hashtable.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CLine" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAACAAAAAAAAYAAAAACABAAAIAACAAgAAAAAAA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\line.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CMoveList" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAACCgAAAABAAIAAAAgQEAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\move.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPath" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAAAAAAAEAAAAAAgAAAIAAQgBAGAAAABgAAAgQAAAAA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\path.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPosition" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAgEAQAIAAABAAAIQgAACpCAQoAQAAgCBhwEBA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\position.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPosition2" Collapsed="true">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAIAAhAAAE=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\solver.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPositionAllScore" Collapsed="true">
+    <Position X="5.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAoAAAgAAAAIAAAAAQIIAAAACLAAAAARAAACBAAABA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\position.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPositionFullScore" Collapsed="true">
+    <Position X="0.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAgAAAAIAAQAAAYIAAAACJAAAAARAAACBAAABA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\position.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPositionScore" Collapsed="true">
+    <Position X="3" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAgAAAAIAAAAAAIIAAAACJAAAAARAAACBAAABQ=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\position.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPositionScoreDepth" Collapsed="true">
+    <Position X="3" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAIAAAAAAAIAAAACJQBIAARAAAKBAAABg=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\position.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSelectivity" Collapsed="true">
+    <Position X="0.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\selectivity.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTwoNode" Collapsed="true">
+    <Position X="1" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIwAAAEAAABAAQAAMAAAAAAAAAAAAABAAgAgIABAAgA=</HashCode>
+      <FileName>C:\Users\dohof_000\Documents\GitHub\Cassandra_new.git\src\hashtable.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
