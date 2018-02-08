@@ -1,0 +1,116 @@
+#include "PositionGenerator.h"
+#include <algorithm>
+#include <functional>
+#include <atomic>
+#include <thread>
+#include <mutex>
+#include <omp.h>
+
+class ThreadSavePosSet
+{
+	mutable std::mutex mtx;
+	std::unordered_set<CPosition> set;
+public:
+	bool TryInsert(const CPosition& pos, std::size_t maxSize);
+	std::size_t size() const;
+	const std::unordered_set<CPosition>& GetSet() const { return set; }
+	      std::unordered_set<CPosition>  GetSet()       { return set; }
+};
+
+bool ThreadSavePosSet::TryInsert(const CPosition& pos, std::size_t maxSize)
+{
+	std::lock_guard<std::mutex> guard(mtx);
+	if (set.size() >= maxSize)
+		return false;
+	const bool InsertionTookPlace = set.insert(pos).second;
+	return InsertionTookPlace;
+}
+
+std::size_t ThreadSavePosSet::size() const
+{
+	std::lock_guard<std::mutex> guard(mtx);
+	return set.size();
+}
+
+unsigned int CPositionGenerator::rnd()
+{
+	return distribution(rndEngine);
+}
+
+CPositionGenerator::CPositionGenerator()
+	: CPositionGenerator(std::random_device{}())
+{}
+
+CPositionGenerator::CPositionGenerator(std::size_t seed)
+	: rndEngine(seed)
+	, distribution(std::uniform_int_distribution<unsigned int>(0, 64))
+{}
+
+CPosition CPositionGenerator::CreateRandomPosition(uint8_t EmptiesCount)
+{
+	CPosition pos = CPosition::StartPosition();
+		
+	for (auto plies = pos.EmptyCount() - EmptiesCount; plies > 0; plies--)
+	{
+		CMoves moves = pos.PossibleMoves();
+		if (moves.empty())
+		{
+			pos = pos.PlayPass();
+			moves = pos.PossibleMoves();
+			if (moves.empty())
+				return CreateRandomPosition(EmptiesCount); // Start again.
+		}
+		pos = pos.Play(moves.ExtractMove(rnd() % moves.size()));
+	}
+
+	return pos;
+}
+
+std::unordered_set<CPosition> CPositionGenerator::CreateRandomPositionSet(uint8_t EmptiesCount, std::size_t size)
+{
+	ThreadSavePosSet PosSet;
+	auto gen = [&] { while (PosSet.size() < size) PosSet.TryInsert(CreateRandomPosition(EmptiesCount), size); };
+
+	std::vector<std::thread> threads;
+	for (std::size_t i = 0; i < std::thread::hardware_concurrency() - 1; i++)
+		threads.push_back(std::thread(gen));
+	gen();
+
+	for (auto& it : threads)
+		it.join();
+
+	return PosSet.GetSet();
+}
+
+void GenAll(CPosition pos, std::unordered_set<CPosition>& pos_set, const uint8_t depth)
+{
+	if (depth == 0) {
+		pos.FlipToMin();
+		pos_set.insert(pos);
+		return;
+	}
+
+	auto moves = pos.PossibleMoves();
+
+	if (moves.empty())
+	{
+		pos = pos.PlayPass();
+		if (pos.HasMoves())
+			GenAll(pos, pos_set, depth);
+		return;
+	}
+
+	while (!moves.empty())
+	{
+		const auto move = moves.ExtractMove();
+		GenAll(pos.Play(move), pos_set, depth - 1);
+	}
+}
+
+std::unordered_set<CPosition> CPositionGenerator::GenerateAllPositions(uint8_t EmptiesCount)
+{
+	std::unordered_set<CPosition> PosSet;
+	CPosition pos = CPosition::StartPosition();
+	GenAll(pos, PosSet, static_cast<uint8_t>(pos.EmptyCount() - EmptiesCount));
+	return PosSet;
+}

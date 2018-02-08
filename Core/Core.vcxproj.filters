@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\FlipFast.cpp" />
+    <ClCompile Include="src\Position.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
+    <ClCompile Include="src\PositionGenerator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\FlipFast.h" />
+    <ClInclude Include="src\MacrosHell.h" />
+    <ClInclude Include="src\Moves.h" />
+    <ClInclude Include="src\Position.h" />
+    <ClInclude Include="src\Utility.h" />
+    <ClInclude Include="src\PositionGenerator.h" />
+    <ClInclude Include="src\Hashtable.h" />
+  </ItemGroup>
+</Project>
