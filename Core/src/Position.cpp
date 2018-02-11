@@ -271,6 +271,7 @@ CMoves CPosition::PossibleMoves() const
 
 bool CPosition::HasMoves() const
 {
+	//return PossibleMoves().size() > 0;
 	const uint64_t empties = ~(P | O);
 	if (get_some_moves<1>(P, O & 0x7E7E7E7E7E7E7E7EULL) & empties) return true;
 	if (get_some_moves<8>(P, O & 0x00FFFFFFFFFFFF00ULL) & empties) return true;
@@ -281,6 +282,6 @@ bool CPosition::HasMoves() const
 
 CPosition CPosition::Play(const CMove& move) const
 {
-	const auto flips = Flip(*this, move);
+	const auto flips = Flipper.Flip(*this, move);
 	return CPosition(O ^ flips, P ^ flips ^ MakeBit(move.field));
 }
