@@ -180,6 +180,7 @@ bool TwoNode::LookUp(const CPosition& key, PvsInfo& value) const
 		return true;
 	}
 	
+	return false;
 }
 
 void TwoNode::Refresh(const CPosition& key, const uint8_t date)
