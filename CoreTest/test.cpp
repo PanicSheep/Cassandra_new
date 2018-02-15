@@ -110,8 +110,12 @@ TEST(FlipFastTest, Move_F8) { TestFlip(F8); }
 TEST(FlipFastTest, Move_G8) { TestFlip(G8); }
 TEST(FlipFastTest, Move_H8) { TestFlip(H8); }
 
-//int main(int argc, char **argv)
-//{
-//	::testing::InitGoogleTest(&argc, argv);
-//	return RUN_ALL_TESTS();
-//}
+TEST(FlipLoopTest, OneFlip) {
+	const CPosition pos(0xFF00000000000000ULL, 0x00FFFFFFFFFFFF7EULL);
+	const CMove move(A1);
+	const uint64_t flip = Flip_loop(pos, move);
+
+	ASSERT_EQ(pos.GetP() & flip, 0ULL);
+	ASSERT_EQ(pos.GetO() & flip, flip);
+	ASSERT_EQ(flip, 0x0041211109050300ULL);
+}
