@@ -9,9 +9,9 @@ public:
 	CPositionGenerator();
 	CPositionGenerator(std::size_t seed);
 
-	CPosition CreateRandomPosition(uint8_t EmptiesCount);
-	std::unordered_set<CPosition> CreateRandomPositionSet(uint8_t EmptiesCount, std::size_t size);
-	std::unordered_set<CPosition> GenerateAllPositions(uint8_t EmptiesCount);
+	                   CPosition  GenerateRandomPosition   (uint8_t EmptiesCount);
+	std::unordered_set<CPosition> GenerateRandomPositionSet(uint8_t EmptiesCount, std::size_t size);
+	std::unordered_set<CPosition> GenerateAllPositions     (uint8_t EmptiesCount);
 
 private:
 	std::mt19937_64 rndEngine;

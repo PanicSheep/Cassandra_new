@@ -273,4 +273,4 @@ private:
 	};
 };
 
-extern CFlipper Flipper;
+uint64_t Flip(const CPosition& pos, const CMove move);

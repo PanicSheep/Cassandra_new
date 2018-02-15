@@ -32,9 +32,15 @@ public:
 	
 	std::size_t size() const { return PopCount(moves); }
 	bool empty() const { return moves == 0; }
+	bool HasMove(std::size_t index) const;
 	CMove ExtractMove();
 	CMove ExtractMove(std::size_t index);
 };
+
+inline bool CMoves::HasMove(std::size_t index) const
+{
+	return TestBit(moves, index);
+}
 
 inline CMove CMoves::ExtractMove()
 {

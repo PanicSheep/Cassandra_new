@@ -3,8 +3,6 @@
 #pragma warning(push)
 #pragma warning(disable:4146) // unary minus operator applied to unsigned type, result still unsigned.
 
-CFlipper Flipper;
-
 uint64_t CFlipper::Flip(const CPosition& pos, const CMove move) const
 {
 	return (this->*flip_fp[move.field])(pos.GetP(), pos.GetO());
@@ -978,6 +976,12 @@ uint64_t CFlipper::H8(const uint64_t P, const uint64_t O) const
 	const auto flipped_d = (-outflank_d * 2) & 0x0040201008040200ULL;
 
 	return flipped_v | flipped_h | flipped_d;
+}
+
+uint64_t Flip(const CPosition & pos, const CMove move)
+{
+	static CFlipper Flipper;
+	return Flipper.Flip(pos, move);
 }
 
 #pragma warning(pop)

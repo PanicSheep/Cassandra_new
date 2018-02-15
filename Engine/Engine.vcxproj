@@ -10,6 +10,36 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\BoardCollection.cpp" />
+    <ClCompile Include="src\Boards.cpp" />
+    <ClCompile Include="src\ConfigFile.cpp" />
+    <ClCompile Include="src\HashtablePVS.cpp" />
+    <ClCompile Include="src\LastFlipCounter.cpp" />
+    <ClCompile Include="src\MultiLineStreamDecorator.cpp" />
+    <ClCompile Include="src\NegaMaxSearch.cpp" />
+    <ClCompile Include="src\Path.cpp" />
+    <ClCompile Include="src\Search.cpp" />
+    <ClCompile Include="src\SingleLineStreamDecorator.cpp" />
+    <ClCompile Include="src\StreamConverter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\BoardCollection.h" />
+    <ClInclude Include="src\Boards.h" />
+    <ClInclude Include="src\ConfigFile.h" />
+    <ClInclude Include="src\FileStreamArchive.h" />
+    <ClInclude Include="src\HashtablePVS.h" />
+    <ClInclude Include="src\LastFlipCounter.h" />
+    <ClInclude Include="src\MultiLineStreamDecorator.h" />
+    <ClInclude Include="src\ObjectSerializables.h" />
+    <ClInclude Include="src\Path.h" />
+    <ClInclude Include="src\Search.h" />
+    <ClInclude Include="src\Serializables.h" />
+    <ClInclude Include="src\SingleLineStreamDecorator.h" />
+    <ClInclude Include="src\StreamConverter.h" />
+    <ClInclude Include="src\StreamQueue.h" />
+    <ClInclude Include="src\StreamSerializables.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{FC8E2AA2-09B4-410E-BA19-5D9F41FA1A73}</ProjectGuid>
@@ -48,9 +78,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -67,14 +95,6 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="LastFlipCounter.cpp" />
-    <ClCompile Include="HashtablePVS.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="LastFlipCounter.h" />
-    <ClInclude Include="HashtablePVS.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

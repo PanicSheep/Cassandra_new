@@ -1,4 +1,5 @@
 #include "LastFlipCounter.h"
+#include "MacrosHell.h"
 #include "FlipFast.h"
 
 CLastFlipCounter::CLastFlipCounter()
@@ -18,7 +19,7 @@ uint8_t CLastFlipCounter::CountFlip(const uint8_t P, const CMove& move)
 	if (P & (1 << move.field))
 		return 0;
 	const uint8_t O = P ^ 0xFF ^ (1 << move.field);
-	const auto flips = Flipper.Flip(CPosition(P, O), move);
+	const auto flips = Flip(CPosition(P, O), move);
 	return static_cast<uint8_t>(PopCount(flips));
 }
 
@@ -98,5 +99,13 @@ uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove& move)
 		case F8: return CLF_5[P >> 56] + CLF_7[PExt(P, 0x2020202020202020ULL)] + CLF_5[((P & 0x2050880402010000ULL) * 0x0101010101010101ULL) >> 56];
 		case G8: return CLF_6[P >> 56] + CLF_7[PExt(P, 0x4040404040404040ULL)] + CLF_6[PExt(P, 0x4020100804020100ULL)];
 		case H8: return CLF_7[P >> 56] + CLF_7[PExt(P, 0x8080808080808080ULL)] + CLF_7[PExt(P, 0x8040201008040201ULL)];
+
+		default: return 0;
 	}
-}	
+}
+
+uint8_t CountLastFlip(const CPosition& pos, const CMove& move)
+{
+	static CLastFlipCounter LFC;
+	return LFC.CountLastFlip(pos, move);
+}

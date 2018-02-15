@@ -46,7 +46,7 @@ CPositionGenerator::CPositionGenerator(std::size_t seed)
 	, distribution(std::uniform_int_distribution<unsigned int>(0, 64))
 {}
 
-CPosition CPositionGenerator::CreateRandomPosition(uint8_t EmptiesCount)
+CPosition CPositionGenerator::GenerateRandomPosition(uint8_t EmptiesCount)
 {
 	CPosition pos = CPosition::StartPosition();
 		
@@ -58,7 +58,7 @@ CPosition CPositionGenerator::CreateRandomPosition(uint8_t EmptiesCount)
 			pos = pos.PlayPass();
 			moves = pos.PossibleMoves();
 			if (moves.empty())
-				return CreateRandomPosition(EmptiesCount); // Start again.
+				return GenerateRandomPosition(EmptiesCount); // Start again.
 		}
 		pos = pos.Play(moves.ExtractMove(rnd() % moves.size()));
 	}
@@ -66,10 +66,10 @@ CPosition CPositionGenerator::CreateRandomPosition(uint8_t EmptiesCount)
 	return pos;
 }
 
-std::unordered_set<CPosition> CPositionGenerator::CreateRandomPositionSet(uint8_t EmptiesCount, std::size_t size)
+std::unordered_set<CPosition> CPositionGenerator::GenerateRandomPositionSet(uint8_t EmptiesCount, std::size_t size)
 {
 	ThreadSavePosSet PosSet;
-	auto gen = [&] { while (PosSet.size() < size) PosSet.TryInsert(CreateRandomPosition(EmptiesCount), size); };
+	auto gen = [&] { while (PosSet.size() < size) PosSet.TryInsert(GenerateRandomPosition(EmptiesCount), size); };
 
 	std::vector<std::thread> threads;
 	for (std::size_t i = 0; i < std::thread::hardware_concurrency() - 1; i++)
@@ -109,8 +109,8 @@ void GenAll(CPosition pos, std::unordered_set<CPosition>& pos_set, const uint8_t
 
 std::unordered_set<CPosition> CPositionGenerator::GenerateAllPositions(uint8_t EmptiesCount)
 {
-	std::unordered_set<CPosition> PosSet;
+	std::unordered_set<CPosition> positions;
 	CPosition pos = CPosition::StartPosition();
-	GenAll(pos, PosSet, static_cast<uint8_t>(pos.EmptyCount() - EmptiesCount));
-	return PosSet;
+	GenAll(pos, positions, static_cast<uint8_t>(pos.EmptyCount() - EmptiesCount));
+	return positions;
 }

@@ -23,6 +23,7 @@ public:
 	bool     HasMoves() const;
 	
 	CPosition Play(const CMove& move) const;
+	CPosition Play(const CMove& move, uint64_t flips) const;
 	CPosition PlayPass() const { return CPosition(O, P); }
 	
 	void FlipCodiagonal();
@@ -43,7 +44,7 @@ namespace std
 {
 	template<> struct hash<CPosition>
 	{
-		inline std::size_t operator()(const CPosition& pos) const
+		std::size_t operator()(const CPosition& pos) const
 		{
 			return pos.P ^ ((pos.O << 32) | (pos.O >> 32));
 		}

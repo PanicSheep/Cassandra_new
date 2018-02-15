@@ -1,6 +1,5 @@
 #pragma once
 #include <cstdint>
-#include "MacrosHell.h"
 #include "Position.h"
 #include "Moves.h"
 
@@ -23,3 +22,5 @@ private:
 	uint8_t CLF_6[256];
 	uint8_t CLF_7[256];
 };
+
+uint8_t CountLastFlip(const CPosition&, const CMove&);
