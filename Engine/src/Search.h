@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 #include "Position.h"
 
@@ -57,7 +58,7 @@ inline uint64_t Neighbour(Field field)
 template <int EmptyCount>
 inline int Search::EvalGameOver(const CPosition& pos)
 {
-	const auto Diff = 2 * PopCount(pos.GetP()) + EmptyCount - 64;
+	const int Diff = 2 * static_cast<int>(PopCount(pos.GetP())) + EmptyCount - 64;
 	if (EmptyCount % 2 == 0)
 	{
 		if (Diff > 0) return Diff + EmptyCount;
