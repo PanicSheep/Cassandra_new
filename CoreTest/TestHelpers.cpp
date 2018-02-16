@@ -3,6 +3,22 @@
 #include <functional>
 #include <random>
 
+uint64_t line(const CMove& move, const int dX, const int dY)
+{
+	uint64_t ret = 0;
+	int i = (move.field % 8) + dX; // Starting index in x direction
+	int j = (move.field / 8) + dY; // Starting index in y direction
+
+	while ((i >= 0) && (i < 8) && (j >= 0) && (j < 8)) // In between boundaries
+	{
+		ret |= 1ULL << (j * 8 + i);
+		i += dX;
+		j += dY;
+	}
+
+	return ret;
+}
+
 CPosition MakeRandomPosition(const uint64_t mask)
 {
 	static auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0,3), std::mt19937_64(13));
