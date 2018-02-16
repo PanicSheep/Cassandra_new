@@ -4,6 +4,7 @@
 #include "FlipFast.h"
 #include "Moves.h"
 #include "LastFlipCounter.h"
+#include "Search.h"
 
 void TestCountLastFlip(const CMove& move)
 {
@@ -93,3 +94,38 @@ TEST(CountLastFlip, Move_E8) { TestCountLastFlip(E8); }
 TEST(CountLastFlip, Move_F8) { TestCountLastFlip(F8); }
 TEST(CountLastFlip, Move_G8) { TestCountLastFlip(G8); }
 TEST(CountLastFlip, Move_H8) { TestCountLastFlip(H8); }
+
+class Search_Test : public Search
+{
+public:
+	template <int EmptyCount>
+	static int EvalGameOver(const CPosition& pos) { return Search::EvalGameOver<EmptyCount>(pos); }
+	static int EvalGameOver(const CPosition& pos) { return Search::EvalGameOver(pos); }
+	static int EvalGameOver(const CPosition& pos, const uint64_t EmptyCount) { return Search::EvalGameOver(pos, EmptyCount); }
+};
+
+TEST(Search, EvalGameOver)
+{
+	const auto pos1 = CPosition(0x0000000000000000ULL, 0x0000000000000000ULL); // Player: 0   Opponent: 0   Empty: 64   Score: 0-0=0
+	const auto pos2 = CPosition(0x00000000000000FFULL, 0x0000000000000000ULL); // Player: 8   Opponent: 0   Empty: 56   Score: 8-0+56=64
+	const auto pos3 = CPosition(0x00000000000000FFULL, 0xFF00000000000000ULL); // Player: 8   Opponent: 8   Empty: 48   Score: 8-8=0
+	const auto pos4 = CPosition(0x00000000000000FFULL, 0xFF10000000000000ULL); // Player: 8   Opponent: 9   Empty: 47   Score: 8-9-47=-48
+	const auto pos5 = CPosition(0x0000000000000000ULL, 0x1000000000000000ULL); // Player: 0   Opponent: 1   Empty: 63   Score: 0-1-63=-64
+	const int score1 = 0;
+	const int score2 = 64;
+	const int score3 = 0;
+	const int score4 = -48;
+	const int score5 = -64;
+
+	ASSERT_EQ(Search_Test::EvalGameOver(pos1, 64), score1);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos2, 56), score2);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos3, 48), score3);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos4, 47), score4);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos5, 63), score5);
+
+	ASSERT_EQ(Search_Test::EvalGameOver<64>(pos1), score1);
+	ASSERT_EQ(Search_Test::EvalGameOver<56>(pos2), score2);
+	ASSERT_EQ(Search_Test::EvalGameOver<48>(pos3), score3);
+	ASSERT_EQ(Search_Test::EvalGameOver<47>(pos4), score4);
+	ASSERT_EQ(Search_Test::EvalGameOver<63>(pos5), score5);
+}
