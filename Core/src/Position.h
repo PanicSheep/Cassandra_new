@@ -4,9 +4,9 @@
 
 class CPosition
 {
-public:
-	uint64_t P, O;
-	
+public:	
+	uint64_t P, O; // TODO: Make private!
+
 	CPosition() : CPosition(0, 0) {}
 	CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
 	

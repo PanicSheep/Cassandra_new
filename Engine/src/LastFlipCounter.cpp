@@ -106,6 +106,6 @@ uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove& move)
 
 uint8_t CountLastFlip(const CPosition& pos, const CMove& move)
 {
-	static CLastFlipCounter LFC;
+	static const CLastFlipCounter LFC;
 	return LFC.CountLastFlip(pos, move);
 }

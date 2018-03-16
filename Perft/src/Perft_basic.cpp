@@ -25,9 +25,9 @@ namespace Perft
 
 			if (moves.empty())
 			{
-				auto nextPos = pos.PlayPass();
-				if (nextPos.HasMoves())
-					return perft(nextPos, depth - 1);
+				auto PosPass = pos.PlayPass();
+				if (PosPass.HasMoves())
+					return perft(PosPass, depth - 1);
 				else
 					return 0ULL;
 			}
@@ -98,9 +98,9 @@ namespace Perft
 
 			if (moves.empty())
 			{
-				auto nextPos = pos.PlayPass();
-				if (nextPos.HasMoves())
-					return perft_(nextPos, depth - 1);
+				auto PosPass = pos.PlayPass();
+				if (PosPass.HasMoves())
+					return perft_(PosPass, depth - 1);
 				else
 					return 0ULL;
 			}
@@ -160,17 +160,17 @@ namespace Perft
 
 			if (moves.empty())
 			{
-				auto nextPos = pos.PlayPass();
-				if (nextPos.HasMoves())
-					return perft_HT(nextPos, depth - 1);
+				const auto PosPass = pos.PlayPass();
+				if (PosPass.HasMoves())
+					return perft_HT(PosPass, depth - 1);
 				else
 					return 0ULL;
 			}
 
-			uint64_t sum = 0ULL;
-			if (ht.LookUp(PerftKey(pos, depth), sum))
-				return sum;
+			if (const auto ret = ht.LookUp(PerftKey(pos, depth)); ret.first)
+				return ret.second;
 
+			uint64_t sum = 0ULL;
 			while (!moves.empty())
 				sum += perft_HT(pos.Play(moves.ExtractMove()), depth - 1);
 
@@ -190,9 +190,9 @@ namespace Perft
 
 			if (moves.empty())
 			{
-				auto nextPos = pos.PlayPass();
-				if (nextPos.HasMoves())
-					fill_unique(nextPos, depth - 1);
+				auto PosPass = pos.PlayPass();
+				if (PosPass.HasMoves())
+					fill_unique(PosPass, depth - 1);
 				return;
 			}
 

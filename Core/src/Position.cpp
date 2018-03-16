@@ -271,13 +271,13 @@ CMoves CPosition::PossibleMoves() const
 
 bool CPosition::HasMoves() const
 {
-	//return PossibleMoves().size() > 0;
-	const uint64_t empties = ~(P | O);
-	if (get_some_moves<1>(P, O & 0x7E7E7E7E7E7E7E7EULL) & empties) return true;
-	if (get_some_moves<8>(P, O & 0x00FFFFFFFFFFFF00ULL) & empties) return true;
-	if (get_some_moves<7>(P, O & 0x007E7E7E7E7E7E00ULL) & empties) return true;
-	if (get_some_moves<9>(P, O & 0x007E7E7E7E7E7E00ULL) & empties) return true;
-	return false;
+	return PossibleMoves().size() > 0;
+	//const uint64_t empties = ~(P | O);
+	//if (get_some_moves<1>(P, O & 0x7E7E7E7E7E7E7E7EULL) & empties) return true;
+	//if (get_some_moves<8>(P, O & 0x00FFFFFFFFFFFF00ULL) & empties) return true;
+	//if (get_some_moves<7>(P, O & 0x007E7E7E7E7E7E00ULL) & empties) return true;
+	//if (get_some_moves<9>(P, O & 0x007E7E7E7E7E7E00ULL) & empties) return true;
+	//return false;
 }
 
 CPosition CPosition::Play(const CMove& move) const

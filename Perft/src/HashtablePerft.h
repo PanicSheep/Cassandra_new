@@ -14,44 +14,56 @@ public:
 
 class BigNode
 {
-private:
-	mutable std::atomic<uint64_t> m_Value;
-	std::atomic<uint64_t> m_P, m_O, m_depth;
 public:
 	BigNode() : m_Value(0), m_P(0), m_O(0), m_depth(0) {}
 
-	void Update(const PerftKey& key, const uint64_t Value, uint8_t date)
+	void Update(const PerftKey& key, const uint64_t value, uint8_t date)
 	{
-		uint64_t V;
-		while((V = m_Value.exchange(0xFFFFFFFFFFFFFFFULL, std::memory_order_acquire)) == 0xFFFFFFFFFFFFFFFULL) continue; //lock
-		if (Value > V)
+		const uint64_t old_value = lock();
+		if (value > old_value)
 		{
 			m_P.store(key.pos.GetP(), std::memory_order_relaxed);
 			m_O.store(key.pos.GetO(), std::memory_order_relaxed);
 			m_depth.store(key.depth, std::memory_order_relaxed);
-			V = Value;
+			unlock(value);
 		}
-		m_Value.store(V, std::memory_order_release); //unlock
+		else
+			unlock(old_value);
 	}
-	bool LookUp(const PerftKey& key, uint64_t& Value) const
+
+	std::pair<bool, uint64_t> LookUp(const PerftKey& key) const
 	{
-		uint64_t V;
-		while((V = m_Value.exchange(0xFFFFFFFFFFFFFFFULL, std::memory_order_acquire)) == 0xFFFFFFFFFFFFFFFULL) continue; //lock
+		const uint64_t old_value = lock();
 		const bool KeyIsEqual = (key.pos.GetP() == m_P.load(std::memory_order_relaxed))
 			      && (key.pos.GetO() == m_O.load(std::memory_order_relaxed))
 			      && (key.depth  == m_depth.load(std::memory_order_relaxed));
-		if (KeyIsEqual)
-			Value = V;
-		m_Value.store(V, std::memory_order_release); //unlock
-		return KeyIsEqual;
+		unlock(old_value);
+		return std::pair<bool, uint64_t>(KeyIsEqual, old_value);
 	}
+
 	void Clear()
 	{
-		while(m_Value.exchange(0xFFFFFFFFFFFFFFFULL, std::memory_order_acquire) == 0xFFFFFFFFFFFFFFFULL) continue; //lock
+		lock();
 		m_P.store(0, std::memory_order_relaxed);
 		m_O.store(0, std::memory_order_relaxed);
 		m_depth.store(0, std::memory_order_relaxed);
-		m_Value.store(0, std::memory_order_release); //unlock
+		unlock(0);
+	}
+private:
+	mutable std::atomic<uint64_t> m_Value;
+	std::atomic<uint64_t> m_P, m_O, m_depth;
+
+	uint64_t lock() const
+	{
+		uint64_t value;
+		while ((value = m_Value.exchange(0xFFFFFFFFFFFFFFFULL, std::memory_order_acquire)) == 0xFFFFFFFFFFFFFFFULL)
+			continue; 
+		return value;
+	}
+
+	void unlock(uint64_t value) const 
+	{
+		m_Value.store(value, std::memory_order_release); 
 	}
 };
 
@@ -66,8 +78,8 @@ public:
 //public:
 //	HashTable(const uint64_t Buckets) : buckets(OptimizedBucketSize(Buckets)) { table = std::vector<NodeType>(buckets); }
 //	HashTable() : HashTable(1) {}
-//	void Update(const CPosition& pos, const uint64_t depth, const uint64_t Value){ table[Hash(pos)].Update(pos, depth, Value); }
-//	bool LookUp(const CPosition& pos, const uint64_t depth, uint64_t & Value){ return table[Hash(pos)].LookUp(pos, depth, Value); }
+//	void Update(const CPosition& pos, const uint64_t depth, const uint64_t value){ table[Hash(pos)].Update(pos, depth, value); }
+//	bool LookUp(const CPosition& pos, const uint64_t depth, uint64_t & value){ return table[Hash(pos)].LookUp(pos, depth, value); }
 //	void Clear() { for (auto& it : table) it.Clear(); }
 //	uint64_t size() { return sizeof(NodeType) * buckets; }
 //private:

@@ -12,22 +12,22 @@
 class PvsInfo
 {
 public:
-	uint8_t cost;
-	 int8_t depth;
+	int8_t alpha;
+	int8_t beta;
+	int8_t depth;
 	uint8_t selectivity;
-	 int8_t alpha;
-	 int8_t beta;
 	Field   PV;
 	Field   AV;
+	uint8_t cost;
 
 	PvsInfo();
 	PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t alpha, int8_t beta, CMove PV, CMove AV);
 
 	void Upgrade(const PvsInfo& NewValue);
 
+	uint64_t GetNodeCount() const;
 private:
 	void SetCost(uint64_t NodeCount);
-	uint64_t GetNodeCount() const;
 };
 
 class Node
@@ -59,18 +59,18 @@ public:
 
 	TwoNode& operator=(const TwoNode&);
 
-	void Update (const CPosition& key, const PvsInfo& value, uint8_t date);
-	bool LookUp (const CPosition& key, PvsInfo& value) const; // The return value is stored in 'value'.
+	void Update(const CPosition& key, const PvsInfo& value, uint8_t date);
+	std::pair<bool, PvsInfo> LookUp(const CPosition& key) const;
 	void Refresh(const CPosition& key, uint8_t date);
 	void Clear();
 
 	int NumberOfNonEmptyNodes() const;
 };
 
-typedef HashTable<TwoNode, CPosition, PvsInfo> HashTablePVS;
+typedef HashTable<TwoNode, CPosition, PvsInfo> CHashTablePVS;
 
 template <>
-std::size_t HashTable<TwoNode, CPosition, PvsInfo>::Hash(const CPosition& key) const
+inline std::size_t HashTable<TwoNode, CPosition, PvsInfo>::Hash(const CPosition& key) const
 {
 	uint64_t P = key.GetP();
 	uint64_t O = key.GetO();
@@ -83,5 +83,5 @@ std::size_t HashTable<TwoNode, CPosition, PvsInfo>::Hash(const CPosition& key) c
 	//P *= 0xFF14AFD7ED558CCDULL;
 	//O *= 0xFF14AFD7ED558CCDULL;
 	//O ^= O >> 33;
-	//return (P + O + (O << 41)) % buckets;
+	//return (P + O + (O << 41)) % table.size();
 }

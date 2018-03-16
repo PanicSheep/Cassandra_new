@@ -1,9 +1,11 @@
+#include <iostream>
+#include <chrono>
 #include "BoardCollection.h"
 #include "Path.h"
 #include "Utility.h"
 #include "PositionGenerator.h"
-#include <iostream>
-#include <chrono>
+#include "LastFlipCounter.h"
+#include "FlipFast.h"
 
 void Next(const CPath& Input, const CPath& Output)
 {
@@ -33,6 +35,7 @@ void help()
 
 int main(int argc, char* argv[])
 {
+	CountLastFlip(CPosition(), A1);
 	CPath Input;
 	CPath Output;
 	std::size_t size = 0;

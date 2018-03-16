@@ -17,7 +17,7 @@ public:
 	HashTable() : HashTable(1) {}
 
 	void Update(const KeyType& key, const ValueType& value);
-	bool LookUp(const KeyType& key, ValueType& value) const;
+	std::pair<bool, ValueType> LookUp(const KeyType& key) const;
 	void Refresh(const KeyType& key);
 	void AdvanceDate();
 	void Clear();
@@ -52,13 +52,13 @@ void HashTable<NodeType, KeyType, ValueType>::Update(const KeyType& key, const V
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-bool HashTable<NodeType, KeyType, ValueType>::LookUp(const KeyType& key, ValueType& value) const
+std::pair<bool, ValueType> HashTable<NodeType, KeyType, ValueType>::LookUp(const KeyType& key) const
 {
 	LookUpCounter++;
-	bool b = table[Hash(key)].LookUp(key, value);
-	if (b)
+	const auto ret = table[Hash(key)].LookUp(key);
+	if (ret.first)
 		HitCounter++;
-	return b;
+	return ret;
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>

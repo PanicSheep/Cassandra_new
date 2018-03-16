@@ -310,9 +310,9 @@ inline int32_t CSortedMoves::Score(const CMove& move, const CPosition& pos)
 
 	const auto NextPos = pos.Play(move);
 	const auto PM = NextPos.PossibleMoves();
-	const int32_t MobilityScore = PM.size() << 17;
+	const int32_t MobilityScore = static_cast<int32_t>(PM.size()) << 17;
 	const int32_t CornerMobilityScore = ((PM.HasMove(A1) ? 1 : 0) + (PM.HasMove(A8) ? 1 : 0) + (PM.HasMove(H1) ? 1 : 0) + (PM.HasMove(H8) ? 1 : 0)) << 18;
-	const int32_t OpponentsExposedScore = PopCount(OpponentsExposed(NextPos.GetP(), NextPos.GetO())) << 6;
+	const int32_t OpponentsExposedScore = static_cast<int32_t>(PopCount(OpponentsExposed(NextPos.GetP(), NextPos.GetO()))) << 6;
 	const int32_t FieldScore = FieldValue[move.field];
 	const int32_t ParityScore = ParityValue[PopCount(pos.Empties() & quadrant_mask[move.field])];
 	return FieldScore + ParityScore - MobilityScore - CornerMobilityScore - OpponentsExposedScore;

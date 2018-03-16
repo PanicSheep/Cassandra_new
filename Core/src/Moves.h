@@ -1,5 +1,7 @@
 #pragma once
+#include <algorithm>
 #include <string>
+#include <vector>
 #include "MacrosHell.h"
 
 enum Field : uint8_t
@@ -30,9 +32,13 @@ public:
 	CMoves() : moves(0) {}
 	CMoves(uint64_t moves) : moves(moves) {}
 	
+	bool operator==(const CMoves& o) const { return moves == o.moves; }
+
 	std::size_t size() const { return PopCount(moves); }
 	bool empty() const { return moves == 0; }
+
 	bool HasMove(std::size_t index) const;
+	CMove PeekMove() const;
 	CMove ExtractMove();
 	CMove ExtractMove(std::size_t index);
 };
@@ -40,6 +46,12 @@ public:
 inline bool CMoves::HasMove(std::size_t index) const
 {
 	return TestBit(moves, index);
+}
+
+inline CMove CMoves::PeekMove() const
+{
+	const auto LSB = BitScanLSB(moves);
+	return CMove(static_cast<Field>(LSB));
 }
 
 inline CMove CMoves::ExtractMove()

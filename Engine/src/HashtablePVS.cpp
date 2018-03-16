@@ -162,25 +162,26 @@ void TwoNode::Update(const CPosition& key, const PvsInfo& value, const uint8_t d
 	unlock();
 }
 
-bool TwoNode::LookUp(const CPosition& key, PvsInfo& value) const
+std::pair<bool, PvsInfo> TwoNode::LookUp(const CPosition& key) const
 {
 	lock();
 	
 	if (key == node1.key)
 	{
-		value = node1.value;
+		const auto value = node1.value;
 		unlock();
-		return true;
+		return std::pair<bool, PvsInfo>(true, value);
 	}
 
 	if (key == node2.key)
 	{
-		value = node2.value;
+		const auto value = node2.value;
 		unlock();
-		return true;
+		return std::pair<bool, PvsInfo>(true, value);
 	}
-	
-	return false;
+
+	unlock();
+	return std::pair<bool, PvsInfo>(false, PvsInfo());
 }
 
 void TwoNode::Refresh(const CPosition& key, const uint8_t date)

@@ -406,21 +406,19 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 	// First Move
 	int bestscore = -PVS_N(pos.Play(moves.ExtractMove()), -beta, -alpha);
 	if (bestscore >= beta) return bestscore;
-	int lower = std::max(bestscore, alpha);
 
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
 		const auto nextPos = pos.Play(move);
-		auto score = -ZWS_N(nextPos, -lower - 1);
+		auto score = -ZWS_N(nextPos, -bestscore - 1);
 		if (score >= beta) {
 			UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, score, +64, EmptyCount, EmptyCount, 0));
 			return score;
 		}
-		if (score > lower) // if ZWS failed high.
+		if (score > bestscore) // if ZWS failed high.
 			score = -PVS_N(nextPos, -beta, -score);
 
-		lower = std::max(score, lower);
 		bestscore = std::max(score, bestscore);
 	}
 	if (bestscore <= alpha)

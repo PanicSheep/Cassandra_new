@@ -980,7 +980,7 @@ uint64_t CFlipper::H8(const uint64_t P, const uint64_t O) const
 
 uint64_t Flip(const CPosition & pos, const CMove move)
 {
-	static CFlipper Flipper;
+	static const CFlipper Flipper;
 	return Flipper.Flip(pos, move);
 }
 

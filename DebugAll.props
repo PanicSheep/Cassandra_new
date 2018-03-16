@@ -15,6 +15,7 @@
       </EnableEnhancedInstructionSet>
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalOptions>/D __core_avx2__ /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

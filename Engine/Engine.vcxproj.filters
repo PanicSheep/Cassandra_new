@@ -12,6 +12,11 @@
     <ClCompile Include="src\StreamConverter.cpp" />
     <ClCompile Include="src\Search.cpp" />
     <ClCompile Include="src\NegaMaxSearch.cpp" />
+    <ClCompile Include="src\PVSearch.cpp" />
+    <ClCompile Include="src\AlphaBetaFailSoftSearch.cpp" />
+    <ClCompile Include="src\AlphaBetaFailHardSearch.cpp" />
+    <ClCompile Include="src\Stability.cpp" />
+    <ClCompile Include="src\Environment.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BoardCollection.h" />
@@ -29,5 +34,7 @@
     <ClInclude Include="src\StreamQueue.h" />
     <ClInclude Include="src\StreamSerializables.h" />
     <ClInclude Include="src\Search.h" />
+    <ClInclude Include="src\Stability.h" />
+    <ClInclude Include="src\Environment.h" />
   </ItemGroup>
 </Project>

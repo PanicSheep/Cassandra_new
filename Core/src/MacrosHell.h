@@ -231,10 +231,11 @@ FORCE_INLINE uint64_t GetMSB(const uint64_t b) { return b ? 0x8000000000000000UL
 
 FORCE_INLINE void RemoveMSB(uint64_t & b) { b ^= GetMSB(b); }
 
-template <typename T> FORCE_INLINE uint64_t  MakeBit(                   const T pos) { assert(pos < 64); return         1ULL << pos; }
-template <typename T> FORCE_INLINE void       SetBit(      uint64_t& b, const T pos) { assert(pos < 64);         b |=  (1ULL << pos); }
-template <typename T> FORCE_INLINE void     ResetBit(      uint64_t& b, const T pos) { assert(pos < 64);         b &= ~(1ULL << pos); }
-template <typename T> FORCE_INLINE bool      TestBit(const uint64_t  b, const T pos) { assert(pos < 64); return (b &   (1ULL << pos)) != 0; }
+template <typename T> FORCE_INLINE uint64_t  MakeBit (                   const T pos ) { assert(pos < 64); return         1ULL << pos; }
+template <typename T> FORCE_INLINE void       SetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b |=  (1ULL << pos); }
+template <typename T> FORCE_INLINE void     ResetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b &= ~(1ULL << pos); }
+template <typename T> FORCE_INLINE bool      TestBit (const uint64_t  b, const T pos ) { assert(pos < 64); return (b &   (1ULL << pos)) != 0; }
+template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T mask) { return (b & mask) == mask; }
 
 // PopCount
 #ifdef HAS_POPCNT
