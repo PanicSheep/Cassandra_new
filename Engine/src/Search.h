@@ -179,8 +179,8 @@ public:
 private:
 	// --- Triage ---------
 	int Eval(const CPosition& pos, int alpha, int beta);
-	int PVS(const CPosition& pos);
-	int ZWS(const CPosition& pos);
+	int PVS(const CPosition& pos, int alpha, int beta);
+	int ZWS(const CPosition& pos, int alpha);
 	// --------------------
 	
 	int PVS_N(const CPosition& pos, int alpha, int beta);

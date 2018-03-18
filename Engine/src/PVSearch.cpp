@@ -11,13 +11,31 @@ int PVSearch::Eval(const CPosition& pos)
 
 int PVSearch::Eval(const CPosition& pos, int alpha, int beta)
 {
+	return PVS(pos, alpha, beta);
+}
+
+int PVSearch::PVS(const CPosition& pos, int alpha, int beta)
+{
 	const auto EmptyCount = pos.EmptyCount();
 	switch (EmptyCount)
 	{
 	case 0: return Eval_0(pos);
 	case 1: return PVS_1(pos, alpha, beta);
-		//case 2: return PVS_2(pos, alpha, beta);
 	default: return PVS_N(pos, alpha, beta);
+	}
+}
+
+int PVSearch::ZWS(const CPosition& pos, int alpha)
+{
+	const auto EmptyCount = pos.EmptyCount();
+	switch (EmptyCount)
+	{
+	case 0: return Eval_0(pos);
+	case 1: return ZWS_1(pos, alpha);
+	case 2: return ZWS_2(pos, alpha);
+	case 3: return ZWS_3(pos, alpha);
+	case 4: return ZWS_4(pos, alpha);
+	default: return ZWS_N(pos, alpha);
 	}
 }
 
@@ -347,9 +365,6 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove& move1, const C
 int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 {
 	const auto EmptyCount = pos.EmptyCount();
-	if (EmptyCount == 4)
-		return ZWS_4(pos, alpha);
-
 	NodeCounter(EmptyCount)++;
 
 	CSortedMoves moves(pos);
@@ -370,7 +385,7 @@ int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
-		const auto score = -ZWS_N(pos.Play(move), -alpha - 1);
+		const auto score = -ZWS(pos.Play(move), -alpha - 1);
 		if (score > alpha) {
 			UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, score, +64, EmptyCount, EmptyCount, 0));
 			return score;
@@ -385,9 +400,6 @@ int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 {
 	const auto EmptyCount = pos.EmptyCount();
-	if (EmptyCount == 1)
-		return PVS_1(pos, alpha, beta);
-
 	NodeCounter(EmptyCount)++;
 
 	CSortedMoves moves(pos);
@@ -404,20 +416,20 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 	if (const auto ret = StabilityCutoff(node); ret.first) return ret.second;
 
 	// First Move
-	int bestscore = -PVS_N(pos.Play(moves.ExtractMove()), -beta, -alpha);
+	int bestscore = -PVS(pos.Play(moves.ExtractMove()), -beta, -alpha);
 	if (bestscore >= beta) return bestscore;
 
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
 		const auto nextPos = pos.Play(move);
-		auto score = -ZWS_N(nextPos, -bestscore - 1);
+		auto score = -ZWS(nextPos, -bestscore - 1);
 		if (score >= beta) {
 			UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, score, +64, EmptyCount, EmptyCount, 0));
 			return score;
 		}
 		if (score > bestscore) // if ZWS failed high.
-			score = -PVS_N(nextPos, -beta, -score);
+			score = -PVS(nextPos, -beta, -score);
 
 		bestscore = std::max(score, bestscore);
 	}
