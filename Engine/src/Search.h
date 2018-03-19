@@ -93,40 +93,6 @@ class PVSearch : public Search
 {
 	std::shared_ptr<Environment> environment;
 
-	struct ReturnValues
-	{
-		int8_t alpha;
-		int8_t beta;
-		int8_t depth;
-		uint8_t selectivity;
-		CMove PV;
-		CMove AV;
-		uint64_t NodeCount;
-
-		ReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity, CMove PV, CMove AV, uint64_t NodeCount)
-			: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity), PV(PV), AV(AV), NodeCount(NodeCount)
-		{}
-		ReturnValues(int8_t score, int8_t depth, uint8_t selectivity, CMove PV, CMove AV, uint64_t NodeCount)
-			: ReturnValues(score, score, depth, selectivity, PV, AV, NodeCount)
-		{}
-		ReturnValues() : ReturnValues(0, 0, -1, 0, Field::invalid, Field::invalid, 0) {}
-
-		bool empty() const { return depth == -1; }
-		void Add(const ReturnValues& o)
-		{
-			if (empty() || (o.alpha > alpha) || ((o.alpha == alpha) && (o.beta < beta))) {
-				alpha = o.alpha;
-				beta = o.beta;
-				depth = o.depth;
-				selectivity = o.selectivity;
-				//AV = PV;
-				//PV = move;
-			}
-			NodeCount += o.NodeCount;
-		}
-
-		friend ReturnValues operator-(ReturnValues o) { std::swap(o.alpha, o.beta); o.alpha = -o.alpha; o.beta = -o.beta; return o; }
-	};
 
 	struct InputValues
 	{
@@ -139,12 +105,97 @@ class PVSearch : public Search
 		InputValues(CPosition pos, int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
 			: pos(pos), alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
 		{}
+	};
+	struct ReturnValues;
+	struct AnalysisReturnValues
+	{
+		int8_t alpha;
+		int8_t beta;
+		int8_t depth;
+		uint8_t selectivity;
+		CMove PV;
+		CMove AV;
 
-		InputValues Play(const CMove& move) const { return InputValues(pos.Play(move), -beta, -alpha, depth - 1, selectivity); }
-		InputValues Play(const CMove& move, uint64_t flips) const { return InputValues(pos.Play(move, flips), -beta, -alpha, depth-1, selectivity); }
-		InputValues PlayPass() const { return InputValues(pos.PlayPass(), -beta, -alpha, depth, selectivity); }
+		AnalysisReturnValues() : AnalysisReturnValues(0, 0, -1, 0) {}
+		AnalysisReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity, CMove PV = Field::invalid, CMove AV = Field::invalid)
+			: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity), PV(PV), AV(AV)
+		{}
+		bool empty() const { return depth == -1; }
+	};
+	struct StatusValues
+	{
+		int8_t alpha;
+		int8_t beta;
+		int8_t depth;
+		uint8_t selectivity;
+		CMove PV;
+		CMove AV;
+		uint64_t InitialNodeCount;
 
-		void ImproveWith(const ReturnValues& r) { alpha = std::max(alpha, r.alpha); }
+		StatusValues(const InputValues& in, uint64_t NodeCount)
+			: alpha(in.alpha), beta(in.beta), depth(in.depth), selectivity(in.selectivity), PV(Field::invalid), AV(Field::invalid)
+			, InitialNodeCount(NodeCount)
+		{}
+		bool ImproveWith(const ReturnValues& ret, const CMove& move) {
+			// TODO!
+		}
+		bool ImproveWith(const AnalysisReturnValues& ret) 
+		{
+			if ((!ret.empty()) && (ret.depth >= depth) && (ret.selectivity <= selectivity))
+			{
+				if (ret.beta <= alpha) // Alpha Cut.
+				{
+					alpha = ret.beta;
+					beta = ret.beta;
+					depth = ret.depth;
+					selectivity = ret.selectivity;
+					PV = ret.PV;
+					AV = ret.AV;
+					return true;
+				}
+				if (ret.alpha >= beta) // Beta Cut.
+				{
+					alpha = ret.alpha;
+					beta = ret.alpha;
+					depth = ret.depth;
+					selectivity = ret.selectivity;
+					PV = ret.PV;
+					AV = ret.AV;
+					return true;
+				}
+				else
+				{
+					alpha = std::max(alpha, ret.alpha);
+					beta = std::min(beta, ret.beta);
+					depth = ret.depth;
+					selectivity = ret.selectivity;
+					PV = ret.PV;
+					AV = ret.AV;
+					return false;
+				}
+			}
+			else
+				return false;
+		}
+	};
+	struct ReturnValues
+	{
+		int8_t score;
+		int8_t depth;
+		uint8_t selectivity;
+
+		ReturnValues(int8_t score, int8_t depth, uint8_t selectivity)
+			: score(score), depth(depth), selectivity(selectivity)
+		{}
+		//ReturnValues(int8_t score, int8_t depth, uint8_t selectivity)
+		//	: ReturnValues(score, score, depth, selectivity)
+		//{}
+		//ReturnValues() : ReturnValues(0, -1, 0) {}
+		ReturnValues(const StatusValues& stat) : score(stat.alpha), depth(stat.depth), selectivity(stat.selectivity) {}
+
+		//bool empty() const { return depth == -1; }
+
+		friend ReturnValues operator-(ReturnValues o) { o.score = -o.score; return o; }
 	};
 	struct NodeInfo
 	{
@@ -202,8 +253,8 @@ private:
 	int ZWS_4(const CPosition& pos, int alpha, const CMove& move1, const CMove& move2, const CMove& move3, const CMove& move4);
 	// --------------------
 
-	std::pair<bool, int> StabilityCutoff(const NodeInfo& node);
-	std::pair<bool, int> TranspositionTableCutoff(const NodeInfo& node);
+	AnalysisReturnValues StabilityAnalysis(const InputValues&);
+	AnalysisReturnValues TranspositionTableAnalysis(const InputValues&);
 
 	void UpdateTranspositionTable(uint64_t NodeCount, const NodeInfo& node);
 };

@@ -377,9 +377,11 @@ int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 	}
 
 	const NodeInfo node(pos, alpha, alpha + 1, 0, EmptyCount, 0);
-	const auto LocalNodeCount = GetNodeCount();
-	if (const auto ret = StabilityCutoff(node); ret.first) return ret.second;
-	if (const auto ret = TranspositionTableCutoff(node); ret.first) return ret.second;
+	const InputValues in(pos, alpha, alpha + 1, 0, EmptyCount);
+	StatusValues stat(in, GetNodeCount());
+	const auto LocalNodeCount = GetNodeCount(); // TODO: Remove!
+	if (stat.ImproveWith(StabilityAnalysis(in))) return ReturnValues(stat).score;
+	if (stat.ImproveWith(TranspositionTableAnalysis(in))) return ReturnValues(stat).score;
 
 	int bestscore = -128;
 	for (const auto& pair : moves)
@@ -411,9 +413,10 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 			return EvalGameOver(pos, EmptyCount);
 	}
 
-	NodeInfo node(pos, alpha, beta, 0, EmptyCount, 0);
+	const InputValues in(pos, alpha, beta, 0, EmptyCount);
+	StatusValues stat(in, GetNodeCount());
 	const auto LocalNodeCount = GetNodeCount();
-	if (const auto ret = StabilityCutoff(node); ret.first) return ret.second;
+	if (stat.ImproveWith(StabilityAnalysis(in))) return ReturnValues(stat).score;
 
 	// First Move
 	int bestscore = -PVS(pos.Play(moves.ExtractMove()), -beta, -alpha);
@@ -440,23 +443,20 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 	return bestscore;
 }
 
-std::pair<bool, int> PVSearch::StabilityCutoff(const NodeInfo& node)
+PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
 {
-	const auto score = static_cast<int>(64 - 2 * PopCount(GetStableStones(node.pos)));
-	return std::pair<bool, int>(score <= node.alpha, score);
+	const auto score = static_cast<int>(64 - 2 * PopCount(GetStableStones(in.pos)));
+	return AnalysisReturnValues(-64, score, in.pos.EmptyCount(), 0);
 }
 
-std::pair<bool, int> PVSearch::TranspositionTableCutoff(const NodeInfo& node)
+PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputValues& in)
 {
-	const auto ret = environment->HashTable->LookUp(node.pos);
+	const auto ret = environment->HashTable->LookUp(in.pos);
 	const auto& ttValue = ret.second;
-	if ((ttValue.depth >= node.depth) && (ttValue.selectivity <= node.selectivity))
-	{
-		if (ttValue.alpha >= node.beta) return std::pair<bool, int>(true, ttValue.alpha);
-		if (ttValue.beta <= node.alpha) return std::pair<bool, int>(true, ttValue.beta);
-		if (ttValue.alpha == ttValue.beta) return std::pair<bool, int>(true, ttValue.alpha);
-	}
-	return std::pair<bool, int>(false, 0);
+	if (ret.first)
+		return AnalysisReturnValues(ttValue.alpha, ttValue.beta, ttValue.depth, ttValue.selectivity, ttValue.PV, ttValue.AV);
+	else
+		return AnalysisReturnValues();
 }
 
 void PVSearch::UpdateTranspositionTable(uint64_t NodeCount, const NodeInfo& node)
