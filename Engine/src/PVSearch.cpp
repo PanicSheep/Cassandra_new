@@ -376,12 +376,10 @@ int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 			return EvalGameOver(pos, EmptyCount);
 	}
 
-	const NodeInfo node(pos, alpha, alpha + 1, 0, EmptyCount, 0);
 	const InputValues in(pos, alpha, alpha + 1, 0, EmptyCount);
 	StatusValues stat(in, GetNodeCount());
-	const auto LocalNodeCount = GetNodeCount(); // TODO: Remove!
-	if (stat.ImproveWith(StabilityAnalysis(in))) return ReturnValues(stat).score;
-	if (stat.ImproveWith(TranspositionTableAnalysis(in))) return ReturnValues(stat).score;
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values.GetScore();
+	if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) ret.Values.GetScore();
 
 	int bestscore = -128;
 	for (const auto& pair : moves)
@@ -389,13 +387,14 @@ int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 		const auto& move = pair.second;
 		const auto score = -ZWS(pos.Play(move), -alpha - 1);
 		if (score > alpha) {
-			UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, score, +64, EmptyCount, EmptyCount, 0));
+			UpdateTranspositionTable(stat);
 			return score;
 		}
 		bestscore = std::max(score, bestscore);
 	}
 
-	UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, -64, bestscore, EmptyCount, EmptyCount, 0));
+	stat.AllMovesSearched();
+	UpdateTranspositionTable(stat);
 	return bestscore;
 }
 
@@ -415,8 +414,7 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 
 	const InputValues in(pos, alpha, beta, 0, EmptyCount);
 	StatusValues stat(in, GetNodeCount());
-	const auto LocalNodeCount = GetNodeCount();
-	if (stat.ImproveWith(StabilityAnalysis(in))) return ReturnValues(stat).score;
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values.GetScore();
 
 	// First Move
 	int bestscore = -PVS(pos.Play(moves.ExtractMove()), -beta, -alpha);
@@ -428,7 +426,7 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 		const auto nextPos = pos.Play(move);
 		auto score = -ZWS(nextPos, -bestscore - 1);
 		if (score >= beta) {
-			UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, score, +64, EmptyCount, EmptyCount, 0));
+			//UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, score, +64, EmptyCount, EmptyCount, 0));
 			return score;
 		}
 		if (score > bestscore) // if ZWS failed high.
@@ -436,10 +434,9 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 
 		bestscore = std::max(score, bestscore);
 	}
-	if (bestscore <= alpha)
-		UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, -64, bestscore, EmptyCount, EmptyCount, 0));
-	else
-		UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, bestscore, bestscore, EmptyCount, EmptyCount, 0));
+
+	stat.AllMovesSearched();
+	UpdateTranspositionTable(stat);
 	return bestscore;
 }
 
@@ -459,7 +456,7 @@ PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputV
 		return AnalysisReturnValues();
 }
 
-void PVSearch::UpdateTranspositionTable(uint64_t NodeCount, const NodeInfo& node)
+void PVSearch::UpdateTranspositionTable(const StatusValues& stat)
 {
-	environment->HashTable->Update(node.pos, PvsInfo(NodeCount, node.depth, node.selectivity, node.alpha, node.beta, Field::invalid, Field::invalid));
+	environment->HashTable->Update(stat.pos, PvsInfo(GetNodeCount(), stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
 }

@@ -23,6 +23,7 @@ public:
 	Field field;
 	
 	CMove(Field field) : field(field) {}
+	bool operator == (const Field& o) const { return field == o; }
 };
 
 class CMoves

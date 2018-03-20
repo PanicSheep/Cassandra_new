@@ -106,7 +106,6 @@ class PVSearch : public Search
 			: pos(pos), alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
 		{}
 	};
-	struct ReturnValues;
 	struct AnalysisReturnValues
 	{
 		int8_t alpha;
@@ -120,10 +119,43 @@ class PVSearch : public Search
 		AnalysisReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity, CMove PV = Field::invalid, CMove AV = Field::invalid)
 			: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity), PV(PV), AV(AV)
 		{}
-		bool empty() const { return depth == -1; }
+	};
+	struct ReturnValues
+	{
+		int8_t alpha;
+		int8_t beta;
+		int8_t depth;
+		uint8_t selectivity;
+
+		ReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
+			: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
+		{}
+		//ReturnValues(int8_t score, int8_t depth, uint8_t selectivity)
+		//	: ReturnValues(score, score, depth, selectivity)
+		//{}
+		ReturnValues() : ReturnValues(0, 0, 0, 0) {}
+		//ReturnValues(const StatusValues& stat) : score(stat.alpha), depth(stat.depth), selectivity(stat.selectivity) {}
+
+		//bool empty() const { return depth == -1; }
+
+		friend ReturnValues operator-(ReturnValues o) { std::swap(o.alpha, o.beta); o.alpha = -o.alpha; o.beta = -o.beta; return o; }
+
+		int GetScore() const {
+			if (alpha == -64)
+				return beta;
+			return alpha;
+		}
+	};
+	struct AAA
+	{
+		bool CausesCut;
+		ReturnValues Values;
+
+		AAA(bool CausesCut, ReturnValues Values) : CausesCut(CausesCut), Values(Values) {}
 	};
 	struct StatusValues
 	{
+		const CPosition& pos;
 		int8_t alpha;
 		int8_t beta;
 		int8_t depth;
@@ -134,35 +166,19 @@ class PVSearch : public Search
 
 		StatusValues(const InputValues& in, uint64_t NodeCount)
 			: alpha(in.alpha), beta(in.beta), depth(in.depth), selectivity(in.selectivity), PV(Field::invalid), AV(Field::invalid)
-			, InitialNodeCount(NodeCount)
+			, InitialNodeCount(NodeCount), pos(in.pos)
 		{}
-		bool ImproveWith(const ReturnValues& ret, const CMove& move) {
+		AAA ImproveWith(const ReturnValues& ret, const CMove& move) {
 			// TODO!
 		}
-		bool ImproveWith(const AnalysisReturnValues& ret) 
+		AAA ImproveWith(const AnalysisReturnValues& ret)
 		{
-			if ((!ret.empty()) && (ret.depth >= depth) && (ret.selectivity <= selectivity))
+			if ((ret.depth >= depth) && (ret.selectivity <= selectivity))
 			{
 				if (ret.beta <= alpha) // Alpha Cut.
-				{
-					alpha = ret.beta;
-					beta = ret.beta;
-					depth = ret.depth;
-					selectivity = ret.selectivity;
-					PV = ret.PV;
-					AV = ret.AV;
-					return true;
-				}
+					return AAA(true, ReturnValues(-64, ret.beta, ret.depth, ret.selectivity));
 				if (ret.alpha >= beta) // Beta Cut.
-				{
-					alpha = ret.alpha;
-					beta = ret.alpha;
-					depth = ret.depth;
-					selectivity = ret.selectivity;
-					PV = ret.PV;
-					AV = ret.AV;
-					return true;
-				}
+					return AAA(true, ReturnValues(ret.alpha, +64, ret.depth, ret.selectivity));
 				else
 				{
 					alpha = std::max(alpha, ret.alpha);
@@ -171,47 +187,17 @@ class PVSearch : public Search
 					selectivity = ret.selectivity;
 					PV = ret.PV;
 					AV = ret.AV;
-					return false;
 				}
 			}
-			else
-				return false;
+			return AAA(false, ReturnValues());
 		}
-	};
-	struct ReturnValues
-	{
-		int8_t score;
-		int8_t depth;
-		uint8_t selectivity;
-
-		ReturnValues(int8_t score, int8_t depth, uint8_t selectivity)
-			: score(score), depth(depth), selectivity(selectivity)
-		{}
-		//ReturnValues(int8_t score, int8_t depth, uint8_t selectivity)
-		//	: ReturnValues(score, score, depth, selectivity)
-		//{}
-		//ReturnValues() : ReturnValues(0, -1, 0) {}
-		ReturnValues(const StatusValues& stat) : score(stat.alpha), depth(stat.depth), selectivity(stat.selectivity) {}
-
-		//bool empty() const { return depth == -1; }
-
-		friend ReturnValues operator-(ReturnValues o) { o.score = -o.score; return o; }
-	};
-	struct NodeInfo
-	{
-		CPosition pos;
-		int8_t alpha;
-		int8_t beta;
-		int8_t depth;
-		int8_t empties;
-		uint8_t selectivity;
-
-		NodeInfo(CPosition pos, int8_t alpha, int8_t beta, int8_t depth, int8_t empties, uint8_t selectivity)
-			: pos(pos), alpha(alpha), beta(beta), depth(depth), empties(empties), selectivity(selectivity)
-		{}
-		NodeInfo(CPosition pos, int8_t score, int8_t depth, uint8_t selectivity)
-			: pos(pos), alpha(score), beta(score), depth(depth), empties(empties), selectivity(selectivity)
-		{}
+		ReturnValues AllMovesSearched() const
+		{
+			if (PV == Field::invalid) // No best move
+				return ReturnValues(-64, alpha, depth, selectivity);
+			else
+				return ReturnValues(alpha, alpha, depth, selectivity);
+		}
 	};
 
 	struct ConfigValues
@@ -256,7 +242,7 @@ private:
 	AnalysisReturnValues StabilityAnalysis(const InputValues&);
 	AnalysisReturnValues TranspositionTableAnalysis(const InputValues&);
 
-	void UpdateTranspositionTable(uint64_t NodeCount, const NodeInfo& node);
+	void UpdateTranspositionTable(const StatusValues&);
 };
 
 uint64_t Neighbour(Field field);
