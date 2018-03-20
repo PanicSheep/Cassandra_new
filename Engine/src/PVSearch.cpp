@@ -379,7 +379,7 @@ int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 	const InputValues in(pos, alpha, alpha + 1, 0, EmptyCount);
 	StatusValues stat(in, GetNodeCount());
 	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values.GetScore();
-	if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) ret.Values.GetScore();
+	if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values.GetScore();
 
 	int bestscore = -128;
 	for (const auto& pair : moves)
@@ -387,14 +387,14 @@ int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
 		const auto& move = pair.second;
 		const auto score = -ZWS(pos.Play(move), -alpha - 1);
 		if (score > alpha) {
-			UpdateTranspositionTable(stat);
+			//UpdateTranspositionTable(stat);
 			return score;
 		}
 		bestscore = std::max(score, bestscore);
 	}
 
-	stat.AllMovesSearched();
-	UpdateTranspositionTable(stat);
+	//stat.AllMovesSearched();
+	//UpdateTranspositionTable(stat);
 	return bestscore;
 }
 
@@ -435,8 +435,8 @@ int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
 		bestscore = std::max(score, bestscore);
 	}
 
-	stat.AllMovesSearched();
-	UpdateTranspositionTable(stat);
+	//stat.AllMovesSearched();
+	//UpdateTranspositionTable(stat);
 	return bestscore;
 }
 
