@@ -30,6 +30,7 @@ void PvsInfo::Upgrade(const PvsInfo& NewValue)
 	}
 	else if ((NewValue.depth == depth) && (NewValue.selectivity == selectivity))
 	{	// Evaluation is the same
+		assert(std::max(alpha, NewValue.alpha) <= std::min(beta, NewValue.beta));
 
 		// TODO: This should be subject to a broad range of tests.
 		//cost = std::max(cost, NewValue.cost);

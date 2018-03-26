@@ -23,7 +23,10 @@ public:
 	Field field;
 	
 	CMove(Field field) : field(field) {}
+	bool operator == (const CMove& o) const { return field == o.field; }
+	bool operator != (const CMove& o) const { return field != o.field; }
 	bool operator == (const Field& o) const { return field == o; }
+	bool operator != (const Field& o) const { return field != o; }
 };
 
 class CMoves

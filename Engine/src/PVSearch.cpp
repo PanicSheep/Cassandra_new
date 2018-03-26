@@ -11,31 +11,35 @@ int PVSearch::Eval(const CPosition& pos)
 
 int PVSearch::Eval(const CPosition& pos, int alpha, int beta)
 {
-	return PVS(pos, alpha, beta);
+	return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
 }
 
-int PVSearch::PVS(const CPosition& pos, int alpha, int beta)
+PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 {
-	const auto EmptyCount = pos.EmptyCount();
+	const auto EmptyCount = in.pos.EmptyCount();
 	switch (EmptyCount)
 	{
-	case 0: return Eval_0(pos);
-	case 1: return PVS_1(pos, alpha, beta);
-	default: return PVS_N(pos, alpha, beta);
+	case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
+	case 1: return ReturnValues(PVS_1(in.pos, in.alpha, in.beta), 1, 0);
+	default: return PVS_N(in);
 	}
 }
 
-int PVSearch::ZWS(const CPosition& pos, int alpha)
+PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 {
-	const auto EmptyCount = pos.EmptyCount();
+	const auto EmptyCount = in.pos.EmptyCount();
 	switch (EmptyCount)
 	{
-	case 0: return Eval_0(pos);
-	case 1: return ZWS_1(pos, alpha);
-	case 2: return ZWS_2(pos, alpha);
-	case 3: return ZWS_3(pos, alpha);
-	case 4: return ZWS_4(pos, alpha);
-	default: return ZWS_N(pos, alpha);
+	case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
+	case 1: return ReturnValues(ZWS_1(in.pos, in.alpha), 1, 0);
+	case 2: return ReturnValues(ZWS_2(in.pos, in.alpha), 2, 0);
+	case 3: return ReturnValues(ZWS_3(in.pos, in.alpha), 3, 0);
+	case 4: return ReturnValues(ZWS_4(in.pos, in.alpha), 4, 0);
+	case 5:
+	case 6:
+	case 7:
+		return ZWS_A(in);
+	default: return ZWS_N(in);
 	}
 }
 
@@ -362,82 +366,135 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove& move1, const C
 		return -EvalGameOver<4>(posPass);
 }
 
-int PVSearch::ZWS_N(const CPosition& pos, const int alpha)
+PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 {
-	const auto EmptyCount = pos.EmptyCount();
+	assert(in.beta == in.alpha + 1);
+
+	const auto EmptyCount = in.pos.EmptyCount();
 	NodeCounter(EmptyCount)++;
 
-	CSortedMoves moves(pos);
+	CMoves moves = in.pos.PossibleMoves();
 	if (moves.empty()) {
-		const auto PosPass = pos.PlayPass();
-		if (PosPass.HasMoves())
-			return -ZWS_N(PosPass, -alpha - 1);
+		const auto Pass = in.PlayPass();
+		if (Pass.pos.HasMoves())
+			return -ZWS_A(Pass);
 		else
-			return EvalGameOver(pos, EmptyCount);
+		{
+			const auto score = EvalGameOver(in.pos, EmptyCount);
+			return ReturnValues(score, score, EmptyCount, 0);
+		}
 	}
 
-	const InputValues in(pos, alpha, alpha + 1, 0, EmptyCount);
 	StatusValues stat(in, GetNodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values.GetScore();
-	if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values.GetScore();
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	//if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
 
 	int bestscore = -128;
-	for (const auto& pair : moves)
+	while (!moves.empty())
 	{
-		const auto& move = pair.second;
-		const auto score = -ZWS(pos.Play(move), -alpha - 1);
-		if (score > alpha) {
+		const auto move = moves.ExtractMove();
+		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
+		if (ret.CausesCut) {
 			//UpdateTranspositionTable(stat);
-			return score;
+			return ret.Values;
 		}
-		bestscore = std::max(score, bestscore);
 	}
 
-	//stat.AllMovesSearched();
+	const auto ret = stat.AllMovesSearched();
 	//UpdateTranspositionTable(stat);
-	return bestscore;
+	return ret;
 }
 
-int PVSearch::PVS_N(const CPosition& pos, const int alpha, const int beta)
+PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 {
-	const auto EmptyCount = pos.EmptyCount();
+	assert(in.beta == in.alpha + 1);
+
+	const auto EmptyCount = in.pos.EmptyCount();
 	NodeCounter(EmptyCount)++;
 
-	CSortedMoves moves(pos);
-	if (moves.empty()) {
-		const auto PosPass = pos.PlayPass();
-		if (PosPass.HasMoves())
-			return -PVS_N(PosPass, -beta, -alpha);
+	if (in.pos.HasMoves() == false) {
+		const auto Pass = in.PlayPass();
+		if (Pass.pos.HasMoves())
+			return -ZWS_N(Pass);
 		else
-			return EvalGameOver(pos, EmptyCount);
+		{
+			const auto score = EvalGameOver(in.pos, EmptyCount);
+			return ReturnValues(score, score, EmptyCount, 0);
+		}
 	}
 
-	const InputValues in(pos, alpha, beta, 0, EmptyCount);
 	StatusValues stat(in, GetNodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values.GetScore();
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
 
+	int bestscore = -128;
+	CSortedMoves moves(in.pos);
+	for (const auto& pair : moves)
+	{
+		const auto& move = pair.second;
+		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
+		if (ret.CausesCut) {
+			UpdateTranspositionTable(stat);
+			return ret.Values;
+		}
+	}
+
+	const auto ret = stat.AllMovesSearched();
+	UpdateTranspositionTable(stat);
+	return ret;
+}
+
+PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
+{
+	const auto EmptyCount = in.pos.EmptyCount();
+	NodeCounter(EmptyCount)++;
+
+	if (in.pos.HasMoves() == false) {
+		const auto Pass = in.PlayPass();
+		if (Pass.pos.HasMoves())
+			return -PVS_N(Pass);
+		else
+		{
+			const auto score = EvalGameOver(in.pos, EmptyCount);
+			return ReturnValues(score, score, EmptyCount, 0);
+		}
+	}
+
+	StatusValues stat(in, GetNodeCount());
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+
+	CSortedMoves moves(in.pos);
 	// First Move
-	int bestscore = -PVS(pos.Play(moves.ExtractMove()), -beta, -alpha);
-	if (bestscore >= beta) return bestscore;
+	{
+		const auto move = moves.ExtractMove();
+		const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
+		if (ret.CausesCut) {
+			UpdateTranspositionTable(stat);
+			return ret.Values;
+		}
+	}
 
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
-		const auto nextPos = pos.Play(move);
-		auto score = -ZWS(nextPos, -bestscore - 1);
-		if (score >= beta) {
-			//UpdateTranspositionTable(GetNodeCount() - LocalNodeCount, NodeInfo(pos, score, +64, EmptyCount, EmptyCount, 0));
-			return score;
+		const auto zws_ret = -ZWS(stat.PlayZWS(move));
+		if (zws_ret.GetScore() >= stat.beta) { // TODO: Try using ImproveWith and test for a cut.
+			const auto ret = stat.ImproveWith(zws_ret, move);
+			UpdateTranspositionTable(stat);
+			return ret.Values;
 		}
-		if (score > bestscore) // if ZWS failed high.
-			score = -PVS(nextPos, -beta, -score);
-
-		bestscore = std::max(score, bestscore);
+		if (zws_ret.GetScore() > stat.alpha) { // if ZWS failed high.
+			const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
+			if (ret.CausesCut) {
+				UpdateTranspositionTable(stat);
+				return ret.Values;
+			}
+		}
 	}
 
-	//stat.AllMovesSearched();
-	//UpdateTranspositionTable(stat);
-	return bestscore;
+	const auto ret = stat.AllMovesSearched();
+	UpdateTranspositionTable(stat);
+	return ret;
 }
 
 PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
@@ -458,5 +515,5 @@ PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputV
 
 void PVSearch::UpdateTranspositionTable(const StatusValues& stat)
 {
-	environment->HashTable->Update(stat.pos, PvsInfo(GetNodeCount(), stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
+	environment->HashTable->Update(stat.pos, PvsInfo(GetNodeCount() - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
 }
