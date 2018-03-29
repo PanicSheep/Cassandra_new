@@ -5,6 +5,7 @@
 #include "FlipLoop.h"
 #include "FlipFast.h"
 #include "Moves.h"
+#include "PositionGenerator.h"
 
 void TestFlip(const CMove& move)
 {
@@ -379,5 +380,123 @@ TEST(PossibleMovesTest, PossibleMoves2)
 		}
 
 		ASSERT_EQ(pos.PossibleMoves(), possibleMoves);
+	}
+}
+
+TEST(PositionGenerator, GenerateRandomPosition_noSeed)
+{
+	CPositionGenerator pos_gen;
+
+	for (int empty_count = 0; empty_count <= 60; empty_count++)
+	{
+		const auto pos = pos_gen.GenerateRandomPosition(empty_count);
+
+		ASSERT_EQ(pos.EmptyCount(), empty_count);
+		ASSERT_EQ(pos.GetP() & pos.GetO(), 0); // P and O don't overlap.
+	}
+}
+
+TEST(PositionGenerator, GenerateRandomPosition_Seed)
+{
+	CPositionGenerator pos_gen1(144);
+	CPositionGenerator pos_gen2(144);
+
+	for (int empty_count = 0; empty_count <= 60; empty_count++)
+	{
+		const auto pos1 = pos_gen1.GenerateRandomPosition(empty_count);
+		const auto pos2 = pos_gen2.GenerateRandomPosition(empty_count);
+
+		ASSERT_EQ(pos1, pos2);
+	}
+}
+
+TEST(PositionGenerator, GenerateRandomPositionSet_SetSize)
+{
+	CPositionGenerator pos_gen;
+	const int empty_count = 25;
+
+	for (int SetSize = 1; SetSize <= 1024; SetSize *= 2)
+	{
+		const auto set = pos_gen.GenerateRandomPositionSet(empty_count, SetSize);
+
+		ASSERT_EQ(set.size(), SetSize);
+		for (const auto& pos : set) {
+			ASSERT_EQ(pos.EmptyCount(), empty_count);
+			ASSERT_EQ(pos.GetP() & pos.GetO(), 0); // P and O don't overlap.
+		}
+	}
+}
+
+TEST(PositionGenerator, GenerateRandomPositionSet_EmptyCount)
+{
+	CPositionGenerator pos_gen;
+	const int SetSize = 100;
+
+	for (int empty_count = 0; empty_count <= 50; empty_count++)
+	{
+		const auto set = pos_gen.GenerateRandomPositionSet(empty_count, SetSize);
+
+		ASSERT_EQ(set.size(), SetSize);
+		for (const auto& pos : set) {
+			ASSERT_EQ(pos.EmptyCount(), empty_count);
+			ASSERT_EQ(pos.GetP() & pos.GetO(), 0); // P and O don't overlap.
+		}
+	}
+}
+
+// TODO: Make CPositionGenerator::GenerateRandomPositionSet deterministic and add test.
+
+//TEST(PositionGenerator, GenerateRandomPositionSet_Seed)
+//{
+//	CPositionGenerator pos_gen1(144);
+//	CPositionGenerator pos_gen2(144);
+//	const int empty_count = 25;
+//
+//	for (int SetSize = 1; SetSize <= 1024; SetSize *= 2)
+//	{
+//		const auto set1 = pos_gen1.GenerateRandomPositionSet(empty_count, SetSize);
+//		const auto set2 = pos_gen2.GenerateRandomPositionSet(empty_count, SetSize);
+//		ASSERT_EQ(set1.size(), SetSize);
+//		ASSERT_EQ(set2.size(), SetSize);
+//
+//		std::vector<CPosition> vec1(set1.begin(), set1.end());
+//		std::vector<CPosition> vec2(set2.begin(), set2.end());
+//
+//		for (std::size_t i = 0; i < SetSize; i++)
+//			ASSERT_EQ(vec1[i], vec2[i]);
+//	}
+//}
+
+TEST(PositionGenerator, GenerateAllPositions)
+{
+	CPositionGenerator pos_gen;
+	const uint64_t correct[] = { 1, 4, 12, 54, 236, 1'288, 7'092, 42'614, 269'352, 1'723'592, 11'922'566 };
+
+	for (int empty_count = 60; empty_count >= 55; empty_count--)
+	{
+		const auto set = pos_gen.GenerateAllPositions(empty_count);
+
+		ASSERT_EQ(set.size(), correct[60 - empty_count]);
+		for (const auto& pos : set) {
+			ASSERT_EQ(pos.EmptyCount(), empty_count);
+			ASSERT_EQ(pos.GetP() & pos.GetO(), 0); // P and O don't overlap.
+		}
+	}
+}
+
+TEST(PositionGenerator, GenerateAllPositionsSym)
+{
+	CPositionGenerator pos_gen;
+	const uint64_t correct[] = { 1, 1, 3, 14, 60, 322, 1'773, 10'649, 64'245, 434'029, 2'958'586 };
+
+	for (int empty_count = 60; empty_count >= 55; empty_count--)
+	{
+		const auto set = pos_gen.GenerateAllPositionsSym(empty_count);
+
+		ASSERT_EQ(set.size(), correct[60 - empty_count]);
+		for (const auto& pos : set) {
+			ASSERT_EQ(pos.EmptyCount(), empty_count);
+			ASSERT_EQ(pos.GetP() & pos.GetO(), 0); // P and O don't overlap.
+		}
 	}
 }
