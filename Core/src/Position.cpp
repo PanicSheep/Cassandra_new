@@ -68,6 +68,17 @@ uint64_t CPosition::Parity() const
 	#endif
 }
 
+uint64_t CPosition::GetParityQuadrants() const
+{
+	uint64_t E = Empties();
+	E ^= E >> 1;
+	E ^= E >> 2;
+	E ^= E >> 8;
+	E ^= E >> 16;
+	E &= 0x0000001100000011ULL;
+	return E * 0x000000000F0F0F0FULL;
+}
+
 CMoves CPosition::PossibleMoves() const
 {
 #if defined(HAS_AVX512)
