@@ -35,6 +35,7 @@ class CMoves
 public:
 	CMoves() : moves(0) {}
 	CMoves(uint64_t moves) : moves(moves) {}
+	CMoves(const CMoves& o, uint64_t filter) : moves(o.moves & filter) {} // TODO: Fix this hack!
 	
 	bool operator==(const CMoves& o) const { return moves == o.moves; }
 
