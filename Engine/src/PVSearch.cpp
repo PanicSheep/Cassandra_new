@@ -386,13 +386,25 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 	}
 
 	StatusValues stat(in, GetNodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
+		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	//if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
 
 	int bestscore = -128;
-	while (!moves.empty())
+	CMoves parity_moves(moves, in.pos.GetParityQuadrants());
+	while (!parity_moves.empty())
 	{
-		const auto move = moves.ExtractMove();
+		const auto move = parity_moves.ExtractMove();
+		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
+		if (ret.CausesCut) {
+			//UpdateTranspositionTable(stat);
+			return ret.Values;
+		}
+	}
+	CMoves non_parity_moves(moves, ~in.pos.GetParityQuadrants());
+	while (!non_parity_moves.empty())
+	{
+		const auto move = non_parity_moves.ExtractMove();
 		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
 		if (ret.CausesCut) {
 			//UpdateTranspositionTable(stat);
@@ -424,7 +436,8 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 	}
 
 	StatusValues stat(in, GetNodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
+		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
 
 	int bestscore = -128;
@@ -461,7 +474,8 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 	}
 
 	StatusValues stat(in, GetNodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
+		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 
 	CSortedMoves moves(in.pos);
 	// First Move
