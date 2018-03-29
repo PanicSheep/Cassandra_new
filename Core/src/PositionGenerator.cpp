@@ -82,10 +82,10 @@ std::unordered_set<CPosition> CPositionGenerator::GenerateRandomPositionSet(uint
 	return PosSet.GetSet();
 }
 
+// Not taking symmetrie into account.
 void GenAll(CPosition pos, std::unordered_set<CPosition>& pos_set, const uint8_t depth)
 {
 	if (depth == 0) {
-		pos.FlipToMin();
 		pos_set.insert(pos);
 		return;
 	}
@@ -107,10 +107,44 @@ void GenAll(CPosition pos, std::unordered_set<CPosition>& pos_set, const uint8_t
 	}
 }
 
+// Taking symmetrie into account.
+void GenAllSym(CPosition pos, std::unordered_set<CPosition>& pos_set, const uint8_t depth)
+{
+	if (depth == 0) {
+		pos.FlipToMin();
+		pos_set.insert(pos);
+		return;
+	}
+
+	auto moves = pos.PossibleMoves();
+
+	if (moves.empty())
+	{
+		pos = pos.PlayPass();
+		if (pos.HasMoves())
+			GenAllSym(pos, pos_set, depth);
+		return;
+	}
+
+	while (!moves.empty())
+	{
+		const auto move = moves.ExtractMove();
+		GenAllSym(pos.Play(move), pos_set, depth - 1);
+	}
+}
+
 std::unordered_set<CPosition> CPositionGenerator::GenerateAllPositions(uint8_t EmptiesCount)
 {
 	std::unordered_set<CPosition> positions;
 	CPosition pos = CPosition::StartPosition();
 	GenAll(pos, positions, static_cast<uint8_t>(pos.EmptyCount() - EmptiesCount));
+	return positions;
+}
+
+std::unordered_set<CPosition> CPositionGenerator::GenerateAllPositionsSym(uint8_t EmptiesCount)
+{
+	std::unordered_set<CPosition> positions;
+	CPosition pos = CPosition::StartPosition();
+	GenAllSym(pos, positions, static_cast<uint8_t>(pos.EmptyCount() - EmptiesCount));
 	return positions;
 }
