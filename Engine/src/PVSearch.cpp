@@ -500,7 +500,7 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
 {
 	const auto score = static_cast<int>(64 - 2 * PopCount(GetStableStones(in.pos)));
-	return AnalysisReturnValues(-64, score, in.pos.EmptyCount(), 0);
+	return AnalysisReturnValues(-64, score+1, in.pos.EmptyCount(), 0);
 }
 
 PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputValues& in)
