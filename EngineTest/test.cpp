@@ -143,22 +143,22 @@ std::vector<CPositionScore> TestPos = {
 	CPositionScore(0xFF00FF00FF00FF00ULL, 0x00FF00FF00FF00FFULL,   0), //  0
 	CPositionScore(0xFF00FF00FF00FFFFULL, 0x00FF00FF00FF0000ULL, +16), //  1
 	CPositionScore(0xFF00FF00FF000000ULL, 0x00FF00FF00FFFFFFULL, -16), //  2
-	
+
 	CPositionScore(0xFFFFFFFFFFFFFFFEULL, 0x0000000000000000ULL, +64), //  3
 	CPositionScore(0xFFFFFFFFFFFFFCFCULL, 0x0000000000000302ULL, +64), //  4
 	CPositionScore(0xFFFFFFFFFFFFFF7EULL, 0x0000000000000080ULL, +48), //  5
 	CPositionScore(0xFFFFFFFFFFFFFE7EULL, 0x0000000000000180ULL, +62), //  6
-	
+
 	CPositionScore(0xFEFFFFFFFFFFFFFEULL, 0x0000000000000000ULL, +64), //  7
 	CPositionScore(0xFCFCFFFFFFFFFCFCULL, 0x0203000000000302ULL, +64), //  8
 	CPositionScore(0xFEFFFFFFFFFFFF7EULL, 0x0000000000000080ULL, +22), //  9
 	CPositionScore(0xFFFFFFFFFBFEFC7EULL, 0x0000000004010280ULL, +54), // 10
-	
+
 	CPositionScore(0xFFFFFFFFFFFFFFF8ULL, 0x0000000000000000ULL, +64), // 11
 	CPositionScore(0xFFFFFFFFFFFFFDF8ULL, 0x0000000000000200ULL, +64), // 12
 	CPositionScore(0xF8FFFFFFFFFFFFF8ULL, 0x0700000000000000ULL, +16), // 13
 	CPositionScore(0xFFFFFFFEFBFEFC7EULL, 0x0000000104000280ULL, +58), // 14
-	
+
 	CPositionScore(0xFFFFFFFFFFFFFFF0ULL, 0x0000000000000000ULL, +64), // 15
 	CPositionScore(0xFFFFFFFFFFFFE0E0ULL, 0x0000000000001F10ULL, +64), // 16
 	CPositionScore(0xF0FFFFFFFFFFFFF0ULL, 0x0F00000000000000ULL,  +0), // 17
@@ -306,9 +306,9 @@ TEST (PVS, FForum09) { TestPosition(27, PVSearch()); }
 TEST (PVS, FForum10) { TestPosition(28, PVSearch()); }
 
 void Test_Folder(
-	std::string path_string, 
-	std::string absolute_folder_path, 
-	std::string folder_name, 
+	std::string path_string,
+	std::string absolute_folder_path,
+	std::string folder_name,
 	std::string relative_folder_path)
 {
 	replace_all(path_string         , WRONG_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
@@ -387,7 +387,7 @@ void Test_File(
 	std::string path_string,
 	std::string raw_file_name,
 	std::string full_file_name,
-	std::string extension, 
+	std::string extension,
 	std::string absolute_file_path,
 	std::string relative_file_path)
 {
@@ -399,7 +399,7 @@ void Test_File(
 	replace_all(relative_file_path, WRONG_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
 
 	CPath path(path_string);
-	
+
 	ASSERT_EQ(path.IsFile(), true);
 	ASSERT_EQ(path.IsFolder(), false);
 
