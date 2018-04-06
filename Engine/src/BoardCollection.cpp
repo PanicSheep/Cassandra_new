@@ -12,7 +12,7 @@ void CBoardCollection::Load(const CPath & file)
 	std::unique_ptr<StreamArchive> fstream = std::make_unique<fstreamArchive>(file, true);
 	const auto ext = file.GetExtension();
 
-	     if (ext == "pos")		archive = std::make_unique<StreamConverter>(std::move(fstream));
+	     if (ext == "pos")		archive = std::make_unique<BoardToStreamConverter>(std::move(fstream));
 	else if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
 	else if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
 	else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
@@ -32,7 +32,7 @@ void CBoardCollection::Save(const CPath & file) const
 	
 	const auto ext = file.GetExtension();
 
-	     if (ext == "pos")		archive = std::make_unique<StreamConverter>(std::move(fstream));
+	     if (ext == "pos")		archive = std::make_unique<BoardToStreamConverter>(std::move(fstream));
 	else if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
 	else if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
 	else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
