@@ -19,9 +19,13 @@ void CBoardCollection::Load(const CPath & file)
 	else
 		return;
 
-	std::unique_ptr<CBoard> board;
-	while (board = archive->DeserializeBoard())
+	while (true)
+	{
+		std::unique_ptr<CBoard> board = archive->DeserializeBoard();
+		if (board == nullptr)
+			break;
 		m_boards.push_back(std::move(board));
+	}
 }
 
 void CBoardCollection::Save(const CPath & file) const

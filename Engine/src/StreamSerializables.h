@@ -125,27 +125,27 @@ public:
 	bool Good() override { return istream->good() && (istream->peek() != EOF); }
 	std::string getline() override { std::string str; std::getline(*istream, str); return str; }
 
-	void Serialize(  int8_t var) override { *ostream << var; }
-	void Serialize( uint8_t var) override { *ostream << var; }
-	void Serialize( int16_t var) override { *ostream << var; }
-	void Serialize(uint16_t var) override { *ostream << var; }
-	void Serialize( int32_t var) override { *ostream << var; }
-	void Serialize(uint32_t var) override { *ostream << var; }
-	void Serialize( int64_t var) override { *ostream << var; }
-	void Serialize(uint64_t var) override { *ostream << var; }
-	void Serialize(   float var) override { *ostream << var; }
-	void Serialize(  double var) override { *ostream << var; }
+	void Serialize(  int8_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize( uint8_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize( int16_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize(uint16_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize( int32_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize(uint32_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize( int64_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize(uint64_t var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize(   float var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Serialize(  double var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
 	void Serialize(std::string var) override { *ostream << var; }
 	
-	void Deserialize(  int8_t& var) override { *istream >> var; }
-	void Deserialize( uint8_t& var) override { *istream >> var; }
-	void Deserialize( int16_t& var) override { *istream >> var; }
-	void Deserialize(uint16_t& var) override { *istream >> var; }
-	void Deserialize( int32_t& var) override { *istream >> var; }
-	void Deserialize(uint32_t& var) override { *istream >> var; }
-	void Deserialize( int64_t& var) override { *istream >> var; }
-	void Deserialize(uint64_t& var) override { *istream >> var; }
-	void Deserialize(   float& var) override { *istream >> var; }
-	void Deserialize(  double& var) override { *istream >> var; }
+	void Deserialize(  int8_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize( uint8_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize( int16_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize(uint16_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize( int32_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize(uint32_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize( int64_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize(uint64_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize(   float& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
+	void Deserialize(  double& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
 	void Deserialize(std::string& var) override { *istream >> var; }
 };

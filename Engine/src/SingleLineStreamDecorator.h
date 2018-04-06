@@ -12,6 +12,7 @@ class SingleLineStreamDecorator : public BoardArchive
 	std::unique_ptr<StreamArchive> stream;
 public:
 	SingleLineStreamDecorator(std::unique_ptr<StreamArchive> stream) : stream(std::move(stream)) {}
+	virtual ~SingleLineStreamDecorator() {}
 	
 	void Serialize(const CBoard& obj) override;
 	void Serialize(const CBoardScore& obj) override;

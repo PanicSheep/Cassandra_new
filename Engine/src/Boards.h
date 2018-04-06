@@ -54,7 +54,7 @@ public:
 
 	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
 	void Serialize(oBoardArchive& arch) const override { arch.Serialize(*this); }
-	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+	void Deserialize(iStreamArchive& arch) override { CBoard::deserialize(arch); deserialize(arch); }
 
 protected:
 	void serialize(oStreamArchive& arch) const { CBoard::serialize(arch); arch << score; }
@@ -82,7 +82,7 @@ public:
 
 	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
 	void Serialize(oBoardArchive& arch) const override { arch.Serialize(*this); }
-	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+	void Deserialize(iStreamArchive& arch) override { CBoardScore::deserialize(arch); deserialize(arch); }
 
 protected:
 	void serialize(oStreamArchive& arch) const { CBoardScore::serialize(arch); arch << depth << selectivity; }
@@ -112,7 +112,7 @@ public:
 
 	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
 	void Serialize(oBoardArchive& arch) const override { arch.Serialize(*this); }
-	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+	void Deserialize(iStreamArchive& arch) override { CBoard::deserialize(arch); deserialize(arch); }
 
 protected:
 	void serialize(oStreamArchive& arch) const { CBoard::serialize(arch); for (const auto& it : score) arch << it; }
@@ -140,7 +140,7 @@ public:
 
 	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
 	void Serialize(oBoardArchive& arch) const override { arch.Serialize(*this); }
-	void Deserialize(iStreamArchive& arch) override { deserialize(arch); }
+	void Deserialize(iStreamArchive& arch) override { CBoard::deserialize(arch); deserialize(arch); }
 
 protected:
 	void serialize(oStreamArchive& arch) const { CBoard::serialize(arch); for (const auto& it : score) arch << it; }
