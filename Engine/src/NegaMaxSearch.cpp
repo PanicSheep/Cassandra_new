@@ -86,13 +86,11 @@ int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove& move1, const CMove&
 	NodeCounter(2)++;
 	int score = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1))
-			score = std::max(score, -Eval_1(pos.Play(move1, flips), move2));
+	if (const auto flips = Flip(pos, move1))
+		score = std::max(score, -Eval_1(pos.Play(move1, flips), move2));
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2))
-			score = std::max(score, -Eval_1(pos.Play(move2, flips), move1));
+	if (const auto flips = Flip(pos, move2))
+		score = std::max(score, -Eval_1(pos.Play(move2, flips), move1));
 
 	if (score != -128)
 		return score;
@@ -100,13 +98,11 @@ int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove& move1, const CMove&
 	const auto posPass = pos.PlayPass();
 	score = 128;
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1))
-			score = std::min(score, Eval_1(posPass.Play(move1, flips), move2));
+	if (const auto flips = Flip(posPass, move1))
+		score = std::min(score, Eval_1(posPass.Play(move1, flips), move2));
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2))
-			score = std::min(score, Eval_1(posPass.Play(move2, flips), move1));
+	if (const auto flips = Flip(posPass, move2))
+		score = std::min(score, Eval_1(posPass.Play(move2, flips), move1));
 
 	if (score != 128) {
 		NodeCounter(2)++;
@@ -121,17 +117,14 @@ int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove& move1, const CMove&
 	NodeCounter(3)++;
 	int score = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1))
-			score = std::max(score, -Eval_2(pos.Play(move1, flips), move2, move3));
+	if (const auto flips = Flip(pos, move1))
+		score = std::max(score, -Eval_2(pos.Play(move1, flips), move2, move3));
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2))
-			score = std::max(score, -Eval_2(pos.Play(move2, flips), move1, move3));
+	if (const auto flips = Flip(pos, move2))
+		score = std::max(score, -Eval_2(pos.Play(move2, flips), move1, move3));
 
-	if (pos.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(pos, move3))
-			score = std::max(score, -Eval_2(pos.Play(move3, flips), move1, move2));
+	if (const auto flips = Flip(pos, move3))
+		score = std::max(score, -Eval_2(pos.Play(move3, flips), move1, move2));
 
 	if (score != -128)
 		return score;
@@ -139,17 +132,14 @@ int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove& move1, const CMove&
 	const auto posPass = pos.PlayPass();
 	score = 128;
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1))
-			score = std::min(score, Eval_2(posPass.Play(move1, flips), move2, move3));
+	if (const auto flips = Flip(posPass, move1))
+		score = std::min(score, Eval_2(posPass.Play(move1, flips), move2, move3));
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2))
-			score = std::min(score, Eval_2(posPass.Play(move2, flips), move1, move3));
+	if (const auto flips = Flip(posPass, move2))
+		score = std::min(score, Eval_2(posPass.Play(move2, flips), move1, move3));
 
-	if (posPass.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(posPass, move3))
-			score = std::min(score, Eval_2(posPass.Play(move3, flips), move1, move2));
+	if (const auto flips = Flip(posPass, move3))
+		score = std::min(score, Eval_2(posPass.Play(move3, flips), move1, move2));
 
 	if (score != 128) {
 		NodeCounter(3)++;
@@ -164,21 +154,17 @@ int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove& move1, const CMove&
 	NodeCounter(4)++;
 	int score = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1))
-			score = std::max(score, -Eval_3(pos.Play(move1, flips), move2, move3, move4));
+	if (const auto flips = Flip(pos, move1))
+		score = std::max(score, -Eval_3(pos.Play(move1, flips), move2, move3, move4));
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2))
-			score = std::max(score, -Eval_3(pos.Play(move2, flips), move1, move3, move4));
+	if (const auto flips = Flip(pos, move2))
+		score = std::max(score, -Eval_3(pos.Play(move2, flips), move1, move3, move4));
 
-	if (pos.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(pos, move3))
-			score = std::max(score, -Eval_3(pos.Play(move3, flips), move1, move2, move4));
+	if (const auto flips = Flip(pos, move3))
+		score = std::max(score, -Eval_3(pos.Play(move3, flips), move1, move2, move4));
 
-	if (pos.GetO() & Neighbour(move4.field))
-		if (const auto flips = Flip(pos, move4))
-			score = std::max(score, -Eval_3(pos.Play(move4, flips), move1, move2, move3));
+	if (const auto flips = Flip(pos, move4))
+		score = std::max(score, -Eval_3(pos.Play(move4, flips), move1, move2, move3));
 
 	if (score != -128)
 		return score;
@@ -186,21 +172,17 @@ int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove& move1, const CMove&
 	const auto posPass = pos.PlayPass();
 	score = 128;
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1))
-			score = std::min(score, Eval_3(posPass.Play(move1, flips), move2, move3, move4));
+	if (const auto flips = Flip(posPass, move1))
+		score = std::min(score, Eval_3(posPass.Play(move1, flips), move2, move3, move4));
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2))
-			score = std::min(score, Eval_3(posPass.Play(move2, flips), move1, move3, move4));
+	if (const auto flips = Flip(posPass, move2))
+		score = std::min(score, Eval_3(posPass.Play(move2, flips), move1, move3, move4));
 
-	if (posPass.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(posPass, move3))
-			score = std::min(score, Eval_3(posPass.Play(move3, flips), move1, move2, move4));
+	if (const auto flips = Flip(posPass, move3))
+		score = std::min(score, Eval_3(posPass.Play(move3, flips), move1, move2, move4));
 
-	if (posPass.GetO() & Neighbour(move4.field))
-		if (const auto flips = Flip(posPass, move4))
-			score = std::min(score, Eval_3(posPass.Play(move4, flips), move1, move2, move3));
+	if (const auto flips = Flip(posPass, move4))
+		score = std::min(score, Eval_3(posPass.Play(move4, flips), move1, move2, move3));
 
 	if (score != 128) {
 		NodeCounter(4)++;
