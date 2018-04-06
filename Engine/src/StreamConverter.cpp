@@ -1,12 +1,12 @@
 #include "StreamConverter.h"
 
-void StreamConverter::Serialize(const CBoard& obj) { *arch << obj; }
-void StreamConverter::Serialize(const CBoardScore& obj) { *arch << obj; }
-void StreamConverter::Serialize(const CBoardScoreDepth& obj) {* arch << obj; }
-void StreamConverter::Serialize(const CBoardAllDepthScore& obj) { *arch << obj; }
-void StreamConverter::Serialize(const CBoardAllMoveScore& obj) { *arch << obj; }
+void BoardToStreamConverter::Serialize(const CBoard& obj) { *arch << obj; }
+void BoardToStreamConverter::Serialize(const CBoardScore& obj) { *arch << obj; }
+void BoardToStreamConverter::Serialize(const CBoardScoreDepth& obj) {* arch << obj; }
+void BoardToStreamConverter::Serialize(const CBoardAllDepthScore& obj) { *arch << obj; }
+void BoardToStreamConverter::Serialize(const CBoardAllMoveScore& obj) { *arch << obj; }
 
-std::unique_ptr<CBoard> StreamConverter::DeserializeBoard()
+std::unique_ptr<CBoard> BoardToStreamConverter::DeserializeBoard()
 {
 	if (arch->Good() == false)
 		return nullptr;

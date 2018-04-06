@@ -3,12 +3,12 @@
 #include "ObjectSerializables.h"
 #include "StreamSerializables.h"
 
-class StreamConverter : public BoardArchive
+ class BoardToStreamConverter : public BoardArchive
 {
 	std::unique_ptr<StreamArchive> arch;
 public:
-	StreamConverter(std::unique_ptr<StreamArchive> arch) : arch(std::move(arch)) {}
-	virtual ~StreamConverter() {}
+	BoardToStreamConverter(std::unique_ptr<StreamArchive> arch) : arch(std::move(arch)) {}
+	virtual ~BoardToStreamConverter() {}
 
 	void Serialize(const CBoard& obj) override;
 	void Serialize(const CBoardScore& obj) override;
