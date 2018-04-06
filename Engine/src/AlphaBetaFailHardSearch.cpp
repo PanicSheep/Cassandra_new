@@ -91,38 +91,34 @@ int AlphaBetaFailHardSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 	NodeCounter(2)++;
 	int score = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1)) {
-			score = -Eval_1(pos.Play(move1, flips), -beta, -alpha, move2);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move1)) {
+		score = -Eval_1(pos.Play(move1, flips), -beta, -alpha, move2);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2)) {
-			score = -Eval_1(pos.Play(move2, flips), -beta, -alpha, move1);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move2)) {
+		score = -Eval_1(pos.Play(move2, flips), -beta, -alpha, move1);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
 	if (score != -128)
 		return alpha;
 
 	const auto posPass = pos.PlayPass();
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1)) {
-			score = Eval_1(posPass.Play(move1, flips), alpha, beta, move2);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move1)) {
+		score = Eval_1(posPass.Play(move1, flips), alpha, beta, move2);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2)) {
-			score = Eval_1(posPass.Play(move2, flips), alpha, beta, move1);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move2)) {
+		score = Eval_1(posPass.Play(move2, flips), alpha, beta, move1);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
 	if (score != -128) {
 		NodeCounter(2)++;
@@ -137,49 +133,43 @@ int AlphaBetaFailHardSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 	NodeCounter(3)++;
 	int score = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1)) {
-			score = -Eval_2(pos.Play(move1, flips), -beta, -alpha, move2, move3);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move1)) {
+		score = -Eval_2(pos.Play(move1, flips), -beta, -alpha, move2, move3);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2)) {
-			score = -Eval_2(pos.Play(move2, flips), -beta, -alpha, move1, move3);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move2)) {
+		score = -Eval_2(pos.Play(move2, flips), -beta, -alpha, move1, move3);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
-	if (pos.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(pos, move3)) {
-			score = -Eval_2(pos.Play(move3, flips), -beta, -alpha, move1, move2);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move3)) {
+		score = -Eval_2(pos.Play(move3, flips), -beta, -alpha, move1, move2);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
 	if (score != -128)
 		return alpha;
 
 	const auto posPass = pos.PlayPass();
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1)) {
-			score = Eval_2(posPass.Play(move1, flips), alpha, beta, move2, move3);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move1)) {
+		score = Eval_2(posPass.Play(move1, flips), alpha, beta, move2, move3);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2)) {
-			score = Eval_2(posPass.Play(move2, flips), alpha, beta, move1, move3);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move2)) {
+		score = Eval_2(posPass.Play(move2, flips), alpha, beta, move1, move3);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
-	if (posPass.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(posPass, move3)) {
-			score = Eval_2(posPass.Play(move3, flips), alpha, beta, move1, move2);
+	if (const auto flips = Flip(posPass, move3)) {
+		score = Eval_2(posPass.Play(move3, flips), alpha, beta, move1, move2);
 		if (score <= alpha) return alpha;
 		if (score < beta) beta = score;
 	}
@@ -197,66 +187,58 @@ int AlphaBetaFailHardSearch::Eval_4(const CPosition& pos, int alpha, int beta, c
 	NodeCounter(4)++;
 	int score = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1)) {
-			score = -Eval_3(pos.Play(move1, flips), -beta, -alpha, move2, move3, move4);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move1)) {
+		score = -Eval_3(pos.Play(move1, flips), -beta, -alpha, move2, move3, move4);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2)) {
-			score = -Eval_3(pos.Play(move2, flips), -beta, -alpha, move1, move3, move4);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move2)) {
+		score = -Eval_3(pos.Play(move2, flips), -beta, -alpha, move1, move3, move4);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
-	if (pos.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(pos, move3)) {
-			score = -Eval_3(pos.Play(move3, flips), -beta, -alpha, move1, move2, move4);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move3)) {
+		score = -Eval_3(pos.Play(move3, flips), -beta, -alpha, move1, move2, move4);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
-	if (pos.GetO() & Neighbour(move4.field))
-		if (const auto flips = Flip(pos, move4)) {
-			score = -Eval_3(pos.Play(move4, flips), -beta, -alpha, move1, move2, move3);
-			if (score >= beta) return beta;
-			if (score > alpha) alpha = score;
-		}
+	if (const auto flips = Flip(pos, move4)) {
+		score = -Eval_3(pos.Play(move4, flips), -beta, -alpha, move1, move2, move3);
+		if (score >= beta) return beta;
+		if (score > alpha) alpha = score;
+	}
 
 	if (score != -128)
 		return alpha;
 
 	const auto posPass = pos.PlayPass();
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1)) {
-			score = Eval_3(posPass.Play(move1, flips), alpha, beta, move2, move3, move4);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move1)) {
+		score = Eval_3(posPass.Play(move1, flips), alpha, beta, move2, move3, move4);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2)) {
-			score = Eval_3(posPass.Play(move2, flips), alpha, beta, move1, move3, move4);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move2)) {
+		score = Eval_3(posPass.Play(move2, flips), alpha, beta, move1, move3, move4);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
-	if (posPass.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(posPass, move3)) {
-			score = Eval_3(posPass.Play(move3, flips), alpha, beta, move1, move2, move4);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move3)) {
+		score = Eval_3(posPass.Play(move3, flips), alpha, beta, move1, move2, move4);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
-	if (posPass.GetO() & Neighbour(move4.field))
-		if (const auto flips = Flip(posPass, move4)) {
-			score = Eval_3(posPass.Play(move4, flips), alpha, beta, move1, move2, move3);
-			if (score <= alpha) return alpha;
-			if (score < beta) beta = score;
-		}
+	if (const auto flips = Flip(posPass, move4)) {
+		score = Eval_3(posPass.Play(move4, flips), alpha, beta, move1, move2, move3);
+		if (score <= alpha) return alpha;
+		if (score < beta) beta = score;
+	}
 
 	if (score != -128) {
 		NodeCounter(4)++;
