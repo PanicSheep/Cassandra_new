@@ -1,0 +1,2 @@
+bin\Benchmark.exe
+@pause
