@@ -93,7 +93,6 @@ class PVSearch : public Search
 {
 	std::shared_ptr<Environment> environment;
 
-
 	struct InputValues
 	{
 		CPosition pos;
@@ -312,6 +311,7 @@ class CSortedMoves
 public:
 	CSortedMoves() {}
 	CSortedMoves(const CPosition&);
+	CSortedMoves(const CPosition&, const CMove& filter1, const CMove& filter2);
 	
 	std::size_t size() const { return moves.size(); }
 	bool empty() const { return moves.empty(); }
@@ -328,11 +328,25 @@ private:
 inline CSortedMoves::CSortedMoves(const CPosition& pos)
 {
 	CMoves mov = pos.PossibleMoves();
-	std::vector<std::pair<int32_t, CMove>> ScoreMovePairs;
 	moves.reserve(mov.size());
 
 	while (!mov.empty()) {
 		const auto move = mov.ExtractMove();
+		moves.emplace_back(Score(move, pos), move);
+	}
+
+	std::sort(moves.begin(), moves.end(), [](auto& left, auto& right) { return left.first < right.first; });
+}
+
+inline CSortedMoves::CSortedMoves(const CPosition& pos, const CMove& filter1, const CMove& filter2)
+{
+	CMoves mov = pos.PossibleMoves();
+	moves.reserve(mov.size());
+
+	while (!mov.empty()) {
+		const auto move = mov.ExtractMove();
+		if (move == filter1) continue;
+		if (move == filter2) continue;
 		moves.emplace_back(Score(move, pos), move);
 	}
 
