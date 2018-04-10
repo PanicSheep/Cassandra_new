@@ -261,6 +261,8 @@ private:
 
 	int PVS_1(const CPosition& pos, int alpha, int beta);
 	int PVS_1(const CPosition& pos, int alpha, int beta, const CMove& move1);
+	int PVS_2(const CPosition& pos, int alpha, int beta);
+	int PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move1, const CMove& move2);
 
 	int ZWS_1(const CPosition& pos, int alpha);
 	int ZWS_1(const CPosition& pos, int alpha, const CMove& move1);

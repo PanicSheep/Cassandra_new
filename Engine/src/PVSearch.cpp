@@ -21,6 +21,7 @@ PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 	{
 	case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
 	case 1: return ReturnValues(PVS_1(in.pos, in.alpha, in.beta), 1, 0);
+	case 2: return ReturnValues(PVS_2(in.pos, in.alpha, in.beta), 2, 0);
 	default: return PVS_N(in);
 	}
 }
@@ -57,14 +58,14 @@ int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta)
 	return PVS_1(pos, alpha, beta, move1);
 }
 
-//int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta)
-//{
-//	auto moves = CMoves(pos.Empties());
-//	const auto move1 = moves.ExtractMove();
-//	const auto move2 = moves.ExtractMove();
-//
-//	return PVS_2(pos, alpha, beta, move1, move2);
-//}
+int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta)
+{
+	auto moves = CMoves(pos.Empties());
+	const auto move1 = moves.ExtractMove();
+	const auto move2 = moves.ExtractMove();
+
+	return PVS_2(pos, alpha, beta, move1, move2);
+}
 
 int PVSearch::ZWS_1(const CPosition& pos, int alpha)
 {
@@ -124,56 +125,56 @@ int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove& move
 		return (score > 0) ? score + 1 : score - 1;
 }
 
-//int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move1, const CMove& move2)
-//{
-//	NodeCounter(2)++;
-//	int bestscore = -128;
-//
-//	if (pos.GetO() & Neighbour(move1.field))
-//		if (const auto flips = Flip(pos, move1)) {
-//			const auto score = -PVS_1(pos.Play(move1, flips), -beta, -alpha, move2);
-//			if (score >= beta) return score;
-//			alpha = std::max(score, alpha);
-//			bestscore = std::max(score, bestscore);
-//		}
-//
-//	if (pos.GetO() & Neighbour(move2.field))
-//		if (const auto flips = Flip(pos, move2)) {
-//			const auto score = -PVS_1(pos.Play(move2, flips), -beta, -alpha, move1);
-//			if (score >= beta) return score;
-//			alpha = std::max(score, alpha);
-//			bestscore = std::max(score, bestscore);
-//		}
-//
-//	if (bestscore != -128)
-//		return bestscore;
-//	bestscore = 128;
-//
-//	const auto posPass = pos.PlayPass();
-//
-//	if (posPass.GetO() & Neighbour(move1.field))
-//		if (const auto flips = Flip(posPass, move1)) {
-//			const auto score = PVS_1(posPass.Play(move1, flips), alpha, beta, move2);
-//			if (score <= alpha) return score;
-//			beta = std::min(score, beta);
-//			bestscore = std::min(score, bestscore);
-//		}
-//
-//	if (posPass.GetO() & Neighbour(move2.field))
-//		if (const auto flips = Flip(posPass, move2)) {
-//			const auto score = PVS_1(posPass.Play(move2, flips), alpha, beta, move1);
-//			if (score <= alpha) return score;
-//			beta = std::min(score, beta);
-//			bestscore = std::min(score, bestscore);
-//		}
-//
-//	if (bestscore != 128) {
-//		NodeCounter(2)++;
-//		return bestscore;
-//	}
-//	else
-//		return -EvalGameOver<2>(posPass);
-//}
+int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move1, const CMove& move2)
+{
+	NodeCounter(2)++;
+	int bestscore = -128;
+
+	if (pos.GetO() & Neighbour(move1.field))
+		if (const auto flips = Flip(pos, move1)) {
+			const auto score = -PVS_1(pos.Play(move1, flips), -beta, -alpha, move2);
+			if (score >= beta) return score;
+			alpha = std::max(score, alpha);
+			bestscore = std::max(score, bestscore);
+		}
+
+	if (pos.GetO() & Neighbour(move2.field))
+		if (const auto flips = Flip(pos, move2)) {
+			const auto score = -PVS_1(pos.Play(move2, flips), -beta, -alpha, move1);
+			if (score >= beta) return score;
+			alpha = std::max(score, alpha);
+			bestscore = std::max(score, bestscore);
+		}
+
+	if (bestscore != -128)
+		return bestscore;
+	bestscore = 128;
+
+	const auto posPass = pos.PlayPass();
+
+	if (posPass.GetO() & Neighbour(move1.field))
+		if (const auto flips = Flip(posPass, move1)) {
+			const auto score = PVS_1(posPass.Play(move1, flips), alpha, beta, move2);
+			if (score <= alpha) return score;
+			beta = std::min(score, beta);
+			bestscore = std::min(score, bestscore);
+		}
+
+	if (posPass.GetO() & Neighbour(move2.field))
+		if (const auto flips = Flip(posPass, move2)) {
+			const auto score = PVS_1(posPass.Play(move2, flips), alpha, beta, move1);
+			if (score <= alpha) return score;
+			beta = std::min(score, beta);
+			bestscore = std::min(score, bestscore);
+		}
+
+	if (bestscore != 128) {
+		NodeCounter(2)++;
+		return bestscore;
+	}
+	else
+		return -EvalGameOver<2>(posPass);
+}
 
 int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove& move1)
 {
