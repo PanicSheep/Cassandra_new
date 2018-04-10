@@ -13,7 +13,7 @@
       </FunctionLevelLinking>
       <EnableEnhancedInstructionSet>
       </EnableEnhancedInstructionSet>
-      <OpenMPSupport>false</OpenMPSupport>
+      <OpenMPSupport>true</OpenMPSupport>
       <AdditionalOptions>/D __core_avx2__ /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
