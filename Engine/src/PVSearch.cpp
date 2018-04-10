@@ -438,10 +438,29 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 	StatusValues stat(in, GetNodeCount());
 	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
 		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
-	if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
+	const auto TTRet = TranspositionTableAnalysis(in);
+	if (const auto ret = stat.ImproveWith(TTRet); ret.CausesCut) return ret.Values;
 
-	int bestscore = -128;
-	CSortedMoves moves(in.pos);
+	if (TTRet.PV != Field::invalid)
+	{
+		const auto& move = TTRet.PV;
+		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
+		if (ret.CausesCut) {
+			UpdateTranspositionTable(stat);
+			return ret.Values;
+		}
+	}
+	if (TTRet.AV != Field::invalid)
+	{
+		const auto& move = TTRet.AV;
+		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
+		if (ret.CausesCut) {
+			UpdateTranspositionTable(stat);
+			return ret.Values;
+		}
+	}
+
+	CSortedMoves moves(in.pos, TTRet.PV, TTRet.AV);
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
@@ -476,18 +495,44 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 	StatusValues stat(in, GetNodeCount());
 	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
 		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	const auto TTRet = TranspositionTableAnalysis(in);
 
-	CSortedMoves moves(in.pos);
-	// First Move
+	if (TTRet.PV != Field::invalid)
 	{
-		const auto move = moves.ExtractMove();
-		const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
-		if (ret.CausesCut) {
+		const auto& move = TTRet.PV;
+		const auto zws_ret = -ZWS(stat.PlayZWS(move));
+		if (zws_ret.GetScore() >= stat.beta) { // TODO: Try using ImproveWith and test for a cut.
+			const auto ret = stat.ImproveWith(zws_ret, move);
 			UpdateTranspositionTable(stat);
 			return ret.Values;
 		}
+		if (zws_ret.GetScore() > stat.alpha) { // if ZWS failed high.
+			const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
+			if (ret.CausesCut) {
+				UpdateTranspositionTable(stat);
+				return ret.Values;
+			}
+		}
+	}
+	if (TTRet.AV != Field::invalid)
+	{
+		const auto& move = TTRet.AV;
+		const auto zws_ret = -ZWS(stat.PlayZWS(move));
+		if (zws_ret.GetScore() >= stat.beta) { // TODO: Try using ImproveWith and test for a cut.
+			const auto ret = stat.ImproveWith(zws_ret, move);
+			UpdateTranspositionTable(stat);
+			return ret.Values;
+		}
+		if (zws_ret.GetScore() > stat.alpha) { // if ZWS failed high.
+			const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
+			if (ret.CausesCut) {
+				UpdateTranspositionTable(stat);
+				return ret.Values;
+			}
+		}
 	}
 
+	CSortedMoves moves(in.pos, TTRet.PV, TTRet.AV);
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
