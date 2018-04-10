@@ -46,11 +46,11 @@ public:
 	CBoardScore(CPosition pos, int8_t score) : CBoard(pos), score(score) {}
 	CBoardScore(iStreamArchive& arch) : CBoard(arch) { deserialize(arch); }
 
-	virtual uint8_t ClassId() const override { return classId; }
-	virtual CBoardScore* Clone() const override { return new CBoardScore(*this); }
-	virtual CBoardScore* Play(const CMove& move) const override { return new CBoardScore(pos.Play(move)); }
-	virtual bool Test() const override { return CBoard::Test() && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
-	virtual bool IsSolved() const override { return score != DEFAULT_SCORE; }
+	uint8_t ClassId() const override { return classId; }
+	CBoardScore* Clone() const override { return new CBoardScore(*this); }
+	CBoardScore* Play(const CMove& move) const override { return new CBoardScore(pos.Play(move)); }
+	bool Test() const override { return CBoard::Test() && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
+	bool IsSolved() const override { return score != DEFAULT_SCORE; }
 
 	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
 	void Serialize(oBoardArchive& arch) const override { arch.Serialize(*this); }
@@ -73,12 +73,12 @@ public:
 	CBoardScoreDepth(CPosition pos) : CBoardScore(pos), depth(DEFAULT_DEPTH), selectivity(DEFAULT_SELECTIVITY) {}
 	CBoardScoreDepth(iStreamArchive& arch) : CBoardScore(arch) { deserialize(arch); }
 
-	virtual uint8_t ClassId() const override { return classId; }
-	virtual CBoardScoreDepth* Clone() const override { return new CBoardScoreDepth(*this); }
-	virtual CBoardScoreDepth* Play(const CMove& move) const override { return new CBoardScoreDepth(pos.Play(move)); }
-	virtual bool Test() const override { return CBoardScore::Test() && (depth >= DEFAULT_DEPTH); }
-	virtual bool IsSolved() const override { return (depth == static_cast<int8_t>(pos.EmptyCount())) && (selectivity == 0); }
-	virtual bool IsSolved(int8_t Depth, uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
+	uint8_t ClassId() const override { return classId; }
+	CBoardScoreDepth* Clone() const override { return new CBoardScoreDepth(*this); }
+	CBoardScoreDepth* Play(const CMove& move) const override { return new CBoardScoreDepth(pos.Play(move)); }
+	bool Test() const override { return CBoardScore::Test() && (depth >= DEFAULT_DEPTH); }
+	bool IsSolved() const override { return (depth == static_cast<int8_t>(pos.EmptyCount())) && (selectivity == 0); }
+	bool IsSolved(int8_t Depth, uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
 
 	void Serialize(oStreamArchive& arch) const override { arch << classId; serialize(arch); }
 	void Serialize(oBoardArchive& arch) const override { arch.Serialize(*this); }
@@ -99,12 +99,12 @@ public:
 	CBoardAllDepthScore(CPosition pos) : CBoard(pos) { ResetInformation(); }
 	CBoardAllDepthScore(iStreamArchive& arch) : CBoard(arch) { deserialize(arch); }
 
-	virtual uint8_t ClassId() const override { return classId; }
-	virtual CBoardAllDepthScore* Clone() const override { return new CBoardAllDepthScore(*this); }
-	virtual CBoardAllDepthScore* Play(const CMove& move) const override { return new CBoardAllDepthScore(pos.Play(move)); }
-	virtual bool Test() const override;
-	virtual bool IsSolved() const override;
-	virtual bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
+	uint8_t ClassId() const override { return classId; }
+	CBoardAllDepthScore* Clone() const override { return new CBoardAllDepthScore(*this); }
+	CBoardAllDepthScore* Play(const CMove& move) const override { return new CBoardAllDepthScore(pos.Play(move)); }
+	bool Test() const override;
+	bool IsSolved() const override;
+	bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
 
 	virtual void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
 
@@ -129,12 +129,12 @@ public:
 	CBoardAllMoveScore(CPosition pos) : CBoard(pos) { ResetInformation(); }
 	CBoardAllMoveScore(iStreamArchive& arch) : CBoard(arch) { deserialize(arch); }
 
-	virtual uint8_t ClassId() const override { return classId; }
-	virtual CBoardAllMoveScore* Clone() const override { return new CBoardAllMoveScore(*this); }
-	virtual CBoardAllMoveScore* Play(const CMove& move) const override { return new CBoardAllMoveScore(pos.Play(move)); }
-	virtual void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
-	virtual bool Test() const override;
-	virtual bool IsSolved() const override;
+	uint8_t ClassId() const override { return classId; }
+	CBoardAllMoveScore* Clone() const override { return new CBoardAllMoveScore(*this); }
+	CBoardAllMoveScore* Play(const CMove& move) const override { return new CBoardAllMoveScore(pos.Play(move)); }
+	void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
+	bool Test() const override;
+	bool IsSolved() const override;
 
 	int8_t MaxScore() const { return *std::max_element(std::begin(score), std::end(score)); }
 
