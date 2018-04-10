@@ -43,18 +43,18 @@ std::string short_time_format(std::chrono::duration<long long, std::pico> durati
 	unsigned long long nanoss = std::chrono::duration_cast<std::chrono::nanoseconds >(duration).count();
 	unsigned long long picos = duration.count();
 
-	     if (millis >= 100) printf(buff, "%4lldms", millis);
-	else if (millis >=  10) printf(buff, "%2.1fms", static_cast<double>(micros) / 1000.0);
-	else if (millis >=   1) printf(buff, "%1.2fms", static_cast<double>(micros) / 1000.0);
-	else if (micros >= 100) printf(buff, "%4lldus", micros);
-	else if (micros >=  10) printf(buff, "%2.1fus", static_cast<double>(nanoss) / 1000.0);
-	else if (micros >=   1) printf(buff, "%1.2fus", static_cast<double>(nanoss) / 1000.0);
-	else if (nanoss >= 100) printf(buff, "%4lldns", nanoss);
-	else if (nanoss >=  10) printf(buff, "%2.1fns", static_cast<double>(picos) / 1000.0);
-	else if (nanoss >=   1) printf(buff, "%1.2fns", static_cast<double>(picos) / 1000.0);
-	else if (picos        ) printf(buff, "%4lldps", picos);
+	     if (millis >= 100) sprintf(buff, "%4lldms", millis);
+	else if (millis >=  10) sprintf(buff, "%2.1fms", static_cast<double>(micros) / 1000.0);
+	else if (millis >=   1) sprintf(buff, "%1.2fms", static_cast<double>(micros) / 1000.0);
+	else if (micros >= 100) sprintf(buff, "%4lldus", micros);
+	else if (micros >=  10) sprintf(buff, "%2.1fus", static_cast<double>(nanoss) / 1000.0);
+	else if (micros >=   1) sprintf(buff, "%1.2fus", static_cast<double>(nanoss) / 1000.0);
+	else if (nanoss >= 100) sprintf(buff, "%4lldns", nanoss);
+	else if (nanoss >=  10) sprintf(buff, "%2.1fns", static_cast<double>(picos) / 1000.0);
+	else if (nanoss >=   1) sprintf(buff, "%1.2fns", static_cast<double>(picos) / 1000.0);
+	else if (picos        ) sprintf(buff, "%4lldps", picos);
 	else
-		printf(buff, "Error!");
+		sprintf(buff, "Error!");
 
 	return std::string(buff);
 }
