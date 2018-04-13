@@ -30,7 +30,7 @@ class NegaMaxSearch : public Search
 public:
 	NegaMaxSearch() : Search() {}
 
-	virtual int Eval(const CPosition&) override;
+	int Eval(const CPosition&) override;
 private:
 	int Eval_1(const CPosition&);
 	int Eval_2(const CPosition&);
@@ -50,7 +50,7 @@ class AlphaBetaFailSoftSearch : public Search
 public:
 	AlphaBetaFailSoftSearch() : Search() {}
 
-	virtual int Eval(const CPosition&) override;
+	int Eval(const CPosition&) override;
 	
 	int Eval(const CPosition&, int alpha, int beta);
 private:
@@ -72,7 +72,7 @@ class AlphaBetaFailHardSearch : public Search
 public:
 	AlphaBetaFailHardSearch() : Search() {}
 
-	virtual int Eval(const CPosition&) override;
+	int Eval(const CPosition&) override;
 	
 	int Eval(const CPosition&, int alpha, int beta);
 private:
