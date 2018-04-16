@@ -1,5 +1,6 @@
 #include "BoardCollection.h"
 #include <iostream>
+#include <functional>
 
 CBoardCollection::CBoardCollection(const CPath & file)
 {
@@ -44,4 +45,75 @@ void CBoardCollection::Save(const CPath & file) const
 	
 	for (const auto& it : m_boards)
 		*archive << *it;
+}
+
+AutoSavingBoardCollection::AutoSavingBoardCollection(const CPath& input_file, const CPath& output_file, std::chrono::seconds interval)
+	: m_terminate(false)
+{
+	Load(input_file);
+
+	m_thread = std::thread(
+		[this, output_file, interval]()
+		{
+			std::unique_lock<std::mutex> lock(m_mtx);
+			while (m_terminate.load(std::memory_order_acquire) == false)
+			{
+				m_cv.wait_for(lock, interval);
+				CBoardCollection::Save(output_file);
+			}
+		}
+	);
+}
+
+AutoSavingBoardCollection::~AutoSavingBoardCollection()
+{
+	m_terminate.store(true, std::memory_order_release);
+}
+
+void AutoSavingBoardCollection::push_back(std::unique_ptr<CBoard>&& pos)
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	CBoardCollection::push_back(std::move(pos));
+}
+
+void AutoSavingBoardCollection::push_back(const std::unique_ptr<CBoard>& pos)
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	CBoardCollection::push_back(std::unique_ptr<CBoard>(pos->Clone()));
+}
+
+std::unique_ptr<CBoard> AutoSavingBoardCollection::Get(std::size_t index) const
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	return CBoardCollection::Get(index);
+}
+
+void AutoSavingBoardCollection::Set(std::size_t index, std::unique_ptr<CBoard>&& pos)
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	CBoardCollection::Set(index, std::move(pos));
+}
+
+void AutoSavingBoardCollection::Set(std::size_t index, const std::unique_ptr<CBoard>& pos)
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	CBoardCollection::Set(index, pos);
+}
+
+std::size_t AutoSavingBoardCollection::size() const
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	return CBoardCollection::size();
+}
+
+void AutoSavingBoardCollection::Load(const CPath & file)
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	CBoardCollection::Load(file);
+}
+
+void AutoSavingBoardCollection::Save(const CPath & file) const
+{
+	std::unique_lock<std::mutex> lock(m_mtx);
+	CBoardCollection::Save(file);
 }
