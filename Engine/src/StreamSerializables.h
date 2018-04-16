@@ -84,7 +84,6 @@ public:
 
 	      iArchive& operator>>(Deserializable& obj) override { return *this >> dynamic_cast<StreamDeserializable&>(obj); }
 	iStreamArchive& operator>>(StreamDeserializable& obj) { obj.Deserialize(*this); return *this; }
-
 };
 
 namespace std
