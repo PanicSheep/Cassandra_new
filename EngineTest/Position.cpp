@@ -1,19 +1,6 @@
 #include "pch.h"
-//#include <memory>
-//#include "TestHelpers.h"
 #include "Position.h"
 #include "Stability.h"
-//#include "FlipFast.h"
-//#include "Moves.h"
-//#include "LastFlipCounter.h"
-//#include "Search.h"
-//#include "Path.h"
-//#include "Utility.h"
-//#include "Boards.h"
-//#include "StreamQueue.h"
-//#include "StreamConverter.h"
-//#include "BoardCollection.h"
-//#include "PositionGenerator.h"
 
 TEST(PositionTest, Stability_Initialize)
 {
