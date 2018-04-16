@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
 	const double time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 	std::cout << ThousandsSeparator(NodeCounter) << " nodes in " << time_format(endTime - startTime)
 		<< " (" << ThousandsSeparator(NodeCounter * 1000.0 / time_diff) << " N/s)" << std::endl;
-	
+
 	if (!test)
 		boards->Save(filename);
 	return 0;

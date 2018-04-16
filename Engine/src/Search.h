@@ -51,7 +51,7 @@ public:
 	AlphaBetaFailSoftSearch() : Search() {}
 
 	int Eval(const CPosition&) override;
-	
+
 	int Eval(const CPosition&, int alpha, int beta);
 private:
 	int Eval_1(const CPosition&, int alpha);
@@ -73,7 +73,7 @@ public:
 	AlphaBetaFailHardSearch() : Search() {}
 
 	int Eval(const CPosition&) override;
-	
+
 	int Eval(const CPosition&, int alpha, int beta);
 private:
 	int Eval_1(const CPosition&, int alpha, int beta);
@@ -252,7 +252,7 @@ private:
 	ReturnValues PVS(const InputValues&);
 	ReturnValues ZWS(const InputValues&);
 	// --------------------
-	
+
 	ReturnValues PVS_N(const InputValues&);
 	ReturnValues ZWS_N(const InputValues&);
 
@@ -314,7 +314,7 @@ public:
 	CSortedMoves() {}
 	CSortedMoves(const CPosition&);
 	CSortedMoves(const CPosition&, const CMove& filter1, const CMove& filter2);
-	
+
 	std::size_t size() const { return moves.size(); }
 	bool empty() const { return moves.empty(); }
 

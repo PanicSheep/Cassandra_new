@@ -565,7 +565,7 @@ TEST(Board, Streamable_stream)
 	CBoard board2(CPosition(0, 0));
 	StreamQueue queue;
 	uint8_t classId;
-	
+
 	queue << board1;
 	queue >> classId;
 
@@ -598,7 +598,7 @@ TEST(Board, Streamable_BoardSerializable)
 
 	boardArchive << board1;
 	auto board2 = boardArchive.DeserializeBoard();
-	
+
 	ASSERT_EQ(board1.ClassId(), board2->ClassId());
 	ASSERT_EQ(board1.GetPosition(), board2->GetPosition());
 }

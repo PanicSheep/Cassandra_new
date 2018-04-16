@@ -136,7 +136,7 @@ public:
 	void Serialize(   float var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
 	void Serialize(  double var) override { ostream->write(reinterpret_cast<char*>(&var), sizeof(var)); }
 	void Serialize(std::string var) override { *ostream << var; }
-	
+
 	void Deserialize(  int8_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
 	void Deserialize( uint8_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }
 	void Deserialize( int16_t& var) override { istream->read(reinterpret_cast<char*>(&var), sizeof(var)); }

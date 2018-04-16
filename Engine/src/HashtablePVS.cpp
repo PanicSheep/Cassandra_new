@@ -99,10 +99,10 @@ TwoNode::TwoNode(Node node1, Node node2)
 TwoNode::TwoNode(const TwoNode& o)
 {
 	o.lock();
-	
+
 	node1 = o.node1;
 	node2 = o.node2;
-	
+
 	o.unlock();
 	unlock();
 }
@@ -114,7 +114,7 @@ TwoNode& TwoNode::operator=(const TwoNode& o)
 
 	o.lock();
 	lock();
-	
+
 	node1 = o.node1;
 	node2 = o.node2;
 
@@ -166,7 +166,7 @@ void TwoNode::Update(const CPosition& key, const PvsInfo& value, const uint8_t d
 std::pair<bool, PvsInfo> TwoNode::LookUp(const CPosition& key) const
 {
 	lock();
-	
+
 	if (key == node1.key)
 	{
 		const auto value = node1.value;

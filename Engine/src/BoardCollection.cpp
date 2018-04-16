@@ -33,7 +33,7 @@ void CBoardCollection::Save(const CPath & file) const
 {
 	std::unique_ptr<oBoardArchive> archive;
 	std::unique_ptr<StreamArchive> fstream = std::make_unique<fstreamArchive>(file, false);
-	
+
 	const auto ext = file.GetExtension();
 
 	     if (ext == "pos")		archive = std::make_unique<BoardToStreamConverter>(std::move(fstream));
@@ -42,7 +42,7 @@ void CBoardCollection::Save(const CPath & file) const
 	else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
 	else
 		return;
-	
+
 	for (const auto& it : m_boards)
 		*archive << *it;
 }

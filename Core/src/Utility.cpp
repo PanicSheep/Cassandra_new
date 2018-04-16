@@ -92,7 +92,7 @@ std::string GetCurrentWorkingDirectory()
 void replace_all(std::string& source, const std::string& from, const std::string& to)
 {
 	assert(!from.empty());
-	
+
 	for (std::size_t i = source.find(from); i != std::string::npos; i = source.find(from, i + to.length()))
 		source.replace(i, from.length(), to);
 }
@@ -101,7 +101,7 @@ std::vector<std::string> split(const std::string& src, const std::string& deli)
 {
 	assert(!deli.empty());
 	std::vector<std::string> vec;
-	
+
 	std::size_t begin = 0;
 	std::size_t end = src.find(deli);
 	while (end != std::string::npos) {
@@ -110,7 +110,7 @@ std::vector<std::string> split(const std::string& src, const std::string& deli)
 		end = src.find(deli, begin);
 	}
 	vec.push_back(src.substr(begin));
-	
+
 	return vec;
 }
 
@@ -155,7 +155,7 @@ uint64_t FlipCodiagonal(uint64_t b)
 {
 	// 9 x XOR, 6 x SHIFT, 3 x AND
 	// 18 OPs
-	
+
 	// # # # # # # # /
 	// # # # # # # / #
 	// # # # # # / # #
@@ -178,7 +178,7 @@ uint64_t FlipDiagonal(uint64_t b)
 {
 	// 9 x XOR, 6 x SHIFT, 3 x AND
 	// 18 OPs
-	
+
 	// \ # # # # # # #
 	// # \ # # # # # #
 	// # # \ # # # # #
@@ -201,7 +201,7 @@ uint64_t FlipHorizontal(uint64_t b)
 {
 	// 6 x SHIFT, 6 x AND, 3 x OR
 	// 15 OPs
-	
+
 	// # # # #|# # # #
 	// # # # #|# # # #
 	// # # # #|# # # #
@@ -220,7 +220,7 @@ uint64_t FlipVertical(uint64_t b)
 {
 	// 1 x BSwap
 	// 1 OPs
-	
+
 	// # # # # # # # #
 	// # # # # # # # #
 	// # # # # # # # #

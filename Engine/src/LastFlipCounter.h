@@ -9,10 +9,10 @@ public:
 	CLastFlipCounter();
 
 	uint8_t CountLastFlip(const CPosition&, const CMove&) const;
-	
+
 private:
 	uint8_t CountFlip(uint8_t P, const CMove& move);
-	
+
 	uint8_t CLF_0[256];
 	uint8_t CLF_1[256];
 	uint8_t CLF_2[256];

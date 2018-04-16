@@ -7,12 +7,12 @@ class CPath
 public:
 	CPath() = default;
 	CPath(std::string path);
-		
+
 	bool IsFolder() const;
 	std::string GetFolderName() const;
 	std::string GetAbsoluteFolderPath() const;
 	std::string GetRelativeFolderPath() const;
-	
+
 	bool IsFile() const;
 	std::string GetRawFileName() const;
 	std::string GetFullFileName() const;

@@ -49,7 +49,7 @@ CPositionGenerator::CPositionGenerator(std::size_t seed)
 CPosition CPositionGenerator::GenerateRandomPosition(uint8_t EmptiesCount)
 {
 	CPosition pos = CPosition::StartPosition();
-		
+
 	for (auto plies = pos.EmptyCount() - EmptiesCount; plies > 0; plies--)
 	{
 		CMoves moves = pos.PossibleMoves();

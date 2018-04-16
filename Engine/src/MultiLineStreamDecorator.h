@@ -12,7 +12,7 @@ class MultiLineStreamDecorator : public oBoardArchive
 	oStreamArchive& stream;
 public:
 	MultiLineStreamDecorator(oStreamArchive& stream) : stream(stream) {}
-	
+
 	void Serialize(const CBoard& obj) override;
 	void Serialize(const CBoardScore& obj) override;
 	void Serialize(const CBoardScoreDepth& obj) override;

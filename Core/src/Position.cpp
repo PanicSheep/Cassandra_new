@@ -3,7 +3,7 @@
 #include "FlipFast.h"
 
 namespace
-{	
+{
 	template <const int dir>
 	uint64_t get_some_moves(const uint64_t P, const uint64_t mask)
 	{
