@@ -245,7 +245,7 @@ public:
 	PVSearch() : PVSearch(std::make_shared<Environment>()) {}
 	PVSearch(std::shared_ptr<Environment> environment) : Search(), environment(environment) {}
 
-	virtual int Eval(const CPosition&) override;
+	int Eval(const CPosition&) override;
 private:
 	// --- Triage ---------
 	int Eval(const CPosition& pos, int alpha, int beta);
