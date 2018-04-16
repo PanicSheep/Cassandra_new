@@ -28,14 +28,19 @@ int main(int argc, char* argv[])
 		     if (std::string(argv[i]) == "-f") filename = CPath(argv[++i]);
 		else if (std::string(argv[i]) == "-v") { print_each_board = true; }
 		else if (std::string(argv[i]) == "-test") test = true;
+		else if (std::string(argv[i]) == "-t") threads = std::stoi(argv[++i]);
 		else if (std::string(argv[i]) == "-h") { help(); return 0; }
 	}
 
-	std::unique_ptr<CBoardCollection> boards = std::make_unique<CBoardCollection>(filename);
+	std::unique_ptr<CBoardCollection> boards;
+	if (test)
+		boards = std::make_unique<CBoardCollection>(filename);
+	else
+		boards = std::make_unique<AutoSavingBoardCollection>(filename, std::chrono::seconds(300));
 
 	auto env = std::make_shared<Environment>(std::make_shared<CConfigurations>(), std::make_shared<CHashTablePVS>(16'000'000));
 	std::vector<std::unique_ptr<Search>> searches;
-	for (std::size_t i = 0; i < boards.size(); i++)
+	for (std::size_t i = 0; i < boards->size(); i++)
 		searches.emplace_back(std::make_unique<PVSearch>(env));
 
 	if (print_each_board)
@@ -86,6 +91,7 @@ int main(int argc, char* argv[])
 						<< (test && score != BoardScore->score ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != BoardScore->score ? "#" : " ") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
+					std::wcout << score << "§" << BoardScore->score;
 
 					if (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() > 0)
 						std::cout << std::setw(12) << ThousandsSeparator(search->GetNodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
@@ -105,8 +111,9 @@ int main(int argc, char* argv[])
 	for (auto& search : searches)
 		NodeCounter += search->GetNodeCount();
 
+	const double time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 	std::cout << ThousandsSeparator(NodeCounter) << " nodes in " << time_format(endTime - startTime)
-		<< " (" << ThousandsSeparator(NodeCounter * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
+		<< " (" << ThousandsSeparator(NodeCounter * 1000.0 / time_diff) << " N/s)" << std::endl;
 	
 	if (!test)
 		boards->Save(filename);
