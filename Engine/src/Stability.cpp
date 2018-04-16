@@ -11,7 +11,7 @@ CStabilityAnalyzer::CStabilityAnalyzer()
 				if (P & O)
 					continue;
 
-				const auto pos = CPosition(P, O);
+				const auto pos = CPosition(P, O ^ ~0xFFULL);
 				if (pos.EmptyCount() == empty)
 				{
 					CMoves moves(pos.Empties());
@@ -130,14 +130,14 @@ uint64_t CStabilityAnalyzer::FullLineCodiagonal(const uint64_t discs)
 	return full;
 }
 
-static const CStabilityAnalyzer CStabilityAnalyzer;
+static const CStabilityAnalyzer StabilityAnalyzer;
 
 uint64_t GetStableEdges(const CPosition & pos)
 {
-	return CStabilityAnalyzer.GetStableEdges(pos);
+	return StabilityAnalyzer.GetStableEdges(pos);
 }
 
 uint64_t GetStableStones(const CPosition & pos)
 {
-	return CStabilityAnalyzer.GetStableStones(pos);
+	return StabilityAnalyzer.GetStableStones(pos);
 }
