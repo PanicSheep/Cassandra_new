@@ -6,6 +6,47 @@
 #include "FlipFast.h"
 #include "Moves.h"
 #include "PositionGenerator.h"
+#include "Utility.h"
+
+TEST(UtilityTest, SignedInt) {
+	ASSERT_EQ(SignedInt(-10), "-10");
+	ASSERT_EQ(SignedInt(-1), "-1");
+	ASSERT_EQ(SignedInt(+0), "+0");
+	ASSERT_EQ(SignedInt(+1), "+1");
+	ASSERT_EQ(SignedInt(+10), "+10");
+}
+
+TEST(UtilityTest, DoubleDigitSignedInt) {
+	ASSERT_EQ(DoubleDigitSignedInt(-10), "-10");
+	ASSERT_EQ(DoubleDigitSignedInt(-1), "-01");
+	ASSERT_EQ(DoubleDigitSignedInt(+0), "+00");
+	ASSERT_EQ(DoubleDigitSignedInt(+1), "+01");
+	ASSERT_EQ(DoubleDigitSignedInt(+10), "+10");
+}
+
+TEST(UtilityTest, FlipDiagonal) {
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			ASSERT_EQ(FlipDiagonal(1ULL << (i * 8 + j)), 1ULL << (j * 8 + i));
+}
+
+TEST(UtilityTest, FlipCodiagonal) {
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			ASSERT_EQ(FlipCodiagonal(1ULL << (i * 8 + j)), 1ULL << (63 - (j * 8 + i)));
+}
+
+TEST(UtilityTest, FlipVertical) {
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			ASSERT_EQ(FlipVertical(1ULL << (i * 8 + j)), 1ULL << ((7 - i) * 8 + j));
+}
+
+TEST(UtilityTest, FlipHorizontal) {
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			ASSERT_EQ(FlipHorizontal(1ULL << (i * 8 + j)), 1ULL << (i * 8 + (7 - j)));
+}
 
 void TestFlip(const CMove& move)
 {

@@ -14,6 +14,367 @@
 #include "BoardCollection.h"
 #include "PositionGenerator.h"
 
+TEST(UtilityTest, SMEAR_BITBOARD)
+{
+	for (int move = 0; move < 64; move++)
+	{
+		uint64_t board = 0;
+		int x = move / 8;
+		int y = move % 8;
+
+		for (int dx = -1; dx <= 1; dx++)
+			for (int dy = -1; dy <= 1; dy++)
+				if ((x + dx >= 0) && (x + dx < 8) && (y + dy >= 0) && (y + dy < 8))
+					board |= 1ULL << ((x + dx) * 8 + (y + dy));
+
+		ASSERT_EQ(board, SMEAR_BITBOARD(1ULL << move));
+	}
+}
+
+TEST(UtilityTest, neighbour)
+{
+	for (int move = 0; move < 64; move++)
+		ASSERT_EQ(Neighbour(static_cast<Field>(move)), SMEAR_BITBOARD(1ULL << move) ^ (1ULL << move));
+}
+
+TEST(UtilityTest, RoundInt)
+{
+	ASSERT_EQ(RoundInt(-1.1f), -1);
+	ASSERT_EQ(RoundInt(-1.0f), -1);
+	ASSERT_EQ(RoundInt(-0.9f), -1);
+	ASSERT_EQ(RoundInt(-0.8f), -1);
+	ASSERT_EQ(RoundInt(-0.7f), -1);
+	ASSERT_EQ(RoundInt(-0.6f), -1);
+	ASSERT_EQ(RoundInt(-0.5f), -1);
+	ASSERT_EQ(RoundInt(-0.4f),  0);
+	ASSERT_EQ(RoundInt(-0.3f),  0);
+	ASSERT_EQ(RoundInt(-0.2f),  0);
+	ASSERT_EQ(RoundInt(-0.1f),  0);
+	ASSERT_EQ(RoundInt( 0.0f),  0);
+	ASSERT_EQ(RoundInt( 0.1f),  0);
+	ASSERT_EQ(RoundInt( 0.2f),  0);
+	ASSERT_EQ(RoundInt( 0.3f),  0);
+	ASSERT_EQ(RoundInt( 0.4f),  0);
+	ASSERT_EQ(RoundInt( 0.5f),  1);
+	ASSERT_EQ(RoundInt( 0.6f),  1);
+	ASSERT_EQ(RoundInt( 0.7f),  1);
+	ASSERT_EQ(RoundInt( 0.8f),  1);
+	ASSERT_EQ(RoundInt( 0.9f),  1);
+	ASSERT_EQ(RoundInt( 1.0f),  1);
+	ASSERT_EQ(RoundInt( 1.1f),  1);
+}
+
+TEST (UtilityTest, time_format)
+{
+	//ddd:hh:mm:ss.ccc
+	ASSERT_EQ (time_format(std::chrono::milliseconds( 0)), "           0.000");
+	ASSERT_EQ (time_format(std::chrono::milliseconds( 1)), "           0.001");
+	ASSERT_EQ (time_format(std::chrono::     seconds( 1)), "           1.000");
+	ASSERT_EQ (time_format(std::chrono::     minutes( 1)), "        1:00.000");
+	ASSERT_EQ (time_format(std::chrono::       hours( 1)), "     1:00:00.000");
+	ASSERT_EQ (time_format(std::chrono::       hours(24)), "  1:00:00:00.000");
+	
+	auto time = std::chrono::hours(26) + std::chrono::minutes(41) + std::chrono::milliseconds(1);
+	ASSERT_EQ (time_format(time), "  1:02:41:00.001");
+}
+
+TEST(UtilityTest, ThousandsSeparator)
+{
+	ASSERT_EQ (ThousandsSeparator(      0),         "0");
+	ASSERT_EQ (ThousandsSeparator(      1),         "1");
+	ASSERT_EQ (ThousandsSeparator(     10),        "10");
+	ASSERT_EQ (ThousandsSeparator(    100),       "100");
+	ASSERT_EQ (ThousandsSeparator(   1000),     "1'000");
+	ASSERT_EQ (ThousandsSeparator(  10000),    "10'000");
+	ASSERT_EQ (ThousandsSeparator( 100000),   "100'000");
+	ASSERT_EQ (ThousandsSeparator(1000000), "1'000'000");
+}
+
+TEST(UtilityTest, replace_all)
+{
+	std::string source = "aababba";
+	replace_all(source, "b", "c");
+	ASSERT_EQ(source, "aacacca");
+}
+
+TEST(UtilityTest, replace_all_empty)
+{
+	std::string source = "";
+	replace_all(source, "b", "");
+	ASSERT_EQ(source, "");
+}
+
+TEST(UtilityTest, replace_all_withEmpty)
+{
+	std::string source = "aababba";
+	replace_all(source, "b", "");
+	ASSERT_EQ(source, "aaaa");
+}
+
+TEST(UtilityTest, replace_all_none)
+{
+	std::string source = "aababba";
+	replace_all(source, "c", "b");
+	ASSERT_EQ(source, "aababba");
+}
+
+TEST(UtilityTest, split_simple)
+{
+	const std::string source = "a,b,c";
+	const std::string delimitter = ",";
+
+	std::vector<std::string> vec = split(source, delimitter);
+
+	ASSERT_EQ(vec.size(), 3u);
+	ASSERT_EQ(vec[0], "a");
+	ASSERT_EQ(vec[1], "b");
+	ASSERT_EQ(vec[2], "c");
+}
+
+TEST(UtilityTest, split_empty)
+{
+	const std::string source = "";
+	const std::string delimitter = ",";
+
+	std::vector<std::string> vec = split(source, delimitter);
+
+	ASSERT_EQ(vec.size(), 1u);
+	ASSERT_EQ(vec[0], "");
+}
+
+TEST(UtilityTest, split_none)
+{
+	const std::string source = "a;b";
+	const std::string delimitter = ",";
+
+	std::vector<std::string> vec = split(source, delimitter);
+
+	ASSERT_EQ(vec.size(), 1u);
+	ASSERT_EQ(vec[0], "a;b");
+}
+
+TEST(UtilityTest, split_one)
+{
+	const std::string source = "a";
+	const std::string delimitter = ",";
+
+	std::vector<std::string> vec = split(source, delimitter);
+
+	ASSERT_EQ(vec.size(), 1u);
+	ASSERT_EQ(vec[0], "a");
+}
+
+TEST(UtilityTest, split_emptyToken)
+{
+	const std::string source = "a,,c,";
+	const std::string delimitter = ",";
+
+	std::vector<std::string> vec = split(source, delimitter);
+
+	ASSERT_EQ(vec.size(), 4u);
+	ASSERT_EQ(vec[0], "a");
+	ASSERT_EQ(vec[1], "");
+	ASSERT_EQ(vec[2], "c");
+	ASSERT_EQ(vec[3], "");
+}
+
+TEST(UtilityTest, join_simple)
+{
+	const std::vector<std::string> parts = { "a", "b", "c" };
+	const std::string delimitter = ",";
+
+	const std::string str = join(parts, delimitter);
+
+	ASSERT_EQ(str, "a,b,c");
+}
+
+TEST(UtilityTest, join_empty)
+{
+	const std::vector<std::string> parts;
+	const std::string delimitter = ",";
+
+	const std::string str = join(parts, delimitter);
+
+	ASSERT_EQ(str, "");
+}
+
+TEST(UtilityTest, join_one)
+{
+	const std::vector<std::string> parts = { "a" };
+	const std::string delimitter = ",";
+
+	const std::string str = join(parts, delimitter);
+
+	ASSERT_EQ(str, "a");
+}
+
+TEST(UtilityTest, join_emptyToken)
+{
+	const std::vector<std::string> parts = { "a", "b", "c" };
+	const std::string delimitter = "";
+
+	const std::string str = join(parts, delimitter);
+
+	ASSERT_EQ(str, "abc");
+}
+
+TEST(UtilityTest, join_split)
+{
+	const std::string source = "a,,c,";
+	const std::string delimitter = ",";
+
+	const auto parts = split(source, delimitter);
+	const std::string str = join(parts, delimitter);
+
+	ASSERT_EQ(str, source);
+}
+
+TEST(PositionTest, Stability_Initialize)
+{
+	ASSERT_EQ(GetStableEdges(CPosition(0x00, 0xC0)), 0xC0);
+	ASSERT_EQ(GetStableEdges(CPosition(0x01, 0x80)), 0x81);
+	ASSERT_EQ(GetStableEdges(CPosition(0x00, 0x03)), 0x03);
+	ASSERT_EQ(GetStableEdges(CPosition(0xC0, 0x00)), 0xC0);
+	ASSERT_EQ(GetStableEdges(CPosition(0x03, 0x00)), 0x03);
+	ASSERT_EQ(GetStableEdges(CPosition(0x03, 0xC0)), 0xC3);
+	ASSERT_EQ(GetStableEdges(CPosition(0x28, 0xC7)), 0xC7);
+	ASSERT_EQ(GetStableEdges(CPosition(0x50, 0xA8)), 0xC0);
+	ASSERT_EQ(GetStableEdges(CPosition(0x28, 0x16)), 0x08);
+}
+
+TEST(PositionTest, DefaultPosition)
+{
+	CPosition pos;
+	ASSERT_EQ(pos.EmptyCount(), 64);
+}
+
+TEST(PositionTest, StartPosition_normal)
+{
+	CPosition pos = CPosition::StartPosition();
+	pos.FlipDiagonal();
+	ASSERT_EQ(pos, CPosition::StartPosition());
+}
+
+TEST(PositionTest, StartPosition_ETH)
+{
+	CPosition pos = CPosition::StartPositionETH();
+	pos.FlipHorizontal();
+	ASSERT_EQ(pos, CPosition::StartPositionETH());
+}
+
+TEST(PositionTest, Empties)
+{
+	ASSERT_EQ(CPosition().Empties(), 0xFFFFFFFFFFFFFFFFULL);
+	ASSERT_EQ(CPosition::StartPosition().Empties(), 0xFFFFFFE7E7FFFFFFULL);
+	ASSERT_EQ(CPosition::StartPositionETH().Empties(), 0xFFFFFFE7E7FFFFFFULL);
+	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).Empties(), 0ULL);
+}
+
+TEST(PositionTest, EmptyCount)
+{
+	ASSERT_EQ(CPosition().EmptyCount(), 64u);
+	ASSERT_EQ(CPosition::StartPosition().EmptyCount(), 60u);
+	ASSERT_EQ(CPosition::StartPositionETH().EmptyCount(), 60u);
+	ASSERT_EQ(CPosition(0x0000000000000000ULL, 0x0000000000000000ULL).EmptyCount(), 64u);
+	ASSERT_EQ(CPosition(0x0000000000000001ULL, 0x0000000000000000ULL).EmptyCount(), 63u);
+	ASSERT_EQ(CPosition(0x0000000000000000ULL, 0x0000000000000001ULL).EmptyCount(), 63u);
+	ASSERT_EQ(CPosition(0x0000000000000001ULL, 0x0000000000000001ULL).EmptyCount(), 63u);
+	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0x0000000000000000ULL).EmptyCount(), 0u);
+	ASSERT_EQ(CPosition(0x0000000000000000ULL, 0xFFFFFFFFFFFFFFFFULL).EmptyCount(), 0u);
+	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0xFFFFFFFFFFFFFFFFULL).EmptyCount(), 0u);
+}
+
+TEST(PositionTest, Parity)
+{
+	ASSERT_EQ(CPosition().Parity(), 0u);
+	ASSERT_EQ(CPosition::StartPosition().Parity(), 0xFULL);
+	ASSERT_EQ(CPosition::StartPositionETH().Parity(), 0xFULL);
+	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).Parity(), 0ULL);
+}
+
+TEST(PositionTest, PossibleMoves)
+{
+	ASSERT_EQ(CPosition().PossibleMoves(), 0ULL);
+	ASSERT_EQ(CPosition::StartPosition().PossibleMoves(), 0x0000102004080000ULL);
+	ASSERT_EQ(CPosition::StartPositionETH().PossibleMoves(), 0x00000000003C0000ULL);
+	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).PossibleMoves(), 0ULL);
+}
+
+TEST(PositionTest, HasMoves)
+{
+	ASSERT_EQ(CPosition().HasMoves(), false);
+	ASSERT_EQ(CPosition::StartPosition().HasMoves(), true);
+	ASSERT_EQ(CPosition::StartPositionETH().HasMoves(), true);
+	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).HasMoves(), false);
+}
+
+TEST(PositionTest, Play)
+{
+	CPosition pos = CPosition::StartPosition();
+	pos = pos.PlayPass();
+	ASSERT_EQ(pos, CPosition(CPosition::StartPosition().O, CPosition::StartPosition().P));
+	pos = pos.PlayPass();
+	ASSERT_EQ(pos, CPosition::StartPosition());
+	pos = pos.Play(Field::D3);
+	ASSERT_EQ(pos, CPosition(0x0000001000000000ULL, 0x0000000818080000ULL));
+}
+
+TEST(PositionTest, FlipCodiagonal)
+{
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos5(0x8080808000000000ULL, 0x0ULL);
+	pos1.FlipCodiagonal();
+
+	ASSERT_EQ(pos1, pos5);
+}
+
+TEST(PositionTest, FlipDiagonal)
+{
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos7(0x0000000001010101ULL, 0x0ULL);
+	pos1.FlipDiagonal();
+
+	ASSERT_EQ(pos1, pos7);
+}
+
+TEST(PositionTest, FlipHorizontal)
+{
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos2(0x00000000000000F0ULL, 0x0ULL);
+	pos1.FlipHorizontal();
+
+	ASSERT_EQ(pos1, pos2);
+}
+
+TEST(PositionTest, FlipVertical)
+{
+	CPosition pos1(0x000000000000000FULL, 0x0ULL);
+	CPosition pos4(0x0F00000000000000ULL, 0x0ULL);
+	pos1.FlipVertical();
+
+	ASSERT_EQ(pos1, pos4);
+}
+
+TEST(PositionTest, FlipToMin)
+{
+	CPosition pos1(0x000000000000000FULL, 0x0ULL); pos1.FlipToMin();
+	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();
+	CPosition pos3(0xF000000000000000ULL, 0x0ULL); pos3.FlipToMin();
+	CPosition pos4(0x0F00000000000000ULL, 0x0ULL); pos4.FlipToMin();
+	CPosition pos5(0x8080808000000000ULL, 0x0ULL); pos5.FlipToMin();
+	CPosition pos6(0x0101010100000000ULL, 0x0ULL); pos6.FlipToMin();
+	CPosition pos7(0x0000000001010101ULL, 0x0ULL); pos7.FlipToMin();
+	CPosition pos8(0x0000000080808080ULL, 0x0ULL); pos8.FlipToMin();
+
+	ASSERT_EQ(pos1, pos2);
+	ASSERT_EQ(pos1, pos3);
+	ASSERT_EQ(pos1, pos4);
+	ASSERT_EQ(pos1, pos5);
+	ASSERT_EQ(pos1, pos6);
+	ASSERT_EQ(pos1, pos7);
+	ASSERT_EQ(pos1, pos8);
+}
+
 void TestCountLastFlip(const CMove& move)
 {
 	const uint64_t mask = line(move, -1, -1)
