@@ -17,6 +17,9 @@
 	#include <unistd.h>
 #endif
 
+inline int RoundInt(const double d) { return static_cast<int>(std::round(d)); }
+inline int RoundInt(const float  f) { return static_cast<int>(std::round(f)); }
+
 std::string time_format(const std::chrono::milliseconds duration);
 
 template <class U, class V>
