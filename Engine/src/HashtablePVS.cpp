@@ -85,7 +85,7 @@ void TwoNode::unlock() const
 }
 
 TwoNode::TwoNode()
-{ 
+{
 	unlock();
 }
 

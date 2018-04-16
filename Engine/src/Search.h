@@ -364,7 +364,7 @@ inline CMove CSortedMoves::ExtractMove()
 
 inline uint64_t SMEAR_BITBOARD(uint64_t B)
 {
-	// 4x SHIFT, 4x OR, 2x AND 
+	// 4x SHIFT, 4x OR, 2x AND
 	// = 10 OPs
 	B |= ((B >> 1) & 0x7F7F7F7F7F7F7F7FULL) | ((B << 1) & 0xFEFEFEFEFEFEFEFEULL);
 	return B | (B >> 8) | (B << 8);

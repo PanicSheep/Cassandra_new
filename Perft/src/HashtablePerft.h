@@ -57,13 +57,13 @@ private:
 	{
 		uint64_t value;
 		while ((value = m_Value.exchange(0xFFFFFFFFFFFFFFFULL, std::memory_order_acquire)) == 0xFFFFFFFFFFFFFFFULL)
-			continue; 
+			continue;
 		return value;
 	}
 
-	void unlock(uint64_t value) const 
+	void unlock(uint64_t value) const
 	{
-		m_Value.store(value, std::memory_order_release); 
+		m_Value.store(value, std::memory_order_release);
 	}
 };
 

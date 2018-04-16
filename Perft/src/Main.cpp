@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		else if (std::string(argv[i]) == "-RAM") RAM = ParseBytes(argv[++i]);
 		else if (std::string(argv[i]) == "-h") { PrintHelp(); return 0; }
 	}
-	
+
 	std::cout << "depth|       Positions        |correct|       Time       |       N/s       " << std::endl;
 	std::cout << "-----+------------------------+-------+------------------+-----------------" << std::endl;
 

@@ -52,7 +52,7 @@ namespace Perft
 			}
 		}
 	}
-	
+
 	namespace Unrolled2
 	{
 		// perft for 0 plies left
@@ -177,7 +177,7 @@ namespace Perft
 			ht.Update(PerftKey(pos, depth), sum);
 			return sum;
 		}
-	
+
 		void CPerft::fill_unique(CPosition pos, const uint8_t depth)
 		{
 			if (depth == 0) {
@@ -216,7 +216,7 @@ namespace Perft
 			}
 			return sum;
 		}
-	
+
 		uint64_t perft(const CPosition& pos, const uint8_t depth, const uint64_t BytesRAM)
 		{
 			if (depth < 13)
@@ -224,7 +224,7 @@ namespace Perft
 			else
 				return CPerft(BytesRAM).calculate(pos, depth);
 		}
-	
+
 		uint64_t perft(const uint8_t depth, const uint64_t BytesRAM)
 		{
 			CPosition pos = CPosition::StartPosition();
