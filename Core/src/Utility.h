@@ -1,5 +1,6 @@
 #pragma once
 #include "MacrosHell.h"
+#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -19,6 +20,8 @@
 
 inline int RoundInt(const double d) { return static_cast<int>(std::round(d)); }
 inline int RoundInt(const float  f) { return static_cast<int>(std::round(f)); }
+
+int64_t Pow_int(int64_t base, uint64_t exponent);
 
 std::string time_format(const std::chrono::milliseconds duration);
 

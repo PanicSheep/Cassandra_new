@@ -1,4 +1,14 @@
-#include "utility.h"
+#include "Utility.h"
+
+int64_t Pow_int(int64_t base, uint64_t exponent)
+{
+	if (exponent == 0)
+		return 1;
+	else if (exponent % 2 == 0)
+		return Pow_int(base * base, exponent / 2);
+	else
+		return base * Pow_int(base, exponent - 1);
+}
 
 //ddd:hh:mm:ss.ccc
 std::string time_format(const std::chrono::milliseconds duration)
