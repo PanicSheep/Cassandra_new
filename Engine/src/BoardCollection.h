@@ -15,20 +15,21 @@
 
 class CBoardCollection
 {
-	std::vector<std::shared_ptr<CBoard>> m_boards;
+	std::vector<std::unique_ptr<CBoard>> m_boards;
 public:
 	CBoardCollection() {}
 	CBoardCollection(const CPath& file);
 	template <typename ITERATOR> CBoardCollection(ITERATOR begin, ITERATOR end) : m_boards(begin, end) {}
 
-	void Load(const CPath& file);
-	void Save(const CPath& file) const;
+	virtual void Load(const CPath& file);
+	virtual void Save(const CPath& file) const;
 
-	void push_back(const std::shared_ptr<CBoard>& pos) { m_boards.push_back(pos); }
-	std::shared_ptr<CBoard> operator[](std::size_t index) const { return m_boards[index]; }
-	std::size_t size() const { return m_boards.size(); }
-	std::vector<std::shared_ptr<CBoard>>::      iterator begin()       { return m_boards.begin(); }
-	std::vector<std::shared_ptr<CBoard>>::const_iterator begin() const { return m_boards.begin(); }
-	std::vector<std::shared_ptr<CBoard>>::      iterator end()         { return m_boards.end(); }
-	std::vector<std::shared_ptr<CBoard>>::const_iterator end() const   { return m_boards.end(); }
+	virtual void push_back(std::unique_ptr<CBoard>&& pos) { m_boards.push_back(std::move(pos)); }
+	virtual void push_back(const std::unique_ptr<CBoard>& pos) { m_boards.push_back(pos->Clone()); }
+
+	virtual std::unique_ptr<CBoard> Get(std::size_t index) const { return m_boards[index]->Clone(); }
+	virtual void Set(std::size_t index, std::unique_ptr<CBoard>&& pos) { m_boards[index] = std::move(pos); }
+	virtual void Set(std::size_t index, const std::unique_ptr<CBoard>& pos) { m_boards[index] = pos->Clone(); }
+
+	virtual std::size_t size() const { return m_boards.size(); }
 };

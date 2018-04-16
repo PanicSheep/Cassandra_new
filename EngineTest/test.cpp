@@ -515,8 +515,6 @@ TEST(Board, Clone)
 	const auto clone = board.Clone();
 
 	ASSERT_EQ(board.GetPosition(), pos);
-
-	delete clone;
 }
 
 TEST(Board, Play)
@@ -528,8 +526,6 @@ TEST(Board, Play)
 	const auto clone = board.Play(move);
 
 	ASSERT_EQ(clone->GetPosition(), pos.Play(move));
-
-	delete clone;
 }
 
 TEST(Board, Test)
@@ -635,8 +631,6 @@ TEST(BoardScore, Clone)
 
 	ASSERT_EQ(board.GetPosition(), pos);
 	ASSERT_EQ(board.score, score);
-
-	delete clone;
 }
 
 TEST(BoardScore, Play)
@@ -649,9 +643,7 @@ TEST(BoardScore, Play)
 	const auto clone = board.Play(move);
 
 	ASSERT_EQ(clone->GetPosition(), pos.Play(move));
-	ASSERT_NE(clone->score, 4);
-
-	delete clone;
+	ASSERT_NE(dynamic_cast<CBoardScore*>(clone.get())->score, 4);
 }
 
 TEST(BoardScore, Test)
@@ -761,7 +753,7 @@ TEST(BoardCollection, save_and_load_2_CBoards)
 	boards2.Load(test_file);
 
 	for (std::size_t i = 0; i < 2; i++)
-		ASSERT_EQ(boards1[i]->GetPosition(), boards2[i]->GetPosition());
+		ASSERT_EQ(boards1.Get(i)->GetPosition(), boards2.Get(i)->GetPosition());
 }
 
 TEST(BoardCollection, save_and_load_CBoard)
@@ -779,7 +771,7 @@ TEST(BoardCollection, save_and_load_CBoard)
 	boards2.Load(test_file);
 
 	for (std::size_t i = 0; i < size; i++)
-		ASSERT_EQ(boards1[i]->GetPosition(), boards2[i]->GetPosition());
+		ASSERT_EQ(boards1.Get(i)->GetPosition(), boards2.Get(i)->GetPosition());
 }
 TEST(fstreamArchive, save_and_load_0_Board)
 {

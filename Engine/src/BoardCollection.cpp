@@ -32,7 +32,6 @@ void CBoardCollection::Save(const CPath & file) const
 {
 	std::unique_ptr<oBoardArchive> archive;
 	std::unique_ptr<StreamArchive> fstream = std::make_unique<fstreamArchive>(file, false);
-	//std::unique_ptr<StreamArchive> fstream = std::make_unique<iostreamArchive>(std::shared_ptr<std::istream>(&std::cin, [](void*) {}), std::shared_ptr<std::ostream>(&std::cout, [](void*) {}));
 	
 	const auto ext = file.GetExtension();
 

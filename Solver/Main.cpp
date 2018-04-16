@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		else if (std::string(argv[i]) == "-h") { help(); return 0; }
 	}
 
-	const auto boards = CBoardCollection(filename);
+	std::unique_ptr<CBoardCollection> boards = std::make_unique<CBoardCollection>(filename);
 
 	auto env = std::make_shared<Environment>(std::make_shared<CConfigurations>(), std::make_shared<CHashTablePVS>(16'000'000));
 	std::vector<std::unique_ptr<Search>> searches;
@@ -46,10 +46,13 @@ int main(int argc, char* argv[])
 
 	const auto startTime = std::chrono::high_resolution_clock::now();
 	#pragma omp parallel for schedule(static, 1) num_threads(threads)
-	for (int64_t i = 0; i < boards.size(); i++)
+	for (int64_t i = 0; i < boards->size(); i++)
 	{
-		const auto& board = boards[i];
+		auto board = boards->Get(i);
 		std::unique_ptr<Search>& search = searches[i];
+
+		if (board->IsSolved())
+			continue;
 
 		auto startTime = std::chrono::high_resolution_clock::now();
 		auto score = search->Eval(board->GetPosition());
@@ -57,7 +60,7 @@ int main(int argc, char* argv[])
 
 		if (print_each_board)
 		{
-			if (const auto BoardScore = std::dynamic_pointer_cast<CBoardAllMoveScore>(board))
+			if (const auto BoardScore = dynamic_cast<CBoardAllMoveScore*>(board.get()))
 			{
 				#pragma omp critical
 				{
@@ -73,14 +76,14 @@ int main(int argc, char* argv[])
 					std::cout << std::endl;
 				}
 			}
-			else if (const auto BoardScore = std::dynamic_pointer_cast<CBoardScore>(board))
+			else if (const auto BoardScore = dynamic_cast<CBoardScore*>(board.get()))
 			{
 				#pragma omp critical
 				{
 					std::cout
 						<< std::setw(3) << i << "|"
 						<< std::setw(6) << board->GetPosition().EmptyCount() << "|"
-						<< " " << DoubleDigitSignedInt(score) << " |"
+						<< (test && score != BoardScore->score ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != BoardScore->score ? "#" : " ") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 
@@ -90,6 +93,11 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+
+		if (const auto BoardScore = dynamic_cast<CBoardScore*>(board.get()))
+			BoardScore->score = score;
+
+		boards->Set(i, board);
 	}
 	const auto endTime = std::chrono::high_resolution_clock::now();
 
@@ -101,6 +109,6 @@ int main(int argc, char* argv[])
 		<< " (" << ThousandsSeparator(NodeCounter * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count()) << " N/s)" << std::endl;
 	
 	if (!test)
-		boards.Save(filename);
+		boards->Save(filename);
 	return 0;
 }

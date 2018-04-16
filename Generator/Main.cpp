@@ -10,14 +10,15 @@
 void Next(const CPath& Input, const CPath& Output)
 {
 	const auto input = CBoardCollection(Input);
-	auto output = CBoardCollection(Input);
+	auto output = CBoardCollection();
 
-	for (const auto& pos : input)
+	for (std::size_t i = 0; i < input.size(); i++)
 	{
-		auto possibleMoves = pos.get()->GetPosition().PossibleMoves();
+		auto pos = input.Get(i);
+		auto possibleMoves = pos->GetPosition().PossibleMoves();
 		while (!possibleMoves.empty())
 		{
-			output.push_back(std::make_unique<CBoard>(*pos.get()->Clone()->Play(possibleMoves.ExtractMove())));
+			output.push_back(std::unique_ptr<CBoard>(pos->Clone()->Play(possibleMoves.ExtractMove())));
 		}
 	}
 

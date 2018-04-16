@@ -18,8 +18,8 @@ public:
 	      CPosition& GetPosition()       { return pos; }
 
 	virtual uint8_t ClassId() const { return classId; }
-	virtual CBoard* Clone() const { return new CBoard(*this); }
-	virtual CBoard* Play(const CMove& move) const { return new CBoard(pos.Play(move)); }
+	virtual std::unique_ptr<CBoard> Clone() const { return std::make_unique<CBoard>(*this); }
+	virtual std::unique_ptr<CBoard> Play(const CMove& move) const { return std::make_unique<CBoard>(pos.Play(move)); }
 	virtual bool Test() const { return (pos.GetP() & pos.GetO()) == 0; }
 	virtual bool IsSolved() const { return false; }
 
@@ -47,8 +47,8 @@ public:
 	CBoardScore(iStreamArchive& arch) : CBoard(arch) { deserialize(arch); }
 
 	uint8_t ClassId() const override { return classId; }
-	CBoardScore* Clone() const override { return new CBoardScore(*this); }
-	CBoardScore* Play(const CMove& move) const override { return new CBoardScore(pos.Play(move)); }
+	std::unique_ptr<CBoard> Clone() const override { return std::make_unique<CBoardScore>(*this); }
+	std::unique_ptr<CBoard> Play(const CMove& move) const override { return std::make_unique<CBoardScore>(pos.Play(move)); }
 	bool Test() const override { return CBoard::Test() && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
 	bool IsSolved() const override { return score != DEFAULT_SCORE; }
 
@@ -74,8 +74,8 @@ public:
 	CBoardScoreDepth(iStreamArchive& arch) : CBoardScore(arch) { deserialize(arch); }
 
 	uint8_t ClassId() const override { return classId; }
-	CBoardScoreDepth* Clone() const override { return new CBoardScoreDepth(*this); }
-	CBoardScoreDepth* Play(const CMove& move) const override { return new CBoardScoreDepth(pos.Play(move)); }
+	std::unique_ptr<CBoard> Clone() const override { return std::make_unique<CBoardScoreDepth>(*this); }
+	std::unique_ptr<CBoard> Play(const CMove& move) const override { return std::make_unique<CBoardScoreDepth>(pos.Play(move)); }
 	bool Test() const override { return CBoardScore::Test() && (depth >= DEFAULT_DEPTH); }
 	bool IsSolved() const override { return (depth == static_cast<int8_t>(pos.EmptyCount())) && (selectivity == 0); }
 	bool IsSolved(int8_t Depth, uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
@@ -100,8 +100,8 @@ public:
 	CBoardAllDepthScore(iStreamArchive& arch) : CBoard(arch) { deserialize(arch); }
 
 	uint8_t ClassId() const override { return classId; }
-	CBoardAllDepthScore* Clone() const override { return new CBoardAllDepthScore(*this); }
-	CBoardAllDepthScore* Play(const CMove& move) const override { return new CBoardAllDepthScore(pos.Play(move)); }
+	std::unique_ptr<CBoard> Clone() const override { return std::make_unique<CBoardAllDepthScore>(*this); }
+	std::unique_ptr<CBoard> Play(const CMove& move) const override { return std::make_unique<CBoardAllDepthScore>(pos.Play(move)); }
 	bool Test() const override;
 	bool IsSolved() const override;
 	bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
@@ -130,8 +130,8 @@ public:
 	CBoardAllMoveScore(iStreamArchive& arch) : CBoard(arch) { deserialize(arch); }
 
 	uint8_t ClassId() const override { return classId; }
-	CBoardAllMoveScore* Clone() const override { return new CBoardAllMoveScore(*this); }
-	CBoardAllMoveScore* Play(const CMove& move) const override { return new CBoardAllMoveScore(pos.Play(move)); }
+	std::unique_ptr<CBoard> Clone() const override { return std::make_unique<CBoardAllMoveScore>(*this); }
+	std::unique_ptr<CBoard> Play(const CMove& move) const override { return std::make_unique<CBoardAllMoveScore>(pos.Play(move)); }
 	void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
 	bool Test() const override;
 	bool IsSolved() const override;
