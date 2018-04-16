@@ -34,7 +34,3 @@ public:
 	virtual bool Good() = 0;
 	virtual iArchive& operator>>(Deserializable&) = 0;
 };
-
-
-class ioArchive : public iArchive, public oArchive
-{};
