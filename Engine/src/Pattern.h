@@ -69,7 +69,7 @@ namespace Pattern
 
 		void set_weights() override;
 		void set_weights(const std::vector<float>& compressed_weights) override;
-	
+
 		inline float score(const uint64_t P, const uint64_t O) const override;
 		inline std::vector<float>			GetScoreVec			(const uint64_t P, const uint64_t O) const override;
 		inline std::vector<unsigned int> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
@@ -110,7 +110,7 @@ namespace Pattern
 		static const uint64_t MID = 0x0000001818000000ULL;
 		const uint64_t PatternH, PatternV, PatternD, PatternC, PatternHV, PatternHD, PatternHC;
 		std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
-	
+
 	public:
 		CPattern0(std::string name, uint64_t Pattern);
 
@@ -139,7 +139,7 @@ namespace Pattern
 		CPatternSet(const CPatternSet& o) = delete;
 		inline CPatternSet(CPatternSet&& o);
 		inline ~CPatternSet();
-	
+
 		inline const CPattern* operator[](const std::size_t i) const;
 		inline void Add(CPattern* pattern); /// Takes ownership of pattern.
 		inline float score(const uint64_t P, const uint64_t O) const;
@@ -152,7 +152,7 @@ namespace Pattern
 		std::vector<CPatternSet> m_patternset;
 	public:
 		CBoxedPatternSet(uint64_t Boxes) : Boxes(Boxes) {}
-	
+
 		inline const CPatternSet& operator[](const std::size_t i) const;
 		inline void Add(CPatternSet&& patternset);
 		inline float score(const uint64_t P, const uint64_t O) const;
