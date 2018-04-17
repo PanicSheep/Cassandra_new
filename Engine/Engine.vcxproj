@@ -22,6 +22,7 @@
     <ClCompile Include="src\MultiLineStreamDecorator.cpp" />
     <ClCompile Include="src\NegaMaxSearch.cpp" />
     <ClCompile Include="src\Path.cpp" />
+    <ClCompile Include="src\Pattern.cpp" />
     <ClCompile Include="src\PVSearch.cpp" />
     <ClCompile Include="src\Search.cpp" />
     <ClCompile Include="src\SingleLineStreamDecorator.cpp" />
@@ -39,6 +40,7 @@
     <ClInclude Include="src\MultiLineStreamDecorator.h" />
     <ClInclude Include="src\ObjectSerializables.h" />
     <ClInclude Include="src\Path.h" />
+    <ClInclude Include="src\Pattern.h" />
     <ClInclude Include="src\Search.h" />
     <ClInclude Include="src\Serializables.h" />
     <ClInclude Include="src\SingleLineStreamDecorator.h" />
@@ -47,6 +49,9 @@
     <ClInclude Include="src\StreamQueue.h" />
     <ClInclude Include="src\StreamSerializables.h" />
     <ClInclude Include="src\VectorExtension.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

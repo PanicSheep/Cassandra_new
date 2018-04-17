@@ -17,6 +17,7 @@
     <ClCompile Include="src\AlphaBetaFailHardSearch.cpp" />
     <ClCompile Include="src\Stability.cpp" />
     <ClCompile Include="src\Environment.cpp" />
+    <ClCompile Include="src\Pattern.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BoardCollection.h" />
@@ -36,6 +37,10 @@
     <ClInclude Include="src\Search.h" />
     <ClInclude Include="src\Stability.h" />
     <ClInclude Include="src\Environment.h" />
+    <ClInclude Include="src\Pattern.h" />
     <ClInclude Include="src\VectorExtension.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
