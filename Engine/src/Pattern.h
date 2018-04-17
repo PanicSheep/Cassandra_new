@@ -14,7 +14,7 @@ namespace Pattern
 	class CPatternD;
 	class CPattern0;
 	class CBoxedPatternSet;
-	
+
 	extern unsigned int SumPow3[32768];
 	extern CBoxedPatternSet BoxedPatternSet;
 
@@ -26,9 +26,9 @@ namespace Pattern
 
 	CPattern* NewPattern(const std::string& name, const uint64_t pattern);
 	CPattern* NewPattern(const std::string& name);
-	
+
 	std::vector<std::string> GetActivePattern();
-	
+
 	inline unsigned int FullPatternIndex(const uint64_t P, const uint64_t O, const uint64_t mask);
 
 
@@ -69,7 +69,7 @@ namespace Pattern
 
 		void set_weights() override;
 		void set_weights(const std::vector<float>& compressed_weights) override;
-		
+	
 		inline float score(const uint64_t P, const uint64_t O) const override;
 		inline std::vector<float>			GetScoreVec			(const uint64_t P, const uint64_t O) const override;
 		inline std::vector<unsigned int> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
@@ -79,7 +79,7 @@ namespace Pattern
 		unsigned int ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
 		unsigned int ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
 	};
-	
+
 	class CPatternD : public CPattern
 	{
 		static const uint64_t HALF = 0x0080C0E0F0F8FCFEULL;
@@ -104,13 +104,13 @@ namespace Pattern
 		unsigned int ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
 		unsigned int ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
 	};
-	
+
 	class CPattern0 : public CPattern
 	{
 		static const uint64_t MID = 0x0000001818000000ULL;
 		const uint64_t PatternH, PatternV, PatternD, PatternC, PatternHV, PatternHD, PatternHC;
 		std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
-		
+	
 	public:
 		CPattern0(std::string name, uint64_t Pattern);
 
@@ -139,7 +139,7 @@ namespace Pattern
 		CPatternSet(const CPatternSet& o) = delete;
 		inline CPatternSet(CPatternSet&& o);
 		inline ~CPatternSet();
-		
+	
 		inline const CPattern* operator[](const std::size_t i) const;
 		inline void Add(CPattern* pattern); /// Takes ownership of pattern.
 		inline float score(const uint64_t P, const uint64_t O) const;
@@ -152,7 +152,7 @@ namespace Pattern
 		std::vector<CPatternSet> m_patternset;
 	public:
 		CBoxedPatternSet(uint64_t Boxes) : Boxes(Boxes) {}
-		
+	
 		inline const CPatternSet& operator[](const std::size_t i) const;
 		inline void Add(CPatternSet&& patternset);
 		inline float score(const uint64_t P, const uint64_t O) const;
@@ -172,9 +172,9 @@ inline int EvaluatePattern(const uint64_t P, const uint64_t O);
 namespace Pattern
 {
 	inline unsigned int FullPatternIndex(const uint64_t P, const uint64_t O, const uint64_t mask)
-	{ 
+	{
 		assert(PopCount(mask) <= 15);
-		return SumPow3[PExt(P, mask)] + (SumPow3[PExt(O, mask)] << 1); 
+		return SumPow3[PExt(P, mask)] + (SumPow3[PExt(O, mask)] << 1);
 	}
 
 	inline float CPatternH::score(const uint64_t P, const uint64_t O) const
@@ -219,7 +219,7 @@ namespace Pattern
 			m_weights[2][FullPatternIndex(P, O, PatternC)],
 			m_weights[3][FullPatternIndex(P, O, PatternV)]};
 	}
-	
+
 	inline std::vector<unsigned int> CPatternD::GetConfigurationVec(const uint64_t P, const uint64_t O) const
 	{
 		return std::vector<unsigned int>{
@@ -266,28 +266,28 @@ namespace Pattern
 			ReducedPatternIndex6(P, O),
 			ReducedPatternIndex7(P, O)};
 	}
-	
+
 	inline const CPattern* CPatternSet::operator[](const std::size_t i) const
 	{
 		return m_pattern[i];
 	}
 
 	inline CPatternSet::CPatternSet(CPatternSet&& o)
-	{ 
-		std::swap(m_pattern, o.m_pattern); 
+	{
+		std::swap(m_pattern, o.m_pattern);
 	}
-	
+
 	inline CPatternSet::~CPatternSet()
 	{
 		for (auto it : m_pattern)
 			delete it;
 	}
-	
+
 	inline void CPatternSet::Add(CPattern* pattern)
 	{
 		m_pattern.push_back(pattern);
 	}
-	
+
 	inline float CPatternSet::score(const uint64_t P, const uint64_t O) const
 	{
 		float sum = 0.0;
@@ -295,7 +295,7 @@ namespace Pattern
 			sum += it->score(P, O);
 		return sum;
 	}
-	
+
 	inline std::vector<std::vector<unsigned int>> CPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O) const
 	{
 		std::vector<std::vector<unsigned int>> ret;
@@ -304,34 +304,34 @@ namespace Pattern
 			ret.push_back(std::move(it->GetConfigurationVec(P, O)));
 		return ret;
 	}
-	
+
 	inline const CPatternSet& CBoxedPatternSet::operator[](const std::size_t i) const
 	{
 		return m_patternset[i];
 	}
-	
+
 	inline void CBoxedPatternSet::Add(CPatternSet&& patternset)
 	{
 		m_patternset.push_back(std::move(patternset));
 	}
-	
+
 	inline float CBoxedPatternSet::score(const uint64_t P, const uint64_t O) const
 	{
 		return score(P, O, CPosition(P, O).EmptyCount());
 	}
-	
+
 	inline float CBoxedPatternSet::score(const uint64_t P, const uint64_t O, const uint64_t emptyCount) const
 	{
 		assert(emptyCount > 0);
 		const uint64_t BoxIndex = std::min((emptyCount - 1) / 3, Boxes - 1);
 		return m_patternset[BoxIndex].score(P, O);
 	}
-	
+
 	inline std::vector<std::vector<unsigned int>> CBoxedPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O) const
 	{
 		return GetConfigurationVecs(P, O, CPosition(P, O).EmptyCount());
 	}
-	
+
 	inline std::vector<std::vector<unsigned int>> CBoxedPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O, const uint64_t emptyCount) const
 	{
 		assert(emptyCount > 0);
