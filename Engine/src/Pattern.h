@@ -15,7 +15,7 @@ namespace Pattern
 	class CPattern0;
 	class CBoxedPatternSet;
 
-	extern unsigned int SumPow3[32768];
+	extern uint32_t SumPow3[32768];
 	extern CBoxedPatternSet BoxedPatternSet;
 
 	void Initialize(const bool weights = true, const bool singleton = true);
@@ -29,7 +29,7 @@ namespace Pattern
 
 	std::vector<std::string> GetActivePattern();
 
-	inline unsigned int FullPatternIndex(const uint64_t P, const uint64_t O, const uint64_t mask);
+	inline uint32_t FullPatternIndex(const uint64_t P, const uint64_t O, const uint64_t mask);
 
 
 	class CPattern
@@ -37,23 +37,23 @@ namespace Pattern
 	protected:
 		const std::string m_name;
 		const uint64_t Pattern;
-		const unsigned int m_FullSize, m_ReducedSize, m_Occurrences;
+		const uint32_t m_FullSize, m_ReducedSize, m_Occurrences;
 	public:
-		CPattern(std::string name, uint64_t Pattern, unsigned int FullSize, unsigned int ReducedSize, unsigned int Occurrences)
+		CPattern(std::string name, uint64_t Pattern, uint32_t FullSize, uint32_t ReducedSize, uint32_t Occurrences)
 			: m_name(std::move(name)), Pattern(Pattern), m_FullSize(FullSize), m_ReducedSize(ReducedSize), m_Occurrences(Occurrences) {}
 		virtual inline ~CPattern() {}
 
 				inline	std::string		GetName()		const { return m_name; }
 				inline	uint64_t		GetPattern()	const { return Pattern; }
-				inline	unsigned int	Occurrences()	const { return m_Occurrences; }
-				inline	unsigned int	FullSize()		const { return m_FullSize; }
-				inline	unsigned int	ReducedSize()	const { return m_ReducedSize; }
+				inline	uint32_t	Occurrences()	const { return m_Occurrences; }
+				inline	uint32_t	FullSize()		const { return m_FullSize; }
+				inline	uint32_t	ReducedSize()	const { return m_ReducedSize; }
 
 		virtual			void						set_weights() = 0;
 		virtual			void						set_weights(const std::vector<float>& compressed_weights) = 0;
 		virtual 		float						score(const uint64_t P, const uint64_t O) const = 0;
 		virtual 		std::vector<float>			GetScoreVec(const uint64_t P, const uint64_t O) const = 0;
-		virtual 		std::vector<unsigned int>	GetConfigurationVec(const uint64_t P, const uint64_t O) const = 0;
+		virtual 		std::vector<uint32_t>	GetConfigurationVec(const uint64_t P, const uint64_t O) const = 0;
 	};
 
 	class CPatternH : public CPattern
@@ -61,7 +61,7 @@ namespace Pattern
 		static const uint64_t HALF = 0x0F0F0F0F0F0F0F0FULL;
 		static const uint64_t MID  = 0x0000001818000000ULL;
 		const uint64_t PatternC, PatternV, PatternD;
-		const unsigned int halfSize;
+		const uint32_t halfSize;
 		std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
 
 	public:
@@ -72,12 +72,12 @@ namespace Pattern
 
 		inline float score(const uint64_t P, const uint64_t O) const override;
 		inline std::vector<float>			GetScoreVec			(const uint64_t P, const uint64_t O) const override;
-		inline std::vector<unsigned int> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
+		inline std::vector<uint32_t> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
 	private:
-		unsigned int ReducedPatternIndex0(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex1(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex0(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex1(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
 	};
 
 	class CPatternD : public CPattern
@@ -86,7 +86,7 @@ namespace Pattern
 		static const uint64_t DIAG = 0x8040201008040201ULL;
 		static const uint64_t MID  = 0x0000001818000000ULL;
 		const uint64_t PatternH, PatternC, PatternV;
-		const unsigned int halfSize, diagSize;
+		const uint32_t halfSize, diagSize;
 		std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
 
 	public:
@@ -97,12 +97,12 @@ namespace Pattern
 
 		inline float score(const uint64_t P, const uint64_t O) const override;
 		inline std::vector<float>			GetScoreVec			(const uint64_t P, const uint64_t O) const override;
-		inline std::vector<unsigned int> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
+		inline std::vector<uint32_t> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
 	private:
-		unsigned int ReducedPatternIndex0(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex1(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex0(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex1(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
 	};
 
 	class CPattern0 : public CPattern
@@ -119,16 +119,16 @@ namespace Pattern
 
 		inline float score(const uint64_t P, const uint64_t O) const override;
 		inline std::vector<float>			GetScoreVec			(const uint64_t P, const uint64_t O) const override;
-		inline std::vector<unsigned int> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
+		inline std::vector<uint32_t> 	GetConfigurationVec	(const uint64_t P, const uint64_t O) const override;
 	private:
-		unsigned int ReducedPatternIndex0(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex1(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex4(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex5(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex6(const uint64_t P, const uint64_t O) const;
-		unsigned int ReducedPatternIndex7(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex0(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex1(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex2(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex3(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex4(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex5(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex6(const uint64_t P, const uint64_t O) const;
+		uint32_t ReducedPatternIndex7(const uint64_t P, const uint64_t O) const;
 	};
 
 	class CPatternSet
@@ -143,7 +143,7 @@ namespace Pattern
 		inline const CPattern* operator[](const std::size_t i) const;
 		inline void Add(CPattern* pattern); /// Takes ownership of pattern.
 		inline float score(const uint64_t P, const uint64_t O) const;
-		inline std::vector<std::vector<unsigned int>> GetConfigurationVecs(const uint64_t P, const uint64_t O) const;
+		inline std::vector<std::vector<uint32_t>> GetConfigurationVecs(const uint64_t P, const uint64_t O) const;
 	};
 
 	class CBoxedPatternSet
@@ -157,8 +157,8 @@ namespace Pattern
 		inline void Add(CPatternSet&& patternset);
 		inline float score(const uint64_t P, const uint64_t O) const;
 		inline float score(const uint64_t P, const uint64_t O, const uint64_t emptyCount) const;
-		inline std::vector<std::vector<unsigned int>> GetConfigurationVecs(const uint64_t P, const uint64_t O) const;
-		inline std::vector<std::vector<unsigned int>> GetConfigurationVecs(const uint64_t P, const uint64_t O, const uint64_t emptyCount) const;
+		inline std::vector<std::vector<uint32_t>> GetConfigurationVecs(const uint64_t P, const uint64_t O) const;
+		inline std::vector<std::vector<uint32_t>> GetConfigurationVecs(const uint64_t P, const uint64_t O, const uint64_t emptyCount) const;
 	};
 }
 
@@ -171,7 +171,7 @@ inline int EvaluatePattern(const uint64_t P, const uint64_t O);
 // ------------------------------------------------------------------------------------------------
 namespace Pattern
 {
-	inline unsigned int FullPatternIndex(const uint64_t P, const uint64_t O, const uint64_t mask)
+	inline uint32_t FullPatternIndex(const uint64_t P, const uint64_t O, const uint64_t mask)
 	{
 		assert(PopCount(mask) <= 15);
 		return SumPow3[PExt(P, mask)] + (SumPow3[PExt(O, mask)] << 1);
@@ -194,9 +194,9 @@ namespace Pattern
 			m_weights[3][FullPatternIndex(P, O, PatternD)]};
 	}
 
-	inline std::vector<unsigned int> CPatternH::GetConfigurationVec(const uint64_t P, const uint64_t O) const
+	inline std::vector<uint32_t> CPatternH::GetConfigurationVec(const uint64_t P, const uint64_t O) const
 	{
-		return std::vector<unsigned int>{
+		return std::vector<uint32_t>{
 			ReducedPatternIndex0(P, O),
 			ReducedPatternIndex1(P, O),
 			ReducedPatternIndex2(P, O),
@@ -220,9 +220,9 @@ namespace Pattern
 			m_weights[3][FullPatternIndex(P, O, PatternV)]};
 	}
 
-	inline std::vector<unsigned int> CPatternD::GetConfigurationVec(const uint64_t P, const uint64_t O) const
+	inline std::vector<uint32_t> CPatternD::GetConfigurationVec(const uint64_t P, const uint64_t O) const
 	{
-		return std::vector<unsigned int>{
+		return std::vector<uint32_t>{
 			ReducedPatternIndex0(P, O),
 			ReducedPatternIndex1(P, O),
 			ReducedPatternIndex2(P, O),
@@ -254,9 +254,9 @@ namespace Pattern
 			m_weights[7][FullPatternIndex(P, O, PatternHC)]};
 	}
 
-	inline std::vector<unsigned int> CPattern0::GetConfigurationVec(const uint64_t P, const uint64_t O) const
+	inline std::vector<uint32_t> CPattern0::GetConfigurationVec(const uint64_t P, const uint64_t O) const
 	{
-		return std::vector<unsigned int>{
+		return std::vector<uint32_t>{
 			ReducedPatternIndex0(P, O),
 			ReducedPatternIndex1(P, O),
 			ReducedPatternIndex2(P, O),
@@ -296,9 +296,9 @@ namespace Pattern
 		return sum;
 	}
 
-	inline std::vector<std::vector<unsigned int>> CPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O) const
+	inline std::vector<std::vector<uint32_t>> CPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O) const
 	{
-		std::vector<std::vector<unsigned int>> ret;
+		std::vector<std::vector<uint32_t>> ret;
 		ret.reserve(m_pattern.size());
 		for (auto it : m_pattern)
 			ret.push_back(std::move(it->GetConfigurationVec(P, O)));
@@ -327,12 +327,12 @@ namespace Pattern
 		return m_patternset[BoxIndex].score(P, O);
 	}
 
-	inline std::vector<std::vector<unsigned int>> CBoxedPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O) const
+	inline std::vector<std::vector<uint32_t>> CBoxedPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O) const
 	{
 		return GetConfigurationVecs(P, O, CPosition(P, O).EmptyCount());
 	}
 
-	inline std::vector<std::vector<unsigned int>> CBoxedPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O, const uint64_t emptyCount) const
+	inline std::vector<std::vector<uint32_t>> CBoxedPatternSet::GetConfigurationVecs(const uint64_t P, const uint64_t O, const uint64_t emptyCount) const
 	{
 		assert(emptyCount > 0);
 		const uint64_t BoxIndex = std::min((emptyCount - 1) / 3, Boxes - 1);
