@@ -46,6 +46,7 @@
     <ClInclude Include="src\StreamConverter.h" />
     <ClInclude Include="src\StreamQueue.h" />
     <ClInclude Include="src\StreamSerializables.h" />
+    <ClInclude Include="src\VectorExtension.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

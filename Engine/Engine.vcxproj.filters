@@ -36,5 +36,6 @@
     <ClInclude Include="src\Search.h" />
     <ClInclude Include="src\Stability.h" />
     <ClInclude Include="src\Environment.h" />
+    <ClInclude Include="src\VectorExtension.h" />
   </ItemGroup>
 </Project>
