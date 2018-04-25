@@ -99,14 +99,12 @@ int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 	if (const auto flips = Flip(pos, move1)) {
 		const auto score = -Eval_1(pos.Play(move1, flips), -beta, move2);
 		if (score >= beta) return score;
-		alpha = std::max(score, alpha);
 		bestscore = std::max(score, bestscore);
 	}
 
 	if (const auto flips = Flip(pos, move2)) {
 		const auto score = -Eval_1(pos.Play(move2, flips), -beta, move1);
 		if (score >= beta) return score;
-		alpha = std::max(score, alpha);
 		bestscore = std::max(score, bestscore);
 	}
 
@@ -119,14 +117,12 @@ int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 	if (const auto flips = Flip(posPass, move1)) {
 		const auto score = Eval_1(posPass.Play(move1, flips), alpha, move2);
 		if (score <= alpha) return score;
-		beta = std::min(score, beta);
 		bestscore = std::min(score, bestscore);
 	}
 
 	if (const auto flips = Flip(posPass, move2)) {
 		const auto score = Eval_1(posPass.Play(move2, flips), alpha, move1);
 		if (score <= alpha) return score;
-		beta = std::min(score, beta);
 		bestscore = std::min(score, bestscore);
 	}
 
