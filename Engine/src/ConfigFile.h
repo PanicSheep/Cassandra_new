@@ -8,13 +8,11 @@ class CConfigurations
 	std::unordered_map<std::string, std::string> m_conf;
 public:
 	CConfigurations() {}
+	CConfigurations(const CPath& ConfigFile);
 
-	void			Load(const CPath& ConfigFile);
+	void Load(const CPath& ConfigFile);
 
-	bool 			Has(const std::string& key) const;
-	std::string 	Get(const std::string& key) const;
-	void 			Set(const std::string& key, std::string&& value);
-private:
+	bool Has(const std::string& key) const;
+	std::string Get(const std::string& key) const;
+	void Set(const std::string& key, std::string&& value);
 };
-
-extern CConfigurations Configurations;

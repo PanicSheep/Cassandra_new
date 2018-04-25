@@ -4,6 +4,11 @@
 
 CConfigurations Configurations;
 
+CConfigurations::CConfigurations(const CPath & ConfigFile)
+{
+	Load(ConfigFile);
+}
+
 void CConfigurations::Load(const CPath& ConfigFile)
 {
 	std::ifstream file;
