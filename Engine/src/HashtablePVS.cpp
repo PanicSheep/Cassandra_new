@@ -67,6 +67,11 @@ void Node::Upgrade(const PvsInfo& NewValue, const uint8_t date)
 	this->date = date;
 }
 
+void Node::Refresh(const CPosition& key, uint8_t date)
+{
+	this->date = date;
+}
+
 bool Node::IsOld(const uint8_t CompareDate) const
 {
 	return CompareDate - date >= OLD_AGE;

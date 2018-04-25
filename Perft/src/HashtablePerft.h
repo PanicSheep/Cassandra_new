@@ -31,6 +31,11 @@ public:
 			unlock(old_value);
 	}
 
+	void Refresh(const PerftKey& key, uint8_t date)
+	{
+		// This function is intentionally empty. Because this class does not contain a date.
+	}
+
 	std::pair<bool, uint64_t> LookUp(const PerftKey& key) const
 	{
 		const uint64_t old_value = lock();
@@ -96,7 +101,7 @@ private:
 typedef HashTable<BigNode, PerftKey, uint64_t> HashTablePerft;
 
 template <>
-std::size_t HashTable<BigNode, PerftKey, uint64_t>::Hash(const PerftKey& key) const
+std::size_t HashTablePerft::Hash(const PerftKey& key) const
 {
 	uint64_t P = key.pos.GetP();
 	uint64_t O = key.pos.GetO();

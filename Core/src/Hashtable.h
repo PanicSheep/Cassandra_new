@@ -6,7 +6,19 @@
 #include "Position.h"
 
 template <typename NodeType, typename KeyType, typename ValueType>
-class HashTable
+class IHashTable
+{
+public:
+	virtual ~IHashTable() {}
+	virtual void Update(const KeyType& key, const ValueType& value) = 0;
+	virtual std::pair<bool, ValueType> LookUp(const KeyType& key) const = 0;
+	virtual void Refresh(const KeyType& key) = 0;
+	virtual void AdvanceDate() = 0;
+	virtual void Clear() = 0;
+};
+
+template <typename NodeType, typename KeyType, typename ValueType>
+class HashTable : public IHashTable<NodeType, KeyType, ValueType>
 {
 public:
 	typedef NodeType nodetype;

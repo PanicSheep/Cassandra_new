@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <atomic>
 #include <iostream>
+#include <memory>
 #include "MacrosHell.h"
 #include "Utility.h"
 #include "Moves.h"
@@ -42,6 +43,7 @@ public:
 	Node(const CPosition& key, const PvsInfo& value, const uint8_t date);
 
 	void Upgrade(const PvsInfo& NewValue, uint8_t date);
+	void Refresh(const CPosition& key, uint8_t date);
 	bool IsOld(uint8_t CompareDate) const;
 };
 
@@ -85,3 +87,5 @@ inline std::size_t HashTable<TwoNode, CPosition, PvsInfo>::Hash(const CPosition&
 	//O ^= O >> 33;
 	//return (P + O + (O << 41)) % table.size();
 }
+
+//std::unique_ptr<CHashTablePVS> CreateHashTable(std::size_t size);
