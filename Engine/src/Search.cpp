@@ -2,7 +2,9 @@
 #include <iterator>
 #include <numeric>
 
-Search::Search() : node_counter(0)
+Search::Search(const std::shared_ptr<Environment>& env)
+	: environment(env)
+	, node_counter(0)
 {}
 
 uint64_t Search::GetNodeCount() const

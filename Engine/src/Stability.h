@@ -3,14 +3,15 @@
 #include "Position.h"
 #include "FlipFast.h"
 #include "Moves.h"
+#include "Environment.h"
 
-class CStabilityAnalyzer
+class CStabilityAnalyzer : public IStabilityAnalyzer
 {
 public:
 	CStabilityAnalyzer();
 
 	uint64_t GetStableEdges(const CPosition&) const;
-	uint64_t GetStableStones(const CPosition&) const; // The stable stones from the player.
+	uint64_t GetStableStones(const CPosition&) const override; // The stable stones from the player.
 
 private:
 	static uint64_t FullLineHorizontal(uint64_t discs);

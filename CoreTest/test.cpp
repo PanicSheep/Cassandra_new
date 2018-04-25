@@ -8,6 +8,10 @@
 #include "PositionGenerator.h"
 #include "Utility.h"
 
+TEST(UtilityTest, pow_int_1) { ASSERT_EQ(Pow_int(0, 0), 1); }
+TEST(UtilityTest, pow_int_2) { ASSERT_EQ(Pow_int(10, 3), 1000); }
+TEST(UtilityTest, pow_int_3) { ASSERT_EQ(Pow_int(-10, 3), -1000); }
+
 TEST(UtilityTest, SignedInt) {
 	ASSERT_EQ(SignedInt(-10), "-10");
 	ASSERT_EQ(SignedInt(-1), "-1");
@@ -399,12 +403,17 @@ TEST(PossibleMovesTest, HasMoves)
 	}
 }
 
-TEST(PossibleMovesTest, PossibleMoves1) {
-	ASSERT_EQ(CPosition(0x0000001800000000ULL, 0x0000000018000000ULL).PossibleMoves(), CMoves(0x00000000003C0000ULL));
-	ASSERT_EQ(CPosition(0x0000000810000000ULL, 0x0000001008000000ULL).PossibleMoves(), CMoves(0x0000102004080000ULL));
+TEST(PossibleMovesTest, PossibleMoves_StartPosition)
+{
+	ASSERT_EQ(CPosition::StartPosition().PossibleMoves(), CMoves(0x0000102004080000ULL));
 }
 
-TEST(PossibleMovesTest, PossibleMoves2)
+TEST(PossibleMovesTest, PossibleMoves_StartPositionETH)
+{
+	ASSERT_EQ(CPosition::StartPositionETH().PossibleMoves(), CMoves(0x00000000003C0000ULL));
+}
+
+TEST(PossibleMovesTest, PossibleMoves_RandomSample)
 {
 	for (unsigned int i = 0; i < 100'000; i++)
 	{

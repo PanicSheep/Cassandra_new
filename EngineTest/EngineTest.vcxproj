@@ -38,6 +38,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="LastFlipCounter.cpp" />
     <ClCompile Include="Path.cpp" />
+    <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="test.cpp" />

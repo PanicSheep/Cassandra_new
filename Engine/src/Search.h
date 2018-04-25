@@ -3,12 +3,13 @@
 #include <cstdint>
 #include "Position.h"
 #include "Environment.h"
+#include "HashtablePVS.h"
 
 class Search
 {
 	uint64_t node_counter;
 public:
-	Search();
+	Search(const std::shared_ptr<Environment>& env);
 
 	virtual int Eval(const CPosition&) = 0;
 
@@ -17,6 +18,8 @@ public:
 	void ResetNodeCount();
 
 protected:
+	std::shared_ptr<Environment> environment;
+
 	uint64_t& NodeCounter(std::size_t index);
 
 	template <int EmptyCount>
@@ -28,7 +31,7 @@ protected:
 class NegaMaxSearch : public Search
 {
 public:
-	NegaMaxSearch() : Search() {}
+	NegaMaxSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
 
 	int Eval(const CPosition&) override;
 private:
@@ -48,7 +51,7 @@ private:
 class AlphaBetaFailSoftSearch : public Search
 {
 public:
-	AlphaBetaFailSoftSearch() : Search() {}
+	AlphaBetaFailSoftSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
 
 	int Eval(const CPosition&) override;
 
@@ -70,7 +73,7 @@ private:
 class AlphaBetaFailHardSearch : public Search
 {
 public:
-	AlphaBetaFailHardSearch() : Search() {}
+	AlphaBetaFailHardSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
 
 	int Eval(const CPosition&) override;
 
@@ -91,8 +94,6 @@ private:
 
 class PVSearch : public Search
 {
-	std::shared_ptr<Environment> environment;
-
 	struct InputValues
 	{
 		CPosition pos;
@@ -242,8 +243,7 @@ class PVSearch : public Search
 		{}
 	};
 public:
-	PVSearch() : PVSearch(std::make_shared<Environment>()) {}
-	PVSearch(std::shared_ptr<Environment> environment) : Search(), environment(environment) {}
+	PVSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
 
 	int Eval(const CPosition&) override;
 private:

@@ -3,6 +3,7 @@
 #include "Utility.h"
 #include "PositionGenerator.h"
 #include "Search.h"
+#include "Stability.h"
 #include <thread>
 #include <iostream>
 #include <iomanip>
@@ -38,7 +39,12 @@ int main(int argc, char* argv[])
 	else
 		boards = std::make_unique<AutoSavingBoardCollection>(filename, std::chrono::seconds(300));
 
-	auto env = std::make_shared<Environment>(std::make_shared<CConfigurations>(), std::make_shared<CHashTablePVS>(16'000'000));
+	std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+	std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(450'000'000);
+	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
+	std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+	std::shared_ptr<Environment> env = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+
 	std::vector<std::unique_ptr<Search>> searches;
 	for (std::size_t i = 0; i < boards->size(); i++)
 		searches.emplace_back(std::make_unique<PVSearch>(env));
@@ -58,6 +64,8 @@ int main(int argc, char* argv[])
 
 		if (board->IsSolved())
 			continue;
+
+		env->HashTable->AdvanceDate();
 
 		auto startTime = std::chrono::high_resolution_clock::now();
 		auto score = search->Eval(board->GetPosition());
@@ -91,7 +99,6 @@ int main(int argc, char* argv[])
 						<< (test && score != BoardScore->score ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != BoardScore->score ? "#" : " ") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
-					std::wcout << score << "§" << BoardScore->score;
 
 					if (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() > 0)
 						std::cout << std::setw(12) << ThousandsSeparator(search->GetNodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Search.h"
+#include "Stability.h"
 
 class CPositionScore : public CPosition
 {
@@ -83,93 +84,165 @@ void TestPosition(unsigned int index, Search& search)
 	ASSERT_EQ(score, TestPos[index].score);
 }
 
-TEST(NegaMax, ZeroEmpties0)  { TestPosition( 0, NegaMaxSearch()); }
-TEST(NegaMax, ZeroEmpties1)  { TestPosition( 1, NegaMaxSearch()); }
-TEST(NegaMax, ZeroEmpties2)  { TestPosition( 2, NegaMaxSearch()); }
-TEST(NegaMax, OneEmpties0)   { TestPosition( 3, NegaMaxSearch()); }
-TEST(NegaMax, OneEmpties1)   { TestPosition( 4, NegaMaxSearch()); }
-TEST(NegaMax, OneEmpties2)   { TestPosition( 5, NegaMaxSearch()); }
-TEST(NegaMax, OneEmpties3)   { TestPosition( 6, NegaMaxSearch()); }
-TEST(NegaMax, TwoEmpties0)   { TestPosition( 7, NegaMaxSearch()); }
-TEST(NegaMax, TwoEmpties1)   { TestPosition( 8, NegaMaxSearch()); }
-TEST(NegaMax, TwoEmpties2)   { TestPosition( 9, NegaMaxSearch()); }
-TEST(NegaMax, TwoEmpties3)   { TestPosition(10, NegaMaxSearch()); }
-TEST(NegaMax, ThreeEmpties0) { TestPosition(11, NegaMaxSearch()); }
-TEST(NegaMax, ThreeEmpties1) { TestPosition(12, NegaMaxSearch()); }
-TEST(NegaMax, ThreeEmpties2) { TestPosition(13, NegaMaxSearch()); }
-TEST(NegaMax, ThreeEmpties3) { TestPosition(14, NegaMaxSearch()); }
-TEST(NegaMax, FourEmpties0)  { TestPosition(15, NegaMaxSearch()); }
-TEST(NegaMax, FourEmpties1)  { TestPosition(16, NegaMaxSearch()); }
-TEST(NegaMax, FourEmpties2)  { TestPosition(17, NegaMaxSearch()); }
-TEST(NegaMax, FourEmpties3)  { TestPosition(18, NegaMaxSearch()); }
+class NegaMax : public ::testing::Test
+{
+protected:
+	static std::shared_ptr<Environment> environment;
 
-TEST(AlphaBetaFailHard, ZeroEmpties0)  { TestPosition( 0, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, ZeroEmpties1)  { TestPosition( 1, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, ZeroEmpties2)  { TestPosition( 2, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, OneEmpties0)   { TestPosition( 3, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, OneEmpties1)   { TestPosition( 4, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, OneEmpties2)   { TestPosition( 5, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, OneEmpties3)   { TestPosition( 6, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, TwoEmpties0)   { TestPosition( 7, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, TwoEmpties1)   { TestPosition( 8, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, TwoEmpties2)   { TestPosition( 9, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, TwoEmpties3)   { TestPosition(10, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, ThreeEmpties0) { TestPosition(11, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, ThreeEmpties1) { TestPosition(12, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, ThreeEmpties2) { TestPosition(13, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, ThreeEmpties3) { TestPosition(14, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, FourEmpties0)  { TestPosition(15, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, FourEmpties1)  { TestPosition(16, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, FourEmpties2)  { TestPosition(17, AlphaBetaFailHardSearch()); }
-TEST(AlphaBetaFailHard, FourEmpties3)  { TestPosition(18, AlphaBetaFailHardSearch()); }
+	static void SetUpTestCase()
+	{
+		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
+		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
-TEST(AlphaBetaFailSoft, ZeroEmpties0)  { TestPosition( 0, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, ZeroEmpties1)  { TestPosition( 1, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, ZeroEmpties2)  { TestPosition( 2, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, OneEmpties0)   { TestPosition( 3, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, OneEmpties1)   { TestPosition( 4, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, OneEmpties2)   { TestPosition( 5, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, OneEmpties3)   { TestPosition( 6, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, TwoEmpties0)   { TestPosition( 7, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, TwoEmpties1)   { TestPosition( 8, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, TwoEmpties2)   { TestPosition( 9, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, TwoEmpties3)   { TestPosition(10, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, ThreeEmpties0) { TestPosition(11, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, ThreeEmpties1) { TestPosition(12, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, ThreeEmpties2) { TestPosition(13, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, ThreeEmpties3) { TestPosition(14, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, FourEmpties0)  { TestPosition(15, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, FourEmpties1)  { TestPosition(16, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, FourEmpties2)  { TestPosition(17, AlphaBetaFailSoftSearch()); }
-TEST(AlphaBetaFailSoft, FourEmpties3)  { TestPosition(18, AlphaBetaFailSoftSearch()); }
+		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+	}
+};
 
-TEST(PVS, ZeroEmpties0)  { TestPosition( 0, PVSearch()); }
-TEST(PVS, ZeroEmpties1)  { TestPosition( 1, PVSearch()); }
-TEST(PVS, ZeroEmpties2)  { TestPosition( 2, PVSearch()); }
-TEST(PVS, OneEmpties0)   { TestPosition( 3, PVSearch()); }
-TEST(PVS, OneEmpties1)   { TestPosition( 4, PVSearch()); }
-TEST(PVS, OneEmpties2)   { TestPosition( 5, PVSearch()); }
-TEST(PVS, OneEmpties3)   { TestPosition( 6, PVSearch()); }
-TEST(PVS, TwoEmpties0)   { TestPosition( 7, PVSearch()); }
-TEST(PVS, TwoEmpties1)   { TestPosition( 8, PVSearch()); }
-TEST(PVS, TwoEmpties2)   { TestPosition( 9, PVSearch()); }
-TEST(PVS, TwoEmpties3)   { TestPosition(10, PVSearch()); }
-TEST(PVS, ThreeEmpties0) { TestPosition(11, PVSearch()); }
-TEST(PVS, ThreeEmpties1) { TestPosition(12, PVSearch()); }
-TEST(PVS, ThreeEmpties2) { TestPosition(13, PVSearch()); }
-TEST(PVS, ThreeEmpties3) { TestPosition(14, PVSearch()); }
-TEST(PVS, FourEmpties0)  { TestPosition(15, PVSearch()); }
-TEST(PVS, FourEmpties1)  { TestPosition(16, PVSearch()); }
-TEST(PVS, FourEmpties2)  { TestPosition(17, PVSearch()); }
-TEST(PVS, FourEmpties3)  { TestPosition(18, PVSearch()); }
+std::shared_ptr<Environment> NegaMax::environment;
 
-TEST (PVS, FForum01) { TestPosition(19, PVSearch()); }
-TEST (PVS, FForum02) { TestPosition(20, PVSearch()); }
-TEST (PVS, FForum03) { TestPosition(21, PVSearch()); }
-TEST (PVS, FForum04) { TestPosition(22, PVSearch()); }
-TEST (PVS, FForum05) { TestPosition(23, PVSearch()); }
-TEST (PVS, FForum06) { TestPosition(24, PVSearch()); }
-TEST (PVS, FForum07) { TestPosition(25, PVSearch()); }
-TEST (PVS, FForum08) { TestPosition(26, PVSearch()); }
-TEST (PVS, FForum09) { TestPosition(27, PVSearch()); }
-TEST (PVS, FForum10) { TestPosition(28, PVSearch()); }
+TEST_F(NegaMax, ZeroEmpties0)  { TestPosition( 0, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, ZeroEmpties1)  { TestPosition( 1, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, ZeroEmpties2)  { TestPosition( 2, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, OneEmpties0)   { TestPosition( 3, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, OneEmpties1)   { TestPosition( 4, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, OneEmpties2)   { TestPosition( 5, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, OneEmpties3)   { TestPosition( 6, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, TwoEmpties0)   { TestPosition( 7, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, TwoEmpties1)   { TestPosition( 8, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, TwoEmpties2)   { TestPosition( 9, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, TwoEmpties3)   { TestPosition(10, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, ThreeEmpties0) { TestPosition(11, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, ThreeEmpties1) { TestPosition(12, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, ThreeEmpties2) { TestPosition(13, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, ThreeEmpties3) { TestPosition(14, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, FourEmpties0)  { TestPosition(15, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, FourEmpties1)  { TestPosition(16, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, FourEmpties2)  { TestPosition(17, NegaMaxSearch(environment)); }
+TEST_F(NegaMax, FourEmpties3)  { TestPosition(18, NegaMaxSearch(environment)); }
+
+class AlphaBetaFailHard : public ::testing::Test
+{
+protected:
+	static std::shared_ptr<Environment> environment;
+
+	static void SetUpTestCase()
+	{
+		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
+		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+
+		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+	}
+};
+
+std::shared_ptr<Environment> AlphaBetaFailHard::environment;
+
+TEST_F(AlphaBetaFailHard, ZeroEmpties0)  { TestPosition( 0, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, ZeroEmpties1)  { TestPosition( 1, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, ZeroEmpties2)  { TestPosition( 2, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, OneEmpties0)   { TestPosition( 3, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, OneEmpties1)   { TestPosition( 4, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, OneEmpties2)   { TestPosition( 5, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, OneEmpties3)   { TestPosition( 6, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, TwoEmpties0)   { TestPosition( 7, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, TwoEmpties1)   { TestPosition( 8, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, TwoEmpties2)   { TestPosition( 9, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, TwoEmpties3)   { TestPosition(10, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, ThreeEmpties0) { TestPosition(11, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, ThreeEmpties1) { TestPosition(12, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, ThreeEmpties2) { TestPosition(13, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, ThreeEmpties3) { TestPosition(14, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, FourEmpties0)  { TestPosition(15, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, FourEmpties1)  { TestPosition(16, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, FourEmpties2)  { TestPosition(17, AlphaBetaFailHardSearch(environment)); }
+TEST_F(AlphaBetaFailHard, FourEmpties3)  { TestPosition(18, AlphaBetaFailHardSearch(environment)); }
+
+class AlphaBetaFailSoft : public ::testing::Test
+{
+protected:
+	static std::shared_ptr<Environment> environment;
+
+	static void SetUpTestCase()
+	{
+		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
+		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+
+		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+	}
+};
+
+std::shared_ptr<Environment> AlphaBetaFailSoft::environment;
+
+TEST_F(AlphaBetaFailSoft, ZeroEmpties0)  { TestPosition( 0, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, ZeroEmpties1)  { TestPosition( 1, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, ZeroEmpties2)  { TestPosition( 2, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, OneEmpties0)   { TestPosition( 3, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, OneEmpties1)   { TestPosition( 4, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, OneEmpties2)   { TestPosition( 5, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, OneEmpties3)   { TestPosition( 6, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, TwoEmpties0)   { TestPosition( 7, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, TwoEmpties1)   { TestPosition( 8, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, TwoEmpties2)   { TestPosition( 9, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, TwoEmpties3)   { TestPosition(10, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, ThreeEmpties0) { TestPosition(11, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, ThreeEmpties1) { TestPosition(12, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, ThreeEmpties2) { TestPosition(13, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, ThreeEmpties3) { TestPosition(14, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, FourEmpties0)  { TestPosition(15, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, FourEmpties1)  { TestPosition(16, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, FourEmpties2)  { TestPosition(17, AlphaBetaFailSoftSearch(environment)); }
+TEST_F(AlphaBetaFailSoft, FourEmpties3)  { TestPosition(18, AlphaBetaFailSoftSearch(environment)); }
+
+class PVS : public ::testing::Test
+{
+protected:
+	static std::shared_ptr<Environment> environment;
+
+	static void SetUpTestCase()
+	{
+		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(1'000);
+		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>(); // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+
+		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+	}
+};
+
+std::shared_ptr<Environment> PVS::environment;
+
+TEST_F(PVS, ZeroEmpties0)  { TestPosition( 0, PVSearch(environment)); }
+TEST_F(PVS, ZeroEmpties1)  { TestPosition( 1, PVSearch(environment)); }
+TEST_F(PVS, ZeroEmpties2)  { TestPosition( 2, PVSearch(environment)); }
+TEST_F(PVS, OneEmpties0)   { TestPosition( 3, PVSearch(environment)); }
+TEST_F(PVS, OneEmpties1)   { TestPosition( 4, PVSearch(environment)); }
+TEST_F(PVS, OneEmpties2)   { TestPosition( 5, PVSearch(environment)); }
+TEST_F(PVS, OneEmpties3)   { TestPosition( 6, PVSearch(environment)); }
+TEST_F(PVS, TwoEmpties0)   { TestPosition( 7, PVSearch(environment)); }
+TEST_F(PVS, TwoEmpties1)   { TestPosition( 8, PVSearch(environment)); }
+TEST_F(PVS, TwoEmpties2)   { TestPosition( 9, PVSearch(environment)); }
+TEST_F(PVS, TwoEmpties3)   { TestPosition(10, PVSearch(environment)); }
+TEST_F(PVS, ThreeEmpties0) { TestPosition(11, PVSearch(environment)); }
+TEST_F(PVS, ThreeEmpties1) { TestPosition(12, PVSearch(environment)); }
+TEST_F(PVS, ThreeEmpties2) { TestPosition(13, PVSearch(environment)); }
+TEST_F(PVS, ThreeEmpties3) { TestPosition(14, PVSearch(environment)); }
+TEST_F(PVS, FourEmpties0)  { TestPosition(15, PVSearch(environment)); }
+TEST_F(PVS, FourEmpties1)  { TestPosition(16, PVSearch(environment)); }
+TEST_F(PVS, FourEmpties2)  { TestPosition(17, PVSearch(environment)); }
+TEST_F(PVS, FourEmpties3)  { TestPosition(18, PVSearch(environment)); }
+
+TEST_F(PVS, FForum01) { TestPosition(19, PVSearch(environment)); }
+TEST_F(PVS, FForum02) { TestPosition(20, PVSearch(environment)); }
+TEST_F(PVS, FForum03) { TestPosition(21, PVSearch(environment)); }
+TEST_F(PVS, FForum04) { TestPosition(22, PVSearch(environment)); }
+TEST_F(PVS, FForum05) { TestPosition(23, PVSearch(environment)); }
+TEST_F(PVS, FForum06) { TestPosition(24, PVSearch(environment)); }
+TEST_F(PVS, FForum07) { TestPosition(25, PVSearch(environment)); }
+TEST_F(PVS, FForum08) { TestPosition(26, PVSearch(environment)); }
+TEST_F(PVS, FForum09) { TestPosition(27, PVSearch(environment)); }
+TEST_F(PVS, FForum10) { TestPosition(28, PVSearch(environment)); }
