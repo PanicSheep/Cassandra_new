@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Utility.h"
 
-TEST(UtilityTest, RoundInt)
+TEST(Utility, RoundInt)
 {
 	ASSERT_EQ(RoundInt(-1.1f), -1);
 	ASSERT_EQ(RoundInt(-1.0f), -1);
@@ -28,7 +28,7 @@ TEST(UtilityTest, RoundInt)
 	ASSERT_EQ(RoundInt( 1.1f),  1);
 }
 
-TEST (UtilityTest, time_format)
+TEST (Utility, time_format)
 {
 	//ddd:hh:mm:ss.ccc
 	ASSERT_EQ (time_format(std::chrono::milliseconds( 0)), "           0.000");
@@ -42,7 +42,7 @@ TEST (UtilityTest, time_format)
 	ASSERT_EQ (time_format(time), "  1:02:41:00.001");
 }
 
-TEST(UtilityTest, ThousandsSeparator)
+TEST(Utility, ThousandsSeparator)
 {
 	ASSERT_EQ (ThousandsSeparator(      0),         "0");
 	ASSERT_EQ (ThousandsSeparator(      1),         "1");
@@ -54,35 +54,35 @@ TEST(UtilityTest, ThousandsSeparator)
 	ASSERT_EQ (ThousandsSeparator(1000000), "1'000'000");
 }
 
-TEST(UtilityTest, replace_all)
+TEST(Utility, replace_all)
 {
 	std::string source = "aababba";
 	replace_all(source, "b", "c");
 	ASSERT_EQ(source, "aacacca");
 }
 
-TEST(UtilityTest, replace_all_empty)
+TEST(Utility, replace_all_empty)
 {
 	std::string source = "";
 	replace_all(source, "b", "");
 	ASSERT_EQ(source, "");
 }
 
-TEST(UtilityTest, replace_all_withEmpty)
+TEST(Utility, replace_all_withEmpty)
 {
 	std::string source = "aababba";
 	replace_all(source, "b", "");
 	ASSERT_EQ(source, "aaaa");
 }
 
-TEST(UtilityTest, replace_all_none)
+TEST(Utility, replace_all_none)
 {
 	std::string source = "aababba";
 	replace_all(source, "c", "b");
 	ASSERT_EQ(source, "aababba");
 }
 
-TEST(UtilityTest, split_simple)
+TEST(Utility, split_simple)
 {
 	const std::string source = "a,b,c";
 	const std::string delimitter = ",";
@@ -95,7 +95,7 @@ TEST(UtilityTest, split_simple)
 	ASSERT_EQ(vec[2], "c");
 }
 
-TEST(UtilityTest, split_empty)
+TEST(Utility, split_empty)
 {
 	const std::string source = "";
 	const std::string delimitter = ",";
@@ -106,7 +106,7 @@ TEST(UtilityTest, split_empty)
 	ASSERT_EQ(vec[0], "");
 }
 
-TEST(UtilityTest, split_none)
+TEST(Utility, split_none)
 {
 	const std::string source = "a;b";
 	const std::string delimitter = ",";
@@ -117,7 +117,7 @@ TEST(UtilityTest, split_none)
 	ASSERT_EQ(vec[0], "a;b");
 }
 
-TEST(UtilityTest, split_one)
+TEST(Utility, split_one)
 {
 	const std::string source = "a";
 	const std::string delimitter = ",";
@@ -128,7 +128,7 @@ TEST(UtilityTest, split_one)
 	ASSERT_EQ(vec[0], "a");
 }
 
-TEST(UtilityTest, split_emptyToken)
+TEST(Utility, split_emptyToken)
 {
 	const std::string source = "a,,c,";
 	const std::string delimitter = ",";
@@ -142,7 +142,7 @@ TEST(UtilityTest, split_emptyToken)
 	ASSERT_EQ(vec[3], "");
 }
 
-TEST(UtilityTest, join_simple)
+TEST(Utility, join_simple)
 {
 	const std::vector<std::string> parts = { "a", "b", "c" };
 	const std::string delimitter = ",";
@@ -152,7 +152,7 @@ TEST(UtilityTest, join_simple)
 	ASSERT_EQ(str, "a,b,c");
 }
 
-TEST(UtilityTest, join_empty)
+TEST(Utility, join_empty)
 {
 	const std::vector<std::string> parts;
 	const std::string delimitter = ",";
@@ -162,7 +162,7 @@ TEST(UtilityTest, join_empty)
 	ASSERT_EQ(str, "");
 }
 
-TEST(UtilityTest, join_one)
+TEST(Utility, join_one)
 {
 	const std::vector<std::string> parts = { "a" };
 	const std::string delimitter = ",";
@@ -172,7 +172,7 @@ TEST(UtilityTest, join_one)
 	ASSERT_EQ(str, "a");
 }
 
-TEST(UtilityTest, join_emptyToken)
+TEST(Utility, join_emptyToken)
 {
 	const std::vector<std::string> parts = { "a", "b", "c" };
 	const std::string delimitter = "";
@@ -182,7 +182,7 @@ TEST(UtilityTest, join_emptyToken)
 	ASSERT_EQ(str, "abc");
 }
 
-TEST(UtilityTest, join_split)
+TEST(Utility, join_split)
 {
 	const std::string source = "a,,c,";
 	const std::string delimitter = ",";

@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CLastFlipCounter" Collapsed="true">
+    <Position X="25.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAABAAAAAAgAgAAAAAQAQCACAgBA=</HashCode>
+      <FileName>src\LastFlipCounter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PvsInfo" Collapsed="true">
+    <Position X="23.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAgBAAAAAAQBAAACAAQIBAQAAA=</HashCode>
+      <FileName>src\HashtablePVS.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Node" Collapsed="true">
+    <Position X="22" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAkBAAAAAAAACAAAAAAAQEAAAA=</HashCode>
+      <FileName>src\HashtablePVS.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TwoNode" Collapsed="true">
+    <Position X="25.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwAAIAAkABAACAAQAAAAAAAIAAAAAAAAAAgIABAAAA=</HashCode>
+      <FileName>src\HashtablePVS.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Serializable" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\Serializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="oArchive" Collapsed="true">
+    <Position X="13.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\Serializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Deserializable" Collapsed="true">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\Serializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="iArchive" Collapsed="true">
+    <Position X="10.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAgAAAAAAAAAAE=</HashCode>
+      <FileName>src\Serializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="fstreamArchive" Collapsed="true">
+    <Position X="13.25" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAEAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAABCAAAE=</HashCode>
+      <FileName>src\FileStreamArchive.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CConfigurations" Collapsed="true">
+    <Position X="23.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAIAACBABAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\ConfigFile.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoard" Collapsed="true">
+    <Position X="4.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgACAAIAAAAAAAIIAAACBAAAAAwAABCBAAABA=</HashCode>
+      <FileName>src\Boards.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoardScore" Collapsed="true">
+    <Position X="2.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAgAAAgAAAAIAAAAAAIIAAAACBAAAAAwAAACBAAABA=</HashCode>
+      <FileName>src\Boards.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoardScoreDepth" Collapsed="true">
+    <Position X="2.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAIAAAAAAAIAAAACBQBAAAwAAAKFAAABg=</HashCode>
+      <FileName>src\Boards.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoardAllDepthScore" Collapsed="true">
+    <Position X="4.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAgAAAAIAAAAAAYIAAAACBAAIAAxAAACBAAABA=</HashCode>
+      <FileName>src\Boards.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoardAllMoveScore" Collapsed="true">
+    <Position X="7" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAoAAAgEAAAIAAAAAAIIAAAACBAAAAAxAAACBAAABA=</HashCode>
+      <FileName>src\Boards.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search" Collapsed="true">
+    <Position X="12.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIABAQAAAgAAAAgAAAAgAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>src\Search.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NegaMaxSearch" Collapsed="true">
+    <Position X="13.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAgAA=</HashCode>
+      <FileName>src\Search.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AlphaBetaFailSoftSearch" Collapsed="true">
+    <Position X="16" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAEA=</HashCode>
+      <FileName>src\Search.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AlphaBetaFailHardSearch" Collapsed="true">
+    <Position X="9.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>src\Search.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PVSearch" Collapsed="true">
+    <Position X="11.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAYMIAgAAgIAAAAQAIEAEABCAAAAAAAQAQAAAAA=</HashCode>
+      <FileName>src\Search.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSortedMoves" Collapsed="true">
+    <Position X="23.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAgAAIAAAQASQAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>src\Search.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamSerializable" Collapsed="true">
+    <Position X="3.25" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\StreamSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamDeserializable" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\StreamSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="oStreamArchive" Collapsed="true">
+    <Position X="13.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAACAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\StreamSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="iStreamArchive" Collapsed="true">
+    <Position X="10.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\StreamSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Streamable" Collapsed="true">
+    <Position X="2" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\StreamSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamArchive" Collapsed="true">
+    <Position X="12.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\StreamSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="iostreamArchive" Collapsed="true">
+    <Position X="13.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABEAAAAAAAAAAAAABAAAAABAACBAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>src\StreamSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPath" Collapsed="true">
+    <Position X="22" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAAAAAAAEAAAAAAgAAAIAAQgBAGAAAABgAAAgQAAAAA=</HashCode>
+      <FileName>src\Path.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoardCollection" Collapsed="true">
+    <Position X="22" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgIACAAAAAAAAAIEAAAAQAAEAAAAAAQgAAAAAAAA=</HashCode>
+      <FileName>src\BoardCollection.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CStabilityAnalyzer" Collapsed="true">
+    <Position X="25.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAABAAAAgAABAAAAAAABAAAAAAQAAgAAAAgAAAAA=</HashCode>
+      <FileName>src\Stability.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamQueue" Collapsed="true">
+    <Position X="11" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAABAAAAAACBAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>src\StreamQueue.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BoardToStreamConverter" Collapsed="true">
+    <Position X="16.5" Y="10.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAACAACAAAAAAAAAABAIA=</HashCode>
+      <FileName>src\StreamConverter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MultiLineStreamDecorator" Collapsed="true">
+    <Position X="15.5" Y="9.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAACAAAAAAAAEA=</HashCode>
+      <FileName>src\MultiLineStreamDecorator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SingleLineStreamDecorator" Collapsed="true">
+    <Position X="19" Y="10.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAEAAACAAAAAACAAAAAACAAA=</HashCode>
+      <FileName>src\SingleLineStreamDecorator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BoardSerializable" Collapsed="true">
+    <Position X="5.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\ObjectSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="iBoardArchive" Collapsed="true">
+    <Position X="18.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\ObjectSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="oBoardArchive" Collapsed="true">
+    <Position X="16.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAACAAAABACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\ObjectSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BoardArchive" Collapsed="true">
+    <Position X="17.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\ObjectSerializables.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="reversion_wrapper&lt;T&gt;" Collapsed="true">
+    <Position X="23.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>src\Boards.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Environment" Collapsed="true">
+    <Position X="22" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAiAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\Environment.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="CHashTablePVS" Collapsed="true">
+    <Position X="22" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\HashtablePVS.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

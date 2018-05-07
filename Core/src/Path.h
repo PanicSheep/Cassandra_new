@@ -14,11 +14,13 @@ public:
 	std::string GetRelativeFolderPath() const;
 
 	bool IsFile() const;
-	std::string GetRawFileName() const;
-	std::string GetFullFileName() const;
+	std::string GetRawFileName() const; // The filename without extension.
+	std::string GetFullFileName() const; // The filenam with extension.
 	std::string GetExtension() const;
 	std::string GetAbsoluteFilePath() const;
 	std::string GetRelativeFilePath() const;
+
+	bool operator==(const CPath&) const;
 private:
 	void ProcessFolderUps();
 	std::string GetRelativePath() const;

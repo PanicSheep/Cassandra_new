@@ -2,8 +2,6 @@
 #include <fstream>
 #include <algorithm>
 
-CConfigurations Configurations;
-
 CConfigurations::CConfigurations(const CPath & ConfigFile)
 {
 	Load(ConfigFile);
@@ -12,20 +10,22 @@ CConfigurations::CConfigurations(const CPath & ConfigFile)
 void CConfigurations::Load(const CPath& ConfigFile)
 {
 	std::ifstream file;
-	file.open(ConfigFile.GetFullFileName());
+	file.open(ConfigFile.GetAbsoluteFilePath());
 	if (!file)
-		throw std::runtime_error("Could not open file: '" + ConfigFile.GetFullFileName() + "'.");
+		throw std::runtime_error("Could not open file: '" + ConfigFile.GetAbsoluteFilePath() + "'.");
 
-	const std::string token = " = ";
+	const std::string delimiter = " = ";
 	std::string line;
 	while (std::getline(file, line))
 	{
-		std::size_t pos = line.find(token);
-		std::string key = line.substr(0, pos);
-		line.erase(0, pos + token.length());
-		line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+		const std::size_t begin_of_delimiter = line.find(delimiter);
+		const std::size_t end_of_delimiter = begin_of_delimiter + delimiter.length();
+		const std::size_t end_of_value = line.find('\r', end_of_delimiter);
 
-		m_conf[key] = line;
+		const std::string key = line.substr(0, begin_of_delimiter);
+		const std::string value = line.substr(end_of_delimiter, end_of_value - end_of_delimiter);
+
+		m_conf[key] = value;
 	}
 
 	file.close();

@@ -1,3 +1,4 @@
+#include "Args.h"
 #include "BoardCollection.h"
 #include "Path.h"
 #include "Utility.h"
@@ -9,8 +10,9 @@
 #include <iomanip>
 #include <chrono>
 #include <iterator>
+#include <type_traits>
 
-void help()
+void PrintHelp()
 {
 	std::cout << "Expected input:\n"
 		<< "-f filename\n"
@@ -19,19 +21,35 @@ void help()
 
 int main(int argc, char* argv[])
 {
-	CPath filename;
-	std::size_t threads = std::thread::hardware_concurrency();
-	bool test = false;
-	bool print_each_board = false;
+	CArgs args;
+	args.Set("config", "config.ini");
+	args.Set("RAM", "1GB");
+	args.Set("t", std::thread::hardware_concurrency());
+	args.Load(argc, argv);
 
-	for (int i = 0; i < argc; i++)
-	{
-		     if (std::string(argv[i]) == "-f") filename = CPath(argv[++i]);
-		else if (std::string(argv[i]) == "-v") { print_each_board = true; }
-		else if (std::string(argv[i]) == "-test") test = true;
-		else if (std::string(argv[i]) == "-t") threads = std::stoi(argv[++i]);
-		else if (std::string(argv[i]) == "-h") { help(); return 0; }
+	if (args.Has("h")) {
+		PrintHelp();
+		return 0;
 	}
+
+	if (!args.Has("f")) {
+		std::cerr << "ERROR: Missing filename!" << std::endl;
+		return -1;
+	}
+
+	const CPath filename = args.Get("f")[0];
+	const CPath config_file = args.Get("config")[0];
+	const std::string RAM = args.Get("RAM")[0];
+	const std::size_t threads = std::stoll(args.Get("t")[0]);
+	const bool test = args.Has("test");
+	const bool print_each_board = args.Has("v");
+
+	//std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
+	//std::cout << "Config File: " << config_file.GetAbsoluteFilePath() << std::endl;
+	//std::cout << "RAM: " << RAM << std::endl;
+	//std::cout << "Threads: " << threads << std::endl;
+	//std::cout << "Run as Test: " << test << std::endl;
+	//std::cout << "Print each board: " << print_each_board << std::endl;
 
 	std::unique_ptr<CBoardCollection> boards;
 	if (test)
@@ -40,7 +58,7 @@ int main(int argc, char* argv[])
 		boards = std::make_unique<AutoSavingBoardCollection>(filename, std::chrono::seconds(300));
 
 	std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
-	std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(450'000'000);
+	std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
 	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
 	std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 	std::shared_ptr<Environment> env = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);

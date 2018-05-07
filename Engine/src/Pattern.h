@@ -1,6 +1,5 @@
 #pragma once
 #include "Utility.h"
-#include "ConfigFile.h"
 #include "Position.h"
 #include "Environment.h"
 #include <cstdint>

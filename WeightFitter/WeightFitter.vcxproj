@@ -12,9 +12,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{17F2D495-2A11-4B66-A2AD-9C739CA878B7}</ProjectGuid>
+    <ProjectGuid>{2B50846A-4442-47B6-9736-3BB8BA6AF3EB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Benchmark</RootNamespace>
+    <RootNamespace>WeightFitter</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -61,7 +61,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -78,7 +78,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,7 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Benchmark.cpp" />
+    <ClCompile Include="WeightFitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.vcxproj">
@@ -98,6 +98,9 @@
     <ProjectReference Include="..\IO\IO.vcxproj">
       <Project>{067fbe70-efc7-4a63-be81-6fa42988f6df}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IterativeAlgorithms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,19 +11,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Args.cpp" />
     <ClCompile Include="src\FlipFast.cpp" />
+    <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\Position.cpp" />
     <ClCompile Include="src\PositionGenerator.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Args.h" />
     <ClInclude Include="src\FlipFast.h" />
     <ClInclude Include="src\Hashtable.h" />
     <ClInclude Include="src\MacrosHell.h" />
     <ClInclude Include="src\Moves.h" />
+    <ClInclude Include="src\Path.h" />
     <ClInclude Include="src\Position.h" />
     <ClInclude Include="src\PositionGenerator.h" />
     <ClInclude Include="src\Utility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

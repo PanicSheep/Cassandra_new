@@ -1,5 +1,4 @@
 #include "Pattern.h"
-#include "VectorExtension.h"
 #include <mutex>
 
 std::vector<uint32_t> CPattern::m_sumpow3_cache;

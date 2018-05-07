@@ -8,11 +8,11 @@
 #include "PositionGenerator.h"
 #include "Utility.h"
 
-TEST(UtilityTest, pow_int_1) { ASSERT_EQ(Pow_int(0, 0), 1); }
-TEST(UtilityTest, pow_int_2) { ASSERT_EQ(Pow_int(10, 3), 1000); }
-TEST(UtilityTest, pow_int_3) { ASSERT_EQ(Pow_int(-10, 3), -1000); }
+TEST(Utility, pow_int_1) { ASSERT_EQ(Pow_int(0, 0), 1); }
+TEST(Utility, pow_int_2) { ASSERT_EQ(Pow_int(10, 3), 1000); }
+TEST(Utility, pow_int_3) { ASSERT_EQ(Pow_int(-10, 3), -1000); }
 
-TEST(UtilityTest, SignedInt) {
+TEST(Utility, SignedInt) {
 	ASSERT_EQ(SignedInt(-10), "-10");
 	ASSERT_EQ(SignedInt(-1), "-1");
 	ASSERT_EQ(SignedInt(+0), "+0");
@@ -20,7 +20,7 @@ TEST(UtilityTest, SignedInt) {
 	ASSERT_EQ(SignedInt(+10), "+10");
 }
 
-TEST(UtilityTest, DoubleDigitSignedInt) {
+TEST(Utility, DoubleDigitSignedInt) {
 	ASSERT_EQ(DoubleDigitSignedInt(-10), "-10");
 	ASSERT_EQ(DoubleDigitSignedInt(-1), "-01");
 	ASSERT_EQ(DoubleDigitSignedInt(+0), "+00");
@@ -28,25 +28,25 @@ TEST(UtilityTest, DoubleDigitSignedInt) {
 	ASSERT_EQ(DoubleDigitSignedInt(+10), "+10");
 }
 
-TEST(UtilityTest, FlipDiagonal) {
+TEST(Utility, FlipDiagonal) {
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			ASSERT_EQ(FlipDiagonal(1ULL << (i * 8 + j)), 1ULL << (j * 8 + i));
 }
 
-TEST(UtilityTest, FlipCodiagonal) {
+TEST(Utility, FlipCodiagonal) {
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			ASSERT_EQ(FlipCodiagonal(1ULL << (i * 8 + j)), 1ULL << (63 - (j * 8 + i)));
 }
 
-TEST(UtilityTest, FlipVertical) {
+TEST(Utility, FlipVertical) {
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			ASSERT_EQ(FlipVertical(1ULL << (i * 8 + j)), 1ULL << ((7 - i) * 8 + j));
 }
 
-TEST(UtilityTest, FlipHorizontal) {
+TEST(Utility, FlipHorizontal) {
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			ASSERT_EQ(FlipHorizontal(1ULL << (i * 8 + j)), 1ULL << (i * 8 + (7 - j)));
@@ -141,7 +141,7 @@ TEST(FlipFast, Move_F8) { TestFlip(F8); }
 TEST(FlipFast, Move_G8) { TestFlip(G8); }
 TEST(FlipFast, Move_H8) { TestFlip(H8); }
 
-TEST(FlipLoopTest, OneFlip) {
+TEST(FlipLoop, OneFlip) {
 	const CPosition pos(0xFF00000000000000ULL, 0x00FFFFFFFFFFFF7EULL);
 	const CMove move(A1);
 	const uint64_t flip = Flip_loop(pos, move);
@@ -153,7 +153,7 @@ TEST(FlipLoopTest, OneFlip) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST(MacrosHellTest, BitScanLSB_1) {
+TEST(MacrosHell, BitScanLSB_1) {
 #ifndef NDEBUG
 	ASSERT_DEATH(BitScanLSB(0), ".*");
 #endif
@@ -163,7 +163,7 @@ TEST(MacrosHellTest, BitScanLSB_1) {
 	ASSERT_EQ(BitScanLSB(0x8000000000000000ULL), 63u);
 }
 
-TEST(MacrosHellTest, BitScanLSB_2) {
+TEST(MacrosHell, BitScanLSB_2) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 1);
 	ASSERT_NE(ret, 0);
@@ -171,7 +171,7 @@ TEST(MacrosHellTest, BitScanLSB_2) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanLSB_3) {
+TEST(MacrosHell, BitScanLSB_3) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 2);
 	ASSERT_NE(ret, 0);
@@ -179,7 +179,7 @@ TEST(MacrosHellTest, BitScanLSB_3) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanLSB_4) {
+TEST(MacrosHell, BitScanLSB_4) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 3);
 	ASSERT_NE(ret, 0);
@@ -187,7 +187,7 @@ TEST(MacrosHellTest, BitScanLSB_4) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanLSB_5) {
+TEST(MacrosHell, BitScanLSB_5) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 0x8000000000000000ULL);
 	ASSERT_NE(ret, 0);
@@ -195,7 +195,7 @@ TEST(MacrosHellTest, BitScanLSB_5) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanLSB_6) {
+TEST(MacrosHell, BitScanLSB_6) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanLSB(index, 0);
 	ASSERT_EQ(ret, 0u);
@@ -206,7 +206,7 @@ TEST(MacrosHellTest, BitScanLSB_6) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST(MacrosHellTest, BitScanMSB_1) {
+TEST(MacrosHell, BitScanMSB_1) {
 #ifndef NDEBUG
 	ASSERT_DEATH(BitScanMSB(0), ".*");
 #endif
@@ -216,7 +216,7 @@ TEST(MacrosHellTest, BitScanMSB_1) {
 	ASSERT_EQ(BitScanMSB(0x8000000000000000ULL), 63u);
 }
 
-TEST(MacrosHellTest, BitScanMSB_2) {
+TEST(MacrosHell, BitScanMSB_2) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 1);
 	ASSERT_NE(ret, 0);
@@ -224,7 +224,7 @@ TEST(MacrosHellTest, BitScanMSB_2) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanMSB_3) {
+TEST(MacrosHell, BitScanMSB_3) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 2);
 	ASSERT_NE(ret, 0);
@@ -232,7 +232,7 @@ TEST(MacrosHellTest, BitScanMSB_3) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanMSB_4) {
+TEST(MacrosHell, BitScanMSB_4) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 3);
 	ASSERT_NE(ret, 0);
@@ -240,7 +240,7 @@ TEST(MacrosHellTest, BitScanMSB_4) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanMSB_5) {
+TEST(MacrosHell, BitScanMSB_5) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 0x8000000000000000ULL);
 	ASSERT_NE(ret, 0);
@@ -248,7 +248,7 @@ TEST(MacrosHellTest, BitScanMSB_5) {
 	delete index;
 }
 
-TEST(MacrosHellTest, BitScanMSB_6) {
+TEST(MacrosHell, BitScanMSB_6) {
 	unsigned long * index = new unsigned long();
 	unsigned char ret = BitScanMSB(index, 0);
 	ASSERT_EQ(ret, 0u);
@@ -259,7 +259,7 @@ TEST(MacrosHellTest, BitScanMSB_6) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST(MacrosHellTest, CountLeadingZerosTest) {
+TEST(MacrosHell, CountLeadingZerosTest) {
 #ifndef NDEBUG
 	ASSERT_DEATH(CountLeadingZeros(0), ".*");
 #endif
@@ -269,7 +269,7 @@ TEST(MacrosHellTest, CountLeadingZerosTest) {
 	ASSERT_EQ(CountLeadingZeros(0x8000000000000000ULL), 0u);
 }
 
-TEST(MacrosHellTest, CountTrailingZerosTest) {
+TEST(MacrosHell, CountTrailingZerosTest) {
 #ifndef NDEBUG
 	ASSERT_DEATH(CountTrailingZeros(0), ".*");
 #endif
@@ -283,7 +283,7 @@ TEST(MacrosHellTest, CountTrailingZerosTest) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST(MacrosHellTest, GetLSBTest) {
+TEST(MacrosHell, GetLSBTest) {
 	ASSERT_EQ(GetLSB(0), 0u);
 	ASSERT_EQ(GetLSB(1), 1u);
 	ASSERT_EQ(GetLSB(2), 2u);
@@ -291,7 +291,7 @@ TEST(MacrosHellTest, GetLSBTest) {
 	ASSERT_EQ(GetLSB(0x8000000000000000ULL), 0x8000000000000000ULL);
 }
 
-TEST(MacrosHellTest, GetMSBTest) {
+TEST(MacrosHell, GetMSBTest) {
 	ASSERT_EQ(GetMSB(0), 0u);
 	ASSERT_EQ(GetMSB(1), 1u);
 	ASSERT_EQ(GetMSB(2), 2u);
@@ -299,7 +299,7 @@ TEST(MacrosHellTest, GetMSBTest) {
 	ASSERT_EQ(GetMSB(0x8000000000000000ULL), 0x8000000000000000ULL);
 }
 
-TEST(MacrosHellTest, RemoveLSBTest) {
+TEST(MacrosHell, RemoveLSBTest) {
 	uint64_t a;
 	a = 0; RemoveLSB(a); ASSERT_EQ(a, 0u);
 	a = 1; RemoveLSB(a); ASSERT_EQ(a, 0u);
@@ -308,7 +308,7 @@ TEST(MacrosHellTest, RemoveLSBTest) {
 	a = 0x8000000001000000ULL; RemoveLSB(a); ASSERT_EQ(a, 0x8000000000000000ULL);
 }
 
-TEST(MacrosHellTest, RemoveMSBTest) {
+TEST(MacrosHell, RemoveMSBTest) {
 	uint64_t a;
 	a = 0; RemoveMSB(a); ASSERT_EQ(a, 0u);
 	a = 1; RemoveMSB(a); ASSERT_EQ(a, 0u);
@@ -321,7 +321,7 @@ TEST(MacrosHellTest, RemoveMSBTest) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST(MacrosHellTest, SetBitTest) {
+TEST(MacrosHell, SetBitTest) {
 	for (uint8_t i = 0; i < 64; i++)
 	{
 		uint64_t a = 0ULL;
@@ -336,7 +336,7 @@ TEST(MacrosHellTest, SetBitTest) {
 	}
 }
 
-TEST(MacrosHellTest, GetBitTest) {
+TEST(MacrosHell, GetBitTest) {
 	uint64_t a = 0x8000000000000001ULL;
 	ASSERT_EQ(TestBit(a, 0), true);
 	ASSERT_EQ(TestBit(a, 63), true);
@@ -347,7 +347,7 @@ TEST(MacrosHellTest, GetBitTest) {
 #endif
 }
 
-TEST(MacrosHellTest, MakeBitTest) {
+TEST(MacrosHell, MakeBitTest) {
 	for (uint8_t i = 0; i < 64; i++)
 		ASSERT_EQ(MakeBit(i), 1ULL << i);
 }
@@ -356,7 +356,7 @@ TEST(MacrosHellTest, MakeBitTest) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------
-TEST(MacrosHellTest, PopCountTest) {
+TEST(MacrosHell, PopCountTest) {
 	ASSERT_EQ(PopCount(0), 0u);
 	ASSERT_EQ(PopCount(1), 1u);
 	ASSERT_EQ(PopCount(2), 1u);
@@ -364,7 +364,7 @@ TEST(MacrosHellTest, PopCountTest) {
 	ASSERT_EQ(PopCount(0xFFFFFFFFFFFFFFFFULL), 64u);
 }
 
-TEST(MacrosHellTest, PopCount_max15Test) {
+TEST(MacrosHell, PopCount_max15Test) {
 	ASSERT_EQ(PopCount_max15(0), 0u);
 	ASSERT_EQ(PopCount_max15(1), 1u);
 	ASSERT_EQ(PopCount_max15(2), 1u);
@@ -380,7 +380,7 @@ TEST(MacrosHellTest, PopCount_max15Test) {
 // TODO: Add test for PExt
 // TODO: Add test for BSwap
 
-TEST(PossibleMovesTest, HasMoves)
+TEST(PossibleMoves, HasMoves)
 {
 	for (unsigned int i = 0; i < 100'000; i++)
 	{
@@ -403,17 +403,17 @@ TEST(PossibleMovesTest, HasMoves)
 	}
 }
 
-TEST(PossibleMovesTest, PossibleMoves_StartPosition)
+TEST(PossibleMoves, PossibleMoves_StartPosition)
 {
 	ASSERT_EQ(CPosition::StartPosition().PossibleMoves(), CMoves(0x0000102004080000ULL));
 }
 
-TEST(PossibleMovesTest, PossibleMoves_StartPositionETH)
+TEST(PossibleMoves, PossibleMoves_StartPositionETH)
 {
 	ASSERT_EQ(CPosition::StartPositionETH().PossibleMoves(), CMoves(0x00000000003C0000ULL));
 }
 
-TEST(PossibleMovesTest, PossibleMoves_RandomSample)
+TEST(PossibleMoves, PossibleMoves_RandomSample)
 {
 	for (unsigned int i = 0; i < 100'000; i++)
 	{

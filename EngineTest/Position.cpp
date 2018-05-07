@@ -2,7 +2,7 @@
 #include "Position.h"
 #include "Stability.h"
 
-TEST(PositionTest, Stability_Initialize)
+TEST(Position, Stability_Initialize)
 {
 	ASSERT_EQ(GetStableEdges(CPosition(0x00, 0xC0)), 0xC0);
 	ASSERT_EQ(GetStableEdges(CPosition(0x01, 0x80)), 0x81);
@@ -15,27 +15,27 @@ TEST(PositionTest, Stability_Initialize)
 	ASSERT_EQ(GetStableEdges(CPosition(0x28, 0x16)), 0x08);
 }
 
-TEST(PositionTest, DefaultPosition)
+TEST(Position, DefaultPosition)
 {
 	CPosition pos;
 	ASSERT_EQ(pos.EmptyCount(), 64);
 }
 
-TEST(PositionTest, StartPosition_normal)
+TEST(Position, StartPosition_normal)
 {
 	CPosition pos = CPosition::StartPosition();
 	pos.FlipDiagonal();
 	ASSERT_EQ(pos, CPosition::StartPosition());
 }
 
-TEST(PositionTest, StartPosition_ETH)
+TEST(Position, StartPosition_ETH)
 {
 	CPosition pos = CPosition::StartPositionETH();
 	pos.FlipHorizontal();
 	ASSERT_EQ(pos, CPosition::StartPositionETH());
 }
 
-TEST(PositionTest, Empties)
+TEST(Position, Empties)
 {
 	ASSERT_EQ(CPosition().Empties(), 0xFFFFFFFFFFFFFFFFULL);
 	ASSERT_EQ(CPosition::StartPosition().Empties(), 0xFFFFFFE7E7FFFFFFULL);
@@ -43,7 +43,7 @@ TEST(PositionTest, Empties)
 	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).Empties(), 0ULL);
 }
 
-TEST(PositionTest, EmptyCount)
+TEST(Position, EmptyCount)
 {
 	ASSERT_EQ(CPosition().EmptyCount(), 64u);
 	ASSERT_EQ(CPosition::StartPosition().EmptyCount(), 60u);
@@ -57,7 +57,7 @@ TEST(PositionTest, EmptyCount)
 	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0xFFFFFFFFFFFFFFFFULL).EmptyCount(), 0u);
 }
 
-TEST(PositionTest, Parity)
+TEST(Position, Parity)
 {
 	ASSERT_EQ(CPosition().Parity(), 0u);
 	ASSERT_EQ(CPosition::StartPosition().Parity(), 0xFULL);
@@ -65,7 +65,7 @@ TEST(PositionTest, Parity)
 	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).Parity(), 0ULL);
 }
 
-TEST(PositionTest, PossibleMoves)
+TEST(Position, PossibleMoves)
 {
 	ASSERT_EQ(CPosition().PossibleMoves(), 0ULL);
 	ASSERT_EQ(CPosition::StartPosition().PossibleMoves(), 0x0000102004080000ULL);
@@ -73,7 +73,7 @@ TEST(PositionTest, PossibleMoves)
 	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).PossibleMoves(), 0ULL);
 }
 
-TEST(PositionTest, HasMoves)
+TEST(Position, HasMoves)
 {
 	ASSERT_EQ(CPosition().HasMoves(), false);
 	ASSERT_EQ(CPosition::StartPosition().HasMoves(), true);
@@ -81,7 +81,7 @@ TEST(PositionTest, HasMoves)
 	ASSERT_EQ(CPosition(0xFFFFFFFFFFFFFFFFULL, 0ULL).HasMoves(), false);
 }
 
-TEST(PositionTest, Play)
+TEST(Position, Play)
 {
 	CPosition pos = CPosition::StartPosition();
 	pos = pos.PlayPass();
@@ -92,7 +92,7 @@ TEST(PositionTest, Play)
 	ASSERT_EQ(pos, CPosition(0x0000001000000000ULL, 0x0000000818080000ULL));
 }
 
-TEST(PositionTest, FlipCodiagonal)
+TEST(Position, FlipCodiagonal)
 {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL);
 	CPosition pos5(0x8080808000000000ULL, 0x0ULL);
@@ -101,7 +101,7 @@ TEST(PositionTest, FlipCodiagonal)
 	ASSERT_EQ(pos1, pos5);
 }
 
-TEST(PositionTest, FlipDiagonal)
+TEST(Position, FlipDiagonal)
 {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL);
 	CPosition pos7(0x0000000001010101ULL, 0x0ULL);
@@ -110,7 +110,7 @@ TEST(PositionTest, FlipDiagonal)
 	ASSERT_EQ(pos1, pos7);
 }
 
-TEST(PositionTest, FlipHorizontal)
+TEST(Position, FlipHorizontal)
 {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL);
 	CPosition pos2(0x00000000000000F0ULL, 0x0ULL);
@@ -119,7 +119,7 @@ TEST(PositionTest, FlipHorizontal)
 	ASSERT_EQ(pos1, pos2);
 }
 
-TEST(PositionTest, FlipVertical)
+TEST(Position, FlipVertical)
 {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL);
 	CPosition pos4(0x0F00000000000000ULL, 0x0ULL);
@@ -128,7 +128,7 @@ TEST(PositionTest, FlipVertical)
 	ASSERT_EQ(pos1, pos4);
 }
 
-TEST(PositionTest, FlipToMin)
+TEST(Position, FlipToMin)
 {
 	CPosition pos1(0x000000000000000FULL, 0x0ULL); pos1.FlipToMin();
 	CPosition pos2(0x00000000000000F0ULL, 0x0ULL); pos2.FlipToMin();

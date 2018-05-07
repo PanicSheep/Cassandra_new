@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{e49e3292-d776-4b6c-9f07-2dc51b8abc0f}</ProjectGuid>
+    <ProjectGuid>{670c25d5-2526-4e57-adc8-61d0ec062a0c}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ConfigurationType>Application</ConfigurationType>
@@ -30,29 +30,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClInclude Include="..\CoreTest\TestHelpers.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\CoreTest\TestHelpers.cpp" />
-    <ClCompile Include="LastFlipCounter.cpp" />
-    <ClCompile Include="Pattern.cpp" />
-    <ClCompile Include="Position.cpp" />
-    <ClCompile Include="Search.cpp" />
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="Array2D.cpp" />
+    <ClCompile Include="MatrixCSR_Grid.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Utility.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.vcxproj">
-      <Project>{7394ad84-df32-4be8-b07c-15f10a762125}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine\Engine.vcxproj">
-      <Project>{fc8e2aa2-09b4-410e-ba19-5d9f41fa1a73}</Project>
-    </ProjectReference>
+    <ClCompile Include="VecVec.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -72,8 +59,8 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\CoreTest\;$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>/D "_HAS_TR1_NAMESPACE" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\src;$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/D "_HAS_TR1_NAMESPACE" /D __core_avx2__ /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -88,8 +75,8 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\CoreTest\;$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>/D "_HAS_TR1_NAMESPACE" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\src;$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/D "_HAS_TR1_NAMESPACE" /D __core_avx2__ /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

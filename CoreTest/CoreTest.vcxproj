@@ -35,7 +35,9 @@
     <ClInclude Include="TestHelpers.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ArgsTest.cpp" />
     <ClCompile Include="FlipLoop.cpp" />
+    <ClCompile Include="Path.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Search.h"
 
-TEST(SearchTest, SMEAR_BITBOARD)
+TEST(Search, SMEAR_BITBOARD)
 {
 	for (int move = 0; move < 64; move++)
 	{
@@ -18,7 +18,7 @@ TEST(SearchTest, SMEAR_BITBOARD)
 	}
 }
 
-TEST(SearchTest, neighbour)
+TEST(Search, neighbour)
 {
 	for (int move = 0; move < 64; move++)
 		ASSERT_EQ(Neighbour(static_cast<Field>(move)), SMEAR_BITBOARD(1ULL << move) ^ (1ULL << move));
@@ -33,7 +33,7 @@ public:
 	static int EvalGameOver(const CPosition& pos, const uint64_t EmptyCount) { return Search::EvalGameOver(pos, EmptyCount); }
 };
 
-TEST(SearchTest, EvalGameOver)
+TEST(Search, EvalGameOver)
 {
 	const auto pos1 = CPosition(0x0000000000000000ULL, 0x0000000000000000ULL); // Player: 0   Opponent: 0   Empty: 64   Score: 0-0=0
 	const auto pos2 = CPosition(0x00000000000000FFULL, 0x0000000000000000ULL); // Player: 8   Opponent: 0   Empty: 56   Score: 8-0+56=64
