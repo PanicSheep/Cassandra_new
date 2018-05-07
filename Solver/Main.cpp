@@ -1,10 +1,13 @@
 #include "Args.h"
 #include "BoardCollection.h"
+#include "ConfigFile.h"
 #include "Path.h"
 #include "Utility.h"
+#include "Pattern.h"
 #include "PositionGenerator.h"
 #include "Search.h"
 #include "Stability.h"
+#include "VectorIO.h"
 #include <thread>
 #include <iostream>
 #include <iomanip>
@@ -21,6 +24,8 @@ void PrintHelp()
 
 int main(int argc, char* argv[])
 {
+	CPattern::Initialize();
+
 	CArgs args;
 	args.Set("config", "config.ini");
 	args.Set("RAM", "1GB");
@@ -37,13 +42,47 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	const CPath filename = args.Get("f")[0];
+	// Get arguments without config file
 	const CPath config_file = args.Get("config")[0];
+	const CPath filename = args.Get("f")[0];
 	const std::string RAM = args.Get("RAM")[0];
 	const std::size_t threads = std::stoll(args.Get("t")[0]);
 	const bool test = args.Has("test");
 	const bool print_each_board = args.Has("v");
 
+	CConfigurations configs(config_file);
+	
+	// Get arguments with config file
+	std::vector<std::string> pattern_names;
+	if (configs.Has("active pattern"))
+		pattern_names = split(configs.Get("active pattern"), " ");
+
+	std::vector<std::shared_ptr<CPatternGroup>> pattern_collection;
+	for (int range = 0; range < 20; range++)
+	{
+		std::vector<std::shared_ptr<CPattern>> pattern_group;
+		for (const auto& pat : pattern_names)
+		{
+			uint64_t pattern;
+			if (configs.Has("pattern " + pat))
+				pattern = std::stoull(configs.Get("pattern " + pat), nullptr, 16);
+			else
+				std::cerr << "WARNING: Unknown pattern '" << pat << "'." << std::endl;
+
+			CPath weights(config_file.GetAbsoluteFolderPath() + configs.Get("weights" + std::to_string(range)) + pat + ".w");
+			auto Pattern = CreatePattern(pattern);
+			Pattern->set_weights(read_vector<float>(weights));
+			pattern_group.push_back(std::move(Pattern));
+		}
+		auto shared_pattern_group = std::make_shared<CPatternGroup>(pattern_group);
+		pattern_collection.push_back(shared_pattern_group);
+		pattern_collection.push_back(shared_pattern_group);
+		pattern_collection.push_back(shared_pattern_group);
+		if (range == 0)
+			pattern_collection.push_back(shared_pattern_group);
+	}
+	std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<CPatternCollection>(pattern_collection);
+	
 	//std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
 	//std::cout << "Config File: " << config_file.GetAbsoluteFilePath() << std::endl;
 	//std::cout << "RAM: " << RAM << std::endl;
@@ -60,7 +99,6 @@ int main(int argc, char* argv[])
 	std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
 	std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
 	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
-	std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 	std::shared_ptr<Environment> env = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 
 	std::vector<std::unique_ptr<Search>> searches;

@@ -6,15 +6,6 @@
 #include <omp.h>
 #include <iostream>
 
-struct CLI_Arg
-{
-	const static std::size_t UNDEFINED = std::numeric_limits<std::size_t>::max();
-	std::string name;
-	std::size_t size;
-
-	CLI_Arg(std::string name, std::size_t size = UNDEFINED) : name(name), size(size) {}
-};
-
 bool Check_argument(const std::string& message_prefix, const CArgs& args, CLI_Arg arg)
 {
 	if (args.Has(arg.name))

@@ -1,3 +1,4 @@
+- Draw Architecture.
 - "CMove CMoves::ExtractMove(const std::size_t index)" -> "CMove CMoves::ExtractMove(const CMove& index)".
 - "bool CMoves::HasMove(std::size_t index)" -> "bool CMoves::HasMove(const CMove& index)".
 - Refactor "class CMoves" to not have inline functions.

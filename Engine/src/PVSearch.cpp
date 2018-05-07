@@ -11,12 +11,21 @@ int PVSearch::Eval(const CPosition& pos)
 
 int PVSearch::Eval(const CPosition& pos, int alpha, int beta)
 {
+	const auto empties = pos.EmptyCount();
+	if (empties <= 14)
+		return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
+
+	for (int d = empties % 2; d < empties - 10; d++)
+		PVS(InputValues(pos, alpha, beta, d, 0));
 	return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
 }
 
 PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
+	if (in.depth == 0 && EmptyCount != 0 && environment->PatternEvaluator)
+		return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
+
 	switch (EmptyCount)
 	{
 	case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
@@ -29,6 +38,9 @@ PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
+	if (in.depth == 0 && EmptyCount != 0 && environment->PatternEvaluator)
+		return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
+
 	switch (EmptyCount)
 	{
 	case 0: return ReturnValues(Eval_0(in.pos), 0, 0);

@@ -117,9 +117,9 @@ private:
 // Pattern in a group belong together and shoud never be evaluated separately.
 class CPatternGroup
 {
-	std::vector<std::unique_ptr<CPattern>> m_group;
+	std::vector<std::shared_ptr<CPattern>> m_group;
 public:
-	CPatternGroup(std::vector<std::unique_ptr<CPattern>> group) : m_group(std::move(group)) {}
+	CPatternGroup(std::vector<std::shared_ptr<CPattern>> group) : m_group(std::move(group)) {}
 	virtual ~CPatternGroup() {}
 
 	float Eval(const CPosition&) const;

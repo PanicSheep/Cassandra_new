@@ -19,3 +19,13 @@ public:
 	void Set(const std::string& key, std::string&& value);
 	void Set(const std::string& key, std::vector<std::string>&& values);
 };
+
+class CLI_Arg
+{
+public:
+	const static std::size_t UNDEFINED = std::numeric_limits<std::size_t>::max();
+	std::string name;
+	std::size_t size;
+
+	CLI_Arg(std::string name, std::size_t size = UNDEFINED) : name(name), size(size) {}
+};

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./bin/Solver -test -v -t 1 -f pos/fforum-1-19.obf
+./bin/Solver -config bin/config.ini -test -v -t 1 -f pos/fforum-1-19.obf
 
 read
