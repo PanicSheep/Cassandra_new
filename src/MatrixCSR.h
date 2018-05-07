@@ -68,7 +68,7 @@ CMatrix_CSR<ValueType, SizeType>::CMatrix_CSR(const std::size_t m)
 }
 
 template <typename ValueType, typename SizeType>
-CMatrix_CSR<ValueType, SizeType>::CMatrix_CSR(const std::string & filename) 
+CMatrix_CSR<ValueType, SizeType>::CMatrix_CSR(const std::string & filename)
 {
 	load(filename);
 }
@@ -133,25 +133,25 @@ void CMatrix_CSR<ValueType, SizeType>::save(const std::string & filename) const
 
 template <typename ValueType, typename SizeType>
 inline std::size_t CMatrix_CSR<ValueType, SizeType>::n() const
-{ 
+{
 	return m_n;
 }
 
 template <typename ValueType, typename SizeType>
 inline std::size_t CMatrix_CSR<ValueType, SizeType>::m() const
-{ 
+{
 	return m_m;
 }
 
 template <typename ValueType, typename SizeType>
 inline std::size_t CMatrix_CSR<ValueType, SizeType>::nnz() const
-{ 
+{
 	return std::count_if(data.begin(), data.end(), [](const ValueType& d) { return d != 0; });
 }
 
 template <typename ValueType, typename SizeType>
 inline std::size_t CMatrix_CSR<ValueType, SizeType>::size() const
-{ 
+{
 	return col_indices.size();
 }
 

@@ -33,18 +33,18 @@ public:
 };
 
 template <typename T>
-Vecvec<T>::Vecvec(std::vector<std::size_t> ns) 
+Vecvec<T>::Vecvec(std::vector<std::size_t> ns)
 	: m_n(ns.size())
-{ 
+{
 	m_vec.reserve(m_n);
 	for (const auto& it : ns)
 		m_vec.push_back(std::vector<T>(it));
 }
 
 template <typename T>
-Vecvec<T>::Vecvec(std::vector<std::size_t> ns, T value) 
+Vecvec<T>::Vecvec(std::vector<std::size_t> ns, T value)
 	: m_n(ns.size())
-{ 
+{
 	m_vec.reserve(m_n);
 	for (const auto& it : ns)
 		m_vec.push_back(std::vector<T>(it, value));
