@@ -19,11 +19,11 @@ public:
 
 	Vecvec& operator=(const Vecvec& ) = default;
 	Vecvec& operator=(      Vecvec&&) = default;
-	
+
 	inline             std::size_t  size() const { return m_n; }
 	inline             std::size_t  n()    const { return m_n; }
 	inline std::vector<std::size_t> ns()   const;
-	
+
 	inline const std::vector<T>& operator()(std::size_t i) const { return m_vec[i]; }
 	inline       std::vector<T>& operator()(std::size_t i)       { return m_vec[i]; }
 

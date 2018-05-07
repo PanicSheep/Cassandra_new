@@ -48,7 +48,7 @@ public:
 	CIterativeAlgorithm(const Matrix& A, const Vector& b, Vector x0, double tolerance)
 		: A(A), b(b), x(x0), tolerance(tolerance), terminationCause(eTerminationCause::None) {}
 	virtual ~CIterativeAlgorithm() {}
-	
+
 	void SetValues(const Matrix& A_, const Vector& b_, Vector x0_, double tol)
 	{
 		A = A_;
@@ -61,9 +61,9 @@ public:
 	      std::vector<T>  GetResiduum()       { return residuum; }
 	const Vector&         GetX()        const { return x; }
 	      Vector          GetX()              { return x; }
-	
+
 	eTerminationCause GetTerminationCause() const { return terminationCause; }
-	
+
 	virtual void Iterate(std::size_t maxIteration) = 0;
 };
 
@@ -88,7 +88,7 @@ public:
 	CIterativeCG() : CIterativeAlgorithm<Matrix, Vector, T>() {}
 	CIterativeCG(const Matrix& A, const Vector& b, Vector x0, double tolerance)
 		: CIterativeAlgorithm<Matrix, Vector, T>(A, b, x0, tolerance) {}
-	
+
 	void Iterate(std::size_t maxIteration)
 	{
 		assert(A.n() == A.m());
@@ -105,7 +105,7 @@ public:
 		residuum.push_back(r_dot_r_new);
 
 		for (std::size_t k = 1; k <= maxIteration; k++)
-		{		
+		{
 			r_dot_r_old = r_dot_r_new;
 			A_p = A * p;
 			alpha = r_dot_r_old / dot(p, A_p);
@@ -148,7 +148,7 @@ public:
 	CIterativePCG() : CIterativeAlgorithm<Matrix, Vector, T>() {}
 	CIterativePCG(const Matrix& A, const IPreconditioner<Matrix, Vector> * P, const Vector& b, Vector x0, double tolerance)
 		: CIterativeAlgorithm<Matrix, Vector, T>(A, b, x0, tolerance), P(P) {}
-	
+
 	void Iterate(std::size_t maxIteration)
 	{
 		assert(A.n() == A.m());
@@ -180,7 +180,7 @@ public:
 				terminationCause = eTerminationCause::Converged;
 				return;
 			}
-			
+
 			beta = r_dot_r_new / r_dot_r_old;
 			p = r + beta * p;
 		}
@@ -209,7 +209,7 @@ public:
 	CIterativeCGLS() : CIterativeAlgorithm<Matrix, Vector, T>() {}
 	CIterativeCGLS(const Matrix& A, const Vector& b, Vector x0, double tolerance)
 		: CIterativeAlgorithm<Matrix, Vector, T>(A, b, x0, tolerance) {}
-	
+
 	void Iterate(std::size_t maxIteration)
 	{
 		assert(A.n() == b.size());
@@ -218,7 +218,7 @@ public:
 		assert(tolerance >= 0);
 		Vector r, p, A_p;
 		float alpha, beta, r_dot_r_old, r_dot_r_new;
-		
+
 		r = A.ATx(b - A * x);
 		p = r;
 		r_dot_r_new = dot(r, r);
@@ -238,7 +238,7 @@ public:
 				terminationCause = eTerminationCause::Converged;
 				return;
 			}
-			
+
 			beta = r_dot_r_new / r_dot_r_old;
 			p = r + beta * p;
 		}
@@ -269,7 +269,7 @@ public:
 	CIterativePCGLS() : CIterativeAlgorithm<Matrix, Vector, T>() {}
 	CIterativePCGLS(const Matrix& A, const IPreconditioner<Matrix, Vector> * P, const Vector& b, Vector x0, double tolerance)
 		: CIterativeAlgorithm<Matrix, Vector, T>(A, b, x0, tolerance), P(P) {}
-	
+
 	void Iterate(std::size_t maxIteration)
 	{
 		assert(A.n() == b.size());
@@ -330,7 +330,7 @@ public:
 	CIterativeLSQR() : CIterativeAlgorithm<Matrix, Vector, T>() {}
 	CIterativeLSQR(const Matrix& A, const Vector& b, Vector x0, double tolerance)
 		: CIterativeAlgorithm<Matrix, Vector, T>(A, b, x0, tolerance) {}
-	
+
 	void Iterate(std::size_t maxIteration)
 	{
 		assert(A.n() == b.size());
@@ -396,7 +396,7 @@ public:
 	CIterativePLSQR() : CIterativeAlgorithm<Matrix, Vector, T>() {}
 	CIterativePLSQR(const Matrix& A, const IPreconditioner<Matrix, Vector> * P, const Vector& b, Vector x0, double tolerance)
 		: CIterativeAlgorithm<Matrix, Vector, T>(A, b, x0, tolerance), P(P) {}
-	
+
 	void Iterate(std::size_t maxIteration)
 	{
 		assert(A.n() == b.size());

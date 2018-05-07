@@ -15,7 +15,7 @@ class CMatrix_CSR
 {
 	std::size_t m_n; ///< number of rows
 	std::size_t m_m; ///< number of columns
-	
+
 	std::vector<ValueType> data;
 	std::vector<SizeType> col_indices;
 	std::vector<SizeType> row_starts;
@@ -27,24 +27,24 @@ public:
 	CMatrix_CSR(CMatrix_CSR&&) = default;
 	CMatrix_CSR& operator=(const CMatrix_CSR&);
 	CMatrix_CSR& operator=(CMatrix_CSR&&) = default;
-	
+
 	void load(const std::string & filename);
 	void save(const std::string & filename) const;
-	
+
 	inline std::size_t n() const;
 	inline std::size_t m() const;
 	inline std::size_t nnz() const;
 	inline std::size_t size() const;
-	
+
 	void push_back(const std::vector<SizeType>& Col_Indices, const std::vector<ValueType>& Data);
 	void push_back(const SizeType& col, const ValueType& Data);
 	inline void endRow();
-	
+
 	template <typename T> std::vector<T> Ax(const std::vector<T>& x) const;
 	template <typename T> std::vector<T> ATx(const std::vector<T>& x) const;
 	template <typename T> std::vector<T> ATAx(const std::vector<T>& x) const;
 	template <typename T> std::vector<T> operator*(const std::vector<T>& x) const;
-	
+
 	inline bool operator==(const CMatrix_CSR& mat) const;
 	inline bool operator!=(const CMatrix_CSR& mat) const;
 
@@ -90,23 +90,23 @@ void CMatrix_CSR<ValueType, SizeType>::load(const std::string & filename)
 	std::fstream file(filename, std::ios::in | std::ios::binary);
 	if (!file.is_open())
 		throw std::iostream::failure("File '" + filename + "' could not be opened for input.");
-	
+
 	std::size_t vec1size;
 	std::size_t vec2size;
-	
+
 	file.read(reinterpret_cast<char*>(&m_n), sizeof(std::size_t));
 	file.read(reinterpret_cast<char*>(&m_m), sizeof(std::size_t));
 	file.read(reinterpret_cast<char*>(&vec1size), sizeof(std::size_t));
 	file.read(reinterpret_cast<char*>(&vec2size), sizeof(std::size_t));
-	
+
 	data = std::vector<ValueType>(vec1size);
 	col_indices = std::vector<SizeType >(vec1size);
 	row_starts = std::vector<SizeType >(vec2size);
-	
+
 	file.read(reinterpret_cast<char*>(&data[0])       , sizeof(ValueType) * vec1size);
 	file.read(reinterpret_cast<char*>(&col_indices[0]), sizeof(SizeType ) * vec1size);
 	file.read(reinterpret_cast<char*>(&row_starts[0]) , sizeof(SizeType ) * vec2size);
-	
+
 	file.close();
 }
 
@@ -231,7 +231,7 @@ template <typename T>
 std::vector<T> CMatrix_CSR<ValueType, SizeType>::ATAx(const std::vector<T>& x) const
 {
 	return ATx(Ax(x)); // Room for optimization: Remove this!
-	
+
 	assert(m_m == x.size());
 	std::vector<T> result(m_m, 0);
 	#pragma omp parallel

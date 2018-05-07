@@ -67,12 +67,12 @@ int main(int argc, char* argv[])
 	CArgs args;
 	args.Set("config", "config.ini");
 	args.Load(argc, argv);
-	
+
 	if (args.Has("h")) {
 		PrintHelp();
 		return 0;
 	}
-	
+
 	// Check input
 	Check_mandatory_argument(args, CLI_arg_position);
 	Check_mandatory_argument(args, CLI_arg_output_folder);
@@ -96,13 +96,13 @@ int main(int argc, char* argv[])
 	std::cout << "Input position: '" << position_filename.GetRelativeFilePath() << "'" << std::endl;
 	std::cout << "Output folder: '" << output_folder.GetRelativeFolderPath() << "'" << std::endl;
 	std::cout << "Pattern: " << join(pattern_names, ",") << std::endl;
-	
+
 	std::cout << "Loading positions...";
 	const auto StartTime_load = std::chrono::high_resolution_clock::now();
 	auto boards = CBoardCollection(position_filename);
 	const auto EndTime_load = std::chrono::high_resolution_clock::now();
 	std::cout << "done. " << time_format(EndTime_load - StartTime_load) << std::endl;
-	
+
 	#pragma omp parallel for schedule(static, 1)
 	for (int64_t i = 0; i < static_cast<int64_t>(pattern_names.size()); i++)
 	{

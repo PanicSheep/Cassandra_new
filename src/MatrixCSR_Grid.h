@@ -22,22 +22,22 @@ public:
 	CMatrix_CSR_Grid() = default;
 	CMatrix_CSR_Grid(Array2D<Matrix> arr);
 	CMatrix_CSR_Grid(const Array2D<std::string>& filenames);
-	
+
 	void load(const Array2D<std::string>& filenames);
 	void save(const Array2D<std::string>& filenames) const;
-	
+
 	inline std::size_t n() const { return m_arr.n(); }
 	inline std::size_t m() const { return m_arr.m(); }
 	inline std::size_t nnz() const; ///< Numer of nonzero matrix elements
 	inline std::size_t size() const; ///< Number of matrix elements
 	inline std::vector<std::size_t> ns() const;
 	inline std::vector<std::size_t> ms() const;
-	
+
 	template <typename T> Vecvec<T> Ax(const Vecvec<T>& x) const;
 	template <typename T> Vecvec<T> ATx(const Vecvec<T>& x) const;
 	template <typename T> Vecvec<T> ATAx(const Vecvec<T>& x) const;
 	template <typename T> Vecvec<T> operator*(const Vecvec<T>& x) const;
-	
+
 	inline bool operator==(const CMatrix_CSR_Grid& mat) const;
 	inline bool operator!=(const CMatrix_CSR_Grid& mat) const { return !(*this == mat); }
 
@@ -86,7 +86,7 @@ void CMatrix_CSR_Grid<ValueType, SizeType>::load(const Array2D<std::string>& fil
 	for (std::size_t i = 0; i < filenames.n(); i++)
 		for (std::size_t j = 0; j < filenames.m(); j++)
 			m_arr(i,j) = Matrix(filenames(i,j));
-	
+
 	assert(check_dimensions());
 }
 
@@ -96,7 +96,7 @@ void CMatrix_CSR_Grid<ValueType, SizeType>::save(const Array2D<std::string>& fil
 	// Check dimenstions
 	assert(m_arr.n() == filenames.n());
 	assert(m_arr.m() == filenames.m());
-	
+
 	for (std::size_t i = 0; i < m_arr.n(); i++)
 		for (std::size_t j = 0; j < m_arr.m(); j++)
 			m_arr(i,j).save(filenames(i,j));

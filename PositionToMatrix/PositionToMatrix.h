@@ -15,10 +15,10 @@ template <typename ValueType, typename SizeType>
 CMatrix_CSR<ValueType, SizeType> to_Matrix(const CBoardCollection& boards, const uint64_t pattern)
 {
 	const std::size_t size = boards.size();
-	
+
 	auto Pattern = CreatePattern(pattern);
 	CMatrix_CSR<ValueType, SizeType> A(Pattern->ReducedSize());
-	
+
 	#pragma omp parallel for ordered schedule(static, 1)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
@@ -35,7 +35,7 @@ CMatrix_CSR<ValueType, SizeType> to_Matrix(const CBoardCollection& boards, const
 			A.endRow();
 		}
 	}
-	
+
 	return A;
 }
 
@@ -70,7 +70,7 @@ std::vector<VectorValueType> to_Vector(const CBoardCollection& boards)
 //	Array2D<CMatrix_CSR<ValueType, SizeType>> arr(pos.n(), pattern.size());
 //	Vecvec<VectorValueType> vecvec(pos.n());
 //	std::pair<CMatrix_CSR<ValueType, SizeType>, std::vector<VectorValueType>> matvec;
-//	
+//
 //	for (std::size_t i = 0; i < pos.n(); i++)
 //	{
 //		for (std::size_t j = 0; j < pattern.size(); j++)
@@ -80,6 +80,6 @@ std::vector<VectorValueType> to_Vector(const CBoardCollection& boards)
 //		}
 //		vecvec(i) = matvec.second;
 //	}
-//	
+//
 //	return std::pair<CMatrix_CSR_Grid<ValueType, SizeType>, Vecvec<VectorValueType>>(arr, vecvec);
 //}

@@ -35,7 +35,7 @@ struct Environment
 	std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable;
 	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer;
 	std::shared_ptr<IPattern> PatternEvaluator;
-	
+
 	Environment() : Environment(nullptr, nullptr, nullptr, nullptr) {}
 	Environment(std::shared_ptr<ILastFLipCounter> LastFlipCounter,
 		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable,

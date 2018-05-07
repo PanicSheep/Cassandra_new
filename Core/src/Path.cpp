@@ -160,7 +160,7 @@ void CPath::ProcessFolderUps()
 
 std::string CPath::GetRelativePath() const
 {
-	
+
 	auto cwd = GetCurrentWorkingDirectory();
 	auto SplittedCwd = split(cwd, FOLDER_SEPARATOR);
 	auto SplittedFullPath = split(m_fullpath, FOLDER_SEPARATOR);

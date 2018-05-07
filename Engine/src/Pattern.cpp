@@ -185,7 +185,7 @@ uint32_t CPatternH::ReducedPatternIndex0(CPosition pos) const
 	const uint32_t indexA = (FullPatternIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
 	pos.FlipHorizontal();
 	const uint32_t indexB = (FullPatternIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
-		
+
 	if (indexA > indexB)
 		return indexB * halfSize + indexA - ((indexB * indexB + indexB) >> 1);
 	else
@@ -245,7 +245,7 @@ uint32_t CPatternD::ReducedPatternIndex0(CPosition pos) const
 	const uint32_t indexD = (FullPatternIndex(pos, Pattern & DIAG & ~MID) << PopCount(Pattern & DIAG & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & DIAG & MID));
 	pos.FlipDiagonal();
 	const uint32_t indexB = (FullPatternIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
-		
+
 	if (indexA > indexB)
 		return diagSize * (indexB * halfSize + indexA - ((indexB * indexB + indexB) >> 1)) + indexD;
 	else
@@ -292,7 +292,7 @@ void CPattern0::set_weights(const std::vector<float>& compressed_weights)
 {
 	assert(compressed_weights.size() == m_ReducedSize);
 	set_weights();
-		
+
 	For_each_configuration_in_pattern_do_fkt(Pattern  , [&](const CPosition& pos) { m_weights[0][FullPatternIndex(pos, Pattern  )] = compressed_weights[ReducedPatternIndex0(pos)]; });
 	For_each_configuration_in_pattern_do_fkt(PatternH , [&](const CPosition& pos) { m_weights[1][FullPatternIndex(pos, PatternH )] = compressed_weights[ReducedPatternIndex1(pos)]; });
 	For_each_configuration_in_pattern_do_fkt(PatternV , [&](const CPosition& pos) { m_weights[2][FullPatternIndex(pos, PatternV )] = compressed_weights[ReducedPatternIndex2(pos)]; });

@@ -25,7 +25,7 @@ protected:
 public:
 	CPattern(uint64_t Pattern, uint32_t FullSize, uint32_t ReducedSize, uint32_t Occurrences);
 	virtual ~CPattern() {}
-	
+
 	uint64_t GetPattern() const { return Pattern; }
 	uint32_t Occurrences() const { return m_Occurrences; }
 	uint32_t FullSize() const { return m_FullSize; }

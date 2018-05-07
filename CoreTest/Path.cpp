@@ -392,7 +392,7 @@ void Test_File(
 
 	ASSERT_EQ(path.IsFile(), true);
 	ASSERT_EQ(path.IsFolder(), false);
-	
+
 	ASSERT_EQ(path.GetRawFileName(), raw_file_name);
 	ASSERT_EQ(path.GetFullFileName(), full_file_name);
 	ASSERT_EQ(path.GetExtension(), extension);

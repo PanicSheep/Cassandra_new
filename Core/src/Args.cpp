@@ -26,7 +26,7 @@ void CArgs::Load(int argc, char* argv[])
 					values.push_back(next_token);
 			}
 			m_args[key] = std::move(values);
-			
+
 			i += values.size();
 		}
 	}
