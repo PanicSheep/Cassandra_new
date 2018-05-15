@@ -11,7 +11,7 @@ public:
 	CStabilityAnalyzer();
 
 	uint64_t GetStableEdges(const CPosition&) const;
-	uint64_t GetStableStones(const CPosition&) const override; // The stable stones from the player.
+	uint64_t GetStableStones(const CPosition&) const override; // The stable stones from the opponent.
 
 private:
 	static uint64_t FullLineHorizontal(uint64_t discs);

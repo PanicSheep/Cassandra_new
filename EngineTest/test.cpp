@@ -246,3 +246,18 @@ TEST_F(PVS, FForum07) { TestPosition(25, PVSearch(environment)); }
 TEST_F(PVS, FForum08) { TestPosition(26, PVSearch(environment)); }
 TEST_F(PVS, FForum09) { TestPosition(27, PVSearch(environment)); }
 TEST_F(PVS, FForum10) { TestPosition(28, PVSearch(environment)); }
+
+
+TEST(GetStableStones, none)
+{
+	const auto stables = GetStableStones(CPosition::StartPosition());
+
+	ASSERT_EQ(stables, 0ULL);
+}
+
+TEST(GetStableStones, none2)
+{
+	const auto stables = GetStableStones(CPosition(0, 0xFF));
+
+	ASSERT_EQ(stables, 0xFF);
+}
