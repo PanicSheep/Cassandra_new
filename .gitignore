@@ -1,14 +1,13 @@
-# Position files
-.pos
-.psc
-.pfs
-.psd
-.pas
+*.xlsx
+*.sh
+*.bat
+*.cd
 
 # Cassandra specific files
-.m
-.v
-.w
+*.pos
+*.m
+*.v
+*.w
 
 # Compiled Object files
 *.slo
