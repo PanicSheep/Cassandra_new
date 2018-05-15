@@ -15,7 +15,7 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta)
 	if (empties <= 14)
 		return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
 
-	for (int d = empties % 2; d < empties - 10; d++)
+	for (int d = 0; d < empties - 10; d++)
 		PVS(InputValues(pos, alpha, beta, d, 0));
 	return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
 }
@@ -399,8 +399,7 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 	}
 
 	StatusValues stat(in, GetNodeCount());
-	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
-		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	//if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
 
 	int bestscore = -128;
@@ -449,8 +448,7 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 	}
 
 	StatusValues stat(in, GetNodeCount());
-	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
-		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	const auto TTRet = TranspositionTableAnalysis(in);
 	if (const auto ret = stat.ImproveWith(TTRet); ret.CausesCut) return ret.Values;
 
@@ -506,8 +504,7 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 	}
 
 	StatusValues stat(in, GetNodeCount());
-	if (in.alpha > 42 && ((in.pos.Empties() & 0x8100000000000081ULL) != 0x8100000000000081ULL))
-		if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
+	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	const auto TTRet = TranspositionTableAnalysis(in);
 
 	if (TTRet.PV != Field::invalid)
@@ -571,8 +568,9 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 
 PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
 {
-	const auto score = static_cast<int>(64 - 2 * PopCount(GetStableStones(in.pos)));
-	return AnalysisReturnValues(-64, score+1, in.pos.EmptyCount(), 0);
+	const auto opponents_stable_stoned = GetStableStones(in.pos);
+	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stoned));
+	return AnalysisReturnValues(-64, max_score + 1, in.pos.EmptyCount(), 0);
 }
 
 PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputValues& in)

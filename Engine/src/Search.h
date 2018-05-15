@@ -183,14 +183,14 @@ class PVSearch : public Search
 					return AAA(true, ReturnValues(-64, ret.beta, ret.depth, ret.selectivity));
 				if (ret.alpha >= beta) // Beta Cut.
 					return AAA(true, ReturnValues(ret.alpha, +64, ret.depth, ret.selectivity));
-				else
+				else if (ret.alpha > alpha)
 				{
-					alpha = std::max(alpha, ret.alpha);
-					beta = std::min(beta, ret.beta);
+					alpha = alpha;
+					//beta = std::min(beta, ret.beta);
 					depth = ret.depth;
 					selectivity = ret.selectivity;
-					PV = ret.PV;
-					AV = ret.AV;
+					if (ret.PV != Field::invalid) PV = ret.PV; // TODO: Test this, and decide what to do.
+					if (ret.AV != Field::invalid) AV = ret.AV; // TODO: Test this, and decide what to do.
 				}
 			}
 			return AAA(false, ReturnValues());
