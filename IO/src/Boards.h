@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cstdint>
 #include "Position.h"
-#include "Path.h"
 #include "StreamSerializables.h"
 #include "ObjectSerializables.h"
 

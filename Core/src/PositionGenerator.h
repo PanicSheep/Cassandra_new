@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_set>
 #include <random>
-#include "position.h"
+#include "Position.h"
 
 class CPositionGenerator
 {

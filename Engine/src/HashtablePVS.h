@@ -4,8 +4,6 @@
 #include <atomic>
 #include <iostream>
 #include <memory>
-#include "MacrosHell.h"
-#include "Utility.h"
 #include "Moves.h"
 #include "Position.h"
 #include "Hashtable.h"

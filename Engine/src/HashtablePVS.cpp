@@ -1,5 +1,6 @@
 #include "HashtablePVS.h"
 #include <algorithm>
+#include "MacrosHell.h"
 
 PvsInfo::PvsInfo()
 	: cost(0)
