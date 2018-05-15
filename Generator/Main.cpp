@@ -7,6 +7,8 @@
 #include "LastFlipCounter.h"
 #include "FlipFast.h"
 
+using namespace IO;
+
 void Next(const CPath& Input, const CPath& Output)
 {
 	const auto input = CBoardCollection(Input);

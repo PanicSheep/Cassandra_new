@@ -3,18 +3,21 @@
 #include "ObjectSerializables.h"
 #include "StreamSerializables.h"
 
- class BoardToStreamConverter : public BoardArchive
+namespace IO
 {
-	std::unique_ptr<StreamArchive> arch;
-public:
-	BoardToStreamConverter(std::unique_ptr<StreamArchive> arch) : arch(std::move(arch)) {}
-	virtual ~BoardToStreamConverter() {}
+	class BoardToStreamConverter : public BoardArchive
+	{
+		std::unique_ptr<StreamArchive> arch;
+	public:
+		BoardToStreamConverter(std::unique_ptr<StreamArchive> arch) : arch(std::move(arch)) {}
+		virtual ~BoardToStreamConverter() {}
 
-	void Serialize(const CBoard& obj) override;
-	void Serialize(const CBoardScore& obj) override;
-	void Serialize(const CBoardScoreDepth& obj) override;
-	void Serialize(const CBoardAllDepthScore& obj) override;
-	void Serialize(const CBoardAllMoveScore& obj) override;
+		void Serialize(const CBoard& obj) override;
+		void Serialize(const CBoardScore& obj) override;
+		void Serialize(const CBoardScoreDepth& obj) override;
+		void Serialize(const CBoardAllDepthScore& obj) override;
+		void Serialize(const CBoardAllMoveScore& obj) override;
 
-	std::unique_ptr<CBoard> DeserializeBoard() override;
-};
+		std::unique_ptr<CBoard> DeserializeBoard() override;
+	};
+}

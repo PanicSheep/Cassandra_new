@@ -5,6 +5,8 @@
 #include "BoardCollection.h"
 #include "PositionGenerator.h"
 
+using namespace IO;
+
 TEST(Board, Position)
 {
 	const CPosition pos = CPosition::StartPosition();

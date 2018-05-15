@@ -15,6 +15,8 @@
 #include <iterator>
 #include <type_traits>
 
+using namespace IO;
+
 void PrintHelp()
 {
 	std::cout << "Expected input:\n"

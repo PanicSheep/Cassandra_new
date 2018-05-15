@@ -11,6 +11,8 @@
 #include <map>
 #include <cstdint>
 
+using namespace IO;
+
 template <typename ValueType, typename SizeType>
 CMatrix_CSR<ValueType, SizeType> to_Matrix(const CBoardCollection& boards, const uint64_t pattern)
 {

@@ -2,58 +2,60 @@
 #include <iostream>
 #include <functional>
 
-CBoardCollection::CBoardCollection(const CPath & file)
+namespace IO
 {
-	Load(file);
-}
-
-void CBoardCollection::Load(const CPath & file)
-{
-	std::unique_ptr<iBoardArchive> archive;
-	std::unique_ptr<StreamArchive> fstream = std::make_unique<fstreamArchive>(file, true);
-	const auto ext = file.GetExtension();
-
-	     if (ext == "pos")		archive = std::make_unique<BoardToStreamConverter>(std::move(fstream));
-	else if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
-	else if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
-	else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
-	else
-		return;
-
-	while (true)
+	CBoardCollection::CBoardCollection(const CPath & file)
 	{
-		std::unique_ptr<CBoard> board = archive->DeserializeBoard();
-		if (board == nullptr)
-			break;
-		m_boards.push_back(std::move(board));
+		Load(file);
 	}
-}
 
-void CBoardCollection::Save(const CPath & file) const
-{
-	std::unique_ptr<oBoardArchive> archive;
-	std::unique_ptr<StreamArchive> fstream = std::make_unique<fstreamArchive>(file, false);
+	void CBoardCollection::Load(const CPath & file)
+	{
+		std::unique_ptr<iBoardArchive> archive;
+		std::unique_ptr<StreamArchive> fstream = std::make_unique<fstreamArchive>(file, true);
+		const auto ext = file.GetExtension();
 
-	const auto ext = file.GetExtension();
+		if (ext == "pos")		archive = std::make_unique<BoardToStreamConverter>(std::move(fstream));
+		else if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
+		else if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
+		else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
+		else
+			return;
 
-	     if (ext == "pos")		archive = std::make_unique<BoardToStreamConverter>(std::move(fstream));
-	else if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
-	else if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
-	else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
-	else
-		return;
+		while (true)
+		{
+			std::unique_ptr<CBoard> board = archive->DeserializeBoard();
+			if (board == nullptr)
+				break;
+			m_boards.push_back(std::move(board));
+		}
+	}
 
-	for (const auto& it : m_boards)
-		*archive << *it;
-}
+	void CBoardCollection::Save(const CPath & file) const
+	{
+		std::unique_ptr<oBoardArchive> archive;
+		std::unique_ptr<StreamArchive> fstream = std::make_unique<fstreamArchive>(file, false);
 
-AutoSavingBoardCollection::AutoSavingBoardCollection(const CPath& input_file, const CPath& output_file, std::chrono::seconds interval)
-	: m_terminate(false)
-{
-	Load(input_file);
+		const auto ext = file.GetExtension();
 
-	m_thread = std::thread(
-		[this, output_file, interval]()
+		if (ext == "pos")		archive = std::make_unique<BoardToStreamConverter>(std::move(fstream));
+		else if (ext == "script")	archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
+		else if (ext == "full")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
+		else if (ext == "obf")		archive = std::make_unique<SingleLineStreamDecorator>(std::move(fstream));
+		else
+			return;
+
+		for (const auto& it : m_boards)
+			*archive << *it;
+	}
+
+	AutoSavingBoardCollection::AutoSavingBoardCollection(const CPath& input_file, const CPath& output_file, std::chrono::seconds interval)
+		: m_terminate(false)
+	{
+		Load(input_file);
+
+		m_thread = std::thread(
+			[this, output_file, interval]()
 		{
 			std::unique_lock<std::mutex> lock(m_mtx);
 			while (m_terminate.load(std::memory_order_acquire) == false)
@@ -62,58 +64,59 @@ AutoSavingBoardCollection::AutoSavingBoardCollection(const CPath& input_file, co
 				CBoardCollection::Save(output_file);
 			}
 		}
-	);
-}
+		);
+	}
 
-AutoSavingBoardCollection::~AutoSavingBoardCollection()
-{
-	m_terminate.store(true, std::memory_order_release);
-}
+	AutoSavingBoardCollection::~AutoSavingBoardCollection()
+	{
+		m_terminate.store(true, std::memory_order_release);
+	}
 
-void AutoSavingBoardCollection::push_back(std::unique_ptr<CBoard>&& pos)
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	CBoardCollection::push_back(std::move(pos));
-}
+	void AutoSavingBoardCollection::push_back(std::unique_ptr<CBoard>&& pos)
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		CBoardCollection::push_back(std::move(pos));
+	}
 
-void AutoSavingBoardCollection::push_back(const std::unique_ptr<CBoard>& pos)
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	CBoardCollection::push_back(std::unique_ptr<CBoard>(pos->Clone()));
-}
+	void AutoSavingBoardCollection::push_back(const std::unique_ptr<CBoard>& pos)
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		CBoardCollection::push_back(std::unique_ptr<CBoard>(pos->Clone()));
+	}
 
-std::unique_ptr<CBoard> AutoSavingBoardCollection::Get(std::size_t index) const
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	return CBoardCollection::Get(index);
-}
+	std::unique_ptr<CBoard> AutoSavingBoardCollection::Get(std::size_t index) const
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		return CBoardCollection::Get(index);
+	}
 
-void AutoSavingBoardCollection::Set(std::size_t index, std::unique_ptr<CBoard>&& pos)
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	CBoardCollection::Set(index, std::move(pos));
-}
+	void AutoSavingBoardCollection::Set(std::size_t index, std::unique_ptr<CBoard>&& pos)
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		CBoardCollection::Set(index, std::move(pos));
+	}
 
-void AutoSavingBoardCollection::Set(std::size_t index, const std::unique_ptr<CBoard>& pos)
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	CBoardCollection::Set(index, pos);
-}
+	void AutoSavingBoardCollection::Set(std::size_t index, const std::unique_ptr<CBoard>& pos)
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		CBoardCollection::Set(index, pos);
+	}
 
-std::size_t AutoSavingBoardCollection::size() const
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	return CBoardCollection::size();
-}
+	std::size_t AutoSavingBoardCollection::size() const
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		return CBoardCollection::size();
+	}
 
-void AutoSavingBoardCollection::Load(const CPath & file)
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	CBoardCollection::Load(file);
-}
+	void AutoSavingBoardCollection::Load(const CPath & file)
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		CBoardCollection::Load(file);
+	}
 
-void AutoSavingBoardCollection::Save(const CPath & file) const
-{
-	std::unique_lock<std::mutex> lock(m_mtx);
-	CBoardCollection::Save(file);
+	void AutoSavingBoardCollection::Save(const CPath & file) const
+	{
+		std::unique_lock<std::mutex> lock(m_mtx);
+		CBoardCollection::Save(file);
+	}
 }
