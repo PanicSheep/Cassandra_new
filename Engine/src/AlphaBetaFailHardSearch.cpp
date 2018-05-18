@@ -1,7 +1,9 @@
-#include "Search.h"
+#include "AlphaBetaFailHardSearch.h"
+
+#include <algorithm>
+
 #include "LastFlipCounter.h"
 #include "FlipFast.h"
-#include <algorithm>
 
 int AlphaBetaFailHardSearch::Eval(const CPosition& pos)
 {

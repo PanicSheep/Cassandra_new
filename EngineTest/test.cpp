@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Search.h"
+#include "NegaMaxSearch.h"
+#include "AlphaBetaFailHardSearch.h"
+#include "AlphaBetaFailSoftSearch.h"
 #include "Stability.h"
 
 class CPositionScore : public CPosition

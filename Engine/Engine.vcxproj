@@ -24,10 +24,13 @@
     <ClCompile Include="src\Stability.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AlphaBetaFailHardSearch.h" />
+    <ClInclude Include="src\AlphaBetaFailSoftSearch.h" />
     <ClInclude Include="src\ConfigFile.h" />
     <ClInclude Include="src\Environment.h" />
     <ClInclude Include="src\HashtablePVS.h" />
     <ClInclude Include="src\LastFlipCounter.h" />
+    <ClInclude Include="src\NegaMaxSearch.h" />
     <ClInclude Include="src\Pattern.h" />
     <ClInclude Include="src\Search.h" />
     <ClInclude Include="src\Stability.h" />

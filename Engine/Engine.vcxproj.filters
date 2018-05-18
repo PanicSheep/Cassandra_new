@@ -21,6 +21,9 @@
     <ClInclude Include="src\Environment.h" />
     <ClInclude Include="src\Pattern.h" />
     <ClInclude Include="src\ConfigFile.h" />
+    <ClInclude Include="src\NegaMaxSearch.h" />
+    <ClInclude Include="src\AlphaBetaFailHardSearch.h" />
+    <ClInclude Include="src\AlphaBetaFailSoftSearch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

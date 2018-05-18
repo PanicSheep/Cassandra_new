@@ -1,7 +1,9 @@
-#include "Search.h"
+#include "NegaMaxSearch.h"
+
+#include <algorithm>
+
 #include "LastFlipCounter.h"
 #include "FlipFast.h"
-#include <algorithm>
 
 int NegaMaxSearch::Eval(const CPosition& pos)
 {
