@@ -78,12 +78,6 @@ namespace IO
 		CBoardCollection::push_back(std::move(pos));
 	}
 
-	void AutoSavingBoardCollection::push_back(const std::unique_ptr<CBoard>& pos)
-	{
-		std::unique_lock<std::mutex> lock(m_mtx);
-		CBoardCollection::push_back(std::unique_ptr<CBoard>(pos->Clone()));
-	}
-
 	std::unique_ptr<CBoard> AutoSavingBoardCollection::Get(std::size_t index) const
 	{
 		std::unique_lock<std::mutex> lock(m_mtx);
@@ -94,12 +88,6 @@ namespace IO
 	{
 		std::unique_lock<std::mutex> lock(m_mtx);
 		CBoardCollection::Set(index, std::move(pos));
-	}
-
-	void AutoSavingBoardCollection::Set(std::size_t index, const std::unique_ptr<CBoard>& pos)
-	{
-		std::unique_lock<std::mutex> lock(m_mtx);
-		CBoardCollection::Set(index, pos);
 	}
 
 	std::size_t AutoSavingBoardCollection::size() const

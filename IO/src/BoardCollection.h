@@ -32,11 +32,9 @@ namespace IO
 		virtual void Save(const CPath& file) const;
 
 		virtual void push_back(std::unique_ptr<CBoard>&& pos) { m_boards.push_back(std::move(pos)); }
-		virtual void push_back(const std::unique_ptr<CBoard>& pos) { m_boards.push_back(pos->Clone()); }
 
 		virtual std::unique_ptr<CBoard> Get(std::size_t index) const { return m_boards[index]->Clone(); }
 		virtual void Set(std::size_t index, std::unique_ptr<CBoard>&& pos) { m_boards[index] = std::move(pos); }
-		virtual void Set(std::size_t index, const std::unique_ptr<CBoard>& pos) { m_boards[index] = pos->Clone(); }
 
 		virtual std::size_t size() const { return m_boards.size(); }
 	};
@@ -60,11 +58,9 @@ namespace IO
 		void Save(const CPath& file) const override;
 
 		void push_back(std::unique_ptr<CBoard>&& pos);
-		void push_back(const std::unique_ptr<CBoard>& pos);
 
 		std::unique_ptr<CBoard> Get(std::size_t index) const override;
 		void Set(std::size_t index, std::unique_ptr<CBoard>&& pos) override;
-		void Set(std::size_t index, const std::unique_ptr<CBoard>& pos) override;
 
 		std::size_t size() const override;
 	};

@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 		if (const auto BoardScore = dynamic_cast<CBoardScore*>(board.get()))
 			BoardScore->score = score;
 
-		boards->Set(i, board);
+		boards->Set(i, std::move(board));
 	}
 	const auto endTime = std::chrono::high_resolution_clock::now();
 

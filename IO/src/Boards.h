@@ -16,7 +16,6 @@ namespace IO
 		CBoard(iStreamArchive& arch) { deserialize(arch); }
 
 		const CPosition& GetPosition() const { return pos; }
-		CPosition& GetPosition() { return pos; }
 
 		virtual uint8_t ClassId() const { return classId; }
 		virtual std::unique_ptr<CBoard> Clone() const { return std::make_unique<CBoard>(*this); }
