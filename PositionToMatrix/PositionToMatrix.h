@@ -46,7 +46,7 @@ std::vector<VectorValueType> to_Vector(const CBoardCollection& boards)
 {
 	const std::size_t size = boards.size();
 	std::vector<VectorValueType> Score;
-	Score.reserve(size);
+	Score.resize(size);
 
 	#pragma omp parallel for schedule(static, 256)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
