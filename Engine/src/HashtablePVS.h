@@ -85,5 +85,3 @@ inline std::size_t HashTable<TwoNode, CPosition, PvsInfo>::Hash(const CPosition&
 	//O ^= O >> 33;
 	//return (P + O + (O << 41)) % table.size();
 }
-
-//std::unique_ptr<CHashTablePVS> CreateHashTable(std::size_t size);
