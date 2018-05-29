@@ -70,39 +70,39 @@
       <FileName>src\ConfigFile.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CBoard" Collapsed="true">
+  <Class Name="CPuzzle" Collapsed="true">
     <Position X="4.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgACAAIAAAAAAAIIAAACBAAAAAwAABCBAAABA=</HashCode>
-      <FileName>src\Boards.h</FileName>
+      <FileName>src\puzzles.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CBoardScore" Collapsed="true">
+  <Class Name="CPuzzleScore" Collapsed="true">
     <Position X="2.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAgAAAgAAAAIAAAAAAIIAAAACBAAAAAwAAACBAAABA=</HashCode>
-      <FileName>src\Boards.h</FileName>
+      <FileName>src\puzzles.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CBoardScoreDepth" Collapsed="true">
+  <Class Name="CPuzzleScoreDepth" Collapsed="true">
     <Position X="2.5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAIAAAAAAAIAAAACBQBAAAwAAAKFAAABg=</HashCode>
-      <FileName>src\Boards.h</FileName>
+      <FileName>src\puzzles.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CBoardAllDepthScore" Collapsed="true">
+  <Class Name="CPuzzleAllDepthScore" Collapsed="true">
     <Position X="4.75" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAgAAAgAAAAIAAAAAAYIAAAACBAAIAAxAAACBAAABA=</HashCode>
-      <FileName>src\Boards.h</FileName>
+      <FileName>src\puzzles.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CBoardAllMoveScore" Collapsed="true">
+  <Class Name="CPuzzleAllMoveScore" Collapsed="true">
     <Position X="7" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAoAAAgEAAAIAAAAAAIIAAAACBAAAAAxAAACBAAABA=</HashCode>
-      <FileName>src\Boards.h</FileName>
+      <FileName>src\puzzles.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Search" Collapsed="true">
@@ -203,11 +203,11 @@
       <FileName>src\Path.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CBoardCollection" Collapsed="true">
+  <Class Name="PuzzleCollection" Collapsed="true">
     <Position X="22" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgIACAAAAAAAAAIEAAAAQAAEAAAAAAQgAAAAAAAA=</HashCode>
-      <FileName>src\BoardCollection.h</FileName>
+      <FileName>src\PuzzleCollection.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CStabilityAnalyzer" Collapsed="true">
@@ -224,7 +224,7 @@
       <FileName>src\StreamQueue.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="BoardToStreamConverter" Collapsed="true">
+  <Class Name="puzzleToStreamConverter" Collapsed="true">
     <Position X="16.5" Y="10.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAACAACAAAAAAAAAABAIA=</HashCode>
@@ -245,28 +245,28 @@
       <FileName>src\SingleLineStreamDecorator.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="BoardSerializable" Collapsed="true">
+  <Class Name="puzzleSerializable" Collapsed="true">
     <Position X="5.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>src\ObjectSerializables.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="iBoardArchive" Collapsed="true">
+  <Class Name="ipuzzleArchive" Collapsed="true">
     <Position X="18.5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>src\ObjectSerializables.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="oBoardArchive" Collapsed="true">
+  <Class Name="opuzzleArchive" Collapsed="true">
     <Position X="16.5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAACAAAABACAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>src\ObjectSerializables.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="BoardArchive" Collapsed="true">
+  <Class Name="puzzleArchive" Collapsed="true">
     <Position X="17.75" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
@@ -277,7 +277,7 @@
     <Position X="23.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
-      <FileName>src\Boards.cpp</FileName>
+      <FileName>src\puzzles.cpp</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Environment" Collapsed="true">

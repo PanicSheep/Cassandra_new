@@ -87,23 +87,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BoardCollection.cpp" />
-    <ClCompile Include="src\Boards.cpp" />
-    <ClCompile Include="src\MultiLineStreamDecorator.cpp" />
-    <ClCompile Include="src\SingleLineStreamDecorator.cpp" />
-    <ClCompile Include="src\StreamConverter.cpp" />
+    <ClCompile Include="src\BinaryStreamArchive.cpp" />
+    <ClCompile Include="src\MultiLineStreamArchive.cpp" />
+    <ClCompile Include="src\IoPuzzleCollection.cpp" />
+    <ClCompile Include="src\SingleLineStreamArchive.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\BoardCollection.h" />
-    <ClInclude Include="src\Boards.h" />
+    <ClInclude Include="src\BinaryStreamArchive.h" />
     <ClInclude Include="src\FileStreamArchive.h" />
-    <ClInclude Include="src\MultiLineStreamDecorator.h" />
-    <ClInclude Include="src\ObjectSerializables.h" />
-    <ClInclude Include="src\Serializables.h" />
-    <ClInclude Include="src\SingleLineStreamDecorator.h" />
-    <ClInclude Include="src\StreamConverter.h" />
-    <ClInclude Include="src\StreamQueue.h" />
-    <ClInclude Include="src\StreamSerializables.h" />
+    <ClInclude Include="src\MultiLineStreamArchive.h" />
+    <ClInclude Include="src\IoPuzzleCollection.h" />
+    <ClInclude Include="src\SingleLineStreamArchive.h" />
     <ClInclude Include="src\VectorIO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

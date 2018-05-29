@@ -3,27 +3,25 @@
   <ItemGroup>
     <ClCompile Include="src\HashtablePVS.cpp" />
     <ClCompile Include="src\LastFlipCounter.cpp" />
-    <ClCompile Include="src\Search.cpp" />
     <ClCompile Include="src\NegaMaxSearch.cpp" />
     <ClCompile Include="src\PVSearch.cpp" />
     <ClCompile Include="src\AlphaBetaFailSoftSearch.cpp" />
     <ClCompile Include="src\AlphaBetaFailHardSearch.cpp" />
     <ClCompile Include="src\Stability.cpp" />
-    <ClCompile Include="src\Environment.cpp" />
     <ClCompile Include="src\Pattern.cpp" />
     <ClCompile Include="src\ConfigFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HashtablePVS.h" />
     <ClInclude Include="src\LastFlipCounter.h" />
-    <ClInclude Include="src\Search.h" />
     <ClInclude Include="src\Stability.h" />
-    <ClInclude Include="src\Environment.h" />
     <ClInclude Include="src\Pattern.h" />
     <ClInclude Include="src\ConfigFile.h" />
     <ClInclude Include="src\NegaMaxSearch.h" />
     <ClInclude Include="src\AlphaBetaFailHardSearch.h" />
     <ClInclude Include="src\AlphaBetaFailSoftSearch.h" />
+    <ClInclude Include="src\PVSearch.h" />
+    <ClInclude Include="src\SortedMoves.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

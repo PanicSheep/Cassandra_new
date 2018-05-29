@@ -3,6 +3,7 @@
 #include "NegaMaxSearch.h"
 #include "AlphaBetaFailHardSearch.h"
 #include "AlphaBetaFailSoftSearch.h"
+#include "PVSearch.h"
 #include "Stability.h"
 
 class CPositionScore : public CPosition

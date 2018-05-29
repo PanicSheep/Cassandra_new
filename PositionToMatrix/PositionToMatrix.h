@@ -1,5 +1,5 @@
 #include "Array2D.h"
-#include "BoardCollection.h"
+#include "PuzzleCollection.h"
 #include "ConfigFile.h"
 #include "MatrixCSR.h"
 #include "MatrixCSR_Grid.h"
@@ -11,12 +11,10 @@
 #include <map>
 #include <cstdint>
 
-using namespace IO;
-
 template <typename ValueType, typename SizeType>
-CMatrix_CSR<ValueType, SizeType> to_Matrix(const CBoardCollection& boards, const uint64_t pattern)
+CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleCollection& puzzles, const uint64_t pattern)
 {
-	const std::size_t size = boards.size();
+	const std::size_t size = puzzles.size();
 
 	auto Pattern = CreatePattern(pattern);
 	CMatrix_CSR<ValueType, SizeType> A(Pattern->ReducedSize());
@@ -24,7 +22,7 @@ CMatrix_CSR<ValueType, SizeType> to_Matrix(const CBoardCollection& boards, const
 	#pragma omp parallel for ordered schedule(static, 1)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
-		auto indices = Pattern->GetConfigurations(boards.Get(i)->GetPosition());
+		auto indices = Pattern->GetConfigurations(puzzles.Get(i)->GetPosition());
 
 		std::map<SizeType, ValueType> map;
 		for (SizeType it : indices)
@@ -42,16 +40,16 @@ CMatrix_CSR<ValueType, SizeType> to_Matrix(const CBoardCollection& boards, const
 }
 
 template <typename VectorValueType>
-std::vector<VectorValueType> to_Vector(const CBoardCollection& boards)
+std::vector<VectorValueType> to_Vector(const PuzzleCollection& puzzles)
 {
-	const std::size_t size = boards.size();
+	const std::size_t size = puzzles.size();
 	std::vector<VectorValueType> Score;
 	Score.resize(size);
 
 	#pragma omp parallel for schedule(static, 256)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
-		Score[i] = dynamic_cast<CBoardScore*>(boards.Get(i).get())->score;
+		Score[i] = dynamic_cast<CPuzzleScore*>(puzzles.Get(i).get())->score;
 	}
 
 	return Score;

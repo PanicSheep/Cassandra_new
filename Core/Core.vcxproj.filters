@@ -7,6 +7,9 @@
     <ClCompile Include="src\PositionGenerator.cpp" />
     <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\Args.cpp" />
+    <ClCompile Include="src\Puzzles.cpp" />
+    <ClCompile Include="src\Environment.cpp" />
+    <ClCompile Include="src\Search.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FlipFast.h" />
@@ -18,6 +21,11 @@
     <ClInclude Include="src\Hashtable.h" />
     <ClInclude Include="src\Path.h" />
     <ClInclude Include="src\Args.h" />
+    <ClInclude Include="src\Puzzles.h" />
+    <ClInclude Include="src\Serializable.h" />
+    <ClInclude Include="src\PuzzleCollection.h" />
+    <ClInclude Include="src\Search.h" />
+    <ClInclude Include="src\Environment.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

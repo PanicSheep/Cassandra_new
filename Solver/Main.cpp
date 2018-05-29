@@ -1,7 +1,9 @@
 #include "Args.h"
-#include "BoardCollection.h"
+#include "IoPuzzleCollection.h"
 #include "ConfigFile.h"
+#include "HashTablePVS.h"
 #include "Path.h"
+#include "PVSearch.h"
 #include "Utility.h"
 #include "Pattern.h"
 #include "PositionGenerator.h"
@@ -50,7 +52,7 @@ int main(int argc, char* argv[])
 	const std::string RAM = args.Get("RAM")[0];
 	const std::size_t threads = std::stoll(args.Get("t")[0]);
 	const bool test = args.Has("test");
-	const bool print_each_board = args.Has("v");
+	const bool print_each_puzzle = args.Has("v");
 
 	CConfigurations configs(config_file);
 	
@@ -60,6 +62,7 @@ int main(int argc, char* argv[])
 		pattern_names = split(configs.Get("active pattern"), " ");
 
 	std::vector<std::shared_ptr<CPatternGroup>> pattern_collection;
+#ifndef _DEBUG
 	for (int range = 0; range < 20; range++)
 	{
 		std::vector<std::shared_ptr<CPattern>> pattern_group;
@@ -83,6 +86,7 @@ int main(int argc, char* argv[])
 		if (range == 0)
 			pattern_collection.push_back(shared_pattern_group);
 	}
+#endif
 	std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<CPatternCollection>(pattern_collection);
 	
 	//std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
@@ -90,13 +94,13 @@ int main(int argc, char* argv[])
 	//std::cout << "RAM: " << RAM << std::endl;
 	//std::cout << "Threads: " << threads << std::endl;
 	//std::cout << "Run as Test: " << test << std::endl;
-	//std::cout << "Print each board: " << print_each_board << std::endl;
-
-	std::unique_ptr<CBoardCollection> boards;
+	//std::cout << "Print each puzzle: " << print_each_puzzle << std::endl;
+	
+	std::unique_ptr<FilePuzzleCollection> puzzles;
 	if (test)
-		boards = std::make_unique<CBoardCollection>(filename);
+		puzzles = std::make_unique<FilePuzzleCollection>(filename);
 	else
-		boards = std::make_unique<AutoSavingBoardCollection>(filename, std::chrono::seconds(300));
+		puzzles = std::make_unique<AutoSavingPuzzleCollection>(filename, std::chrono::seconds(300));
 
 	std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
 	std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
@@ -104,10 +108,10 @@ int main(int argc, char* argv[])
 	std::shared_ptr<Environment> env = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 
 	std::vector<std::unique_ptr<Search>> searches;
-	for (std::size_t i = 0; i < boards->size(); i++)
+	for (std::size_t i = 0; i < puzzles->size(); i++)
 		searches.emplace_back(std::make_unique<PVSearch>(env));
 
-	if (print_each_board)
+	if (print_each_puzzle)
 	{
 		std::cout << " # | depth|score|       time (s) |      nodes (N) |    N/s     " << std::endl;
 		std::cout << "---+------+-----+----------------+----------------+------------" << std::endl;
@@ -115,30 +119,30 @@ int main(int argc, char* argv[])
 
 	const auto startTime = std::chrono::high_resolution_clock::now();
 	#pragma omp parallel for schedule(static, 1) num_threads(threads)
-	for (int64_t i = 0; i < boards->size(); i++)
+	for (int64_t i = 0; i < puzzles->size(); i++)
 	{
-		auto board = boards->Get(i);
+		auto puzzle = puzzles->Get(i);
 		std::unique_ptr<Search>& search = searches[i];
 
-		if (!test && board->IsSolved())
+		if (!test && puzzle->IsSolved())
 			continue;
 
 		env->HashTable->AdvanceDate();
 
 		auto startTime = std::chrono::high_resolution_clock::now();
-		auto score = search->Eval(board->GetPosition());
+		auto score = search->Eval(puzzle->GetPosition());
 		auto endTime = std::chrono::high_resolution_clock::now();
 
-		if (print_each_board)
+		if (print_each_puzzle)
 		{
-			if (const auto BoardScore = dynamic_cast<CBoardAllMoveScore*>(board.get()))
+			if (const auto puzzleScore = dynamic_cast<CPuzzleAllMoveScore*>(puzzle.get()))
 			{
 				#pragma omp critical
 				{
 					std::cout
 						<< std::setw(3) << i << "|"
-						<< std::setw(6) << board->GetPosition().EmptyCount() << "|"
-						<< (test && score != BoardScore->MaxScore() ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != BoardScore->MaxScore() ? "#" : " ") << "|"
+						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
+						<< (test && score != puzzleScore->MaxScore() ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != puzzleScore->MaxScore() ? "#" : " ") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 
@@ -147,14 +151,14 @@ int main(int argc, char* argv[])
 					std::cout << std::endl;
 				}
 			}
-			else if (const auto BoardScore = dynamic_cast<CBoardScore*>(board.get()))
+			else if (const auto puzzleScore = dynamic_cast<CPuzzleScore*>(puzzle.get()))
 			{
 				#pragma omp critical
 				{
 					std::cout
 						<< std::setw(3) << i << "|"
-						<< std::setw(6) << board->GetPosition().EmptyCount() << "|"
-						<< (test && score != BoardScore->score ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != BoardScore->score ? "#" : " ") << "|"
+						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
+						<< (test && score != puzzleScore->score ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != puzzleScore->score ? "#" : " ") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 
@@ -165,10 +169,10 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		if (const auto BoardScore = dynamic_cast<CBoardScore*>(board.get()))
-			BoardScore->score = score;
+		if (const auto puzzleScore = dynamic_cast<CPuzzleScore*>(puzzle.get()))
+			puzzleScore->score = score;
 
-		boards->Set(i, std::move(board));
+		puzzles->Set(i, std::move(puzzle));
 	}
 	const auto endTime = std::chrono::high_resolution_clock::now();
 
@@ -178,13 +182,13 @@ int main(int argc, char* argv[])
 
 	const double time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 
-	if (print_each_board)
+	if (print_each_puzzle)
 		std::cout << "---+------+-----+----------------+----------------+------------" << std::endl;
 
 	std::cout << ThousandsSeparator(NodeCounter) << " nodes in " << time_format(endTime - startTime)
 		<< " (" << ThousandsSeparator(NodeCounter * 1000.0 / time_diff) << " N/s)" << std::endl;
 	
 	if (!test)
-		boards->Save(filename);
+		puzzles->Save(filename);
 	return 0;
 }

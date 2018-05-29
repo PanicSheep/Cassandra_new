@@ -1,6 +1,6 @@
 #include <iostream>
 #include <chrono>
-#include "BoardCollection.h"
+#include "IoPuzzleCollection.h"
 #include "Path.h"
 #include "Utility.h"
 #include "PositionGenerator.h"
@@ -11,8 +11,8 @@ using namespace IO;
 
 void Next(const CPath& Input, const CPath& Output)
 {
-	const auto input = CBoardCollection(Input);
-	auto output = CBoardCollection();
+	const auto input = FilePuzzleCollection(Input);
+	auto output = FilePuzzleCollection();
 
 	for (std::size_t i = 0; i < input.size(); i++)
 	{
@@ -20,7 +20,7 @@ void Next(const CPath& Input, const CPath& Output)
 		auto possibleMoves = pos->GetPosition().PossibleMoves();
 		while (!possibleMoves.empty())
 		{
-			output.push_back(std::unique_ptr<CBoard>(pos->Clone()->Play(possibleMoves.ExtractMove())));
+			output.push_back(std::unique_ptr<CPuzzle>(pos->Play(possibleMoves.ExtractMove())));
 		}
 	}
 
@@ -90,11 +90,11 @@ int main(int argc, char* argv[])
 	else if (all)
 		positions = posgen.GenerateAllPositions(NumEmpties);
 
-	CBoardCollection boards;
+	FilePuzzleCollection puzzles;
 	for (const auto& pos : positions)
-		boards.push_back(std::make_unique<CBoardScore>(pos));
+		puzzles.push_back(std::make_unique<CPuzzleScore>(pos));
 
-	boards.Save(Output);
+	puzzles.Save(Output);
 
 	if (!quiet)
 	{

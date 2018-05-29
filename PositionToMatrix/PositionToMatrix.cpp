@@ -1,10 +1,12 @@
 #include "Args.h"
-#include "BoardCollection.h"
+#include "IoPuzzleCollection.h"
 #include "ConfigFile.h"
 #include "PositionToMatrix.h"
 #include "VectorIO.h"
 #include <omp.h>
 #include <iostream>
+
+using namespace IO;
 
 bool Check_argument(const std::string& message_prefix, const CArgs& args, CLI_Arg arg)
 {
@@ -90,7 +92,7 @@ int main(int argc, char* argv[])
 
 	std::cout << "Loading positions...";
 	const auto StartTime_load = std::chrono::high_resolution_clock::now();
-	auto boards = CBoardCollection(position_filename);
+	auto puzzles = FilePuzzleCollection(position_filename);
 	const auto EndTime_load = std::chrono::high_resolution_clock::now();
 	std::cout << "done. " << time_format(EndTime_load - StartTime_load) << std::endl;
 
@@ -107,7 +109,7 @@ int main(int argc, char* argv[])
 		const CPath matrix_file(output_folder.GetAbsoluteFolderPath() + position_filename.GetRawFileName() + "_" + pat + ".m");
 
 		const auto startTime_mat = std::chrono::high_resolution_clock::now();
-		auto mat = to_Matrix<uint8_t, uint32_t>(boards, pattern);
+		auto mat = to_Matrix<uint8_t, uint32_t>(puzzles, pattern);
 		mat.save(matrix_file.GetAbsoluteFilePath());
 		const auto endTime_mat = std::chrono::high_resolution_clock::now();
 
@@ -119,7 +121,7 @@ int main(int argc, char* argv[])
 	}
 
 	const CPath vector_file(output_folder.GetAbsoluteFolderPath() + position_filename.GetRawFileName() + ".v");
-	write_to_file(vector_file.GetAbsoluteFilePath(), to_Vector<float>(boards));
+	write_to_file(vector_file.GetAbsoluteFilePath(), to_Vector<float>(puzzles));
 
 	return 0;
 }

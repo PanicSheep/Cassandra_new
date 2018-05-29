@@ -1,5 +1,11 @@
-#include "MultiLineStreamDecorator.h"
+#include "MultiLineStreamArchive.h"
+
+#include <regex>
+#include <string>
+#include <cstdint>
+
 #include "Utility.h"
+#include "Puzzles.h"
 
 namespace IO
 {
@@ -47,7 +53,7 @@ namespace IO
 		std::string MultilinePosition(const CPosition& obj)
 		{
 			const CMoves Moves = obj.PossibleMoves();
-			std::string board =
+			std::string puzzle =
 				"  H G F E D C B A  \n"
 				"8 - - - - - - - - 8\n"
 				"7 - - - - - - - - 7\n"
@@ -64,16 +70,16 @@ namespace IO
 				const bool isP = TestBit(obj.P, 63 - i);
 				const bool isO = TestBit(obj.O, 63 - i);
 				const bool isM = Moves.HasMove(63 - i);
-				auto& field = board[22 + 2 * i + 4 * (i / 8)];
+				auto& field = puzzle[22 + 2 * i + 4 * (i / 8)];
 				if (isP && isO) field = '@';
 				else if (isP)   field = 'X';
 				else if (isO)   field = 'O';
 				else if (isM)   field = '+';
 			}
-			return board;
+			return puzzle;
 		}
 
-		std::unique_ptr<CBoard> Parse_CBoard(const std::string& pos)
+		std::unique_ptr<CPuzzle> Parse_CPuzzle(const std::string& pos)
 		{
 			uint64_t P = 0;
 			uint64_t O = 0;
@@ -85,14 +91,14 @@ namespace IO
 			}
 
 			if (pos[65] == 'X')
-				return std::make_unique<CBoard>(CPosition(P, O));
+				return std::make_unique<CPuzzle>(CPosition(P, O));
 			else if (pos[65] == 'O')
-				return std::make_unique<CBoard>(CPosition(O, P));
+				return std::make_unique<CPuzzle>(CPosition(O, P));
 			else
 				return nullptr;
 		}
 
-		std::unique_ptr<CBoardScore> Parse_CBoardScore(const std::string& pos)
+		std::unique_ptr<CPuzzleScore> Parse_CPuzzleScore(const std::string& pos)
 		{
 			uint64_t P = 0;
 			uint64_t O = 0;
@@ -106,14 +112,14 @@ namespace IO
 			const int8_t score = std::stoi(pos.substr(69, 3));
 
 			if (pos[65] == 'X')
-				return std::make_unique<CBoardScore>(CPosition(P, O), score);
+				return std::make_unique<CPuzzleScore>(CPosition(P, O), score);
 			else if (pos[65] == 'O')
-				return std::make_unique<CBoardScore>(CPosition(O, P), -score);
+				return std::make_unique<CPuzzleScore>(CPosition(O, P), -score);
 			else
 				return nullptr;
 		}
 
-		std::unique_ptr<CBoardAllDepthScore> Parse_CBoardAllDepthScore(const std::string& pos)
+		std::unique_ptr<CPuzzleAllDepthScore> Parse_CPuzzleAllDepthScore(const std::string& pos)
 		{
 			uint64_t P = 0;
 			uint64_t O = 0;
@@ -124,12 +130,12 @@ namespace IO
 				else if (pos[i] == '#') { SetBit(P, 63 - i); SetBit(O, 63 - i); }
 			}
 
-			std::unique_ptr<CBoardAllDepthScore> position;
+			std::unique_ptr<CPuzzleAllDepthScore> position;
 
 			if (pos[65] == 'X')
-				position = std::make_unique<CBoardAllDepthScore>(CPosition(P, O));
+				position = std::make_unique<CPuzzleAllDepthScore>(CPosition(P, O));
 			else if (pos[65] == 'O')
-				position = std::make_unique<CBoardAllDepthScore>(CPosition(O, P));
+				position = std::make_unique<CPuzzleAllDepthScore>(CPosition(O, P));
 			else
 				return nullptr;
 
@@ -145,24 +151,24 @@ namespace IO
 		}
 	}
 
-	void MultiLineStreamDecorator::Serialize(const CBoard& obj)
+	void MultiLineStreamArchive::Serialize(const CPuzzle& obj)
 	{
 		stream << MultilinePosition(obj.GetPosition()) << "\n";
 	}
 
-	void MultiLineStreamDecorator::Serialize(const CBoardScore& obj)
+	void MultiLineStreamArchive::Serialize(const CPuzzleScore& obj)
 	{
-		auto board = MultilinePosition(obj.GetPosition());
-		board.insert(39, "  score: " + DoubleDigitSignedInt(obj.score));
-		stream << board << "\n";
+		auto puzzle = MultilinePosition(obj.GetPosition());
+		puzzle.insert(39, "  score: " + DoubleDigitSignedInt(obj.score));
+		stream << puzzle << "\n";
 	}
 
-	void MultiLineStreamDecorator::Serialize(const CBoardScoreDepth& obj)
+	void MultiLineStreamArchive::Serialize(const CPuzzleScoreDepth& obj)
 	{
 		stream << MultilinePosition(obj.GetPosition()) << "\n";
 	}
 
-	void MultiLineStreamDecorator::Serialize(const CBoardAllDepthScore& obj)
+	void MultiLineStreamArchive::Serialize(const CPuzzleAllDepthScore& obj)
 	{
 		stream << MultilinePosition(obj.GetPosition()) << "\n";
 		//stream <<"\nscore:";
@@ -170,7 +176,7 @@ namespace IO
 		//	stream << " " << SignedInt(obj.score[i]);
 	}
 
-	void MultiLineStreamDecorator::Serialize(const CBoardAllMoveScore& obj)
+	void MultiLineStreamArchive::Serialize(const CPuzzleAllMoveScore& obj)
 	{
 		stream << MultilinePosition(obj.GetPosition()) << "\n";
 	}
