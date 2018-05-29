@@ -102,10 +102,10 @@ int main(int argc, char* argv[])
 	else
 		puzzles = std::make_unique<AutoSavingPuzzleCollection>(filename, std::chrono::seconds(300));
 
-	std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
-	std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
+	std::shared_ptr<ILastFlipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+	std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
 	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
-	std::shared_ptr<Environment> env = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+	std::shared_ptr<Environment> env = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 
 	std::vector<std::unique_ptr<Search>> searches;
 	for (std::size_t i = 0; i < puzzles->size(); i++)

@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Args.cpp" />
-    <ClCompile Include="src\Environment.cpp" />
+    <ClCompile Include="src\Moves.cpp" />
     <ClCompile Include="src\Puzzles.cpp" />
     <ClCompile Include="src\FlipFast.cpp" />
     <ClCompile Include="src\Path.cpp" />
@@ -36,9 +36,6 @@
     <ClInclude Include="src\Search.h" />
     <ClInclude Include="src\Serializable.h" />
     <ClInclude Include="src\Utility.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

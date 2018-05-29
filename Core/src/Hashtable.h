@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Position.h"
 
-template <typename NodeType, typename KeyType, typename ValueType>
+template <typename KeyType, typename ValueType>
 class IHashTable
 {
 public:
@@ -18,7 +18,7 @@ public:
 };
 
 template <typename NodeType, typename KeyType, typename ValueType>
-class HashTable : public IHashTable<NodeType, KeyType, ValueType>
+class HashTable : public IHashTable<KeyType, ValueType>
 {
 public:
 	typedef NodeType nodetype;
@@ -28,11 +28,11 @@ public:
 	HashTable(uint64_t Buckets);
 	HashTable() : HashTable(1) {}
 
-	void Update(const KeyType& key, const ValueType& value);
-	std::pair<bool, ValueType> LookUp(const KeyType& key) const;
-	void Refresh(const KeyType& key);
-	void AdvanceDate();
-	void Clear();
+	void Update(const KeyType& key, const ValueType& value) override;
+	std::pair<bool, ValueType> LookUp(const KeyType& key) const override;
+	void Refresh(const KeyType& key) override;
+	void AdvanceDate() override;
+	void Clear() override;
 	void PrintStatistics();
 
 private:
