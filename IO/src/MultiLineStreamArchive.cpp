@@ -67,8 +67,8 @@ namespace IO
 
 			for (unsigned int i = 0; i < 64; i++)
 			{
-				const bool isP = TestBit(obj.P, 63 - i);
-				const bool isO = TestBit(obj.O, 63 - i);
+				const bool isP = TestBit(obj.GetP(), 63 - i);
+				const bool isO = TestBit(obj.GetO(), 63 - i);
 				const bool isM = Moves.HasMove(63 - i);
 				auto& field = puzzle[22 + 2 * i + 4 * (i / 8)];
 				if (isP && isO) field = '@';

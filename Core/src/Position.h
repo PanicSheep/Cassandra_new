@@ -4,8 +4,8 @@
 
 class CPosition
 {
+	uint64_t P, O;
 public:
-	uint64_t P, O; // TODO: Make private!
 
 	CPosition() : CPosition(0, 0) {}
 	CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
@@ -47,7 +47,7 @@ namespace std
 	{
 		std::size_t operator()(const CPosition& pos) const
 		{
-			return pos.P ^ ((pos.O << 32) | (pos.O >> 32));
+			return pos.GetP() ^ ((pos.GetO() << 32) | (pos.GetO() >> 32));
 		}
 	};
 }

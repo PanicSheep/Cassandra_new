@@ -55,8 +55,8 @@ namespace IO
 			std::string puzzle(64, '-');
 			for (unsigned int i = 0; i < 64; i++)
 			{
-				const bool P_bit = TestBit(obj.P, 63 - i);
-				const bool O_bit = TestBit(obj.O, 63 - i);
+				const bool P_bit = TestBit(obj.GetP(), 63 - i);
+				const bool O_bit = TestBit(obj.GetO(), 63 - i);
 				if (P_bit && O_bit) puzzle[i] = '#';
 				else if (P_bit)     puzzle[i] = 'X';
 				else if (O_bit)     puzzle[i] = 'O';
