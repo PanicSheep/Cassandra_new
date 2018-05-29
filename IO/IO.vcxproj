@@ -94,7 +94,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BinaryStreamArchive.h" />
-    <ClInclude Include="src\FileStreamArchive.h" />
     <ClInclude Include="src\MultiLineStreamArchive.h" />
     <ClInclude Include="src\IoPuzzleCollection.h" />
     <ClInclude Include="src\SingleLineStreamArchive.h" />

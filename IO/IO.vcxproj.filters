@@ -7,7 +7,6 @@
     <ClCompile Include="src\BinaryStreamArchive.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\FileStreamArchive.h" />
     <ClInclude Include="src\VectorIO.h" />
     <ClInclude Include="src\IoPuzzleCollection.h" />
     <ClInclude Include="src\MultiLineStreamArchive.h" />
