@@ -27,8 +27,8 @@ uint64_t & Search::NodeCounter(std::size_t index)
 
 int Search::EvalGameOver(const CPosition& pos)
 {
-	const unsigned int Ps = static_cast<unsigned int>(PopCount(pos.GetP()));
-	const unsigned int Os = static_cast<unsigned int>(PopCount(pos.GetO()));
+	const auto Ps = static_cast<unsigned int>(PopCount(pos.GetP()));
+	const auto Os = static_cast<unsigned int>(PopCount(pos.GetO()));
 	if (Ps > Os)
 		return 64 - 2 * Os;
 	else if (Ps < Os)

@@ -16,7 +16,7 @@ public:
 	uint64_t GetP() const { return P; }
 	uint64_t GetO() const { return O; }
 
-	uint64_t Parity() const;
+	uint64_t Parity() const; // TODO: Remove maybe.
 	uint64_t GetParityQuadrants() const;
 	uint64_t Empties() const       { return ~(P | O); }
 	uint64_t EmptyCount() const    { return PopCount(Empties()); }

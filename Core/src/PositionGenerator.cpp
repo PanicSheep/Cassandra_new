@@ -1,4 +1,5 @@
 #include "PositionGenerator.h"
+
 #include <algorithm>
 #include <functional>
 #include <atomic>
