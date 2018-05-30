@@ -20,16 +20,16 @@ namespace IO
 	std::iostream& operator>>(std::iostream& stream, float    & var) { stream.read(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
 	std::iostream& operator>>(std::iostream& stream, double   & var) { stream.read(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
 
-	std::iostream& operator<<(std::iostream& stream,  int8_t  & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream, uint8_t  & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream,  int16_t & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream, uint16_t & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream,  int32_t & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream, uint32_t & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream,  int64_t & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream, uint64_t & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream, float    & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
-	std::iostream& operator<<(std::iostream& stream, double   & var) { stream.write(reinterpret_cast<char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream,  int8_t  var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream, uint8_t  var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream,  int16_t var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream, uint16_t var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream,  int32_t var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream, uint32_t var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream,  int64_t var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream, uint64_t var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream, float    var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
+	std::iostream& operator<<(std::iostream& stream, double   var) { stream.write(reinterpret_cast<const char*>(&var), sizeof(var)); return stream; }
 
 	static const uint8_t CPuzzle_classId = 1;
 	static const uint8_t CPuzzleScore_classId = 2;
