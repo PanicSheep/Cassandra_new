@@ -1,29 +1,6 @@
 #include "pch.h"
 #include "Search.h"
 
-TEST(Search, SMEAR_BITBOARD)
-{
-	for (int move = 0; move < 64; move++)
-	{
-		uint64_t board = 0;
-		int x = move / 8;
-		int y = move % 8;
-
-		for (int dx = -1; dx <= 1; dx++)
-			for (int dy = -1; dy <= 1; dy++)
-				if ((x + dx >= 0) && (x + dx < 8) && (y + dy >= 0) && (y + dy < 8))
-					board |= 1ULL << ((x + dx) * 8 + (y + dy));
-
-		ASSERT_EQ(board, SMEAR_BITBOARD(1ULL << move));
-	}
-}
-
-TEST(Search, neighbour)
-{
-	for (int move = 0; move < 64; move++)
-		ASSERT_EQ(Neighbour(static_cast<Field>(move)), SMEAR_BITBOARD(1ULL << move) ^ (1ULL << move));
-}
-
 class Search_Test : public Search
 {
 public:

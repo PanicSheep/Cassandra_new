@@ -41,6 +41,18 @@ int8_t CPuzzleAllDepthScore::MaxSolvedDepth() const
 	return -1;
 }
 
+bool CPuzzleAllDepthScore::operator==(const CPuzzleAllDepthScore& o) const
+{
+	if (this->CPuzzle::operator!=(o))
+		return false;
+
+	for (std::size_t i = 0; i < sizeof(score); i++)
+		if (score[i] != o.score[i])
+			return false;
+
+	return true;
+}
+
 bool CPuzzleAllMoveScore::Test() const
 {
 	if (CPuzzle::Test() == false)
@@ -72,5 +84,17 @@ bool CPuzzleAllMoveScore::IsSolved() const
 		if (score[move.field] == DEFAULT_SCORE)
 			return false;
 	}
+	return true;
+}
+
+bool CPuzzleAllMoveScore::operator==(const CPuzzleAllMoveScore& o) const
+{
+	if (this->CPuzzle::operator!=(o))
+		return false;
+
+	for (std::size_t i = 0; i < sizeof(score); i++)
+		if (score[i] != o.score[i])
+			return false;
+
 	return true;
 }

@@ -85,7 +85,7 @@ TEST(Position, Play)
 {
 	CPosition pos = CPosition::StartPosition();
 	pos = pos.PlayPass();
-	ASSERT_EQ(pos, CPosition(CPosition::StartPosition().O, CPosition::StartPosition().P));
+	ASSERT_EQ(pos, CPosition(CPosition::StartPosition().GetO(), CPosition::StartPosition().GetP()));
 	pos = pos.PlayPass();
 	ASSERT_EQ(pos, CPosition::StartPosition());
 	pos = pos.Play(Field::D3);

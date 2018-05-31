@@ -91,9 +91,10 @@ namespace IO
 	std::unique_ptr<CPuzzle> BinaryStreamArchive::Deserialize_CPuzzleScoreDepth()
 	{
 		uint64_t P, O;
+		int8_t score;
 		int8_t depth;
 		uint8_t selectivity;
-		stream >> P >> O >> depth >> selectivity;
+		stream >> P >> O >> score >> depth >> selectivity;
 		return std::make_unique<CPuzzleScoreDepth>(CPosition(P, O), depth, selectivity);
 	}
 

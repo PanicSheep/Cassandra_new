@@ -17,6 +17,10 @@ public:
 	virtual bool IsSolved() const { return false; }
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
+
+	bool operator==(const CPuzzle& o) const { return pos == o.pos; }
+	bool operator!=(const CPuzzle& o) const { return !this->operator==(o); }
+
 protected:
 	CPosition pos;
 };
@@ -36,6 +40,9 @@ public:
 	bool IsSolved() const override { return score != DEFAULT_SCORE; }
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
+
+	bool operator==(const CPuzzleScore& o) const { return this->CPuzzle::operator==(o) && score == o.score; }
+	bool operator!=(const CPuzzleScore& o) const { return !this->operator==(o); }
 };
 
 class CPuzzleScoreDepth : public CPuzzleScore
@@ -56,6 +63,9 @@ public:
 	bool IsSolved(int8_t Depth, uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
+
+	bool operator==(const CPuzzleScoreDepth& o) const { return this->CPuzzleScore::operator==(o) && depth == o.depth && selectivity == o.selectivity; }
+	bool operator!=(const CPuzzleScoreDepth& o) const { return !this->operator==(o); }
 };
 
 class CPuzzleAllDepthScore : public CPuzzle
@@ -77,6 +87,9 @@ public:
 	int8_t MaxSolvedDepth() const;
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
+
+	bool operator==(const CPuzzleAllDepthScore& o) const;
+	bool operator!=(const CPuzzleAllDepthScore& o) const { return !this->operator==(o); }
 };
 
 class CPuzzleAllMoveScore : public CPuzzle
@@ -96,4 +109,7 @@ public:
 	int8_t MaxScore() const { return *std::max_element(std::begin(score), std::end(score)); }
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
+
+	bool operator==(const CPuzzleAllMoveScore& o) const;
+	bool operator!=(const CPuzzleAllMoveScore& o) const { return !this->operator==(o); }
 };

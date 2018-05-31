@@ -5,6 +5,7 @@
 #include "AlphaBetaFailSoftSearch.h"
 #include "PVSearch.h"
 #include "Stability.h"
+#include "HashtablePVS.h"
 
 class CPositionScore : public CPosition
 {
@@ -95,12 +96,12 @@ protected:
 
 	static void SetUpTestCase()
 	{
-		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
-		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
+		std::shared_ptr<ILastFlipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
-		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
 };
 
@@ -133,12 +134,12 @@ protected:
 
 	static void SetUpTestCase()
 	{
-		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
-		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
+		std::shared_ptr<ILastFlipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
-		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
 };
 
@@ -171,12 +172,12 @@ protected:
 
 	static void SetUpTestCase()
 	{
-		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
-		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
+		std::shared_ptr<ILastFlipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
-		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
 };
 
@@ -209,12 +210,12 @@ protected:
 
 	static void SetUpTestCase()
 	{
-		std::shared_ptr<ILastFLipCounter> LastFlipCounter = nullptr; // TODO: Replace!
-		std::shared_ptr<IHashTable<TwoNode, CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(1'000);
+		std::shared_ptr<ILastFlipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(1'000);
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>(); // TODO: Replace!
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
-		environment = std::make_shared<Environment>(LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
 };
 
