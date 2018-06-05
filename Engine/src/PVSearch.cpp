@@ -5,21 +5,6 @@
 #include "SortedMoves.h"
 #include <algorithm>
 
-uint64_t Neighbour(Field field)
-{
-	static const uint64_t neighbour[64] = { // Neighbours to the input-field
-		0x0000000000000302ULL, 0x0000000000000705ULL, 0x0000000000000e0aULL, 0x0000000000001c14ULL,	0x0000000000003828ULL, 0x0000000000007050ULL, 0x000000000000e0a0ULL, 0x000000000000c040ULL,
-		0x0000000000030203ULL, 0x0000000000070507ULL, 0x00000000000e0a0eULL, 0x00000000001c141cULL,	0x0000000000382838ULL, 0x0000000000705070ULL, 0x0000000000e0a0e0ULL, 0x0000000000c040c0ULL,
-		0x0000000003020300ULL, 0x0000000007050700ULL, 0x000000000e0a0e00ULL, 0x000000001c141c00ULL,	0x0000000038283800ULL, 0x0000000070507000ULL, 0x00000000e0a0e000ULL, 0x00000000c040c000ULL,
-		0x0000000302030000ULL, 0x0000000705070000ULL, 0x0000000e0a0e0000ULL, 0x0000001c141c0000ULL,	0x0000003828380000ULL, 0x0000007050700000ULL, 0x000000e0a0e00000ULL, 0x000000c040c00000ULL,
-		0x0000030203000000ULL, 0x0000070507000000ULL, 0x00000e0a0e000000ULL, 0x00001c141c000000ULL,	0x0000382838000000ULL, 0x0000705070000000ULL, 0x0000e0a0e0000000ULL, 0x0000c040c0000000ULL,
-		0x0003020300000000ULL, 0x0007050700000000ULL, 0x000e0a0e00000000ULL, 0x001c141c00000000ULL,	0x0038283800000000ULL, 0x0070507000000000ULL, 0x00e0a0e000000000ULL, 0x00c040c000000000ULL,
-		0x0302030000000000ULL, 0x0705070000000000ULL, 0x0e0a0e0000000000ULL, 0x1c141c0000000000ULL,	0x3828380000000000ULL, 0x7050700000000000ULL, 0xe0a0e00000000000ULL, 0xc040c00000000000ULL,
-		0x0203000000000000ULL, 0x0507000000000000ULL, 0x0a0e000000000000ULL, 0x141c000000000000ULL,	0x2838000000000000ULL, 0x5070000000000000ULL, 0xa0e0000000000000ULL, 0x40c0000000000000ULL
-	};
-	return neighbour[field];
-}
-
 int PVSearch::Eval(const CPosition& pos)
 {
 	return Eval(pos, -64, 64);
@@ -158,21 +143,19 @@ int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move
 	NodeCounter(2)++;
 	int bestscore = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1)) {
-			const auto score = -PVS_1(pos.Play(move1, flips), -beta, -alpha, move2);
-			if (score >= beta) return score;
-			alpha = std::max(score, alpha);
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move1)) {
+		const auto score = -PVS_1(pos.Play(move1, flips), -beta, -alpha, move2);
+		if (score >= beta) return score;
+		alpha = std::max(score, alpha);
+		bestscore = std::max(score, bestscore);
+	}
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2)) {
-			const auto score = -PVS_1(pos.Play(move2, flips), -beta, -alpha, move1);
-			if (score >= beta) return score;
-			alpha = std::max(score, alpha);
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move2)) {
+		const auto score = -PVS_1(pos.Play(move2, flips), -beta, -alpha, move1);
+		if (score >= beta) return score;
+		alpha = std::max(score, alpha);
+		bestscore = std::max(score, bestscore);
+	}
 
 	if (bestscore != -128)
 		return bestscore;
@@ -180,21 +163,19 @@ int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move
 
 	const auto posPass = pos.PlayPass();
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1)) {
-			const auto score = PVS_1(posPass.Play(move1, flips), alpha, beta, move2);
-			if (score <= alpha) return score;
-			beta = std::min(score, beta);
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move1)) {
+		const auto score = PVS_1(posPass.Play(move1, flips), alpha, beta, move2);
+		if (score <= alpha) return score;
+		beta = std::min(score, beta);
+		bestscore = std::min(score, bestscore);
+	}
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2)) {
-			const auto score = PVS_1(posPass.Play(move2, flips), alpha, beta, move1);
-			if (score <= alpha) return score;
-			beta = std::min(score, beta);
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move2)) {
+		const auto score = PVS_1(posPass.Play(move2, flips), alpha, beta, move1);
+		if (score <= alpha) return score;
+		beta = std::min(score, beta);
+		bestscore = std::min(score, bestscore);
+	}
 
 	if (bestscore != 128) {
 		NodeCounter(2)++;
@@ -229,17 +210,15 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove& move1, c
 	NodeCounter(2)++;
 	int bestscore = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1)) {
-			const auto score = -ZWS_1(pos.Play(move1, flips), -alpha - 1, move2);
-			if (score > alpha) return score;
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move1)) {
+		const auto score = -ZWS_1(pos.Play(move1, flips), -alpha - 1, move2);
+		if (score > alpha) return score;
+		bestscore = std::max(score, bestscore);
+	}
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2)) {
-			return std::max(bestscore, -ZWS_1(pos.Play(move2, flips), -alpha - 1, move1));
-		}
+	if (const auto flips = Flip(pos, move2)) {
+		return std::max(bestscore, -ZWS_1(pos.Play(move2, flips), -alpha - 1, move1));
+	}
 
 	if (bestscore != -128)
 		return bestscore;
@@ -247,17 +226,15 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove& move1, c
 
 	const auto posPass = pos.PlayPass();
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1)) {
-			const auto score = ZWS_1(posPass.Play(move1, flips), alpha, move2);
-			if (score <= alpha) return score;
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move1)) {
+		const auto score = ZWS_1(posPass.Play(move1, flips), alpha, move2);
+		if (score <= alpha) return score;
+		bestscore = std::min(score, bestscore);
+	}
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2)) {
-			return std::min(bestscore, ZWS_1(posPass.Play(move2, flips), alpha, move1));
-		}
+	if (const auto flips = Flip(posPass, move2)) {
+		return std::min(bestscore, ZWS_1(posPass.Play(move2, flips), alpha, move1));
+	}
 
 	if (bestscore != 128) {
 		NodeCounter(2)++;
@@ -272,24 +249,21 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove& move1, const C
 	NodeCounter(3)++;
 	int bestscore = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1)) {
-			const auto score = -ZWS_2(pos.Play(move1, flips), -alpha - 1, move2, move3);
-			if (score > alpha) return score;
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move1)) {
+		const auto score = -ZWS_2(pos.Play(move1, flips), -alpha - 1, move2, move3);
+		if (score > alpha) return score;
+		bestscore = std::max(score, bestscore);
+	}
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2)) {
-			const auto score = -ZWS_2(pos.Play(move2, flips), -alpha - 1, move1, move3);
-			if (score > alpha) return score;
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move2)) {
+		const auto score = -ZWS_2(pos.Play(move2, flips), -alpha - 1, move1, move3);
+		if (score > alpha) return score;
+		bestscore = std::max(score, bestscore);
+	}
 
-	if (pos.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(pos, move3)) {
-			return std::max(bestscore, -ZWS_2(pos.Play(move3, flips), -alpha - 1, move1, move2));
-		}
+	if (const auto flips = Flip(pos, move3)) {
+		return std::max(bestscore, -ZWS_2(pos.Play(move3, flips), -alpha - 1, move1, move2));
+	}
 
 	if (bestscore != -128)
 		return bestscore;
@@ -297,24 +271,21 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove& move1, const C
 
 	const auto posPass = pos.PlayPass();
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1)) {
-			const auto score = ZWS_2(posPass.Play(move1, flips), alpha, move2, move3);
-			if (score <= alpha) return score;
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move1)) {
+		const auto score = ZWS_2(posPass.Play(move1, flips), alpha, move2, move3);
+		if (score <= alpha) return score;
+		bestscore = std::min(score, bestscore);
+	}
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2)) {
-			const auto score = ZWS_2(posPass.Play(move2, flips), alpha, move1, move3);
-			if (score <= alpha) return score;
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move2)) {
+		const auto score = ZWS_2(posPass.Play(move2, flips), alpha, move1, move3);
+		if (score <= alpha) return score;
+		bestscore = std::min(score, bestscore);
+	}
 
-	if (posPass.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(posPass, move3)) {
-			return std::min(bestscore, ZWS_2(posPass.Play(move3, flips), alpha, move1, move2));
-		}
+	if (const auto flips = Flip(posPass, move3)) {
+		return std::min(bestscore, ZWS_2(posPass.Play(move3, flips), alpha, move1, move2));
+	}
 
 	if (bestscore != 128) {
 		NodeCounter(3)++;
@@ -329,31 +300,27 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove& move1, const C
 	NodeCounter(4)++;
 	int bestscore = -128;
 
-	if (pos.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(pos, move1)) {
-			const auto score = -ZWS_3(pos.Play(move1, flips), -alpha - 1, move2, move3, move4);
-			if (score > alpha) return score;
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move1)) {
+		const auto score = -ZWS_3(pos.Play(move1, flips), -alpha - 1, move2, move3, move4);
+		if (score > alpha) return score;
+		bestscore = std::max(score, bestscore);
+	}
 
-	if (pos.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(pos, move2)) {
-			const auto score = -ZWS_3(pos.Play(move2, flips), -alpha - 1, move1, move3, move4);
-			if (score > alpha) return score;
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move2)) {
+		const auto score = -ZWS_3(pos.Play(move2, flips), -alpha - 1, move1, move3, move4);
+		if (score > alpha) return score;
+		bestscore = std::max(score, bestscore);
+	}
 
-	if (pos.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(pos, move3)) {
-			const auto score = -ZWS_3(pos.Play(move3, flips), -alpha - 1, move1, move2, move4);
-			if (score > alpha) return score;
-			bestscore = std::max(score, bestscore);
-		}
+	if (const auto flips = Flip(pos, move3)) {
+		const auto score = -ZWS_3(pos.Play(move3, flips), -alpha - 1, move1, move2, move4);
+		if (score > alpha) return score;
+		bestscore = std::max(score, bestscore);
+	}
 
-	if (pos.GetO() & Neighbour(move4.field))
-		if (const auto flips = Flip(pos, move4)) {
-			return std::max(bestscore, -ZWS_3(pos.Play(move4, flips), -alpha - 1, move1, move2, move3));
-		}
+	if (const auto flips = Flip(pos, move4)) {
+		return std::max(bestscore, -ZWS_3(pos.Play(move4, flips), -alpha - 1, move1, move2, move3));
+	}
 
 	if (bestscore != -128)
 		return bestscore;
@@ -361,30 +328,26 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove& move1, const C
 
 	const auto posPass = pos.PlayPass();
 
-	if (posPass.GetO() & Neighbour(move1.field))
-		if (const auto flips = Flip(posPass, move1)) {
-			const auto score = ZWS_3(posPass.Play(move1, flips), alpha, move2, move3, move4);
-			if (score <= alpha) return score;
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move1)) {
+		const auto score = ZWS_3(posPass.Play(move1, flips), alpha, move2, move3, move4);
+		if (score <= alpha) return score;
+		bestscore = std::min(score, bestscore);
+	}
 
-	if (posPass.GetO() & Neighbour(move2.field))
-		if (const auto flips = Flip(posPass, move2)) {
-			const auto score = ZWS_3(posPass.Play(move2, flips), alpha, move1, move3, move4);
-			if (score <= alpha) return score;
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move2)) {
+		const auto score = ZWS_3(posPass.Play(move2, flips), alpha, move1, move3, move4);
+		if (score <= alpha) return score;
+		bestscore = std::min(score, bestscore);
+	}
 
-	if (posPass.GetO() & Neighbour(move3.field))
-		if (const auto flips = Flip(posPass, move3)) {
-			const auto score = ZWS_3(posPass.Play(move3, flips), alpha, move1, move2, move4);
-			if (score <= alpha) return score;
-			bestscore = std::min(score, bestscore);
-		}
+	if (const auto flips = Flip(posPass, move3)) {
+		const auto score = ZWS_3(posPass.Play(move3, flips), alpha, move1, move2, move4);
+		if (score <= alpha) return score;
+		bestscore = std::min(score, bestscore);
+	}
 
-	if (posPass.GetO() & Neighbour(move4.field))
-		if (const auto flips = Flip(posPass, move4)) {
-			return std::min(bestscore, ZWS_3(posPass.Play(move4, flips), alpha, move1, move2, move3));
+	if (const auto flips = Flip(posPass, move4)) {
+		return std::min(bestscore, ZWS_3(posPass.Play(move4, flips), alpha, move1, move2, move3));
 		}
 
 	if (bestscore != 128) {
