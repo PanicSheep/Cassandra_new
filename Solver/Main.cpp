@@ -2,6 +2,7 @@
 #include "IoPuzzleCollection.h"
 #include "ConfigFile.h"
 #include "HashTablePVS.h"
+#include "LastFlipCounter.h"
 #include "Path.h"
 #include "PVSearch.h"
 #include "Utility.h"
@@ -103,7 +104,7 @@ int main(int argc, char* argv[])
 	else
 		puzzles = std::make_unique<AutoSavingPuzzleCollection>(filename, std::chrono::seconds(300));
 
-	std::shared_ptr<ILastFlipCounter> LastFlipCounter = nullptr; // TODO: Replace!
+	std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 	std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
 	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
 	std::shared_ptr<Environment> env = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
