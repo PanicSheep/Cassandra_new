@@ -34,9 +34,6 @@
     <ClInclude Include="src\Stability.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Core\Core.vcxproj">
       <Project>{7394ad84-df32-4be8-b07c-15f10a762125}</Project>
     </ProjectReference>
