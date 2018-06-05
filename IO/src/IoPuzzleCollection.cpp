@@ -70,6 +70,7 @@ namespace IO
 	AutoSavingPuzzleCollection::~AutoSavingPuzzleCollection()
 	{
 		m_terminate.store(true, std::memory_order_release);
+		m_thread.join();
 	}
 
 	void AutoSavingPuzzleCollection::push_back(std::unique_ptr<CPuzzle>&& pos)
