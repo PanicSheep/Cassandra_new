@@ -16,6 +16,7 @@
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalOptions>/D __core_avx2__ /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
