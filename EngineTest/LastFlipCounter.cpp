@@ -4,6 +4,7 @@
 
 void TestCountLastFlip(const CMove& move)
 {
+	CLastFlipCounter LFC;
 	const uint64_t mask = line(move, -1, -1)
 	                    | line(move, -1,  0)
 	                    | line(move, -1, +1)
@@ -16,13 +17,13 @@ void TestCountLastFlip(const CMove& move)
 	for (unsigned int i = 0; i < 100'000; i++)
 	{
 		CPosition pos = MakeFullRandomPosition(mask);
-		ASSERT_EQ(PopCount(Flip(pos, move)) * 2, CountLastFlip(pos, move));
+		ASSERT_EQ(PopCount(Flip(pos, move)) * 2, LFC.CountLastFlip(pos, move));
 	}
 
 	for (unsigned int i = 0; i < 10'000; i++)
 	{
 		CPosition pos = MakeFullRandomPosition(~(1ULL << move.field));
-		ASSERT_EQ(PopCount(Flip(pos, move)) * 2, CountLastFlip(pos, move));
+		ASSERT_EQ(PopCount(Flip(pos, move)) * 2, LFC.CountLastFlip(pos, move));
 	}
 }
 

@@ -16,11 +16,35 @@ CLastFlipCounter::CLastFlipCounter()
 
 uint8_t CLastFlipCounter::CountFlip(const uint8_t P, const CMove& move)
 {
-	if (P & (1 << move.field))
+	if (P & MakeBit(move.field))
 		return 0;
-	const uint8_t O = P ^ 0xFF ^ (1 << move.field);
+	const uint8_t O = P ^ 0xFF ^ MakeBit(move.field);
 	const auto flips = Flip(CPosition(P, O), move);
 	return static_cast<uint8_t>(PopCount(flips));
+}
+
+uint64_t CLastFlipCounter::Flip(const CPosition& pos, const CMove& move)
+{
+	return Flip_dir(pos, move, -1) | Flip_dir(pos, move, +1);
+}
+
+uint64_t CLastFlipCounter::Flip_dir(const CPosition& pos, const CMove& move, const int dX)
+{
+	uint64_t flips = 0;
+	int x = (move.field % 8) + dX;
+
+	while ((x >= 0) && (x < 8))
+	{
+		const uint64_t bit = MakeBit(x);
+		if (pos.GetO() & bit)
+			flips |= bit;
+		else if (pos.GetP() & bit)
+			return flips;
+		else
+			return 0;
+		x += dX;
+	}
+	return 0;
 }
 
 uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove& move) const
@@ -102,10 +126,4 @@ uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove& move)
 
 		default: return 0;
 	}
-}
-
-uint8_t CountLastFlip(const CPosition& pos, const CMove& move)
-{
-	static const CLastFlipCounter LFC;
-	return LFC.CountLastFlip(pos, move);
 }
