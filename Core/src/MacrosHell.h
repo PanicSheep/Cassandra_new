@@ -403,6 +403,25 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
         FORCE_INLINE __m256i operator<<=(__m256i& a, const int b) { return a = a << b; }
         FORCE_INLINE __m256i operator>>=(__m256i& a, const int b) { return a = a >> b; }
     #endif
+	#ifdef HAS_AVX512
+		FORCE_INLINE __m512i operator~(const __m512i& a) { return _mm512_xor_si512(a, _mm512_set1_epi64(0xFFFFFFFFFFFFFFFFULL)); }
+
+		FORCE_INLINE __m512i operator+(const __m512i& a, const __m512i& b) { return _mm512_add_epi64(a, b); }
+		FORCE_INLINE __m512i operator-(const __m512i& a, const __m512i& b) { return _mm512_sub_epi64(a, b); }
+		FORCE_INLINE __m512i operator&(const __m512i& a, const __m512i& b) { return _mm512_and_si512(a, b); }
+		FORCE_INLINE __m512i operator|(const __m512i& a, const __m512i& b) { return _mm512_or_si512(a, b); }
+		FORCE_INLINE __m512i operator^(const __m512i& a, const __m512i& b) { return _mm512_xor_si512(a, b); }
+		FORCE_INLINE __m512i operator<<(const __m512i& a, const int b) { return _mm512_slli_epi64(a, b); }
+		FORCE_INLINE __m512i operator>>(const __m512i& a, const int b) { return _mm512_srli_epi64(a, b); }
+
+		FORCE_INLINE __m512i operator+=(__m512i& a, const __m512i& b) { return a = a + b; }
+		FORCE_INLINE __m512i operator-=(__m512i& a, const __m512i& b) { return a = a - b; }
+		FORCE_INLINE __m512i operator&=(__m512i& a, const __m512i& b) { return a = a & b; }
+		FORCE_INLINE __m512i operator|=(__m512i& a, const __m512i& b) { return a = a | b; }
+		FORCE_INLINE __m512i operator^=(__m512i& a, const __m512i& b) { return a = a ^ b; }
+		FORCE_INLINE __m512i operator<<=(__m512i& a, const int b) { return a = a << b; }
+		FORCE_INLINE __m512i operator>>=(__m512i& a, const int b) { return a = a >> b; }
+	#endif
 #endif
 
 // ### Fix for Visual Studio bug ###

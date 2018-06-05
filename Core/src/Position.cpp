@@ -86,9 +86,9 @@ CMoves CPosition::PossibleMoves() const
 	// = 19 OPs
 
 	// 1 x AND
-	const __m512i PP = _mm512_set1_epi64x(P);
-	const __m512i maskO = _mm512_set1_epi64x(O) & _mm512_set_epi64x(0x7E7E7E7E7E7E7E7EULL, 0x00FFFFFFFFFFFF00ULL, 0x007E7E7E7E7E7E00ULL, 0x007E7E7E7E7E7E00ULL, 0x7E7E7E7E7E7E7E7EULL, 0x00FFFFFFFFFFFF00ULL, 0x007E7E7E7E7E7E00ULL, 0x007E7E7E7E7E7E00ULL);
-	const __m512i shift1 = _mm512_set_epi64x(1, 8, 7, 9, -1, -8, -7, -9);
+	const __m512i PP = _mm512_set1_epi64(P);
+	const __m512i maskO = _mm512_set1_epi64(O) & _mm512_set_epi64(0x7E7E7E7E7E7E7E7EULL, 0x00FFFFFFFFFFFF00ULL, 0x007E7E7E7E7E7E00ULL, 0x007E7E7E7E7E7E00ULL, 0x7E7E7E7E7E7E7E7EULL, 0x00FFFFFFFFFFFF00ULL, 0x007E7E7E7E7E7E00ULL, 0x007E7E7E7E7E7E00ULL);
+	const __m512i shift1 = _mm512_set_epi64(1, 8, 7, 9, -1, -8, -7, -9);
 	const __m512i shift2 = shift1 + shift1;
 	__m512i mask;
 	__m512i flip;
