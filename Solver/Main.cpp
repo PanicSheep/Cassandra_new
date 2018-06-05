@@ -16,6 +16,7 @@
 #include <chrono>
 #include <iterator>
 #include <type_traits>
+#include <omp.h>
 
 using namespace IO;
 
