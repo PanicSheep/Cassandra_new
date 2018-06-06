@@ -146,15 +146,6 @@ class PVSearch : public Search
 			return ReturnValues(alpha, beta, depth, selectivity);
 		}
 	};
-
-	struct ConfigValues
-	{
-		bool StabilityCut, TranspositionCut;
-
-		ConfigValues(bool StabilityCut, bool TranspositionCut)
-			: StabilityCut(StabilityCut), TranspositionCut(StabilityCut)
-		{}
-	};
 public:
 	PVSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
 
