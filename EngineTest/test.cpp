@@ -99,7 +99,7 @@ protected:
 	{
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
-		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
+		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
 		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
@@ -137,7 +137,7 @@ protected:
 	{
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
-		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
+		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
 		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
@@ -175,7 +175,7 @@ protected:
 	{
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
-		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = nullptr; // TODO: Replace!
+		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
 		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
@@ -256,14 +256,14 @@ TEST_F(PVS, FForum10) { TestPosition(28, PVSearch(environment)); }
 
 TEST(GetStableStones, none)
 {
-	const auto stables = GetStableStones(CPosition::StartPosition());
+	const auto stables = CStabilityAnalyzer().GetStableStones(CPosition::StartPosition());
 
 	ASSERT_EQ(stables, 0ULL);
 }
 
 TEST(GetStableStones, none2)
 {
-	const auto stables = GetStableStones(CPosition(0, 0xFF));
+	const auto stables = CStabilityAnalyzer().GetStableStones(CPosition(0, 0xFF));
 
 	ASSERT_EQ(stables, 0xFF);
 }

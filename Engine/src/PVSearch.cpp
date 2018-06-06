@@ -547,7 +547,7 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 
 PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
 {
-	const auto opponents_stable_stoned = GetStableStones(in.pos);
+	const auto opponents_stable_stoned = environment->StabilityAnalyzer->GetStableStones(in.pos);
 	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stoned));
 	return AnalysisReturnValues(-64, max_score + 1, in.pos.EmptyCount(), 0);
 }

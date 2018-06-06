@@ -25,6 +25,3 @@ private:
 
 	uint8_t edge_stables[256][256];
 };
-
-uint64_t GetStableEdges(const CPosition&);
-uint64_t GetStableStones(const CPosition&); // The stable stones from the opponent.

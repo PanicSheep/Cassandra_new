@@ -4,15 +4,16 @@
 
 TEST(Position, Stability_Initialize)
 {
-	ASSERT_EQ(GetStableEdges(CPosition(0x00, 0xC0)), 0xC0);
-	ASSERT_EQ(GetStableEdges(CPosition(0x01, 0x80)), 0x81);
-	ASSERT_EQ(GetStableEdges(CPosition(0x00, 0x03)), 0x03);
-	ASSERT_EQ(GetStableEdges(CPosition(0xC0, 0x00)), 0xC0);
-	ASSERT_EQ(GetStableEdges(CPosition(0x03, 0x00)), 0x03);
-	ASSERT_EQ(GetStableEdges(CPosition(0x03, 0xC0)), 0xC3);
-	ASSERT_EQ(GetStableEdges(CPosition(0x28, 0xC7)), 0xC7);
-	ASSERT_EQ(GetStableEdges(CPosition(0x50, 0xA8)), 0xC0);
-	ASSERT_EQ(GetStableEdges(CPosition(0x28, 0x16)), 0x08);
+	CStabilityAnalyzer stab;
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x00, 0xC0)), 0xC0);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x01, 0x80)), 0x81);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x00, 0x03)), 0x03);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0xC0, 0x00)), 0xC0);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x03, 0x00)), 0x03);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x03, 0xC0)), 0xC3);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x28, 0xC7)), 0xC7);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x50, 0xA8)), 0xC0);
+	ASSERT_EQ(stab.GetStableEdges(CPosition(0x28, 0x16)), 0x08);
 }
 
 TEST(Position, DefaultPosition)

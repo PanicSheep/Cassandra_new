@@ -153,15 +153,3 @@ uint64_t CStabilityAnalyzer::FullLineCodiagonal(const uint64_t discs)
 	if (TestBits(discs, 0x0000000000010204ULL)) full |= 0x0000000000010204ULL;
 	return full;
 }
-
-static const CStabilityAnalyzer StabilityAnalyzer;
-
-uint64_t GetStableEdges(const CPosition & pos)
-{
-	return StabilityAnalyzer.GetStableEdges(pos);
-}
-
-uint64_t GetStableStones(const CPosition & pos)
-{
-	return StabilityAnalyzer.GetStableStones(pos);
-}
