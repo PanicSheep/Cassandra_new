@@ -1,4 +1,5 @@
 #include "Stability.h"
+#include "MacrosHell.h"
 
 CStabilityAnalyzer::CStabilityAnalyzer()
 {
@@ -11,18 +12,17 @@ CStabilityAnalyzer::CStabilityAnalyzer()
 				if (P & O)
 					continue;
 
-				const auto pos = CPosition(P, O ^ ~0xFFULL);
-				if (pos.EmptyCount() == empty)
+				if (8 - PopCount(P) - PopCount(O) == empty)
 				{
-					CMoves moves(pos.Empties());
 					unsigned int stables = 0xFF;
+					CMoves moves(~(P | O) & 0xFFULL);
 					while (!moves.empty())
 					{
 						const auto move = moves.ExtractMove();
 						const auto moveBit = MakeBit(move.field);
 
-						const uint64_t flips_P = Flip(pos           , move) & 0xFFULL;
-						const uint64_t flips_O = Flip(pos.PlayPass(), move) & 0xFFULL;
+						const uint64_t flips_P = Flip(CPosition(P, O), move);
+						const uint64_t flips_O = Flip(CPosition(O, P), move);
 						stables &= edge_stables[P ^ flips_P ^ moveBit][O ^ flips_P] & ~flips_P & ~moveBit;
 						stables &= edge_stables[P ^ flips_O][O ^ flips_O ^ moveBit] & ~flips_O & ~moveBit;
 
@@ -32,6 +32,30 @@ CStabilityAnalyzer::CStabilityAnalyzer()
 					edge_stables[P][O] = stables;
 				}
 			}
+}
+
+uint64_t CStabilityAnalyzer::Flip(const CPosition& pos, const CMove& move)
+{
+	return Flip_dir(pos, move, -1) | Flip_dir(pos, move, +1);
+}
+
+uint64_t CStabilityAnalyzer::Flip_dir(const CPosition& pos, const CMove& move, const int dX)
+{
+	uint64_t flips = 0;
+	int x = (move.field % 8) + dX;
+
+	while ((x >= 0) && (x < 8))
+	{
+		const uint64_t bit = MakeBit(x);
+		if (pos.GetO() & bit)
+			flips |= bit;
+		else if (pos.GetP() & bit)
+			return flips;
+		else
+			return 0;
+		x += dX;
+	}
+	return 0;
 }
 
 uint64_t CStabilityAnalyzer::GetStableEdges(const CPosition & pos) const
