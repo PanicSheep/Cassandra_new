@@ -174,7 +174,7 @@ protected:
 	static void SetUpTestCase()
 	{
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
-		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
+		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr;
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
 		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
 
