@@ -98,3 +98,30 @@ bool CPuzzleAllMoveScore::operator==(const CPuzzleAllMoveScore& o) const
 
 	return true;
 }
+
+void CPuzzleScore::Solve(Search& search)
+{
+	score = search.Eval(pos);
+}
+
+void CPuzzleScoreDepth::Solve(Search& search)
+{
+	score = search.Eval(pos, depth, selectivity);
+}
+
+void CPuzzleAllDepthScore::Solve(Search& search)
+{
+	for (int8_t i = 0; i < sizeof(score); i++)
+		if (score[i] == DEFAULT_SCORE)
+			score[i] = search.Eval(pos, i, 0);
+}
+
+void CPuzzleAllMoveScore::Solve(Search& search)
+{
+	const auto moves = pos.PossibleMoves();
+	for (int i = 0; i < 64; i++)
+	{
+		if ((score[i] == DEFAULT_SCORE) && moves.HasMove(i))
+			score[i] = search.Eval(pos.Play(CMove(static_cast<Field>(i))));
+	}
+}

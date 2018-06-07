@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "Position.h"
+#include "Search.h"
 #include "Serializable.h"
 
 class CPuzzle : public Serializable
@@ -15,6 +16,7 @@ public:
 	virtual std::unique_ptr<CPuzzle> Play(const CMove& move) const { return std::make_unique<CPuzzle>(pos.Play(move)); }
 	virtual bool Test() const { return (pos.GetP() & pos.GetO()) == 0; }
 	virtual bool IsSolved() const { return false; }
+	virtual void Solve(Search& search) { search.Eval(pos); }
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
@@ -38,6 +40,7 @@ public:
 	std::unique_ptr<CPuzzle> Play(const CMove& move) const override { return std::make_unique<CPuzzleScore>(pos.Play(move)); }
 	bool Test() const override { return CPuzzle::Test() && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
 	bool IsSolved() const override { return score != DEFAULT_SCORE; }
+	void Solve(Search&) override;
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
@@ -61,6 +64,7 @@ public:
 	bool Test() const override { return CPuzzleScore::Test() && (depth >= DEFAULT_DEPTH); }
 	bool IsSolved() const override { return (depth == static_cast<int8_t>(pos.EmptyCount())) && (selectivity == 0); }
 	bool IsSolved(int8_t Depth, uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
+	void Solve(Search&) override;
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
@@ -81,6 +85,7 @@ public:
 	bool Test() const override;
 	bool IsSolved() const override;
 	bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
+	void Solve(Search&) override;
 
 	void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
 
@@ -105,6 +110,7 @@ public:
 	void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
 	bool Test() const override;
 	bool IsSolved() const override;
+	void Solve(Search&) override;
 
 	int8_t MaxScore() const { return *std::max_element(std::begin(score), std::end(score)); }
 
