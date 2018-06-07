@@ -7,18 +7,30 @@
 
 int PVSearch::Eval(const CPosition& pos)
 {
-	return Eval(pos, -64, 64);
+	return Eval(pos, -64, 64, pos.EmptyCount(), 0);
 }
 
-int PVSearch::Eval(const CPosition& pos, int alpha, int beta)
+int PVSearch::Eval(const CPosition& pos, int8_t depth, uint8_t selectivity)
+{
+	return Eval(pos, -64, 64, depth, selectivity);
+}
+
+int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity)
 {
 	const auto empties = pos.EmptyCount();
-	if (empties <= 14)
-		return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
+	if (depth == empties)
+	{
+		if (empties <= 14)
+			return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
 
-	for (int d = 0; d < empties - 10; d++)
-		PVS(InputValues(pos, alpha, beta, d, 0));
-	return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
+		for (int d = 0; d < empties - 10; d++)
+			PVS(InputValues(pos, alpha, beta, d, 0));
+		return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
+	}
+	else
+	{
+		return PVS(InputValues(pos, alpha, beta, depth, selectivity)).GetScore();
+	}
 }
 
 PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)

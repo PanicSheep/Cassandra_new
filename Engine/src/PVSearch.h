@@ -150,9 +150,10 @@ public:
 	PVSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
 
 	int Eval(const CPosition&) override;
+	int Eval(const CPosition&, int8_t depth, uint8_t selectivity) override;
 private:
 	// --- Triage ---------
-	int Eval(const CPosition& pos, int alpha, int beta);
+	int Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity);
 	ReturnValues PVS(const InputValues&);
 	ReturnValues ZWS(const InputValues&);
 	// --------------------
