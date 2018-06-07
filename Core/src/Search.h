@@ -11,6 +11,7 @@ public:
 	Search(const std::shared_ptr<Environment>&);
 
 	virtual int Eval(const CPosition&) = 0;
+	virtual int Eval(const CPosition& pos, int8_t depth, uint8_t selectivity) { return Eval(pos); }
 
 	uint64_t GetNodeCount() const;
 	uint64_t GetNodeCount(uint64_t EmptyCount) const;
