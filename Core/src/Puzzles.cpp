@@ -53,6 +53,13 @@ bool CPuzzleAllDepthScore::isEqual(const CPuzzle & o) const
 	return true;
 }
 
+void CPuzzleAllDepthScore::Solve(Search& search)
+{
+	for (int8_t i = 0; i < sizeof(score); i++)
+		if ((score[i] == DEFAULT_SCORE) && (i <= pos.EmptyCount()))
+			score[i] = search.Eval(pos, i, 0);
+}
+
 bool CPuzzleAllMoveScore::Test() const
 {
 	if (CPuzzle::Test() == false)
