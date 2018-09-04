@@ -253,6 +253,32 @@ TEST_F(PVS, FForum08) { TestPosition(26, PVSearch(environment)); }
 TEST_F(PVS, FForum09) { TestPosition(27, PVSearch(environment)); }
 TEST_F(PVS, FForum10) { TestPosition(28, PVSearch(environment)); }
 
+class DummyPattern : public IPattern
+{
+public:
+	float Eval(const CPosition& pos) const override { return pos.EmptyCount(); }
+};
+
+TEST(PVS_limitted_depth, limitted_depth)
+{
+	std::shared_ptr<Environment> environment;
+	std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
+	std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(1'000);
+	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
+	std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<DummyPattern>();
+
+	PVSearch search(std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator));
+
+	for (int e = 0; e < 15; e++)
+		for (int d = 0; d < e; d++)
+		{
+			const CPosition pos(0, 0xFFFFFFFFFFFFFFFFULL << e);
+			ASSERT_EQ(pos.EmptyCount(), e);
+
+			const int score = search.Eval(pos, d, 0);
+			ASSERT_EQ(score, pos.EmptyCount());
+		}
+}
 
 TEST(GetStableStones, none)
 {
