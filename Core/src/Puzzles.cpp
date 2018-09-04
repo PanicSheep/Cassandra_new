@@ -41,15 +41,15 @@ int8_t CPuzzleAllDepthScore::MaxSolvedDepth() const
 	return -1;
 }
 
-bool CPuzzleAllDepthScore::operator==(const CPuzzleAllDepthScore& o) const
+bool CPuzzleAllDepthScore::isEqual(const CPuzzle & o) const
 {
-	if (this->CPuzzle::operator!=(o))
+	if (CPuzzle::isEqual(o) == false)
 		return false;
 
+	const auto& O = dynamic_cast<const CPuzzleAllDepthScore&>(o);
 	for (std::size_t i = 0; i < sizeof(score); i++)
-		if (score[i] != o.score[i])
+		if (score[i] != O.score[i])
 			return false;
-
 	return true;
 }
 
@@ -87,15 +87,15 @@ bool CPuzzleAllMoveScore::IsSolved() const
 	return true;
 }
 
-bool CPuzzleAllMoveScore::operator==(const CPuzzleAllMoveScore& o) const
+bool CPuzzleAllMoveScore::isEqual(const CPuzzle & o) const
 {
-	if (this->CPuzzle::operator!=(o))
+	if (CPuzzle::isEqual(o) == false)
 		return false;
 
+	const auto& O = dynamic_cast<const CPuzzleAllMoveScore&>(o);
 	for (std::size_t i = 0; i < sizeof(score); i++)
-		if (score[i] != o.score[i])
+		if (score[i] != O.score[i])
 			return false;
-
 	return true;
 }
 
@@ -104,16 +104,21 @@ void CPuzzleScore::Solve(Search& search)
 	score = search.Eval(pos);
 }
 
+bool CPuzzleScore::isEqual(const CPuzzle & o) const
+{
+	const auto& O = dynamic_cast<const CPuzzleScore&>(o);
+	return CPuzzle::isEqual(o) && (score == O.score);
+}
+
 void CPuzzleScoreDepth::Solve(Search& search)
 {
 	score = search.Eval(pos, depth, selectivity);
 }
 
-void CPuzzleAllDepthScore::Solve(Search& search)
+bool CPuzzleScoreDepth::isEqual(const CPuzzle & o) const
 {
-	for (int8_t i = 0; i < sizeof(score); i++)
-		if (score[i] == DEFAULT_SCORE)
-			score[i] = search.Eval(pos, i, 0);
+	const auto& O = dynamic_cast<const CPuzzleScoreDepth&>(o);
+	return CPuzzle::isEqual(o) && (depth == O.depth) && (selectivity == O.selectivity);
 }
 
 void CPuzzleAllMoveScore::Solve(Search& search)

@@ -150,11 +150,7 @@ TEST(puzzleCollection, save_and_load_CPuzzle)
 	puzzles2.Load(test_file);
 
 	for (std::size_t i = 0; i < size; i++) {
-		auto puzz1 = dynamic_cast<CPuzzleScore*>(puzzles1.Get(i).get());
-		auto puzz2 = dynamic_cast<CPuzzleScore*>(puzzles2.Get(i).get());
-		ASSERT_TRUE(puzz1);
-		ASSERT_TRUE(puzz2);
-		ASSERT_EQ(*puzz1, *puzz2);
+		ASSERT_TRUE(*puzzles1[i] == *puzzles2[i]);
 	}
 
 	std::remove(test_file.GetAbsoluteFilePath().c_str());
@@ -204,9 +200,9 @@ TEST(BinaryStreamArchive, save_and_load_0_puzzle)
 	ASSERT_TRUE(dynamic_cast<CPuzzleAllDepthScore*>(p4_in.get()));
 	ASSERT_TRUE(dynamic_cast<CPuzzleAllMoveScore *>(p5_in.get()));
 
-	ASSERT_TRUE(dynamic_cast<CPuzzle             *>(p1_in.get())->operator==(p1_out));
-	ASSERT_TRUE(dynamic_cast<CPuzzleScore        *>(p2_in.get())->operator==(p2_out));
-	ASSERT_TRUE(dynamic_cast<CPuzzleScoreDepth   *>(p3_in.get())->operator==(p3_out));
-	ASSERT_TRUE(dynamic_cast<CPuzzleAllDepthScore*>(p4_in.get())->operator==(p4_out));
-	ASSERT_TRUE(dynamic_cast<CPuzzleAllMoveScore *>(p5_in.get())->operator==(p5_out));
+	ASSERT_TRUE(*p1_in == p1_out);
+	ASSERT_TRUE(*p2_in == p2_out);
+	ASSERT_TRUE(*p3_in == p3_out);
+	ASSERT_TRUE(*p4_in == p4_out);
+	ASSERT_TRUE(*p5_in == p5_out);
 }

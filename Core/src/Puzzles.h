@@ -17,14 +17,17 @@ public:
 	virtual bool Test() const { return (pos.GetP() & pos.GetO()) == 0; }
 	virtual bool IsSolved() const { return false; }
 	virtual void Solve(Search& search) { search.Eval(pos); }
+	virtual void Reset() {}
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
-	bool operator==(const CPuzzle& o) const { return pos == o.pos; }
-	bool operator!=(const CPuzzle& o) const { return !this->operator==(o); }
+	friend bool operator==(const CPuzzle& lhs, const CPuzzle& rhs) { return (typeid(lhs) == typeid(rhs)) && lhs.isEqual(rhs); }
+	friend bool operator!=(const CPuzzle& lhs, const CPuzzle& rhs) { return !(lhs == rhs); }
 
 protected:
 	CPosition pos;
+
+	virtual bool isEqual(const CPuzzle& o) const { return pos == o.pos; }
 };
 
 class CPuzzleScore : public CPuzzle
@@ -41,11 +44,12 @@ public:
 	bool Test() const override { return CPuzzle::Test() && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
 	bool IsSolved() const override { return score != DEFAULT_SCORE; }
 	void Solve(Search&) override;
+	void Reset() override { score = DEFAULT_SCORE; }
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
-	bool operator==(const CPuzzleScore& o) const { return this->CPuzzle::operator==(o) && score == o.score; }
-	bool operator!=(const CPuzzleScore& o) const { return !this->operator==(o); }
+protected:
+	bool isEqual(const CPuzzle& o) const override;
 };
 
 class CPuzzleScoreDepth : public CPuzzleScore
@@ -68,8 +72,8 @@ public:
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
-	bool operator==(const CPuzzleScoreDepth& o) const { return this->CPuzzleScore::operator==(o) && depth == o.depth && selectivity == o.selectivity; }
-	bool operator!=(const CPuzzleScoreDepth& o) const { return !this->operator==(o); }
+protected:
+	bool isEqual(const CPuzzle& o) const override;
 };
 
 class CPuzzleAllDepthScore : public CPuzzle
@@ -78,7 +82,7 @@ class CPuzzleAllDepthScore : public CPuzzle
 public:
 	int8_t score[61];
 
-	CPuzzleAllDepthScore(CPosition pos) : CPuzzle(pos) { ResetInformation(); }
+	CPuzzleAllDepthScore(CPosition pos) : CPuzzle(pos) { Reset(); }
 
 	std::unique_ptr<CPuzzle> Clone() const override { return std::make_unique<CPuzzleAllDepthScore>(*this); }
 	std::unique_ptr<CPuzzle> Play(const CMove& move) const override { return std::make_unique<CPuzzleAllDepthScore>(pos.Play(move)); }
@@ -87,14 +91,14 @@ public:
 	bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
 	void Solve(Search&) override;
 
-	void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
+	void Reset() override { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
 
 	int8_t MaxSolvedDepth() const;
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
-	bool operator==(const CPuzzleAllDepthScore& o) const;
-	bool operator!=(const CPuzzleAllDepthScore& o) const { return !this->operator==(o); }
+protected:
+	bool isEqual(const CPuzzle& o) const override;
 };
 
 class CPuzzleAllMoveScore : public CPuzzle
@@ -103,19 +107,19 @@ class CPuzzleAllMoveScore : public CPuzzle
 public:
 	int8_t score[64];
 
-	CPuzzleAllMoveScore(CPosition pos) : CPuzzle(pos) { ResetInformation(); }
+	CPuzzleAllMoveScore(CPosition pos) : CPuzzle(pos) { Reset(); }
 
 	std::unique_ptr<CPuzzle> Clone() const override { return std::make_unique<CPuzzleAllMoveScore>(*this); }
 	std::unique_ptr<CPuzzle> Play(const CMove& move) const override { return std::make_unique<CPuzzleAllMoveScore>(pos.Play(move)); }
-	void ResetInformation() { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
 	bool Test() const override;
 	bool IsSolved() const override;
 	void Solve(Search&) override;
+	void Reset() override { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
 
 	int8_t MaxScore() const { return *std::max_element(std::begin(score), std::end(score)); }
 
 	void Serialize(Archive& arch) const override { arch.Serialize(*this); }
 
-	bool operator==(const CPuzzleAllMoveScore& o) const;
-	bool operator!=(const CPuzzleAllMoveScore& o) const { return !this->operator==(o); }
+protected:
+	bool isEqual(const CPuzzle& o) const override;
 };
