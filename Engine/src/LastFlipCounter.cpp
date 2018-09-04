@@ -18,7 +18,7 @@ uint8_t CLastFlipCounter::CountFlip(const uint8_t P, const CMove& move)
 {
 	if (P & MakeBit(move.field))
 		return 0;
-	const uint8_t O = P ^ 0xFF ^ MakeBit(move.field);
+	const uint8_t O = static_cast<uint8_t>(P ^ 0xFF ^ MakeBit(move.field));
 	const auto flips = Flip(CPosition(P, O), move);
 	return static_cast<uint8_t>(PopCount(flips));
 }
