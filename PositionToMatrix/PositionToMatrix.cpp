@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 
 	std::cout << "Loading positions...";
 	const auto StartTime_load = std::chrono::high_resolution_clock::now();
-	auto puzzles = FilePuzzleCollection(position_filename);
+	auto puzzles = LoadPuzzles(position_filename);
 	const auto EndTime_load = std::chrono::high_resolution_clock::now();
 	std::cout << "done. " << time_format(EndTime_load - StartTime_load) << std::endl;
 

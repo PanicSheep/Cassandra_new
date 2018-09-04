@@ -120,16 +120,15 @@ TEST(puzzleCollection, save_and_load_2_CPuzzles)
 {
 	const CPath test_file = "test.pos";
 
-	IO::FilePuzzleCollection puzzles1;
-	IO::FilePuzzleCollection puzzles2;
+	PuzzleVector puzzles1;
 	puzzles1.push_back(std::make_unique<CPuzzle>(CPosition::StartPosition()));
 	puzzles1.push_back(std::make_unique<CPuzzle>(CPosition::StartPositionETH()));
 
-	puzzles1.Save(test_file);
-	puzzles2.Load(test_file);
+	IO::SavePuzzles(puzzles1, test_file);
+	PuzzleVector puzzles2 = IO::LoadPuzzles(test_file);
 
 	for (std::size_t i = 0; i < 2; i++) {
-		ASSERT_EQ(*puzzles1.Get(i).get(), *puzzles2.Get(i).get());
+		ASSERT_EQ(*puzzles1[i].get(), *puzzles2[i].get());
 	}
 
 	std::remove(test_file.GetAbsoluteFilePath().c_str());
@@ -141,13 +140,13 @@ TEST(puzzleCollection, save_and_load_CPuzzle)
 	const std::size_t size = 100;
 
 	const auto positions = CPositionGenerator(1337).GenerateRandomPositionSet(10, size);
-	IO::FilePuzzleCollection puzzles1;
-	IO::FilePuzzleCollection puzzles2;
+	PuzzleVector puzzles1;
+	puzzles1.reserve(size);
 	for (const auto& pos : positions)
 		puzzles1.push_back(std::make_unique<CPuzzleScore>(pos));
 
-	puzzles1.Save(test_file);
-	puzzles2.Load(test_file);
+	IO::SavePuzzles(puzzles1, test_file);
+	PuzzleVector puzzles2 = IO::LoadPuzzles(test_file);
 
 	for (std::size_t i = 0; i < size; i++) {
 		ASSERT_TRUE(*puzzles1[i] == *puzzles2[i]);

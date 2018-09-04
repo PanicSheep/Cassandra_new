@@ -98,11 +98,11 @@ int main(int argc, char* argv[])
 	//std::cout << "Run as Test: " << test << std::endl;
 	//std::cout << "Print each puzzle: " << print_each_puzzle << std::endl;
 	
-	std::unique_ptr<FilePuzzleCollection> puzzles;
+	std::unique_ptr<PuzzleVectorGuard> puzzles;
 	if (test)
-		puzzles = std::make_unique<FilePuzzleCollection>(filename);
+		puzzles = std::make_unique<PuzzleVectorGuard>(LoadPuzzles(filename));
 	else
-		puzzles = std::make_unique<AutoSavingPuzzleCollection>(filename, std::chrono::seconds(300));
+		puzzles = std::make_unique<AutoSavingPuzzleVector>(LoadPuzzles(filename), filename, std::chrono::seconds(300));
 
 	std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 	std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
@@ -191,6 +191,6 @@ int main(int argc, char* argv[])
 		<< " (" << ThousandsSeparator(NodeCounter * 1000.0 / time_diff) << " N/s)" << std::endl;
 	
 	if (!test)
-		puzzles->Save(filename);
+		SavePuzzles(puzzles->Release(), filename);
 	return 0;
 }

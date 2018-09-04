@@ -9,14 +9,14 @@
 
 using namespace IO;
 
-void Next(const CPath& Input, const CPath& Output)
+void Next(const CPath& input_file, const CPath& output_file)
 {
-	const auto input = FilePuzzleCollection(Input);
-	auto output = FilePuzzleCollection();
+	const auto input = LoadPuzzles(input_file);
+	PuzzleVector output;
 
 	for (std::size_t i = 0; i < input.size(); i++)
 	{
-		auto pos = input.Get(i);
+		auto& pos = input[i];
 		auto possibleMoves = pos->GetPosition().PossibleMoves();
 		while (!possibleMoves.empty())
 		{
@@ -24,16 +24,20 @@ void Next(const CPath& Input, const CPath& Output)
 		}
 	}
 
-	output.Save(Output);
+	SavePuzzles(output, output_file);
 }
 
 void help()
 {
-	std::cout << "Expected input:\n"
-		<< "-rnd -o filename -n size -e EmptyCount\n"
-		<< "-all -o filename -e EmptyCount\n"
-		<< "-next -i filename -o filename\n"
-		<< "-q for quiet mode\n";
+	std::cout << "Expected one of these inputs:\n"
+		<< " -rnd -o filename -n size -e EmptyCount\n"
+		<< " -all -o filename -e EmptyCount\n"
+		<< " -next -i filename -o filename\n"
+		<< "with one of these options:\n"
+		<< " -Score (default)\n"
+		<< " -AllDepthScore\n"
+		<< "and optional:\n"
+		<< " -q for quiet mode\n";
 }
 
 int main(int argc, char* argv[])
@@ -42,21 +46,23 @@ int main(int argc, char* argv[])
 	CPath Output;
 	std::size_t size = 0;
 	uint8_t NumEmpties = 0;
-	bool rnd = true;
+	bool rnd = false;
 	bool all = false;
 	bool next = false;
 	bool quiet = false;
+	bool AllDepthScore = false;
 
 	for (int i = 0; i < argc; i++)
 	{
-		if (std::string(argv[i]) == "-i") Input = CPath(argv[++i]);
+		if (std::string(argv[i]) == "-q") quiet = true;
+		else if (std::string(argv[i]) == "-i") Input = CPath(argv[++i]);
 		else if (std::string(argv[i]) == "-o") Output = CPath(argv[++i]);
 		else if (std::string(argv[i]) == "-n") size = std::atoi(argv[++i]);
 		else if (std::string(argv[i]) == "-e") NumEmpties = std::atoi(argv[++i]);
 		else if (std::string(argv[i]) == "-rnd") rnd = true;
 		else if (std::string(argv[i]) == "-all") all = true;
 		else if (std::string(argv[i]) == "-next") next = true;
-		else if (std::string(argv[i]) == "-q") quiet = true;
+		else if (std::string(argv[i]) == "-AllDepthScore") AllDepthScore = true;
 		else if (std::string(argv[i]) == "-h") { help(); return 0; }
 	}
 
@@ -82,18 +88,23 @@ int main(int argc, char* argv[])
 		std::cout << " positions with " << std::to_string(NumEmpties) << " empties to " << Output.GetRelativeFilePath() << " ..." << std::flush;
 	}
 
-	CPositionGenerator posgen;
+	CPositionGenerator PositionGenerator;
 	std::unordered_set<CPosition> positions;
 	if (rnd)
-		positions = posgen.GenerateRandomPositionSet(NumEmpties, size);
+		positions = PositionGenerator.GenerateRandomPositionSet(NumEmpties, size);
 	else if (all)
-		positions = posgen.GenerateAllPositions(NumEmpties);
+		positions = PositionGenerator.GenerateAllPositions(NumEmpties);
 
-	FilePuzzleCollection puzzles;
+	PuzzleVector puzzles;
 	for (const auto& pos : positions)
-		puzzles.push_back(std::make_unique<CPuzzleScore>(pos));
+	{
+		if (AllDepthScore)
+			puzzles.push_back(std::make_unique<CPuzzleAllDepthScore>(pos));
+		else
+			puzzles.push_back(std::make_unique<CPuzzleScore>(pos));
+	}
 
-	puzzles.Save(Output);
+	SavePuzzles(puzzles, Output);
 
 	if (!quiet)
 	{

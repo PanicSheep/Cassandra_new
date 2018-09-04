@@ -10,12 +10,7 @@
 
 namespace IO
 {
-	FilePuzzleCollection::FilePuzzleCollection(const CPath & file)
-	{
-		Load(file);
-	}
-
-	void FilePuzzleCollection::Load(const CPath & file)
+	PuzzleVector LoadPuzzles(const CPath& file)
 	{
 		std::fstream fstream(file.GetAbsoluteFilePath(), std::ios::in | std::ios::binary);
 		std::unique_ptr<Archive> archive;
@@ -26,13 +21,15 @@ namespace IO
 		else if (ext == "full")		archive = std::make_unique<SingleLineStreamArchive>(fstream);
 		else if (ext == "obf")		archive = std::make_unique<SingleLineStreamArchive>(fstream);
 		else
-			return;
+			throw std::runtime_error("Unknown file extension");
 
+		PuzzleVector vec;
 		while (std::unique_ptr<CPuzzle> puzzle = archive->Deserialize())
-			FilePuzzleCollection::push_back(std::move(puzzle));
+			vec.push_back(std::move(puzzle));
+		return vec;
 	}
 
-	void FilePuzzleCollection::Save(const CPath & file) const
+	void SavePuzzles(const PuzzleVector& vec, const CPath& file)
 	{
 		std::fstream fstream(file.GetAbsoluteFilePath(), std::ios::out | std::ios::binary);
 		std::unique_ptr<Archive> archive;
@@ -43,17 +40,15 @@ namespace IO
 		else if (ext == "full")		archive = std::make_unique<SingleLineStreamArchive>(fstream);
 		else if (ext == "obf")		archive = std::make_unique<SingleLineStreamArchive>(fstream);
 		else
-			return;
+			throw std::runtime_error("Unknown file extension");
 
-		for (const auto& it : m_puzzles)
+		for (const auto& it : vec)
 			*archive << *it;
 	}
 
-	AutoSavingPuzzleCollection::AutoSavingPuzzleCollection(const CPath& input_file, const CPath& output_file, std::chrono::seconds interval)
-		: m_terminate(false)
+	AutoSavingPuzzleVector::AutoSavingPuzzleVector(PuzzleVector&& puzzles, CPath output_file, std::chrono::seconds interval)
+		: PuzzleVectorGuard(std::move(puzzles)), m_terminate(false)
 	{
-		Load(input_file);
-
 		m_thread = std::thread(
 			[this, output_file, interval]()
 		{
@@ -61,51 +56,31 @@ namespace IO
 			while (m_terminate.load(std::memory_order_acquire) == false)
 			{
 				m_cv.wait_for(lock, interval);
-				FilePuzzleCollection::Save(output_file);
+				if (m_terminate.load(std::memory_order_acquire) == false)
+					SavePuzzles(m_puzzles, output_file);
 			}
 		}
 		);
 	}
 
-	AutoSavingPuzzleCollection::~AutoSavingPuzzleCollection()
+	AutoSavingPuzzleVector::~AutoSavingPuzzleVector()
 	{
 		m_terminate.store(true, std::memory_order_release);
+		m_cv.notify_all();
 		m_thread.join();
 	}
 
-	void AutoSavingPuzzleCollection::push_back(std::unique_ptr<CPuzzle>&& pos)
+	PuzzleVector AutoSavingPuzzleVector::Release()
 	{
-		std::unique_lock<std::mutex> lock(m_mtx);
-		FilePuzzleCollection::push_back(std::move(pos));
+		m_terminate.store(true, std::memory_order_release);
+		m_cv.notify_all();
+		m_thread.join();
+		return PuzzleVectorGuard::Release();
 	}
 
-	std::unique_ptr<CPuzzle> AutoSavingPuzzleCollection::Get(std::size_t index) const
+	void AutoSavingPuzzleVector::Save(const CPath & file) const
 	{
 		std::unique_lock<std::mutex> lock(m_mtx);
-		return FilePuzzleCollection::Get(index);
-	}
-
-	void AutoSavingPuzzleCollection::Set(std::size_t index, std::unique_ptr<CPuzzle>&& pos)
-	{
-		std::unique_lock<std::mutex> lock(m_mtx);
-		FilePuzzleCollection::Set(index, std::move(pos));
-	}
-
-	std::size_t AutoSavingPuzzleCollection::size() const
-	{
-		std::unique_lock<std::mutex> lock(m_mtx);
-		return FilePuzzleCollection::size();
-	}
-
-	void AutoSavingPuzzleCollection::Load(const CPath & file)
-	{
-		std::unique_lock<std::mutex> lock(m_mtx);
-		FilePuzzleCollection::Load(file);
-	}
-
-	void AutoSavingPuzzleCollection::Save(const CPath & file) const
-	{
-		std::unique_lock<std::mutex> lock(m_mtx);
-		FilePuzzleCollection::Save(file);
+		SavePuzzles(m_puzzles, file);
 	}
 }

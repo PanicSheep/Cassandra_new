@@ -2,22 +2,30 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <mutex>
 
 #include "Puzzles.h"
 
-class PuzzleCollection
+using PuzzleVector = std::vector<std::unique_ptr<CPuzzle>>;
+
+// Provides thread save access to the puzzles.
+class PuzzleVectorGuard
 {
 protected:
-	std::vector<std::unique_ptr<CPuzzle>> m_puzzles;
+	PuzzleVector m_puzzles;
+	mutable std::mutex m_mtx;
+
 public:
-	PuzzleCollection() {}
-	template <typename ITERATOR> PuzzleCollection(ITERATOR begin, ITERATOR end) : m_puzzles(begin, end) {}
-	virtual ~PuzzleCollection() {}
+	PuzzleVectorGuard() = delete;
+	PuzzleVectorGuard(const PuzzleVector&) = delete;
+	PuzzleVectorGuard(PuzzleVector&&);
+	virtual ~PuzzleVectorGuard() {}
 
-	virtual void push_back(std::unique_ptr<CPuzzle>&& pos) { m_puzzles.push_back(std::move(pos)); }
+	virtual PuzzleVector Release();
 
-	virtual std::unique_ptr<CPuzzle> Get(std::size_t index) const { return m_puzzles[index]->Clone(); }
-	virtual void Set(std::size_t index, std::unique_ptr<CPuzzle>&& pos) { m_puzzles[index] = std::move(pos); }
+	void push_back(std::unique_ptr<CPuzzle>&&);
+	std::size_t size() const;
 
-	virtual std::size_t size() const { return m_puzzles.size(); }
+	std::unique_ptr<CPuzzle> Get(std::size_t index) const;
+	void Set(std::size_t index, std::unique_ptr<CPuzzle>&&);
 };

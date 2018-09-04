@@ -12,7 +12,7 @@
 #include <cstdint>
 
 template <typename ValueType, typename SizeType>
-CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleCollection& puzzles, const uint64_t pattern)
+CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleVector& puzzles, const uint64_t pattern)
 {
 	const std::size_t size = puzzles.size();
 
@@ -22,7 +22,7 @@ CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleCollection& puzzles, cons
 	#pragma omp parallel for ordered schedule(static, 1)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
-		auto indices = Pattern->GetConfigurations(puzzles.Get(i)->GetPosition());
+		auto indices = Pattern->GetConfigurations(puzzles[i]->GetPosition());
 
 		std::map<SizeType, ValueType> map;
 		for (SizeType it : indices)
@@ -40,7 +40,7 @@ CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleCollection& puzzles, cons
 }
 
 template <typename VectorValueType>
-std::vector<VectorValueType> to_Vector(const PuzzleCollection& puzzles)
+std::vector<VectorValueType> to_Vector(const PuzzleVector& puzzles)
 {
 	const std::size_t size = puzzles.size();
 	std::vector<VectorValueType> Score;
@@ -49,7 +49,7 @@ std::vector<VectorValueType> to_Vector(const PuzzleCollection& puzzles)
 	#pragma omp parallel for schedule(static, 256)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
-		Score[i] = dynamic_cast<CPuzzleScore*>(puzzles.Get(i).get())->score;
+		Score[i] = dynamic_cast<CPuzzleScore*>(puzzles[i].get())->score;
 	}
 
 	return Score;
