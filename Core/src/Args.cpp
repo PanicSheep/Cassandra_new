@@ -8,24 +8,25 @@ CArgs::CArgs(int argc, char* argv[])
 void CArgs::Load(int argc, char* argv[])
 {
 	const std::string prefix = "-";
+	const std::size_t prefix_length = prefix.length();
 
-	for (int i = 0; i < argc; i++)
+	for (std::size_t i = 0; i < argc; i++)
 	{
 		const std::string token = argv[i];
-		if (token.substr(0, prefix.length()) == prefix)
+		if (token.compare(0, prefix_length, prefix) == 0)
 		{
-			const std::string key = token.substr(prefix.length());
+			const std::string key = token.substr(prefix_length);
 
 			std::vector<std::string> values;
-			for (int j = i + 1; j < argc; j++)
+			for (std::size_t j = i + 1; j < argc; j++)
 			{
 				const std::string next_token = argv[j];
-				if (next_token.substr(0, prefix.length()) == prefix)
+				if (next_token.compare(0, prefix_length, prefix) == 0)
 					break;
 				else
-					values.push_back(next_token);
+					values.emplace_back(std::move(next_token));
 			}
-			m_args[key] = std::move(values);
+			std::move(values.begin(), values.end(), std::back_inserter(m_args[key]));
 
 			i += values.size();
 		}

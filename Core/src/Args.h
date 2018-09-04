@@ -20,6 +20,7 @@ public:
 	void Set(const std::string& key, std::vector<std::string>&& values);
 };
 
+// Command Line Interface Arguments
 class CLI_Arg
 {
 public:

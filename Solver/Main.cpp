@@ -49,11 +49,12 @@ int main(int argc, char* argv[])
 	}
 
 	// Get arguments without config file
-	const CPath config_file = args.Get("config")[0];
-	const CPath filename = args.Get("f")[0];
-	const std::string RAM = args.Get("RAM")[0];
-	const std::size_t threads = std::stoll(args.Get("t")[0]);
+	const CPath config_file = args.Get("config").back(); // TODO: search all .Get [0] and replace with .back().
+	const CPath filename = args.Get("f").back();
+	const std::string RAM = args.Get("RAM").back();
+	const std::size_t threads = std::stoll(args.Get("t").back());
 	const bool test = args.Has("test");
+	const bool force = args.Has("force");
 	const bool print_each_puzzle = args.Has("v");
 
 	CConfigurations configs(config_file);
@@ -64,7 +65,7 @@ int main(int argc, char* argv[])
 		pattern_names = split(configs.Get("active pattern"), " ");
 
 	std::vector<std::shared_ptr<CPatternGroup>> pattern_collection;
-#ifndef _DEBUG
+//#ifndef _DEBUG
 	for (int range = 0; range < 20; range++)
 	{
 		std::vector<std::shared_ptr<CPattern>> pattern_group;
@@ -78,7 +79,14 @@ int main(int argc, char* argv[])
 
 			CPath weights(config_file.GetAbsoluteFolderPath() + configs.Get("weights" + std::to_string(range)) + pat + ".w");
 			auto Pattern = CreatePattern(pattern);
-			Pattern->set_weights(read_vector<float>(weights));
+			try
+			{
+				Pattern->set_weights(read_vector<float>(weights));
+			}
+			catch (...)
+			{
+				Pattern->set_weights();
+			}
 			pattern_group.push_back(std::move(Pattern));
 		}
 		auto shared_pattern_group = std::make_shared<CPatternGroup>(pattern_group);
@@ -88,7 +96,7 @@ int main(int argc, char* argv[])
 		if (range == 0)
 			pattern_collection.push_back(shared_pattern_group);
 	}
-#endif
+//#endif
 	std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<CPatternCollection>(pattern_collection);
 	
 	//std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
@@ -119,20 +127,24 @@ int main(int argc, char* argv[])
 		std::cout << "---+------+-----+----------------+----------------+------------" << std::endl;
 	}
 
-	const auto startTime = std::chrono::high_resolution_clock::now();
+	const auto GlobalStartTime = std::chrono::high_resolution_clock::now();
 	#pragma omp parallel for schedule(static, 1) num_threads(threads)
-	for (int64_t i = 0; i < puzzles->size(); i++)
+	for (int64_t i = 0; i < static_cast<int64_t>(puzzles->size()); i++)
 	{
 		auto puzzle = puzzles->Get(i);
 		std::unique_ptr<Search>& search = searches[i];
 
-		if (!test && puzzle->IsSolved())
+		if (!force && !test && puzzle->IsSolved())
 			continue;
 
 		env->HashTable->AdvanceDate();
 
+		auto old_puzzle = puzzle->Clone();
+		if (test || force)
+			puzzle->Reset();
+
 		auto startTime = std::chrono::high_resolution_clock::now();
-		auto score = search->Eval(puzzle->GetPosition());
+		puzzle->Solve(*search);
 		auto endTime = std::chrono::high_resolution_clock::now();
 
 		if (print_each_puzzle)
@@ -144,7 +156,9 @@ int main(int argc, char* argv[])
 					std::cout
 						<< std::setw(3) << i << "|"
 						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
-						<< (test && score != puzzleScore->MaxScore() ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != puzzleScore->MaxScore() ? "#" : " ") << "|"
+						<< (test && (old_puzzle != puzzle) ? "#" : " ")
+							<< DoubleDigitSignedInt(puzzleScore->MaxScore())
+						<< (test && (old_puzzle != puzzle) ? "#" : " ") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 
@@ -160,19 +174,37 @@ int main(int argc, char* argv[])
 					std::cout
 						<< std::setw(3) << i << "|"
 						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
-						<< (test && score != puzzleScore->score ? "#" : " ") << DoubleDigitSignedInt(score) << (test && score != puzzleScore->score ? "#" : " ") << "|"
+						<< (test && (old_puzzle != puzzle) ? "#" : " ")
+						<< DoubleDigitSignedInt(puzzleScore->score)
+						<< (test && (old_puzzle != puzzle) ? "#" : " ") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 
 					if (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() > 0)
 						std::cout << std::setw(12) << ThousandsSeparator(search->GetNodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
-						std::cout << std::endl;
+					std::cout << std::endl;
+				}
+			}
+			else if (const auto puzzleScore = dynamic_cast<CPuzzleAllDepthScore*>(puzzle.get()))
+			{
+
+				#pragma omp critical
+				{
+					std::cout
+						<< std::setw(3) << i << "|"
+						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
+						<< (test && (old_puzzle != puzzle) ? "#" : " ")
+						<< DoubleDigitSignedInt(puzzleScore->score[puzzleScore->MaxSolvedDepth()])
+						<< (test && (old_puzzle != puzzle) ? "#" : " ") << "|"
+						<< std::setw(16) << time_format(endTime - startTime) << "|"
+						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
+
+					if (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() > 0)
+						std::cout << std::setw(12) << ThousandsSeparator(search->GetNodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
+					std::cout << std::endl;
 				}
 			}
 		}
-
-		if (const auto puzzleScore = dynamic_cast<CPuzzleScore*>(puzzle.get()))
-			puzzleScore->score = score;
 
 		puzzles->Set(i, std::move(puzzle));
 	}
@@ -182,12 +214,12 @@ int main(int argc, char* argv[])
 	for (auto& search : searches)
 		NodeCounter += search->GetNodeCount();
 
-	const double time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+	const double time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - GlobalStartTime).count();
 
 	if (print_each_puzzle)
 		std::cout << "---+------+-----+----------------+----------------+------------" << std::endl;
 
-	std::cout << ThousandsSeparator(NodeCounter) << " nodes in " << time_format(endTime - startTime)
+	std::cout << ThousandsSeparator(NodeCounter) << " nodes in " << time_format(endTime - GlobalStartTime)
 		<< " (" << ThousandsSeparator(NodeCounter * 1000.0 / time_diff) << " N/s)" << std::endl;
 	
 	if (!test)
