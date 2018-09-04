@@ -25,7 +25,7 @@ CPath::CPath(std::string path)
 	replace_all(path, WRONG_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
 
 	if (IsAbsolutePath(path))
-		m_fullpath = path;
+		m_fullpath = std::move(path);
 	else // relative path
 	{
 		if (StartsWith(path, FOLDER_SEPARATOR))

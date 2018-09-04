@@ -7,6 +7,7 @@ class CPath
 public:
 	CPath() = default;
 	CPath(std::string path);
+	CPath(const char* path) : CPath(std::string(path)) {}
 
 	bool IsFolder() const;
 	std::string GetFolderName() const;
