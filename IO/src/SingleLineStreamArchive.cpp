@@ -72,7 +72,7 @@ namespace IO
 			{
 				if (pos[i] == 'X') { SetBit(P, 63 - i); }
 				else if (pos[i] == 'O') { SetBit(O, 63 - i); }
-				else if (pos[i] == '@') { SetBit(P, 63 - i); SetBit(O, 63 - i); }
+				else if (pos[i] == '#') { SetBit(P, 63 - i); SetBit(O, 63 - i); }
 			}
 
 			if (pos[65] == 'X')
@@ -91,7 +91,7 @@ namespace IO
 			{
 				if (pos[i] == 'X') { SetBit(P, 63 - i); }
 				else if (pos[i] == 'O') { SetBit(O, 63 - i); }
-				else if (pos[i] == '@') { SetBit(P, 63 - i); SetBit(O, 63 - i); }
+				else if (pos[i] == '#') { SetBit(P, 63 - i); SetBit(O, 63 - i); }
 			}
 
 			const int8_t score = std::stoi(pos.substr(69, 3));
@@ -99,7 +99,7 @@ namespace IO
 			if (pos[65] == 'X')
 				return std::make_unique<CPuzzleScore>(CPosition(P, O), score);
 			else if (pos[65] == 'O')
-				return std::make_unique<CPuzzleScore>(CPosition(O, P), -score);
+				return std::make_unique<CPuzzleScore>(CPosition(O, P), score);
 			else
 				return nullptr;
 		}
@@ -112,7 +112,7 @@ namespace IO
 			{
 				if (pos[i] == 'X') { SetBit(P, 63 - i); }
 				else if (pos[i] == 'O') { SetBit(O, 63 - i); }
-				else if (pos[i] == '@') { SetBit(P, 63 - i); SetBit(O, 63 - i); }
+				else if (pos[i] == '#') { SetBit(P, 63 - i); SetBit(O, 63 - i); }
 			}
 
 			std::unique_ptr<CPuzzleAllMoveScore> baord;
@@ -172,13 +172,13 @@ namespace IO
 		std::string line;
 		std::getline(stream, line);
 
-		if (std::regex_match(line, std::regex(R"((X|O|-){64} (X|O);(\r)?)")))
+		if (std::regex_match(line, std::regex(R"((X|O|#|-){64} (X|O);(\r)?)")))
 			return Parse_CPuzzle(line);
 
-		if (std::regex_match(line, std::regex(R"((X|O|-){64} (X|O) % ((\+|\-)[0-9]{2})(\r)?)")))
+		if (std::regex_match(line, std::regex(R"((X|O|#|-){64} (X|O) % ((\+|\-)[0-9]{2})(\r)?)")))
 			return Parse_CPuzzleScore(line);
 
-		if (std::regex_match(line, std::regex(R"((X|O|-){64} (X|O) % ([A-H][0-8]:(\+|\-)[0-9]{2}( )?)+(\r)?)")))
+		if (std::regex_match(line, std::regex(R"((X|O|#|-){64} (X|O) % ([A-H][0-8]:(\+|\-)[0-9]{2}( )?)+(\r)?)")))
 			return Parse_CPuzzleAllMoveScore(line);
 
 		return nullptr;
