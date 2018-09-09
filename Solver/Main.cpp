@@ -65,7 +65,8 @@ int main(int argc, char* argv[])
 		pattern_names = split(configs.Get("active pattern"), " ");
 
 	std::vector<std::shared_ptr<CPatternGroup>> pattern_collection;
-//#ifndef _DEBUG
+	std::shared_ptr<IPattern> PatternEvaluator = nullptr;
+#ifndef _DEBUG
 	for (int range = 0; range < 20; range++)
 	{
 		std::vector<std::shared_ptr<CPattern>> pattern_group;
@@ -96,8 +97,8 @@ int main(int argc, char* argv[])
 		if (range == 0)
 			pattern_collection.push_back(shared_pattern_group);
 	}
-//#endif
-	std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<CPatternCollection>(pattern_collection);
+	PatternEvaluator = std::make_shared<CPatternCollection>(pattern_collection);
+#endif
 	
 	//std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
 	//std::cout << "Config File: " << config_file.GetAbsoluteFilePath() << std::endl;
