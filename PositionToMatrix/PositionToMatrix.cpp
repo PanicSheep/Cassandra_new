@@ -72,9 +72,9 @@ int main(int argc, char* argv[])
 	Check_optional_argument(args, CLI_arg_pattern);
 
 	// Get arguments without config file
-	const CPath config_file = args.Get("config")[0];
-	const CPath position_filename = args.Get(CLI_arg_position.name)[0];
-	const CPath output_folder = args.Get(CLI_arg_output_folder.name)[0];
+	const CPath config_file = args.Get("config").back();
+	const CPath position_filename = args.Get(CLI_arg_position.name).back();
+	const CPath output_folder = args.Get(CLI_arg_output_folder.name).back();
 
 	CConfigurations configs(config_file);
 
