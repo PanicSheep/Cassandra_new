@@ -5,20 +5,6 @@
 #include <random>
 #include <vector>
 
-std::vector<PuzzleVector> LoadPuzzles(const std::vector<CPath>& files)
-{
-	std::vector<PuzzleVector> ret;
-	for (const auto& file : files)
-		ret.emplace_back(IO::LoadPuzzles(file));
-	return ret;
-}
-
-void SavePuzzles(const std::vector<PuzzleVector>& puzzles, const std::vector<CPath>& files)
-{
-	for (std::size_t i = 0; i < std::min(puzzles.size(), files.size()); i++)
-		IO::SavePuzzles(puzzles[i], files[i]);
-}
-
 PuzzleVector Merge(std::vector<PuzzleVector>&& vec)
 {
 	PuzzleVector ret;
@@ -55,15 +41,7 @@ std::vector<PuzzleVector> Split(PuzzleVector&& puzzles, const std::vector<double
 
 void Split(const std::vector<CPath>& input_files, const std::vector<CPath>& output_files, const std::vector<double>& fractions)
 {
-	SavePuzzles(Split(Merge(LoadPuzzles(input_files)), fractions), output_files);
-}
-
-
-std::vector<CPath> to_Path(const std::vector<std::string>& strings)
-{
-	std::vector<CPath> ret;
-	std::transform(strings.begin(), strings.end(), std::back_inserter(ret), [](const std::string& str) { return CPath(str); });
-	return ret;
+	IO::SavePuzzles(Split(Merge(IO::LoadPuzzles(input_files)), fractions), output_files);
 }
 
 std::vector<CPath> ParseFiles(const std::vector<std::string>& vec)
