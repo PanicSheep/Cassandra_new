@@ -137,3 +137,15 @@ void CPuzzleAllMoveScore::Solve(Search& search)
 			score[i] = search.Eval(pos.Play(CMove(static_cast<Field>(i))));
 	}
 }
+
+std::unique_ptr<CPuzzleAllDepthScore> to_PuzzleAllDepthScore(const CPuzzle & puzzle)
+{
+	if (const auto tmp = dynamic_cast<const CPuzzleScore*>(&puzzle))
+	{
+		const auto position = tmp->GetPosition();
+		auto ret = std::make_unique<CPuzzleAllDepthScore>(position);
+		ret->score[position.EmptyCount()] = tmp->score;
+		return ret;
+	}
+	throw std::runtime_error("not implemented");
+}

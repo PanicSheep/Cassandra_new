@@ -123,3 +123,5 @@ public:
 protected:
 	bool isEqual(const CPuzzle& o) const override;
 };
+
+std::unique_ptr<CPuzzleAllDepthScore> to_PuzzleAllDepthScore(const CPuzzle&);
