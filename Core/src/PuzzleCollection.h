@@ -29,3 +29,6 @@ public:
 	std::unique_ptr<CPuzzle> Get(std::size_t index) const;
 	void Set(std::size_t index, std::unique_ptr<CPuzzle>&&);
 };
+
+
+PuzzleVector Merge(std::vector<PuzzleVector>&&);
