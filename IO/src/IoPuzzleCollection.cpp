@@ -46,6 +46,20 @@ namespace IO
 			*archive << *it;
 	}
 
+	std::vector<PuzzleVector> LoadPuzzles(const std::vector<CPath>& files)
+	{
+		std::vector<PuzzleVector> ret;
+		for (const auto& file : files)
+			ret.emplace_back(IO::LoadPuzzles(file));
+		return ret;
+	}
+
+	void SavePuzzles(const std::vector<PuzzleVector>& puzzles, const std::vector<CPath>& files)
+	{
+		for (std::size_t i = 0; i < std::min(puzzles.size(), files.size()); i++)
+			IO::SavePuzzles(puzzles[i], files[i]);
+	}
+
 	AutoSavingPuzzleVector::AutoSavingPuzzleVector(PuzzleVector&& puzzles, CPath output_file, std::chrono::seconds interval)
 		: PuzzleVectorGuard(std::move(puzzles)), m_terminate(false)
 	{
