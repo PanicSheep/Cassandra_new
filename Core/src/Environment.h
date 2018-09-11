@@ -18,7 +18,6 @@ public:
 	virtual uint8_t CountLastFlip(const CPosition&, const CMove&) const = 0;
 };
 
-class TwoNode;
 class PvsInfo;
 
 class IStabilityAnalyzer
