@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 class CPath
 {
@@ -26,3 +27,5 @@ private:
 	void ProcessFolderUps();
 	std::string GetRelativePath() const;
 };
+
+std::vector<CPath> to_Path(const std::vector<std::string>&);

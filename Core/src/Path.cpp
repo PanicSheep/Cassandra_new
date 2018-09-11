@@ -178,3 +178,10 @@ std::string CPath::GetRelativePath() const
 
 	return join(RelPath, FOLDER_SEPARATOR);
 }
+
+std::vector<CPath> to_Path(const std::vector<std::string>& strings)
+{
+	std::vector<CPath> ret;
+	std::transform(strings.begin(), strings.end(), std::back_inserter(ret), [](const std::string& str) { return CPath(str); });
+	return ret;
+}
