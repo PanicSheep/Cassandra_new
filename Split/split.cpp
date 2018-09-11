@@ -8,12 +8,16 @@
 PuzzleVector Merge(std::vector<PuzzleVector>&& vec)
 {
 	PuzzleVector ret;
-	for (auto& it : vec)
-		std::move(it.begin(), it.end(), std::back_inserter(ret));
+	if (vec.size())
+		ret = std::move(vec.front());
+
+	for (auto it = vec.begin() + 1; it != vec.end(); ++it)
+		std::move(it->begin(), it->end(), std::back_inserter(ret));
+
 	return ret;
 }
 
-PuzzleVector ExtractRandomSample(PuzzleVector& puzzles, std::size_t count)
+PuzzleVector ExtractRandomSample(PuzzleVector& puzzles, const std::size_t count)
 {
 	PuzzleVector ret;
 	std::sample(
@@ -31,11 +35,16 @@ PuzzleVector ExtractRandomSample(PuzzleVector& puzzles, std::size_t count)
 std::vector<PuzzleVector> Split(PuzzleVector&& puzzles, const std::vector<double>& fractions)
 {
 	const std::size_t size = puzzles.size();
+
 	std::vector<PuzzleVector> ret;
+	ret.reserve(fractions.size());
+
 	for (const auto fraction : fractions)
 		ret.emplace_back(ExtractRandomSample(puzzles, std::round(size * fraction)));
+
 	if (puzzles.size())
 		ret.emplace_back(std::move(puzzles));
+
 	return ret;
 }
 
@@ -49,8 +58,10 @@ std::vector<CPath> ParseFiles(const std::vector<std::string>& vec)
 	std::vector<CPath> ret;
 	for (std::size_t i = 1; i < vec.size(); i += 2)
 		ret.push_back(CPath(vec[i]));
+
 	if (vec.size() % 2 == 1)
 		ret.push_back(CPath(vec.back()));
+
 	return ret;
 }
 
