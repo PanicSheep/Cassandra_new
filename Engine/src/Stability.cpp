@@ -119,37 +119,39 @@ uint64_t CStabilityAnalyzer::FullLineVertival(uint64_t discs)
 }
 
 uint64_t CStabilityAnalyzer::FullLineDiagonal(const uint64_t discs)
-{	// 11 x AND, 11 x CMP, 11 x OR
-	// 33 OPs
-	uint64_t full = 0;
-	if (TestBits(discs, 0x0402010000000000ULL)) full |= 0x0402010000000000ULL;
-	if (TestBits(discs, 0x0804020100000000ULL)) full |= 0x0804020100000000ULL;
-	if (TestBits(discs, 0x1008040201000000ULL)) full |= 0x1008040201000000ULL;
-	if (TestBits(discs, 0x2010080402010000ULL)) full |= 0x2010080402010000ULL;
-	if (TestBits(discs, 0x4020100804020100ULL)) full |= 0x4020100804020100ULL;
-	if (TestBits(discs, 0x8040201008040201ULL)) full |= 0x8040201008040201ULL;
-	if (TestBits(discs, 0x0080402010080402ULL)) full |= 0x0080402010080402ULL;
-	if (TestBits(discs, 0x0000804020100804ULL)) full |= 0x0000804020100804ULL;
-	if (TestBits(discs, 0x0000008040201008ULL)) full |= 0x0000008040201008ULL;
-	if (TestBits(discs, 0x0000000080402010ULL)) full |= 0x0000000080402010ULL;
-	if (TestBits(discs, 0x0000000000804020ULL)) full |= 0x0000000000804020ULL;
-	return full;
+{	// 5 x SHR, 5 x SHL, 7x AND, 10 x OR
+	// 27 OPs
+	const uint64_t edge = 0xFF818181818181FFULL;
+
+	uint64_t full_l = discs & (edge | (discs >> 9));
+	uint64_t full_r = discs & (edge | (discs << 9));
+	uint64_t edge_l = edge | (edge >> 9);
+	uint64_t edge_r = edge | (edge << 9);
+	full_l &= edge_l | (full_l >> 18);
+	full_r &= edge_r | (full_r << 18);
+	edge_l |= edge_l >> 18;
+	edge_r |= edge_r << 18;
+	full_l &= edge_l | (full_l >> 36);
+	full_r &= edge_r | (full_r << 36);
+
+	return full_r & full_l;
 }
 
 uint64_t CStabilityAnalyzer::FullLineCodiagonal(const uint64_t discs)
-{	// 11 x AND, 11 x CMP, 11 x OR
-	// 33 OPs
-	uint64_t full = 0;
-	if (TestBits(discs, 0x2040800000000000ULL)) full |= 0x2040800000000000ULL;
-	if (TestBits(discs, 0x1020408000000000ULL)) full |= 0x1020408000000000ULL;
-	if (TestBits(discs, 0x0810204080000000ULL)) full |= 0x0810204080000000ULL;
-	if (TestBits(discs, 0x0408102040800000ULL)) full |= 0x0408102040800000ULL;
-	if (TestBits(discs, 0x0204081020408000ULL)) full |= 0x0204081020408000ULL;
-	if (TestBits(discs, 0x0102040810204080ULL)) full |= 0x0102040810204080ULL;
-	if (TestBits(discs, 0x0001020408102040ULL)) full |= 0x0001020408102040ULL;
-	if (TestBits(discs, 0x0000010204081020ULL)) full |= 0x0000010204081020ULL;
-	if (TestBits(discs, 0x0000000102040810ULL)) full |= 0x0000000102040810ULL;
-	if (TestBits(discs, 0x0000000001020408ULL)) full |= 0x0000000001020408ULL;
-	if (TestBits(discs, 0x0000000000010204ULL)) full |= 0x0000000000010204ULL;
-	return full;
+{	// 5 x SHR, 5 x SHL, 7x AND, 10 x OR
+	// 27 OPs
+	const uint64_t edge = 0xFF818181818181FFULL;
+
+	uint64_t full_l = discs & (edge | (discs >> 7));
+	uint64_t full_r = discs & (edge | (discs << 7));
+	uint64_t edge_l = edge | (edge >> 7);
+	uint64_t edge_r = edge | (edge << 7);
+	full_l &= edge_l | (full_l >> 14);
+	full_r &= edge_r | (full_r << 14);
+	edge_l |= edge_l >> 14;
+	edge_r |= edge_r << 14;
+	full_l &= edge_l | (full_l >> 28);
+	full_r &= edge_r | (full_r << 28);
+
+	return full_r & full_l;
 }
