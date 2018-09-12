@@ -10,7 +10,7 @@
     <ClCompile Include="src\Puzzles.cpp" />
     <ClCompile Include="src\Search.cpp" />
     <ClCompile Include="src\Moves.cpp" />
-    <ClCompile Include="PuzzleCollection.cpp" />
+    <ClCompile Include="src\PuzzleCollection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FlipFast.h" />

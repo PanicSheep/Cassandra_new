@@ -30,5 +30,4 @@ public:
 	void Set(std::size_t index, std::unique_ptr<CPuzzle>&&);
 };
 
-
 PuzzleVector Merge(std::vector<PuzzleVector>&&);

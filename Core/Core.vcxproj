@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PuzzleCollection.cpp" />
     <ClCompile Include="src\Args.cpp" />
     <ClCompile Include="src\Moves.cpp" />
+    <ClCompile Include="src\PuzzleCollection.cpp" />
     <ClCompile Include="src\Puzzles.cpp" />
     <ClCompile Include="src\FlipFast.cpp" />
     <ClCompile Include="src\Path.cpp" />
