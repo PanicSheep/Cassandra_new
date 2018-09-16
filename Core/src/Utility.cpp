@@ -71,15 +71,8 @@ std::string short_time_format(std::chrono::duration<long long, std::pico> durati
 
 std::string ThousandsSeparator(uint64_t n)
 {
-	class MyNumPunct : public std::numpunct<char>
-	{
-	protected:
-		virtual char do_thousands_sep() const { return '\''; }
-		virtual std::string do_grouping() const { return "\03"; }
-	};
-
 	std::ostringstream oss;
-	oss.imbue(std::locale(std::locale::classic(), new MyNumPunct));
+	oss.imbue(std::locale(""));
 	oss << n;
 	return oss.str();
 }
