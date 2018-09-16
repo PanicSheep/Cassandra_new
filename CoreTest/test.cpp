@@ -52,7 +52,7 @@ TEST(Utility, FlipHorizontal) {
 			ASSERT_EQ(FlipHorizontal(1ULL << (i * 8 + j)), 1ULL << (i * 8 + (7 - j)));
 }
 
-void TestFlip(const CMove& move)
+void TestFlip(const CMove move)
 {
 	const uint64_t mask = line(move, -1, -1)
 	                    | line(move, -1,  0)
@@ -71,7 +71,7 @@ void TestFlip(const CMove& move)
 
 	for (unsigned int i = 0; i < 1'000; i++)
 	{
-		CPosition pos = MakeRandomPosition(~(1ULL << move.field));
+		CPosition pos = MakeRandomPosition(~(1ULL << move));
 		ASSERT_EQ(Flip(pos, move), Flip_loop(pos, move));
 	}
 }
@@ -426,7 +426,7 @@ TEST(PossibleMoves, PossibleMoves_RandomSample)
 		{
 			const auto move = PotentialMoves.ExtractMove();
 			if (Flip(pos, move) != 0ULL)
-				possibleMoves |= MakeBit(move.field);
+				possibleMoves |= MakeBit(move);
 		}
 
 		ASSERT_EQ(pos.PossibleMoves(), possibleMoves);

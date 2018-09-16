@@ -20,9 +20,9 @@ private:
 	int Eval_4(const CPosition&, int alpha, int beta);
 
 	int Eval_0(const CPosition&);
-	int Eval_1(const CPosition&, int alpha, const CMove& move1);
-	int Eval_2(const CPosition&, int alpha, int beta, const CMove& move1, const CMove& move2);
-	int Eval_3(const CPosition&, int alpha, int beta, const CMove& move1, const CMove& move2, const CMove& move3);
-	int Eval_4(const CPosition&, int alpha, int beta, const CMove& move1, const CMove& move2, const CMove& move3, const CMove& move4);
+	int Eval_1(const CPosition&, int alpha, CMove move1);
+	int Eval_2(const CPosition&, int alpha, int beta, CMove move1, CMove move2);
+	int Eval_3(const CPosition&, int alpha, int beta, CMove move1, CMove move2, CMove move3);
+	int Eval_4(const CPosition&, int alpha, int beta, CMove move1, CMove move2, CMove move3, CMove move4);
 	int Eval_N(const CPosition&, int alpha, int beta);
 };

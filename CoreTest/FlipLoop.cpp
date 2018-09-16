@@ -2,11 +2,11 @@
 #include "FlipLoop.h"
 
 // flips discs in one direction
-uint64_t Flip_loop_dir(const CPosition& pos, const CMove& move, const int dX, const int dY)
+uint64_t Flip_loop_dir(const CPosition& pos, const CMove move, const int dX, const int dY)
 {
 	uint64_t flips = 0;
-	int i = (move.field % 8) + dX; // Starting index in x direction
-	int j = (move.field / 8) + dY; // Starting index in y direction
+	int i = (move % 8) + dX; // Starting index in x direction
+	int j = (move / 8) + dY; // Starting index in y direction
 
 	while ((i >= 0) && (i < 8) && (j >= 0) && (j < 8)) // In between boundaries
 	{
@@ -23,7 +23,7 @@ uint64_t Flip_loop_dir(const CPosition& pos, const CMove& move, const int dX, co
 	return 0;
 }
 
-uint64_t Flip_loop(const CPosition& pos, const CMove& move)
+uint64_t Flip_loop(const CPosition& pos, const CMove move)
 {
 	return Flip_loop_dir(pos, move, -1, -1)
 	     | Flip_loop_dir(pos, move, -1,  0)

@@ -15,8 +15,8 @@ public:
 	uint64_t GetStableStones(const CPosition&) const override; // The stable stones from the opponent.
 
 private:
-	static uint64_t Flip(const CPosition&, const CMove&);
-	static uint64_t Flip_dir(const CPosition&, const CMove&, const int dX);
+	static uint64_t Flip(const CPosition&, CMove);
+	static uint64_t Flip_dir(const CPosition&, CMove, const int dX);
 
 	static uint64_t FullLineHorizontal(uint64_t discs);
 	static uint64_t FullLineVertival(uint64_t discs);

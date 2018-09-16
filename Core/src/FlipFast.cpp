@@ -5,7 +5,7 @@
 
 uint64_t CFlipper::Flip(const CPosition& pos, const CMove move) const
 {
-	return (this->*flip_fp[move.field])(pos.GetP(), pos.GetO());
+	return (this->*flip_fp[move])(pos.GetP(), pos.GetO());
 }
 
 uint64_t CFlipper::A1(const uint64_t P, const uint64_t O) const

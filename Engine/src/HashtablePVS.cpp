@@ -17,8 +17,8 @@ PvsInfo::PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t a
 	, selectivity(selectivity)
 	, alpha(alpha)
 	, beta(beta)
-	, PV(PV.field)
-	, AV(AV.field)
+	, PV(PV)
+	, AV(AV)
 {
 	SetCost(NodeCount);
 }

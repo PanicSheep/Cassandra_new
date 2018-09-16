@@ -8,14 +8,14 @@ class IFlipper
 {
 public:
 	virtual ~IFlipper() {}
-	virtual CPosition Play(const CPosition&, const CMove&) const = 0;
+	virtual CPosition Play(const CPosition&, CMove) const = 0;
 };
 
 class ILastFlipCounter
 {
 public:
 	virtual ~ILastFlipCounter() {}
-	virtual uint8_t CountLastFlip(const CPosition&, const CMove&) const = 0;
+	virtual uint8_t CountLastFlip(const CPosition&, CMove) const = 0;
 };
 
 class PvsInfo;

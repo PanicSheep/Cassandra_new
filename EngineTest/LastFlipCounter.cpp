@@ -2,7 +2,7 @@
 #include "LastFlipCounter.h"
 #include "FlipFast.h"
 
-void TestCountLastFlip(const CMove& move)
+void TestCountLastFlip(CMove move)
 {
 	CLastFlipCounter LFC;
 	const uint64_t mask = line(move, -1, -1)
@@ -22,7 +22,7 @@ void TestCountLastFlip(const CMove& move)
 
 	for (unsigned int i = 0; i < 10'000; i++)
 	{
-		CPosition pos = MakeFullRandomPosition(~(1ULL << move.field));
+		CPosition pos = MakeFullRandomPosition(~(1ULL << move));
 		ASSERT_EQ(PopCount(Flip(pos, move)) * 2, LFC.CountLastFlip(pos, move));
 	}
 }

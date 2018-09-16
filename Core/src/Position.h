@@ -23,8 +23,8 @@ public:
 	CMoves   PossibleMoves() const;
 	bool     HasMoves() const;
 
-	CPosition Play(const CMove& move) const;
-	CPosition Play(const CMove& move, uint64_t flips) const;
+	CPosition Play(CMove move) const;
+	CPosition Play(CMove move, uint64_t flips) const;
 	CPosition PlayPass() const { return CPosition(O, P); }
 
 	void FlipCodiagonal();

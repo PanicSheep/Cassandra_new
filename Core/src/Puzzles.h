@@ -13,7 +13,7 @@ public:
 	const CPosition& GetPosition() const { return pos; }
 
 	virtual std::unique_ptr<CPuzzle> Clone() const { return std::make_unique<CPuzzle>(*this); }
-	virtual std::unique_ptr<CPuzzle> Play(const CMove& move) const { return std::make_unique<CPuzzle>(pos.Play(move)); }
+	virtual std::unique_ptr<CPuzzle> Play(CMove move) const { return std::make_unique<CPuzzle>(pos.Play(move)); }
 	virtual bool Test() const { return (pos.GetP() & pos.GetO()) == 0; }
 	virtual bool IsSolved() const { return false; }
 	virtual void Solve(Search& search) { search.Eval(pos); }
@@ -40,7 +40,7 @@ public:
 	CPuzzleScore(CPosition pos, int8_t score) : CPuzzle(pos), score(score) {}
 
 	std::unique_ptr<CPuzzle> Clone() const override { return std::make_unique<CPuzzleScore>(*this); }
-	std::unique_ptr<CPuzzle> Play(const CMove& move) const override { return std::make_unique<CPuzzleScore>(pos.Play(move)); }
+	std::unique_ptr<CPuzzle> Play(CMove move) const override { return std::make_unique<CPuzzleScore>(pos.Play(move)); }
 	bool Test() const override { return CPuzzle::Test() && (((score >= -64) && (score <= 64)) || (score == DEFAULT_SCORE)); }
 	bool IsSolved() const override { return score != DEFAULT_SCORE; }
 	void Solve(Search&) override;
@@ -64,7 +64,7 @@ public:
 	CPuzzleScoreDepth(CPosition pos, int8_t depth, uint8_t selectivity) : CPuzzleScore(pos), depth(depth), selectivity(selectivity) {}
 
 	std::unique_ptr<CPuzzle> Clone() const override { return std::make_unique<CPuzzleScoreDepth>(*this); }
-	std::unique_ptr<CPuzzle> Play(const CMove& move) const override { return std::make_unique<CPuzzleScoreDepth>(pos.Play(move)); }
+	std::unique_ptr<CPuzzle> Play(CMove move) const override { return std::make_unique<CPuzzleScoreDepth>(pos.Play(move)); }
 	bool Test() const override { return CPuzzleScore::Test() && (depth >= DEFAULT_DEPTH); }
 	bool IsSolved() const override { return (depth == static_cast<int8_t>(pos.EmptyCount())) && (selectivity == 0); }
 	bool IsSolved(int8_t Depth, uint8_t Selectivity) const { return (depth >= Depth) || ((depth == Depth) && (selectivity <= Selectivity)); }
@@ -85,7 +85,7 @@ public:
 	CPuzzleAllDepthScore(CPosition pos) : CPuzzle(pos) { Reset(); }
 
 	std::unique_ptr<CPuzzle> Clone() const override { return std::make_unique<CPuzzleAllDepthScore>(*this); }
-	std::unique_ptr<CPuzzle> Play(const CMove& move) const override { return std::make_unique<CPuzzleAllDepthScore>(pos.Play(move)); }
+	std::unique_ptr<CPuzzle> Play(CMove move) const override { return std::make_unique<CPuzzleAllDepthScore>(pos.Play(move)); }
 	bool Test() const override;
 	bool IsSolved() const override;
 	bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
@@ -110,7 +110,7 @@ public:
 	CPuzzleAllMoveScore(CPosition pos) : CPuzzle(pos) { Reset(); }
 
 	std::unique_ptr<CPuzzle> Clone() const override { return std::make_unique<CPuzzleAllMoveScore>(*this); }
-	std::unique_ptr<CPuzzle> Play(const CMove& move) const override { return std::make_unique<CPuzzleAllMoveScore>(pos.Play(move)); }
+	std::unique_ptr<CPuzzle> Play(CMove move) const override { return std::make_unique<CPuzzleAllMoveScore>(pos.Play(move)); }
 	bool Test() const override;
 	bool IsSolved() const override;
 	void Solve(Search&) override;

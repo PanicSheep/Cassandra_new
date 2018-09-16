@@ -88,7 +88,7 @@ bool CPuzzleAllMoveScore::IsSolved() const
 	while (!possibleMoves.empty())
 	{
 		const auto move = possibleMoves.ExtractMove();
-		if (score[move.field] == DEFAULT_SCORE)
+		if (score[move] == DEFAULT_SCORE)
 			return false;
 	}
 	return true;
@@ -134,7 +134,7 @@ void CPuzzleAllMoveScore::Solve(Search& search)
 	for (int i = 0; i < 64; i++)
 	{
 		if ((score[i] == DEFAULT_SCORE) && moves.HasMove(i))
-			score[i] = search.Eval(pos.Play(CMove(static_cast<Field>(i))));
+			score[i] = search.Eval(pos.Play(static_cast<CMove>(i)));
 	}
 }
 

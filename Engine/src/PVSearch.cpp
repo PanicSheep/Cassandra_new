@@ -36,36 +36,53 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
-	if (in.depth == 0 && EmptyCount != 0 && environment->PatternEvaluator)
-		return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
 
-	switch (EmptyCount)
+	if (in.depth == EmptyCount)
 	{
-	case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
-	case 1: return ReturnValues(PVS_1(in.pos, in.alpha, in.beta), 1, 0);
-	case 2: return ReturnValues(PVS_2(in.pos, in.alpha, in.beta), 2, 0);
-	default: return PVS_N(in);
+		switch (EmptyCount)
+		{
+		case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
+		case 1: return ReturnValues(PVS_1(in.pos, in.alpha, in.beta), 1, 0);
+		case 2: return ReturnValues(PVS_2(in.pos, in.alpha, in.beta), 2, 0);
+		default: return PVS_N(in);
+		}
+	}
+	else
+	{
+		switch (in.depth)
+		{
+		case 0: return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
+		default: return PVS_N(in);
+		}
 	}
 }
 
 PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
-	if (in.depth == 0 && EmptyCount != 0 && environment->PatternEvaluator)
-		return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
-
-	switch (EmptyCount)
+	if (in.depth == EmptyCount)
 	{
-	case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
-	case 1: return ReturnValues(ZWS_1(in.pos, in.alpha), 1, 0);
-	case 2: return ReturnValues(ZWS_2(in.pos, in.alpha), 2, 0);
-	case 3: return ReturnValues(ZWS_3(in.pos, in.alpha), 3, 0);
-	case 4: return ReturnValues(ZWS_4(in.pos, in.alpha), 4, 0);
-	case 5:
-	case 6:
-	case 7:
-		return ZWS_A(in);
-	default: return ZWS_N(in);
+		switch (EmptyCount)
+		{
+		case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
+		case 1: return ReturnValues(ZWS_1(in.pos, in.alpha), 1, 0);
+		case 2: return ReturnValues(ZWS_2(in.pos, in.alpha), 2, 0);
+		case 3: return ReturnValues(ZWS_3(in.pos, in.alpha), 3, 0);
+		case 4: return ReturnValues(ZWS_4(in.pos, in.alpha), 4, 0);
+		case 5:
+		case 6:
+		case 7:
+			return ZWS_A(in);
+		default: return ZWS_N(in);
+		}
+	}
+	else
+	{
+		switch (in.depth)
+		{
+		case 0: return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
+		default: return ZWS_N(in);
+		}
 	}
 }
 
@@ -130,7 +147,7 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha)
 	return ZWS_4(pos, alpha, move1, move2, move3, move4);
 }
 
-int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove& move1)
+int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove move1)
 {
 	NodeCounter(1)++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
@@ -150,7 +167,7 @@ int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove& move
 		return (score > 0) ? score + 1 : score - 1;
 }
 
-int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move1, const CMove& move2)
+int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
 {
 	NodeCounter(2)++;
 	int bestscore = -128;
@@ -197,7 +214,7 @@ int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move
 		return -EvalGameOver<2>(posPass);
 }
 
-int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove& move1)
+int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove move1)
 {
 	NodeCounter(1)++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
@@ -217,7 +234,7 @@ int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove& move1)
 		return (score > 0) ? score + 1 : score - 1;
 }
 
-int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove& move1, const CMove& move2)
+int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove move1, const CMove move2)
 {
 	NodeCounter(2)++;
 	int bestscore = -128;
@@ -256,7 +273,7 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove& move1, c
 		return -EvalGameOver<2>(posPass);
 }
 
-int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove& move1, const CMove& move2, const CMove& move3)
+int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CMove move2, const CMove move3)
 {
 	NodeCounter(3)++;
 	int bestscore = -128;
@@ -307,7 +324,7 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove& move1, const C
 		return -EvalGameOver<3>(posPass);
 }
 
-int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove& move1, const CMove& move2, const CMove& move3, const CMove& move4)
+int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
 	NodeCounter(4)++;
 	int bestscore = -128;

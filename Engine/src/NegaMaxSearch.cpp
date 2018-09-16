@@ -63,7 +63,7 @@ int NegaMaxSearch::Eval_0(const CPosition& pos)
 	return EvalGameOver<0>(pos);
 }
 
-int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove& move1)
+int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove move1)
 {
 	NodeCounter(1)++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
@@ -83,7 +83,7 @@ int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove& move1)
 		return (score > 0) ? score + 1 : score - 1;
 }
 
-int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove& move1, const CMove& move2)
+int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 {
 	NodeCounter(2)++;
 	int score = -128;
@@ -114,7 +114,7 @@ int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove& move1, const CMove&
 		return -EvalGameOver<2>(posPass);
 }
 
-int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove& move1, const CMove& move2, const CMove& move3)
+int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3)
 {
 	NodeCounter(3)++;
 	int score = -128;
@@ -151,7 +151,7 @@ int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove& move1, const CMove&
 		return -EvalGameOver<3>(posPass);
 }
 
-int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove& move1, const CMove& move2, const CMove& move3, const CMove& move4)
+int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
 	NodeCounter(4)++;
 	int score = -128;

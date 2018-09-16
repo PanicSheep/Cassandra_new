@@ -14,24 +14,24 @@ CLastFlipCounter::CLastFlipCounter()
 	for (int i = 0; i < 256; i++) CLF_7[i] = 2 * CountFlip(i, H1);
 }
 
-uint8_t CLastFlipCounter::CountFlip(const uint8_t P, const CMove& move)
+uint8_t CLastFlipCounter::CountFlip(const uint8_t P, const CMove move)
 {
-	if (P & MakeBit(move.field))
+	if (P & MakeBit(move))
 		return 0;
-	const uint8_t O = static_cast<uint8_t>(P ^ 0xFF ^ MakeBit(move.field));
+	const uint8_t O = static_cast<uint8_t>(P ^ 0xFF ^ MakeBit(move));
 	const auto flips = Flip(CPosition(P, O), move);
 	return static_cast<uint8_t>(PopCount(flips));
 }
 
-uint64_t CLastFlipCounter::Flip(const CPosition& pos, const CMove& move)
+uint64_t CLastFlipCounter::Flip(const CPosition& pos, const CMove move)
 {
 	return Flip_dir(pos, move, -1) | Flip_dir(pos, move, +1);
 }
 
-uint64_t CLastFlipCounter::Flip_dir(const CPosition& pos, const CMove& move, const int dX)
+uint64_t CLastFlipCounter::Flip_dir(const CPosition& pos, const CMove move, const int dX)
 {
 	uint64_t flips = 0;
-	int x = (move.field % 8) + dX;
+	int x = (move % 8) + dX;
 
 	while ((x >= 0) && (x < 8))
 	{
@@ -47,10 +47,10 @@ uint64_t CLastFlipCounter::Flip_dir(const CPosition& pos, const CMove& move, con
 	return 0;
 }
 
-uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove& move) const
+uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove move) const
 {
 	const auto P = pos.GetP();
-	switch (move.field)
+	switch (move)
 	{
 		case A1: return CLF_0[P & 0xFFULL] + CLF_0[PExt(P, 0x0101010101010101ULL)] + CLF_0[PExt(P, 0x8040201008040201ULL)];
 		case B1: return CLF_1[P & 0xFFULL] + CLF_0[PExt(P, 0x0202020202020202ULL)] + CLF_0[PExt(P, 0x0080402010080402ULL)];

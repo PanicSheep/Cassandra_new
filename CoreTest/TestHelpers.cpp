@@ -3,11 +3,11 @@
 #include <functional>
 #include <random>
 
-uint64_t line(const CMove& move, const int dX, const int dY)
+uint64_t line(CMove move, const int dX, const int dY)
 {
 	uint64_t ret = 0;
-	int i = (move.field % 8) + dX; // Starting index in x direction
-	int j = (move.field / 8) + dY; // Starting index in y direction
+	int i = (move % 8) + dX; // Starting index in x direction
+	int j = (move / 8) + dY; // Starting index in y direction
 
 	while ((i >= 0) && (i < 8) && (j >= 0) && (j < 8)) // In between boundaries
 	{

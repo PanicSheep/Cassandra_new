@@ -11,7 +11,7 @@ class CSortedMoves
 public:
 	CSortedMoves() {}
 	CSortedMoves(const CPosition&);
-	CSortedMoves(const CPosition&, const CMove& filter1, const CMove& filter2);
+	CSortedMoves(const CPosition&, CMove filter1, CMove filter2);
 
 	std::size_t size() const { return moves.size(); }
 	bool empty() const { return moves.empty(); }
@@ -22,7 +22,7 @@ public:
 	auto begin() const { return moves.rbegin(); }
 	auto end() const { return moves.rend(); }
 private:
-	int32_t Score(const CMove&, const CPosition&);
+	int32_t Score(CMove, const CPosition&);
 };
 
 inline CSortedMoves::CSortedMoves(const CPosition& pos)
@@ -38,7 +38,7 @@ inline CSortedMoves::CSortedMoves(const CPosition& pos)
 	std::sort(moves.begin(), moves.end(), [](auto& left, auto& right) { return left.first < right.first; });
 }
 
-inline CSortedMoves::CSortedMoves(const CPosition& pos, const CMove& filter1, const CMove& filter2)
+inline CSortedMoves::CSortedMoves(const CPosition& pos, CMove filter1, CMove filter2)
 {
 	CMoves mov = pos.PossibleMoves();
 	moves.reserve(mov.size());
@@ -70,7 +70,7 @@ inline uint64_t SMEAR_BITpuzzle(uint64_t B)
 
 inline uint64_t OpponentsExposed(const uint64_t P, const uint64_t O) { return SMEAR_BITpuzzle(~(P | O)) & O; } // 13 OPs
 
-inline int32_t CSortedMoves::Score(const CMove& move, const CPosition& pos)
+inline int32_t CSortedMoves::Score(CMove move, const CPosition& pos)
 {
 	static const uint64_t quadrant_mask[64] = {
 		0x000000000F0F0F0FULL, 0x000000000F0F0F0FULL, 0x000000000F0F0F0FULL, 0x000000000F0F0F0FULL, 0x00000000F0F0F0F0ULL, 0x00000000F0F0F0F0ULL, 0x00000000F0F0F0F0ULL, 0x00000000F0F0F0F0ULL,
@@ -99,7 +99,7 @@ inline int32_t CSortedMoves::Score(const CMove& move, const CPosition& pos)
 	const int32_t MobilityScore = static_cast<int32_t>(PM.size()) << 17;
 	const int32_t CornerMobilityScore = ((PM.HasMove(A1) ? 1 : 0) + (PM.HasMove(A8) ? 1 : 0) + (PM.HasMove(H1) ? 1 : 0) + (PM.HasMove(H8) ? 1 : 0)) << 18;
 	const int32_t OpponentsExposedScore = static_cast<int32_t>(PopCount(OpponentsExposed(NextPos.GetP(), NextPos.GetO()))) << 6;
-	const int32_t FieldScore = FieldValue[move.field];
-	const int32_t ParityScore = ParityValue[PopCount(pos.Empties() & quadrant_mask[move.field])];
+	const int32_t FieldScore = FieldValue[move];
+	const int32_t ParityScore = ParityValue[PopCount(pos.Empties() & quadrant_mask[move])];
 	return FieldScore + ParityScore - MobilityScore - CornerMobilityScore - OpponentsExposedScore;
 }

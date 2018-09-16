@@ -19,7 +19,7 @@ CStabilityAnalyzer::CStabilityAnalyzer()
 					while (!moves.empty())
 					{
 						const auto move = moves.ExtractMove();
-						const auto moveBit = MakeBit(move.field);
+						const auto moveBit = MakeBit(move);
 
 						const uint64_t flips_P = Flip(CPosition(P, O), move);
 						const uint64_t flips_O = Flip(CPosition(O, P), move);
@@ -34,15 +34,15 @@ CStabilityAnalyzer::CStabilityAnalyzer()
 			}
 }
 
-uint64_t CStabilityAnalyzer::Flip(const CPosition& pos, const CMove& move)
+uint64_t CStabilityAnalyzer::Flip(const CPosition& pos, const CMove move)
 {
 	return Flip_dir(pos, move, -1) | Flip_dir(pos, move, +1);
 }
 
-uint64_t CStabilityAnalyzer::Flip_dir(const CPosition& pos, const CMove& move, const int dX)
+uint64_t CStabilityAnalyzer::Flip_dir(const CPosition& pos, const CMove move, const int dX)
 {
 	uint64_t flips = 0;
-	int x = (move.field % 8) + dX;
+	int x = (move % 8) + dX;
 
 	while ((x >= 0) && (x < 8))
 	{

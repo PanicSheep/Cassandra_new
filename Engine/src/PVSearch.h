@@ -85,8 +85,8 @@ class PVSearch : public Search
 			, InitialNodeCount(NodeCount), pos(in.pos)
 		{}
 
-		InputValues Play(const CMove& move) const { return InputValues(pos.Play(move), -beta, -alpha, depth - 1, selectivity); }
-		InputValues PlayZWS(const CMove& move) const { return InputValues(pos.Play(move), -alpha - 1, -alpha, depth - 1, selectivity); }
+		InputValues Play(CMove move) const { return InputValues(pos.Play(move), -beta, -alpha, depth - 1, selectivity); }
+		InputValues PlayZWS(CMove move) const { return InputValues(pos.Play(move), -alpha - 1, -alpha, depth - 1, selectivity); }
 
 		AAA ImproveWith(const AnalysisReturnValues& ret)
 		{
@@ -108,7 +108,7 @@ class PVSearch : public Search
 			}
 			return AAA(false, ReturnValues());
 		}
-		AAA ImproveWith(const ReturnValues& ret, const CMove& move)
+		AAA ImproveWith(const ReturnValues& ret, CMove move)
 		{
 			if ((ret.depth + 1 >= depth) && (ret.selectivity <= selectivity))
 			{
@@ -165,18 +165,18 @@ private:
 	int Eval_0(const CPosition& pos);
 
 	int PVS_1(const CPosition& pos, int alpha, int beta);
-	int PVS_1(const CPosition& pos, int alpha, int beta, const CMove& move1);
+	int PVS_1(const CPosition& pos, int alpha, int beta, CMove move1);
 	int PVS_2(const CPosition& pos, int alpha, int beta);
-	int PVS_2(const CPosition& pos, int alpha, int beta, const CMove& move1, const CMove& move2);
+	int PVS_2(const CPosition& pos, int alpha, int beta, CMove move1, CMove move2);
 
 	int ZWS_1(const CPosition& pos, int alpha);
-	int ZWS_1(const CPosition& pos, int alpha, const CMove& move1);
+	int ZWS_1(const CPosition& pos, int alpha, CMove move1);
 	int ZWS_2(const CPosition& pos, int alpha);
-	int ZWS_2(const CPosition& pos, int alpha, const CMove& move1, const CMove& move2);
+	int ZWS_2(const CPosition& pos, int alpha, CMove move1, CMove move2);
 	int ZWS_3(const CPosition& pos, int alpha);
-	int ZWS_3(const CPosition& pos, int alpha, const CMove& move1, const CMove& move2, const CMove& move3);
+	int ZWS_3(const CPosition& pos, int alpha, CMove move1, CMove move2, CMove move3);
 	int ZWS_4(const CPosition& pos, int alpha);
-	int ZWS_4(const CPosition& pos, int alpha, const CMove& move1, const CMove& move2, const CMove& move3, const CMove& move4);
+	int ZWS_4(const CPosition& pos, int alpha, CMove move1, CMove move2, CMove move3, CMove move4);
 	ReturnValues ZWS_A(const InputValues&);
 	// --------------------
 

@@ -291,13 +291,13 @@ bool CPosition::HasMoves() const
 	//return false;
 }
 
-CPosition CPosition::Play(const CMove& move) const
+CPosition CPosition::Play(const CMove move) const
 {
 	const auto flips = Flip(*this, move);
 	return Play(move, flips);
 }
 
-CPosition CPosition::Play(const CMove& move, const uint64_t flips) const
+CPosition CPosition::Play(const CMove move, const uint64_t flips) const
 {
-	return CPosition(O ^ flips, P ^ flips ^ MakeBit(move.field));
+	return CPosition(O ^ flips, P ^ flips ^ MakeBit(move));
 }
