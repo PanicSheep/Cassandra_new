@@ -12,10 +12,10 @@ public:
 	TestClass1(int * m) : m(m) {}
 
 	TestClass1(const TestClass1&  o) = delete;
-	TestClass1(TestClass1&& o) { std::swap(m, o.m); }
+	TestClass1(TestClass1&& o) noexcept { std::swap(m, o.m); }
 
 	TestClass1& operator=(const TestClass1&  o) = delete;
-	TestClass1& operator=(TestClass1&& o) { std::swap(m, o.m); return *this; }
+	TestClass1& operator=(TestClass1&& o) noexcept { std::swap(m, o.m); return *this; }
 
 	inline bool operator==(const TestClass1& o) const { return m == o.m; }
 	inline bool operator!=(const TestClass1& o) const { return m != o.m; }
