@@ -70,6 +70,8 @@ uint64_t CPosition::Parity() const
 
 uint64_t CPosition::GetParityQuadrants() const
 {
+	// 4 x SHIFT, 4 x XOR, 1 x AND, 1 x NOT, 1x OR, 1 x MUL
+	// = 12 OPs
 	uint64_t E = Empties();
 	E ^= E >> 1;
 	E ^= E >> 2;
