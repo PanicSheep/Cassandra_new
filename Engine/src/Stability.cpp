@@ -66,7 +66,7 @@ uint64_t CStabilityAnalyzer::GetStableEdges(const CPosition & pos) const
 	const uint64_t L0_Left = 0x8080808080808080ULL;
 	const uint64_t L0_Right = 0x0101010101010101ULL;
 
-	const auto StableL0_Bottom = edge_stables[P & 0xFF][O & 0xFF];
+	const auto StableL0_Bottom = edge_stables[static_cast<uint8_t>(P)][static_cast<uint8_t>(O)];
 	const auto StableL0_Top = static_cast<uint64_t>(edge_stables[P >> 56][O >> 56]) << 56;
 	const auto StableL0_Left  = PDep(edge_stables[PExt(P, L0_Left )][PExt(O, L0_Left )], L0_Left );
 	const auto StableL0_Right = PDep(edge_stables[PExt(P, L0_Right)][PExt(O, L0_Right)], L0_Right);
