@@ -1,8 +1,8 @@
 #include "Moves.h"
 
-bool CMoves::HasMove(std::size_t index) const
+bool CMoves::HasMove(const CMove move) const
 {
-	return TestBit(m_moves, index);
+	return TestBit(m_moves, move);
 }
 
 CMove CMoves::PeekMove() const

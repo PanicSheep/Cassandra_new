@@ -68,7 +68,8 @@ bool CPuzzleAllMoveScore::Test() const
 	const auto possibleMoves = GetPosition().PossibleMoves();
 	for (const auto& it : score)
 	{
-		if (possibleMoves.HasMove(std::distance(std::begin(score), &it)))
+		const auto move = static_cast<CMove>(std::distance(std::begin(score), &it));
+		if (possibleMoves.HasMove(move))
 		{
 			if (!(((it >= -64) && (it <= 64)) || (it == DEFAULT_SCORE)))
 				return false;
@@ -130,11 +131,12 @@ bool CPuzzleScoreDepth::isEqual(const CPuzzle & o) const
 
 void CPuzzleAllMoveScore::Solve(Search& search)
 {
-	const auto moves = pos.PossibleMoves();
-	for (int i = 0; i < 64; i++)
+	auto moves = pos.PossibleMoves();
+	while (!moves.empty())
 	{
-		if ((score[i] == DEFAULT_SCORE) && moves.HasMove(i))
-			score[i] = search.Eval(pos.Play(static_cast<CMove>(i)));
+		const CMove move = moves.ExtractMove();
+		if (score[move] == DEFAULT_SCORE)
+			score[move] = search.Eval(pos.Play(move));
 	}
 }
 

@@ -69,7 +69,7 @@ namespace IO
 			{
 				const bool isP = TestBit(obj.GetP(), 63 - i);
 				const bool isO = TestBit(obj.GetO(), 63 - i);
-				const bool isM = Moves.HasMove(63 - i);
+				const bool isM = Moves.HasMove(static_cast<CMove>(63 - i));
 				auto& field = puzzle[22 + 2 * i + 4 * (i / 8)];
 				if (isP && isO) field = '@';
 				else if (isP)   field = 'X';

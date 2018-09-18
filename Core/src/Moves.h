@@ -31,7 +31,7 @@ public:
 	std::size_t size() const { return PopCount(m_moves); }
 	bool empty() const { return m_moves == 0; }
 
-	bool HasMove(std::size_t index) const;
+	bool HasMove(CMove) const;
 	CMove PeekMove() const;
 	CMove ExtractMove();
 
