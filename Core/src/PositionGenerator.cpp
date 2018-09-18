@@ -61,7 +61,9 @@ CPosition CPositionGenerator::GenerateRandomPosition(uint8_t EmptiesCount)
 			if (moves.empty())
 				return GenerateRandomPosition(EmptiesCount); // Start again.
 		}
-		pos = pos.Play(moves.ExtractMove(rnd() % moves.size()));
+		for (int i = rnd() % moves.size(); i >= 0; i--)
+			moves.ExtractMove();
+		pos = pos.Play(moves.ExtractMove());
 	}
 
 	return pos;

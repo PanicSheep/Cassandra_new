@@ -394,7 +394,7 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 	const auto EmptyCount = in.pos.EmptyCount();
 	NodeCounter(EmptyCount)++;
 
-	CMoves moves = in.pos.PossibleMoves();
+	const CMoves moves = in.pos.PossibleMoves();
 	if (moves.empty()) {
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
@@ -411,7 +411,8 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 	//if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
 
 	int bestscore = -128;
-	CMoves parity_moves(moves, in.pos.GetParityQuadrants());
+	CMoves parity_moves = moves;
+	parity_moves.Filter(in.pos.GetParityQuadrants());
 	while (!parity_moves.empty())
 	{
 		const auto move = parity_moves.ExtractMove();
@@ -421,7 +422,8 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 			return ret.Values;
 		}
 	}
-	CMoves non_parity_moves(moves, ~in.pos.GetParityQuadrants());
+	CMoves non_parity_moves = moves;
+	non_parity_moves.Remove(in.pos.GetParityQuadrants());
 	while (!non_parity_moves.empty())
 	{
 		const auto move = non_parity_moves.ExtractMove();
@@ -576,8 +578,8 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 
 PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
 {
-	const auto opponents_stable_stoned = environment->StabilityAnalyzer->GetStableStones(in.pos);
-	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stoned));
+	const auto opponents_stable_stones = environment->StabilityAnalyzer->GetStableStones(in.pos);
+	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stones));
 	return AnalysisReturnValues(-64, max_score + 1, in.pos.EmptyCount(), 0);
 }
 

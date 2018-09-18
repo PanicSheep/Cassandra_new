@@ -2,25 +2,33 @@
 
 bool CMoves::HasMove(std::size_t index) const
 {
-	return TestBit(moves, index);
+	return TestBit(m_moves, index);
 }
 
 CMove CMoves::PeekMove() const
 {
-	return static_cast<CMove>(BitScanLSB(moves));
+	return static_cast<CMove>(BitScanLSB(m_moves));
 }
 
 CMove CMoves::ExtractMove()
 {
-	const auto LSB = BitScanLSB(moves);
-	RemoveLSB(moves);
-	return static_cast<CMove>(LSB);
+	const CMove LSB = static_cast<CMove>(BitScanLSB(m_moves));
+	RemoveLSB(m_moves);
+	return LSB;
 }
 
-CMove CMoves::ExtractMove(const std::size_t index)
+void CMoves::Remove(const CMove move)
 {
-	assert(index < size());
-	const uint64_t MoveBit = PDep(MakeBit(index), moves);
-	moves ^= MoveBit;
-	return static_cast<CMove>(BitScanLSB(MoveBit));
+	if (move != CMove::invalid)
+		ResetBit(m_moves, move);
+}
+
+void CMoves::Remove(uint64_t moves)
+{
+	m_moves &= ~moves;
+}
+
+void CMoves::Filter(uint64_t moves)
+{
+	m_moves &= moves;
 }

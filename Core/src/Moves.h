@@ -21,19 +21,21 @@ using CMove = Field;
 
 class CMoves
 {
-	uint64_t moves;
+	uint64_t m_moves;
 public:
-	CMoves() : moves(0) {}
-	CMoves(uint64_t moves) : moves(moves) {}
-	CMoves(const CMoves& o, uint64_t filter) : moves(o.moves & filter) {} // TODO: Fix this hack!
+	CMoves() : m_moves(0) {}
+	CMoves(uint64_t moves) : m_moves(moves) {}
 
-	bool operator==(const CMoves& o) const { return moves == o.moves; }
+	bool operator==(const CMoves& o) const { return m_moves == o.m_moves; }
 
-	std::size_t size() const { return PopCount(moves); }
-	bool empty() const { return moves == 0; }
+	std::size_t size() const { return PopCount(m_moves); }
+	bool empty() const { return m_moves == 0; }
 
 	bool HasMove(std::size_t index) const;
 	CMove PeekMove() const;
 	CMove ExtractMove();
-	CMove ExtractMove(std::size_t index);
+
+	void Remove(CMove);
+	void Remove(uint64_t moves);
+	void Filter(uint64_t moves);
 };

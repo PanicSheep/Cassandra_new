@@ -38,15 +38,15 @@ inline CSortedMoves::CSortedMoves(const CPosition& pos)
 	std::sort(moves.begin(), moves.end(), [](auto& left, auto& right) { return left.first < right.first; });
 }
 
-inline CSortedMoves::CSortedMoves(const CPosition& pos, CMove filter1, CMove filter2)
+inline CSortedMoves::CSortedMoves(const CPosition& pos, const CMove filter1, const CMove filter2)
 {
 	CMoves mov = pos.PossibleMoves();
+	mov.Remove(filter1);
+	mov.Remove(filter2);
 	moves.reserve(mov.size());
 
 	while (!mov.empty()) {
 		const auto move = mov.ExtractMove();
-		if (move == filter1) continue;
-		if (move == filter2) continue;
 		moves.emplace_back(Score(move, pos), move);
 	}
 
