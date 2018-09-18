@@ -60,7 +60,7 @@ inline CMove CSortedMoves::ExtractMove()
 	return back.second;
 }
 
-inline uint64_t SMEAR_BITpuzzle(uint64_t B)
+inline uint64_t SMEAR_BITBOARD(uint64_t B)
 {
 	// 4x SHIFT, 4x OR, 2x AND
 	// = 10 OPs
@@ -68,7 +68,7 @@ inline uint64_t SMEAR_BITpuzzle(uint64_t B)
 	return B | (B >> 8) | (B << 8);
 }
 
-inline uint64_t OpponentsExposed(const uint64_t P, const uint64_t O) { return SMEAR_BITpuzzle(~(P | O)) & O; } // 13 OPs
+inline uint64_t OpponentsExposed(const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) & O; } // 13 OPs
 
 inline int32_t CSortedMoves::Score(CMove move, const CPosition& pos)
 {
