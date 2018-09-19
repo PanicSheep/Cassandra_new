@@ -3,12 +3,7 @@
 #pragma warning(push)
 #pragma warning(disable:4146) // unary minus operator applied to unsigned type, result still unsigned.
 
-uint64_t CFlipper::Flip(const CPosition& pos, const CMove move) const
-{
-	return (this->*flip_fp[move])(pos.GetP(), pos.GetO());
-}
-
-uint64_t CFlipper::A1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0101010101010100ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010100ULL;
@@ -22,7 +17,7 @@ uint64_t CFlipper::A1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::B1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0202020202020200ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020200ULL;
@@ -36,7 +31,7 @@ uint64_t CFlipper::B1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::C1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0404040404040400ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040400ULL;
@@ -52,7 +47,7 @@ uint64_t CFlipper::C1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::D1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0808080808080800ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080800ULL;
@@ -69,7 +64,7 @@ uint64_t CFlipper::D1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::E1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x1010101010101000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010101000ULL;
@@ -86,7 +81,7 @@ uint64_t CFlipper::E1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::F1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x2020202020202000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020202000ULL;
@@ -102,7 +97,7 @@ uint64_t CFlipper::F1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::G1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x4040404040404000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040404000ULL;
@@ -116,7 +111,7 @@ uint64_t CFlipper::G1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::H1(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x8080808080808000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080808000ULL;
@@ -130,7 +125,7 @@ uint64_t CFlipper::H1(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::A2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0101010101010000ULL) + 0x0000000000010000ULL) & P & 0x0101010101010000ULL;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010000ULL;
@@ -144,7 +139,7 @@ uint64_t CFlipper::A2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::B2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0202020202020000ULL) + 0x0000000000020000ULL) & P & 0x0202020202020000ULL;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020000ULL;
@@ -158,7 +153,7 @@ uint64_t CFlipper::B2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::C2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0404040404040000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040000ULL;
@@ -174,7 +169,7 @@ uint64_t CFlipper::C2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::D2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0808080808080000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080000ULL;
@@ -191,7 +186,7 @@ uint64_t CFlipper::D2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::E2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x1010101010100000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010100000ULL;
@@ -208,7 +203,7 @@ uint64_t CFlipper::E2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::F2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x2020202020200000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020200000ULL;
@@ -224,7 +219,7 @@ uint64_t CFlipper::F2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::G2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x4040404040400000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040400000ULL;
@@ -238,7 +233,7 @@ uint64_t CFlipper::G2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::H2(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x8080808080800000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080800000ULL;
@@ -252,7 +247,7 @@ uint64_t CFlipper::H2(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::A3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0101010101000000ULL) + 0x0000000001000000ULL) & P & 0x0101010101000000ULL;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101000000ULL;
@@ -268,7 +263,7 @@ uint64_t CFlipper::A3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_c;
 }
 
-uint64_t CFlipper::B3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0202020202000000ULL) + 0x0000000002000000ULL) & P & 0x0202020202000000ULL;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202000000ULL;
@@ -284,7 +279,7 @@ uint64_t CFlipper::B3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_c;
 }
 
-uint64_t CFlipper::C3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0404040404000000ULL) + 0x0000000004000000ULL) & P & 0x0404040404000000ULL;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404000000ULL;
@@ -300,7 +295,7 @@ uint64_t CFlipper::C3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_r;
 }
 
-uint64_t CFlipper::D3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0808080808000000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808000000ULL;
@@ -319,7 +314,7 @@ uint64_t CFlipper::D3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_c | flipped_r;
 }
 
-uint64_t CFlipper::E3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x1010101010000000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010000000ULL;
@@ -338,7 +333,7 @@ uint64_t CFlipper::E3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_c | flipped_r;
 }
 
-uint64_t CFlipper::F3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x2020202020000000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020000000ULL;
@@ -354,7 +349,7 @@ uint64_t CFlipper::F3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_r;
 }
 
-uint64_t CFlipper::G3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x4040404040000000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040000000ULL;
@@ -370,7 +365,7 @@ uint64_t CFlipper::G3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_r;
 }
 
-uint64_t CFlipper::H3(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x8080808080000000ULL) & P;
 	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080000000ULL;
@@ -386,7 +381,7 @@ uint64_t CFlipper::H3(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_r;
 }
 
-uint64_t CFlipper::A4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0001010101010100ULL)] & PExt(P, 0x0101010101010101ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0001010101010100ULL;
@@ -400,7 +395,7 @@ uint64_t CFlipper::A4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::B4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0002020202020200ULL)] & PExt(P, 0x0202020202020202ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0002020202020200ULL;
@@ -414,7 +409,7 @@ uint64_t CFlipper::B4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::C4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0004040404040400ULL)] & PExt(P, 0x0404040404040404ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0004040404040400ULL;
@@ -430,7 +425,7 @@ uint64_t CFlipper::C4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x | flipped_r;
 }
 
-uint64_t CFlipper::D4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0008080808080800ULL;
@@ -447,7 +442,7 @@ uint64_t CFlipper::D4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::E4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0010101010101000ULL;
@@ -464,7 +459,7 @@ uint64_t CFlipper::E4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::F4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0020202020202000ULL;
@@ -480,7 +475,7 @@ uint64_t CFlipper::F4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x | flipped_r;
 }
 
-uint64_t CFlipper::G4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0040404040404000ULL;
@@ -494,7 +489,7 @@ uint64_t CFlipper::G4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::H4(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H4(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_3[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0080808080808000ULL;
@@ -508,7 +503,7 @@ uint64_t CFlipper::H4(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::A5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_a1a5d8 = OUTFLANK_4[PExt(O, 0x0004020101010100ULL)] & PExt(P, 0x0804020101010101ULL);
 	const auto flipped_a1a5d8 = FLIPPED_4_V[outflank_a1a5d8] & 0x0004020101010100ULL;
@@ -522,7 +517,7 @@ uint64_t CFlipper::A5(const uint64_t P, const uint64_t O) const
 	return flipped_a1a5d8 | flipped_a8a5e1 | flipped_h;
 }
 
-uint64_t CFlipper::B5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_b1b5e8 = OUTFLANK_4[PExt(O, 0x0008040202020200ULL)] & PExt(P, 0x1008040202020202ULL);
 	const auto flipped_b1b5e8 = FLIPPED_4_V[outflank_b1b5e8] & 0x0008040202020200ULL;
@@ -536,7 +531,7 @@ uint64_t CFlipper::B5(const uint64_t P, const uint64_t O) const
 	return flipped_b1b5e8 | flipped_b8b5f1 | flipped_h;
 }
 
-uint64_t CFlipper::C5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_c1c5f8 = OUTFLANK_4[PExt(O, 0x0010080404040400ULL)] & PExt(P, 0x2010080404040404ULL);
 	const auto flipped_c1c5f8 = FLIPPED_4_V[outflank_c1c5f8] & 0x0010080404040400ULL;
@@ -552,7 +547,7 @@ uint64_t CFlipper::C5(const uint64_t P, const uint64_t O) const
 	return flipped_c1c5f8 | flipped_c8c5g1 | flipped_h | flipped_r;
 }
 
-uint64_t CFlipper::D5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_4[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
 	const auto flipped_v = FLIPPED_4_V[outflank_v] & 0x0008080808080800ULL;
@@ -569,7 +564,7 @@ uint64_t CFlipper::D5(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::E5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_4[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
 	const auto flipped_v = FLIPPED_4_V[outflank_v] & 0x0010101010101000ULL;
@@ -586,7 +581,7 @@ uint64_t CFlipper::E5(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::F5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_4[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
 	const auto flipped_v = FLIPPED_4_V[outflank_v] & 0x0020202020202000ULL;
@@ -602,7 +597,7 @@ uint64_t CFlipper::F5(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_r;
 }
 
-uint64_t CFlipper::G5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_4[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
 	const auto flipped_v = FLIPPED_4_V[outflank_v] & 0x0040404040404000ULL;
@@ -616,7 +611,7 @@ uint64_t CFlipper::G5(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::H5(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H5(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_4[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
 	const auto flipped_v = FLIPPED_4_V[outflank_v] & 0x0080808080808000ULL;
@@ -630,7 +625,7 @@ uint64_t CFlipper::H5(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::A6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0001010101010100ULL)] & PExt(P, 0x0101010101010101ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0001010101010100ULL;
@@ -644,7 +639,7 @@ uint64_t CFlipper::A6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::B6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0002020202020200ULL)] & PExt(P, 0x0202020202020202ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0002020202020200ULL;
@@ -658,7 +653,7 @@ uint64_t CFlipper::B6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::C6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0004040404040400ULL)] & PExt(P, 0x0404040404040404ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0004040404040400ULL;
@@ -674,7 +669,7 @@ uint64_t CFlipper::C6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::D6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0008080808080800ULL)] & PExt(P, 0x0808080808080808ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0008080808080800ULL;
@@ -690,7 +685,7 @@ uint64_t CFlipper::D6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_r;
 }
 
-uint64_t CFlipper::E6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0010101010101000ULL)] & PExt(P, 0x1010101010101010ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0010101010101000ULL;
@@ -706,7 +701,7 @@ uint64_t CFlipper::E6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d | flipped_r;
 }
 
-uint64_t CFlipper::F6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0020202020202000ULL)] & PExt(P, 0x2020202020202020ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0020202020202000ULL;
@@ -722,7 +717,7 @@ uint64_t CFlipper::F6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
 
-uint64_t CFlipper::G6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0040404040404000ULL)] & PExt(P, 0x4040404040404040ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0040404040404000ULL;
@@ -736,7 +731,7 @@ uint64_t CFlipper::G6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::H6(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H6(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = OUTFLANK_5[PExt(O, 0x0080808080808000ULL)] & PExt(P, 0x8080808080808080ULL);
 	const auto flipped_v = FLIPPED_5_V[outflank_v] & 0x0080808080808000ULL;
@@ -750,7 +745,7 @@ uint64_t CFlipper::H6(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_x;
 }
 
-uint64_t CFlipper::A7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A7(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0000010101010101ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0000010101010100ULL;
@@ -764,7 +759,7 @@ uint64_t CFlipper::A7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::B7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B7(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0000020202020202ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0000020202020200ULL;
@@ -778,7 +773,7 @@ uint64_t CFlipper::B7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::C7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C7(const uint64_t P, const uint64_t O) const noexcept
 {
 	// ############ Room for optimization ############
 	const auto outflank_v = GetMSB(~O & 0x0000040404040404ULL) & P;
@@ -793,7 +788,7 @@ uint64_t CFlipper::C7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::D7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D7(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0000080808080808ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0000080808080800ULL;
@@ -807,7 +802,7 @@ uint64_t CFlipper::D7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::E7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E7(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0000101010101010ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0000101010101000ULL;
@@ -821,7 +816,7 @@ uint64_t CFlipper::E7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::F7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F7(const uint64_t P, const uint64_t O) const noexcept
 {
 	// ############ Room for optimization ############
 	const auto outflank_v = GetMSB(~O & 0x0000202020202020ULL) & P;
@@ -836,7 +831,7 @@ uint64_t CFlipper::F7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::G7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G7(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0000404040404040ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0000404040404000ULL;
@@ -850,7 +845,7 @@ uint64_t CFlipper::G7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::H7(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H7(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0000808080808080ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0000808080808000ULL;
@@ -864,7 +859,7 @@ uint64_t CFlipper::H7(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::A8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::A8(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0001010101010101ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0001010101010100ULL;
@@ -878,7 +873,7 @@ uint64_t CFlipper::A8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::B8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::B8(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0002020202020202ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0002020202020200ULL;
@@ -892,7 +887,7 @@ uint64_t CFlipper::B8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_c;
 }
 
-uint64_t CFlipper::C8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::C8(const uint64_t P, const uint64_t O) const noexcept
 {
 	// ############ Room for optimization ############
 	const auto outflank_v = GetMSB(~O & 0x0004040404040404ULL) & P;
@@ -907,7 +902,7 @@ uint64_t CFlipper::C8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::D8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::D8(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0008080808080808ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0008080808080800ULL;
@@ -921,7 +916,7 @@ uint64_t CFlipper::D8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::E8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::E8(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0010101010101010ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0010101010101000ULL;
@@ -935,7 +930,7 @@ uint64_t CFlipper::E8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::F8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::F8(const uint64_t P, const uint64_t O) const noexcept
 {
 	// ############ Room for optimization ############
 	const auto outflank_v = GetMSB(~O & 0x0020202020202020ULL) & P;
@@ -950,7 +945,7 @@ uint64_t CFlipper::F8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::G8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::G8(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0040404040404040ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0040404040404000ULL;
@@ -964,7 +959,7 @@ uint64_t CFlipper::G8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t CFlipper::H8(const uint64_t P, const uint64_t O) const
+uint64_t CFlipper::H8(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetMSB(~O & 0x0080808080808080ULL) & P;
 	const auto flipped_v = (-outflank_v * 2) & 0x0080808080808000ULL;
@@ -978,9 +973,90 @@ uint64_t CFlipper::H8(const uint64_t P, const uint64_t O) const
 	return flipped_v | flipped_h | flipped_d;
 }
 
-uint64_t Flip(const CPosition & pos, const CMove move)
+uint64_t CFlipper::Flip(const CPosition& pos, const CMove move) const noexcept
 {
-	static const CFlipper Flipper;
+	switch (move)
+	{
+		case CMove::A1: return A1(pos.GetP(), pos.GetO());
+		case CMove::B1: return B1(pos.GetP(), pos.GetO());
+		case CMove::C1: return C1(pos.GetP(), pos.GetO());
+		case CMove::D1: return D1(pos.GetP(), pos.GetO());
+		case CMove::E1: return E1(pos.GetP(), pos.GetO());
+		case CMove::F1: return F1(pos.GetP(), pos.GetO());
+		case CMove::G1: return G1(pos.GetP(), pos.GetO());
+		case CMove::H1: return H1(pos.GetP(), pos.GetO());
+
+		case CMove::A2: return A2(pos.GetP(), pos.GetO());
+		case CMove::B2: return B2(pos.GetP(), pos.GetO());
+		case CMove::C2: return C2(pos.GetP(), pos.GetO());
+		case CMove::D2: return D2(pos.GetP(), pos.GetO());
+		case CMove::E2: return E2(pos.GetP(), pos.GetO());
+		case CMove::F2: return F2(pos.GetP(), pos.GetO());
+		case CMove::G2: return G2(pos.GetP(), pos.GetO());
+		case CMove::H2: return H2(pos.GetP(), pos.GetO());
+
+		case CMove::A3: return A3(pos.GetP(), pos.GetO());
+		case CMove::B3: return B3(pos.GetP(), pos.GetO());
+		case CMove::C3: return C3(pos.GetP(), pos.GetO());
+		case CMove::D3: return D3(pos.GetP(), pos.GetO());
+		case CMove::E3: return E3(pos.GetP(), pos.GetO());
+		case CMove::F3: return F3(pos.GetP(), pos.GetO());
+		case CMove::G3: return G3(pos.GetP(), pos.GetO());
+		case CMove::H3: return H3(pos.GetP(), pos.GetO());
+
+		case CMove::A4: return A4(pos.GetP(), pos.GetO());
+		case CMove::B4: return B4(pos.GetP(), pos.GetO());
+		case CMove::C4: return C4(pos.GetP(), pos.GetO());
+		case CMove::D4: return D4(pos.GetP(), pos.GetO());
+		case CMove::E4: return E4(pos.GetP(), pos.GetO());
+		case CMove::F4: return F4(pos.GetP(), pos.GetO());
+		case CMove::G4: return G4(pos.GetP(), pos.GetO());
+		case CMove::H4: return H4(pos.GetP(), pos.GetO());
+
+		case CMove::A5: return A5(pos.GetP(), pos.GetO());
+		case CMove::B5: return B5(pos.GetP(), pos.GetO());
+		case CMove::C5: return C5(pos.GetP(), pos.GetO());
+		case CMove::D5: return D5(pos.GetP(), pos.GetO());
+		case CMove::E5: return E5(pos.GetP(), pos.GetO());
+		case CMove::F5: return F5(pos.GetP(), pos.GetO());
+		case CMove::G5: return G5(pos.GetP(), pos.GetO());
+		case CMove::H5: return H5(pos.GetP(), pos.GetO());
+
+		case CMove::A6: return A6(pos.GetP(), pos.GetO());
+		case CMove::B6: return B6(pos.GetP(), pos.GetO());
+		case CMove::C6: return C6(pos.GetP(), pos.GetO());
+		case CMove::D6: return D6(pos.GetP(), pos.GetO());
+		case CMove::E6: return E6(pos.GetP(), pos.GetO());
+		case CMove::F6: return F6(pos.GetP(), pos.GetO());
+		case CMove::G6: return G6(pos.GetP(), pos.GetO());
+		case CMove::H6: return H6(pos.GetP(), pos.GetO());
+
+		case CMove::A7: return A7(pos.GetP(), pos.GetO());
+		case CMove::B7: return B7(pos.GetP(), pos.GetO());
+		case CMove::C7: return C7(pos.GetP(), pos.GetO());
+		case CMove::D7: return D7(pos.GetP(), pos.GetO());
+		case CMove::E7: return E7(pos.GetP(), pos.GetO());
+		case CMove::F7: return F7(pos.GetP(), pos.GetO());
+		case CMove::G7: return G7(pos.GetP(), pos.GetO());
+		case CMove::H7: return H7(pos.GetP(), pos.GetO());
+
+		case CMove::A8: return A8(pos.GetP(), pos.GetO());
+		case CMove::B8: return B8(pos.GetP(), pos.GetO());
+		case CMove::C8: return C8(pos.GetP(), pos.GetO());
+		case CMove::D8: return D8(pos.GetP(), pos.GetO());
+		case CMove::E8: return E8(pos.GetP(), pos.GetO());
+		case CMove::F8: return F8(pos.GetP(), pos.GetO());
+		case CMove::G8: return G8(pos.GetP(), pos.GetO());
+		case CMove::H8: return H8(pos.GetP(), pos.GetO());
+
+		default: return 0;
+	}
+}
+
+static const CFlipper Flipper;
+
+uint64_t Flip(const CPosition & pos, const CMove move) noexcept
+{
 	return Flipper.Flip(pos, move);
 }
 

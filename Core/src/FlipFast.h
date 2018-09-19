@@ -8,7 +8,7 @@ class CFlipper
 public:
 	CFlipper() {}
 
-	uint64_t Flip(const CPosition& pos, const CMove move) const;
+	uint64_t Flip(const CPosition& pos, const CMove move) const noexcept;
 private:
 	// outflank array (indexed with inner 6 bits)
 	uint8_t OUTFLANK_2[64] = {
@@ -189,88 +189,77 @@ private:
 		0x00FF00FF00000000ULL
 	};
 
-	uint64_t A1(const uint64_t P, const uint64_t O) const;
-	uint64_t B1(const uint64_t P, const uint64_t O) const;
-	uint64_t C1(const uint64_t P, const uint64_t O) const;
-	uint64_t D1(const uint64_t P, const uint64_t O) const;
-	uint64_t E1(const uint64_t P, const uint64_t O) const;
-	uint64_t F1(const uint64_t P, const uint64_t O) const;
-	uint64_t G1(const uint64_t P, const uint64_t O) const;
-	uint64_t H1(const uint64_t P, const uint64_t O) const;
+	uint64_t A1(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B1(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C1(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D1(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E1(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F1(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G1(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H1(const uint64_t P, const uint64_t O) const noexcept;
 
-	uint64_t A2(const uint64_t P, const uint64_t O) const;
-	uint64_t B2(const uint64_t P, const uint64_t O) const;
-	uint64_t C2(const uint64_t P, const uint64_t O) const;
-	uint64_t D2(const uint64_t P, const uint64_t O) const;
-	uint64_t E2(const uint64_t P, const uint64_t O) const;
-	uint64_t F2(const uint64_t P, const uint64_t O) const;
-	uint64_t G2(const uint64_t P, const uint64_t O) const;
-	uint64_t H2(const uint64_t P, const uint64_t O) const;
+	uint64_t A2(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B2(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C2(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D2(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E2(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F2(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G2(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H2(const uint64_t P, const uint64_t O) const noexcept;
 
-	uint64_t A3(const uint64_t P, const uint64_t O) const;
-	uint64_t B3(const uint64_t P, const uint64_t O) const;
-	uint64_t C3(const uint64_t P, const uint64_t O) const;
-	uint64_t D3(const uint64_t P, const uint64_t O) const;
-	uint64_t E3(const uint64_t P, const uint64_t O) const;
-	uint64_t F3(const uint64_t P, const uint64_t O) const;
-	uint64_t G3(const uint64_t P, const uint64_t O) const;
-	uint64_t H3(const uint64_t P, const uint64_t O) const;
+	uint64_t A3(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B3(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C3(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D3(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E3(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F3(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G3(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H3(const uint64_t P, const uint64_t O) const noexcept;
 
-	uint64_t A4(const uint64_t P, const uint64_t O) const;
-	uint64_t B4(const uint64_t P, const uint64_t O) const;
-	uint64_t C4(const uint64_t P, const uint64_t O) const;
-	uint64_t D4(const uint64_t P, const uint64_t O) const;
-	uint64_t E4(const uint64_t P, const uint64_t O) const;
-	uint64_t F4(const uint64_t P, const uint64_t O) const;
-	uint64_t G4(const uint64_t P, const uint64_t O) const;
-	uint64_t H4(const uint64_t P, const uint64_t O) const;
+	uint64_t A4(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B4(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C4(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D4(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E4(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F4(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G4(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H4(const uint64_t P, const uint64_t O) const noexcept;
 
-	uint64_t A5(const uint64_t P, const uint64_t O) const;
-	uint64_t B5(const uint64_t P, const uint64_t O) const;
-	uint64_t C5(const uint64_t P, const uint64_t O) const;
-	uint64_t D5(const uint64_t P, const uint64_t O) const;
-	uint64_t E5(const uint64_t P, const uint64_t O) const;
-	uint64_t F5(const uint64_t P, const uint64_t O) const;
-	uint64_t G5(const uint64_t P, const uint64_t O) const;
-	uint64_t H5(const uint64_t P, const uint64_t O) const;
+	uint64_t A5(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B5(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C5(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D5(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E5(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F5(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G5(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H5(const uint64_t P, const uint64_t O) const noexcept;
 
-	uint64_t A6(const uint64_t P, const uint64_t O) const;
-	uint64_t B6(const uint64_t P, const uint64_t O) const;
-	uint64_t C6(const uint64_t P, const uint64_t O) const;
-	uint64_t D6(const uint64_t P, const uint64_t O) const;
-	uint64_t E6(const uint64_t P, const uint64_t O) const;
-	uint64_t F6(const uint64_t P, const uint64_t O) const;
-	uint64_t G6(const uint64_t P, const uint64_t O) const;
-	uint64_t H6(const uint64_t P, const uint64_t O) const;
+	uint64_t A6(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B6(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C6(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D6(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E6(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F6(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G6(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H6(const uint64_t P, const uint64_t O) const noexcept;
 
-	uint64_t A7(const uint64_t P, const uint64_t O) const;
-	uint64_t B7(const uint64_t P, const uint64_t O) const;
-	uint64_t C7(const uint64_t P, const uint64_t O) const;
-	uint64_t D7(const uint64_t P, const uint64_t O) const;
-	uint64_t E7(const uint64_t P, const uint64_t O) const;
-	uint64_t F7(const uint64_t P, const uint64_t O) const;
-	uint64_t G7(const uint64_t P, const uint64_t O) const;
-	uint64_t H7(const uint64_t P, const uint64_t O) const;
+	uint64_t A7(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B7(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C7(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D7(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E7(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F7(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G7(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H7(const uint64_t P, const uint64_t O) const noexcept;
 
-	uint64_t A8(const uint64_t P, const uint64_t O) const;
-	uint64_t B8(const uint64_t P, const uint64_t O) const;
-	uint64_t C8(const uint64_t P, const uint64_t O) const;
-	uint64_t D8(const uint64_t P, const uint64_t O) const;
-	uint64_t E8(const uint64_t P, const uint64_t O) const;
-	uint64_t F8(const uint64_t P, const uint64_t O) const;
-	uint64_t G8(const uint64_t P, const uint64_t O) const;
-	uint64_t H8(const uint64_t P, const uint64_t O) const;
-
-	uint64_t(CFlipper::*flip_fp[64])(const uint64_t, const uint64_t) const = {
-		&CFlipper::A1, &CFlipper::B1, &CFlipper::C1, &CFlipper::D1, &CFlipper::E1, &CFlipper::F1, &CFlipper::G1, &CFlipper::H1,
-		&CFlipper::A2, &CFlipper::B2, &CFlipper::C2, &CFlipper::D2, &CFlipper::E2, &CFlipper::F2, &CFlipper::G2, &CFlipper::H2,
-		&CFlipper::A3, &CFlipper::B3, &CFlipper::C3, &CFlipper::D3, &CFlipper::E3, &CFlipper::F3, &CFlipper::G3, &CFlipper::H3,
-		&CFlipper::A4, &CFlipper::B4, &CFlipper::C4, &CFlipper::D4, &CFlipper::E4, &CFlipper::F4, &CFlipper::G4, &CFlipper::H4,
-		&CFlipper::A5, &CFlipper::B5, &CFlipper::C5, &CFlipper::D5, &CFlipper::E5, &CFlipper::F5, &CFlipper::G5, &CFlipper::H5,
-		&CFlipper::A6, &CFlipper::B6, &CFlipper::C6, &CFlipper::D6, &CFlipper::E6, &CFlipper::F6, &CFlipper::G6, &CFlipper::H6,
-		&CFlipper::A7, &CFlipper::B7, &CFlipper::C7, &CFlipper::D7, &CFlipper::E7, &CFlipper::F7, &CFlipper::G7, &CFlipper::H7,
-		&CFlipper::A8, &CFlipper::B8, &CFlipper::C8, &CFlipper::D8, &CFlipper::E8, &CFlipper::F8, &CFlipper::G8, &CFlipper::H8
-	};
+	uint64_t A8(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t B8(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t C8(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t D8(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t E8(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t F8(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t G8(const uint64_t P, const uint64_t O) const noexcept;
+	uint64_t H8(const uint64_t P, const uint64_t O) const noexcept;
 };
 
-uint64_t Flip(const CPosition& pos, const CMove move);
+uint64_t Flip(const CPosition& pos, const CMove move) noexcept;
