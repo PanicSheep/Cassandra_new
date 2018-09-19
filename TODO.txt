@@ -1,10 +1,3 @@
 - Draw Architecture.
-- "CMove CMoves::ExtractMove(const std::size_t index)" -> "CMove CMoves::ExtractMove(const CMove& index)".
-- "bool CMoves::HasMove(std::size_t index)" -> "bool CMoves::HasMove(const CMove& index)".
-- Refactor "class CMoves" to not have inline functions.
-
-- Rename 'SingleLineStreamDecorator' to 'SingleLinePositionArchive'
-- Replace ULL with ui64.
-- Remove duplicate "std::string Move(const uint8_t move)"
-- Remove duplicate "uint8_t Move(const std::string& field_name)"
-- Refactor CPosition::Parity() into CPosition::GetParityQuadrants() for it is only used that way.
+- Rename Environment to IEngine and make it have Play(...) and stuff
+- Make CSearch have a protected IEngine interface.
