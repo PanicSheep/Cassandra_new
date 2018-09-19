@@ -88,12 +88,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BinaryStreamArchive.cpp" />
+    <ClCompile Include="src\IoMoves.cpp" />
     <ClCompile Include="src\MultiLineStreamArchive.cpp" />
     <ClCompile Include="src\IoPuzzleCollection.cpp" />
     <ClCompile Include="src\SingleLineStreamArchive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BinaryStreamArchive.h" />
+    <ClInclude Include="src\IoMoves.h" />
     <ClInclude Include="src\MultiLineStreamArchive.h" />
     <ClInclude Include="src\IoPuzzleCollection.h" />
     <ClInclude Include="src\SingleLineStreamArchive.h" />
