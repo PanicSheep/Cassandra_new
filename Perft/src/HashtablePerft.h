@@ -61,7 +61,7 @@ private:
 	uint64_t lock() const
 	{
 		uint64_t value;
-		while ((value = m_Value.exchange(0xFFFFFFFFFFFFFFFULL, std::memory_order_acquire)) == 0xFFFFFFFFFFFFFFFULL)
+		while ((value = m_Value.exchange(0xFFFFFFFFFFFFFFFui64, std::memory_order_acquire)) == 0xFFFFFFFFFFFFFFFui64)
 			continue;
 		return value;
 	}

@@ -221,7 +221,7 @@
 	FORCE_INLINE uint64_t GetLSB(const uint64_t b) { return b & -b; }
 #endif
 
-FORCE_INLINE uint64_t GetMSB(const uint64_t b) { return b ? 0x8000000000000000ULL >> CountLeadingZeros(b) : 0; }
+FORCE_INLINE uint64_t GetMSB(const uint64_t b) { return b ? 0x8000000000000000ui64 >> CountLeadingZeros(b) : 0; }
 
 #ifdef HAS_BLSR
 	FORCE_INLINE void RemoveLSB(uint64_t & b) { b = _blsr_u64(b); }
@@ -231,10 +231,10 @@ FORCE_INLINE uint64_t GetMSB(const uint64_t b) { return b ? 0x8000000000000000UL
 
 FORCE_INLINE void RemoveMSB(uint64_t & b) { b ^= GetMSB(b); }
 
-template <typename T> FORCE_INLINE uint64_t  MakeBit (                   const T pos ) { assert(pos < 64); return         1ULL << pos; }
-template <typename T> FORCE_INLINE void       SetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b |=  (1ULL << pos); }
-template <typename T> FORCE_INLINE void     ResetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b &= ~(1ULL << pos); }
-template <typename T> FORCE_INLINE bool      TestBit (const uint64_t  b, const T pos ) { assert(pos < 64); return (b &   (1ULL << pos)) != 0; }
+template <typename T> FORCE_INLINE uint64_t  MakeBit (                   const T pos ) { assert(pos < 64); return         1ui64 << pos; }
+template <typename T> FORCE_INLINE void       SetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b |=  (1ui64 << pos); }
+template <typename T> FORCE_INLINE void     ResetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b &= ~(1ui64 << pos); }
+template <typename T> FORCE_INLINE bool      TestBit (const uint64_t  b, const T pos ) { assert(pos < 64); return (b &   (1ui64 << pos)) != 0; }
 template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T mask) { return (b & mask) == mask; }
 
 // PopCount
@@ -248,16 +248,16 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 	#endif
 #else
 	inline uint64_t PopCount(uint64_t b){
-		b -=  (b >> 1) & 0x5555555555555555ULL;
-		b  = ((b >> 2) & 0x3333333333333333ULL) + (b & 0x3333333333333333ULL);
-		b  = ((b >> 4) + b) & 0x0F0F0F0F0F0F0F0FULL;
-		return (b * 0x0101010101010101ULL) >> 56;
+		b -=  (b >> 1) & 0x5555555555555555ui64;
+		b  = ((b >> 2) & 0x3333333333333333ui64) + (b & 0x3333333333333333ui64);
+		b  = ((b >> 4) + b) & 0x0F0F0F0F0F0F0F0Fui64;
+		return (b * 0x0101010101010101ui64) >> 56;
 	}
 	inline uint64_t PopCount_max15(uint64_t b){
 		assert(PopCount(b) < 16);
-		b -=  (b >> 1) & 0x5555555555555555ULL;
-		b  = ((b >> 2) & 0x3333333333333333ULL) + (b & 0x3333333333333333ULL);
-		return (b * 0x1111111111111111ULL) >> 60;
+		b -=  (b >> 1) & 0x5555555555555555ui64;
+		b  = ((b >> 2) & 0x3333333333333333ui64) + (b & 0x3333333333333333ui64);
+		return (b * 0x1111111111111111ui64) >> 60;
 	}
 #endif
 
@@ -266,7 +266,7 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 #if defined(HAS_BEXTR) || defined(HAS_TBM)
 	FORCE_INLINE uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) { return _bextr_u64(src, start, len); }
 #else
-	FORCE_INLINE uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) { return (src >> start) & ((1ULL << len) - 1); }
+	FORCE_INLINE uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) { return (src >> start) & ((1ui64 << len) - 1); }
 #endif
 
 
@@ -274,7 +274,7 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 #ifdef HAS_BZHI
 	FORCE_INLINE uint64_t BZHI(const uint64_t src, const uint32_t index) { return _bzhi_u64(src, index); }
 #else
-	FORCE_INLINE uint64_t BZHI(const uint64_t src, const uint32_t index) { return src & ((1ULL << index) - 1); }
+	FORCE_INLINE uint64_t BZHI(const uint64_t src, const uint32_t index) { return src & ((1ui64 << index) - 1); }
 #endif
 
 #ifdef HAS_BLCFILL
@@ -357,7 +357,7 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 
 #if defined(_MSC_VER)
     #ifdef HAS_SSE2
-        FORCE_INLINE __m128i operator~(const __m128i& a) { return _mm_andnot_si128(a, _mm_set1_epi64x(0xFFFFFFFFFFFFFFFFULL)); }
+        FORCE_INLINE __m128i operator~(const __m128i& a) { return _mm_andnot_si128(a, _mm_set1_epi64x(0xFFFFFFFFFFFFFFFFui64)); }
 
         FORCE_INLINE __m128i operator+(const __m128i& a, const __m128i& b) { return _mm_add_epi64(a, b); }
         FORCE_INLINE __m128i operator-(const __m128i& a, const __m128i& b) { return _mm_sub_epi64(a, b); }
@@ -385,7 +385,7 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
         FORCE_INLINE __m128i operator<=(const __m128i& a, const __m128i& b) { return ~(a > b); }
     #endif
     #ifdef HAS_AVX2
-		FORCE_INLINE __m256i operator~(const __m256i& a) { return _mm256_xor_si256(a, _mm256_set1_epi64x(0xFFFFFFFFFFFFFFFFULL)); }
+		FORCE_INLINE __m256i operator~(const __m256i& a) { return _mm256_xor_si256(a, _mm256_set1_epi64x(0xFFFFFFFFFFFFFFFFui64)); }
 
         FORCE_INLINE __m256i operator+(const __m256i& a, const __m256i& b) { return _mm256_add_epi64(a, b); }
         FORCE_INLINE __m256i operator-(const __m256i& a, const __m256i& b) { return _mm256_sub_epi64(a, b); }
@@ -404,7 +404,7 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
         FORCE_INLINE __m256i operator>>=(__m256i& a, const int b) { return a = a >> b; }
     #endif
 	#ifdef HAS_AVX512
-		FORCE_INLINE __m512i operator~(const __m512i& a) { return _mm512_xor_si512(a, _mm512_set1_epi64(0xFFFFFFFFFFFFFFFFULL)); }
+		FORCE_INLINE __m512i operator~(const __m512i& a) { return _mm512_xor_si512(a, _mm512_set1_epi64(0xFFFFFFFFFFFFFFFFui64)); }
 
 		FORCE_INLINE __m512i operator+(const __m512i& a, const __m512i& b) { return _mm512_add_epi64(a, b); }
 		FORCE_INLINE __m512i operator-(const __m512i& a, const __m512i& b) { return _mm512_sub_epi64(a, b); }

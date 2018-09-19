@@ -23,7 +23,7 @@ void PrintHelp()
 int main(int argc, char* argv[])
 {
 	unsigned int depth = 20;
-	std::size_t RAM = 26ULL * 1024 * 1024 * 1024;
+	std::size_t RAM = 26ui64 * 1024 * 1024 * 1024;
 
 	for (int i = 0; i < argc; i++)
 	{

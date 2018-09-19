@@ -10,8 +10,8 @@ public:
 	CPosition() : CPosition(0, 0) {}
 	CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
 
-	static CPosition StartPosition   () { return CPosition(0x0000000810000000ULL, 0x0000001008000000ULL); }
-	static CPosition StartPositionETH() { return CPosition(0x0000001800000000ULL, 0x0000000018000000ULL); }
+	static CPosition StartPosition   () { return CPosition(0x0000000810000000ui64, 0x0000001008000000ui64); }
+	static CPosition StartPositionETH() { return CPosition(0x0000001800000000ui64, 0x0000000018000000ui64); }
 
 	uint64_t GetP() const { return P; }
 	uint64_t GetO() const { return O; }

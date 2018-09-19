@@ -6,7 +6,7 @@
 namespace IO
 {
 	template <typename T>
-	std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFFFFFFFFFFFFFFFFULL)
+	std::vector<T> read_vector(const std::string & filename, std::size_t size = 0xFFFFFFFFFFFFFFFFui64)
 	{
 		std::fstream file(filename, std::ios::in | std::ios::binary);
 		if (!file.is_open())
@@ -24,7 +24,7 @@ namespace IO
 	}
 
 	template <typename T>
-	std::vector<T> read_vector(const CPath & file, std::size_t size = 0xFFFFFFFFFFFFFFFFULL)
+	std::vector<T> read_vector(const CPath & file, std::size_t size = 0xFFFFFFFFFFFFFFFFui64)
 	{
 		return read_vector<T>(file.GetAbsoluteFilePath(), size);
 	}

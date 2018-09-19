@@ -41,8 +41,8 @@ public:
 
 class CPatternH : public CPattern
 {
-	static const uint64_t HALF = 0x0F0F0F0F0F0F0F0FULL;
-	static const uint64_t MID  = 0x0000001818000000ULL;
+	static const uint64_t HALF = 0x0F0F0F0F0F0F0F0Fui64;
+	static const uint64_t MID  = 0x0000001818000000ui64;
 	const uint64_t PatternC, PatternV, PatternD;
 	const uint32_t halfSize;
 	std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
@@ -65,9 +65,9 @@ private:
 
 class CPatternD : public CPattern
 {
-	static const uint64_t HALF = 0x0080C0E0F0F8FCFEULL;
-	static const uint64_t DIAG = 0x8040201008040201ULL;
-	static const uint64_t MID  = 0x0000001818000000ULL;
+	static const uint64_t HALF = 0x0080C0E0F0F8FCFEui64;
+	static const uint64_t DIAG = 0x8040201008040201ui64;
+	static const uint64_t MID  = 0x0000001818000000ui64;
 	const uint64_t PatternH, PatternC, PatternV;
 	const uint32_t halfSize, diagSize;
 	std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
@@ -90,7 +90,7 @@ private:
 
 class CPattern0 : public CPattern
 {
-	static const uint64_t MID = 0x0000001818000000ULL;
+	static const uint64_t MID = 0x0000001818000000ui64;
 	const uint64_t PatternH, PatternV, PatternD, PatternC, PatternHV, PatternHD, PatternHC;
 	std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
 

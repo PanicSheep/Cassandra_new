@@ -19,7 +19,7 @@ namespace Perft
 		uint64_t perft(const CPosition& pos, const uint8_t depth)
 		{
 			if (depth == 0)
-				return 1ULL;
+				return 1ui64;
 
 			auto moves = pos.PossibleMoves();
 
@@ -29,10 +29,10 @@ namespace Perft
 				if (PosPass.HasMoves())
 					return perft(PosPass, depth - 1);
 				else
-					return 0ULL;
+					return 0ui64;
 			}
 
-			uint64_t sum = 0ULL;
+			uint64_t sum = 0ui64;
 			while (!moves.empty())
 				sum += perft(pos.Play(moves.ExtractMove()), depth - 1);
 
@@ -48,7 +48,7 @@ namespace Perft
 			else
 			{
 				pos = pos.Play(pos.PossibleMoves().ExtractMove());
-				return 4ULL * perft(pos, depth - 1);
+				return 4ui64 * perft(pos, depth - 1);
 			}
 		}
 	}
@@ -58,7 +58,7 @@ namespace Perft
 		// perft for 0 plies left
 		uint64_t perft0(const CPosition& pos)
 		{
-			return 1ULL;
+			return 1ui64;
 		}
 
 		// perft for 1 ply left
@@ -75,7 +75,7 @@ namespace Perft
 			if (moves.empty())
 				return pos.PlayPass().PossibleMoves().size();
 
-			uint64_t sum = 0ULL;
+			uint64_t sum = 0ui64;
 			while (!moves.empty())
 			{
 				const auto pos2 = pos.Play(moves.ExtractMove());
@@ -102,10 +102,10 @@ namespace Perft
 				if (PosPass.HasMoves())
 					return perft_(PosPass, depth - 1);
 				else
-					return 0ULL;
+					return 0ui64;
 			}
 
-			uint64_t sum = 0ULL;
+			uint64_t sum = 0ui64;
 			while (!moves.empty())
 				sum += perft_(pos.Play(moves.ExtractMove()), depth - 1);
 
@@ -132,7 +132,7 @@ namespace Perft
 			else
 			{
 				pos = pos.Play(pos.PossibleMoves().ExtractMove());
-				return 4ULL * perft(pos, depth - 1);
+				return 4ui64 * perft(pos, depth - 1);
 			}
 		}
 	}
@@ -164,13 +164,13 @@ namespace Perft
 				if (PosPass.HasMoves())
 					return perft_HT(PosPass, depth - 1);
 				else
-					return 0ULL;
+					return 0ui64;
 			}
 
 			if (const auto ret = ht.LookUp(PerftKey(pos, depth)); ret.first)
 				return ret.second;
 
-			uint64_t sum = 0ULL;
+			uint64_t sum = 0ui64;
 			while (!moves.empty())
 				sum += perft_HT(pos.Play(moves.ExtractMove()), depth - 1);
 
@@ -234,7 +234,7 @@ namespace Perft
 			else
 			{
 				pos = pos.Play(pos.PossibleMoves().ExtractMove());
-				return 4ULL * perft(pos, depth - 1, BytesRAM);
+				return 4ui64 * perft(pos, depth - 1, BytesRAM);
 			}
 		}
 	}

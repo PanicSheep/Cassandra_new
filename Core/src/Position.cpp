@@ -59,12 +59,12 @@ uint64_t CPosition::Parity() const
 	E ^= E >>  8;
 	E ^= E >> 16;
 	#ifdef HAS_PEXT
-		return PExt(E, 0x0000001100000011ULL);
+		return PExt(E, 0x0000001100000011ui64);
 	#else
-		E &= 0x0000001100000011ULL;
+		E &= 0x0000001100000011ui64;
 		E |= E >>  3;
 		E |= E >> 30;
-		return E & 0xFULL;
+		return E & 0xFui64;
 	#endif
 }
 
@@ -77,8 +77,8 @@ uint64_t CPosition::GetParityQuadrants() const
 	E ^= E >> 2;
 	E ^= E >> 8;
 	E ^= E >> 16;
-	E &= 0x0000001100000011ULL;
-	return E * 0x000000000F0F0F0FULL;
+	E &= 0x0000001100000011ui64;
+	return E * 0x000000000F0F0F0Fui64;
 }
 
 CMoves CPosition::PossibleMoves() const
@@ -89,7 +89,7 @@ CMoves CPosition::PossibleMoves() const
 
 	// 1 x AND
 	const __m512i PP = _mm512_set1_epi64(P);
-	const __m512i maskO = _mm512_set1_epi64(O) & _mm512_set_epi64(0x7E7E7E7E7E7E7E7EULL, 0x00FFFFFFFFFFFF00ULL, 0x007E7E7E7E7E7E00ULL, 0x007E7E7E7E7E7E00ULL, 0x7E7E7E7E7E7E7E7EULL, 0x00FFFFFFFFFFFF00ULL, 0x007E7E7E7E7E7E00ULL, 0x007E7E7E7E7E7E00ULL);
+	const __m512i maskO = _mm512_set1_epi64(O) & _mm512_set_epi64(0x7E7E7E7E7E7E7E7Eui64, 0x00FFFFFFFFFFFF00ui64, 0x007E7E7E7E7E7E00ui64, 0x007E7E7E7E7E7E00ui64, 0x7E7E7E7E7E7E7E7Eui64, 0x00FFFFFFFFFFFF00ui64, 0x007E7E7E7E7E7E00ui64, 0x007E7E7E7E7E7E00ui64);
 	const __m512i shift1 = _mm512_set_epi64(1, 8, 7, 9, -1, -8, -7, -9);
 	const __m512i shift2 = shift1 + shift1;
 	__m512i mask;
@@ -112,7 +112,7 @@ CMoves CPosition::PossibleMoves() const
 
 	// 1 x AND
 	const __m256i PP = _mm256_set1_epi64x(P);
-	const __m256i maskO = _mm256_set1_epi64x(O) & _mm256_set_epi64x(0x7E7E7E7E7E7E7E7EULL, 0x00FFFFFFFFFFFF00ULL, 0x007E7E7E7E7E7E00ULL, 0x007E7E7E7E7E7E00ULL);
+	const __m256i maskO = _mm256_set1_epi64x(O) & _mm256_set_epi64x(0x7E7E7E7E7E7E7E7Eui64, 0x00FFFFFFFFFFFF00ui64, 0x007E7E7E7E7E7E00ui64, 0x007E7E7E7E7E7E00ui64);
 	const __m256i shift1 = _mm256_set_epi64x(1, 8, 7, 9);
 	const __m256i shift2 = shift1 + shift1;
 	__m256i mask1, mask2;
@@ -162,8 +162,8 @@ CMoves CPosition::PossibleMoves() const
 	const __m128i OO = _mm_set_epi64x(BSwap(O), O);
 
 	// 2 x AND
-	const uint64_t maskO = O & 0x7E7E7E7E7E7E7E7EULL;
-	const __m128i  maskOO = OO & _mm_set1_epi64x(0x7E7E7E7E7E7E7E7EULL);
+	const uint64_t maskO = O & 0x7E7E7E7E7E7E7E7Eui64;
+	const __m128i  maskOO = OO & _mm_set1_epi64x(0x7E7E7E7E7E7E7E7Eui64);
 
 	// 5 x SHIFT, 5 x AND
 	flip1 = maskO & (P << 1);
@@ -219,7 +219,7 @@ CMoves CPosition::PossibleMoves() const
 	uint64_t flip1, flip2, flip3, flip4, flip5, flip6, flip7, flip8;
 
 	// 1 x AND
-	const uint64_t maskO = O & 0x7E7E7E7E7E7E7E7EULL;
+	const uint64_t maskO = O & 0x7E7E7E7E7E7E7E7Eui64;
 
 	// 8 x SHIFT, 8 x AND
 	flip1 = maskO & (P << 1);
@@ -286,10 +286,10 @@ bool CPosition::HasMoves() const
 {
 	return PossibleMoves().size() > 0;
 	//const uint64_t empties = ~(P | O);
-	//if (get_some_moves<1>(P, O & 0x7E7E7E7E7E7E7E7EULL) & empties) return true;
-	//if (get_some_moves<8>(P, O & 0x00FFFFFFFFFFFF00ULL) & empties) return true;
-	//if (get_some_moves<7>(P, O & 0x007E7E7E7E7E7E00ULL) & empties) return true;
-	//if (get_some_moves<9>(P, O & 0x007E7E7E7E7E7E00ULL) & empties) return true;
+	//if (get_some_moves<1>(P, O & 0x7E7E7E7E7E7E7E7Eui64) & empties) return true;
+	//if (get_some_moves<8>(P, O & 0x00FFFFFFFFFFFF00ui64) & empties) return true;
+	//if (get_some_moves<7>(P, O & 0x007E7E7E7E7E7E00ui64) & empties) return true;
+	//if (get_some_moves<9>(P, O & 0x007E7E7E7E7E7E00ui64) & empties) return true;
 	//return false;
 }
 

@@ -22,7 +22,7 @@ void TestCountLastFlip(CMove move)
 
 	for (unsigned int i = 0; i < 10'000; i++)
 	{
-		CPosition pos = MakeFullRandomPosition(~(1ULL << move));
+		CPosition pos = MakeFullRandomPosition(~(MakeBit(move)));
 		ASSERT_EQ(PopCount(Flip(pos, move)) * 2, LFC.CountLastFlip(pos, move));
 	}
 }

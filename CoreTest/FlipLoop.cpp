@@ -10,7 +10,7 @@ uint64_t Flip_loop_dir(const CPosition& pos, const CMove move, const int dX, con
 
 	while ((i >= 0) && (i < 8) && (j >= 0) && (j < 8)) // In between boundaries
 	{
-		const uint64_t bit = 1ULL << (j * 8 + i); // The bit to look at
+		const uint64_t bit = 1ui64 << (j * 8 + i); // The bit to look at
 		if (pos.GetO() & bit) // The bit belongs to the opponent
 			flips |= bit; // Add to possible flips
 		else if (pos.GetP() & bit) // The bit belongs to the player

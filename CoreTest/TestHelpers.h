@@ -5,5 +5,5 @@
 
 uint64_t line(CMove move, const int dX, const int dY);
 
-CPosition MakeRandomPosition(uint64_t mask = 0xFFFFFFFFFFFFFFFFULL);
-CPosition MakeFullRandomPosition(uint64_t mask = 0xFFFFFFFFFFFFFFFFULL);
+CPosition MakeRandomPosition(uint64_t mask = 0xFFFFFFFFFFFFFFFFui64);
+CPosition MakeFullRandomPosition(uint64_t mask = 0xFFFFFFFFFFFFFFFFui64);

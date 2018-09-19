@@ -8,6 +8,18 @@
 #include "HashtablePVS.h"
 #include "LastFlipCounter.h"
 
+class ZeroPattern : public IPattern
+{
+public:
+	float Eval(const CPosition&) const override { return 0; }
+};
+
+class EmptyCountPattern : public IPattern
+{
+public:
+	float Eval(const CPosition& pos) const override { return pos.EmptyCount(); }
+};
+
 class CPositionScore : public CPosition
 {
 public:
@@ -16,48 +28,48 @@ public:
 };
 
 std::vector<CPositionScore> TestPos = {
-	CPositionScore(0xFF00FF00FF00FF00ULL, 0x00FF00FF00FF00FFULL,   0), //  0
-	CPositionScore(0xFF00FF00FF00FFFFULL, 0x00FF00FF00FF0000ULL, +16), //  1
-	CPositionScore(0xFF00FF00FF000000ULL, 0x00FF00FF00FFFFFFULL, -16), //  2
+	CPositionScore(0xFF00FF00FF00FF00ui64, 0x00FF00FF00FF00FFui64,   0), //  0
+	CPositionScore(0xFF00FF00FF00FFFFui64, 0x00FF00FF00FF0000ui64, +16), //  1
+	CPositionScore(0xFF00FF00FF000000ui64, 0x00FF00FF00FFFFFFui64, -16), //  2
 
-	CPositionScore(0xFFFFFFFFFFFFFFFEULL, 0x0000000000000000ULL, +64), //  3
-	CPositionScore(0xFFFFFFFFFFFFFCFCULL, 0x0000000000000302ULL, +64), //  4
-	CPositionScore(0xFFFFFFFFFFFFFF7EULL, 0x0000000000000080ULL, +48), //  5
-	CPositionScore(0xFFFFFFFFFFFFFE7EULL, 0x0000000000000180ULL, +62), //  6
+	CPositionScore(0xFFFFFFFFFFFFFFFEui64, 0x0000000000000000ui64, +64), //  3
+	CPositionScore(0xFFFFFFFFFFFFFCFCui64, 0x0000000000000302ui64, +64), //  4
+	CPositionScore(0xFFFFFFFFFFFFFF7Eui64, 0x0000000000000080ui64, +48), //  5
+	CPositionScore(0xFFFFFFFFFFFFFE7Eui64, 0x0000000000000180ui64, +62), //  6
 
-	CPositionScore(0xFEFFFFFFFFFFFFFEULL, 0x0000000000000000ULL, +64), //  7
-	CPositionScore(0xFCFCFFFFFFFFFCFCULL, 0x0203000000000302ULL, +64), //  8
-	CPositionScore(0xFEFFFFFFFFFFFF7EULL, 0x0000000000000080ULL, +22), //  9
-	CPositionScore(0xFFFFFFFFFBFEFC7EULL, 0x0000000004010280ULL, +54), // 10
+	CPositionScore(0xFEFFFFFFFFFFFFFEui64, 0x0000000000000000ui64, +64), //  7
+	CPositionScore(0xFCFCFFFFFFFFFCFCui64, 0x0203000000000302ui64, +64), //  8
+	CPositionScore(0xFEFFFFFFFFFFFF7Eui64, 0x0000000000000080ui64, +22), //  9
+	CPositionScore(0xFFFFFFFFFBFEFC7Eui64, 0x0000000004010280ui64, +54), // 10
 
-	CPositionScore(0xFFFFFFFFFFFFFFF8ULL, 0x0000000000000000ULL, +64), // 11
-	CPositionScore(0xFFFFFFFFFFFFFDF8ULL, 0x0000000000000200ULL, +64), // 12
-	CPositionScore(0xF8FFFFFFFFFFFFF8ULL, 0x0700000000000000ULL, +16), // 13
-	CPositionScore(0xFFFFFFFEFBFEFC7EULL, 0x0000000104000280ULL, +58), // 14
+	CPositionScore(0xFFFFFFFFFFFFFFF8ui64, 0x0000000000000000ui64, +64), // 11
+	CPositionScore(0xFFFFFFFFFFFFFDF8ui64, 0x0000000000000200ui64, +64), // 12
+	CPositionScore(0xF8FFFFFFFFFFFFF8ui64, 0x0700000000000000ui64, +16), // 13
+	CPositionScore(0xFFFFFFFEFBFEFC7Eui64, 0x0000000104000280ui64, +58), // 14
 
-	CPositionScore(0xFFFFFFFFFFFFFFF0ULL, 0x0000000000000000ULL, +64), // 15
-	CPositionScore(0xFFFFFFFFFFFFE0E0ULL, 0x0000000000001F10ULL, +64), // 16
-	CPositionScore(0xF0FFFFFFFFFFFFF0ULL, 0x0F00000000000000ULL,  +0), // 17
-	CPositionScore(0xFFFFFFFFFFE7DBC3ULL, 0x0000000000182400ULL, +56), // 18
+	CPositionScore(0xFFFFFFFFFFFFFFF0ui64, 0x0000000000000000ui64, +64), // 15
+	CPositionScore(0xFFFFFFFFFFFFE0E0ui64, 0x0000000000001F10ui64, +64), // 16
+	CPositionScore(0xF0FFFFFFFFFFFFF0ui64, 0x0F00000000000000ui64,  +0), // 17
+	CPositionScore(0xFFFFFFFFFFE7DBC3ui64, 0x0000000000182400ui64, +56), // 18
 
 	// FForum
-	CPositionScore(0x3E0C0D2B772B7000ULL, 0x0071725488140E7CULL, +18), // 19
-	CPositionScore(0x7E2059000C19303EULL, 0x001E267FF3E60C00ULL, +10), // 20
-	CPositionScore(0x040C0D306C707A01ULL, 0x083070CF938F853EULL,  +2), // 21
-	CPositionScore(0x7EB8B9D127070C2CULL, 0x0006462E58383012ULL,  +0), // 22
-	CPositionScore(0x0019D6D6C8F0A07CULL, 0x7C242829370D1C00ULL, +32), // 23
-	CPositionScore(0x1C1C14223F9A047EULL, 0x20E0EADCC0647800ULL, +14), // 24
-	CPositionScore(0x18BC8F9F877F3018ULL, 0x2440706078000E06ULL,  +8), // 25
-	CPositionScore(0x0000081F22426064ULL, 0x14BCF7E0DCBC9C98ULL,  +8), // 26
-	CPositionScore(0x10B070222E942C3CULL, 0x2C0F0F5DD16B1000ULL,  -8), // 27
-	CPositionScore(0x002054A49716247CULL, 0x781CAB5B68E91800ULL, +10), // 28
+	CPositionScore(0x3E0C0D2B772B7000ui64, 0x0071725488140E7Cui64, +18), // 19
+	CPositionScore(0x7E2059000C19303Eui64, 0x001E267FF3E60C00ui64, +10), // 20
+	CPositionScore(0x040C0D306C707A01ui64, 0x083070CF938F853Eui64,  +2), // 21
+	CPositionScore(0x7EB8B9D127070C2Cui64, 0x0006462E58383012ui64,  +0), // 22
+	CPositionScore(0x0019D6D6C8F0A07Cui64, 0x7C242829370D1C00ui64, +32), // 23
+	CPositionScore(0x1C1C14223F9A047Eui64, 0x20E0EADCC0647800ui64, +14), // 24
+	CPositionScore(0x18BC8F9F877F3018ui64, 0x2440706078000E06ui64,  +8), // 25
+	CPositionScore(0x0000081F22426064ui64, 0x14BCF7E0DCBC9C98ui64,  +8), // 26
+	CPositionScore(0x10B070222E942C3Cui64, 0x2C0F0F5DD16B1000ui64,  -8), // 27
+	CPositionScore(0x002054A49716247Cui64, 0x781CAB5B68E91800ui64, +10), // 28
 };
 
 void TestTestPos(unsigned int emptyCount, unsigned int MobilityPlayer, unsigned int MobilityOpponent, unsigned int index)
 {
 	ASSERT_TRUE(TestPos[index].score >= -64);
 	ASSERT_TRUE(TestPos[index].score <= +64);
-	ASSERT_TRUE((TestPos[index].GetP() & TestPos[index].GetO()) == 0ULL);
+	ASSERT_TRUE((TestPos[index].GetP() & TestPos[index].GetO()) == 0ui64);
 	ASSERT_EQ(TestPos[index].EmptyCount(), emptyCount);
 	ASSERT_EQ(TestPos[index].PossibleMoves().size(), MobilityPlayer);
 	ASSERT_EQ(TestPos[index].PlayPass().PossibleMoves().size(), MobilityOpponent);
@@ -100,7 +112,7 @@ protected:
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
-		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<ZeroPattern>();
 
 		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
@@ -138,7 +150,7 @@ protected:
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr; // TODO: Replace!
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
-		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<ZeroPattern>();
 
 		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
@@ -176,7 +188,7 @@ protected:
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = nullptr;
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
-		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<ZeroPattern>();
 
 		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
@@ -214,7 +226,7 @@ protected:
 		std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 		std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(1'000);
 		std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>(); // TODO: Replace!
-		std::shared_ptr<IPattern> PatternEvaluator = nullptr; // TODO: Replace!
+		std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<ZeroPattern>();
 
 		environment = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
 	}
@@ -253,26 +265,19 @@ TEST_F(PVS, FForum08) { TestPosition(26, PVSearch(environment)); }
 TEST_F(PVS, FForum09) { TestPosition(27, PVSearch(environment)); }
 TEST_F(PVS, FForum10) { TestPosition(28, PVSearch(environment)); }
 
-class DummyPattern : public IPattern
-{
-public:
-	float Eval(const CPosition& pos) const override { return pos.EmptyCount(); }
-};
-
 TEST(PVS_limitted_depth, limitted_depth)
 {
-	std::shared_ptr<Environment> environment;
 	std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
 	std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(1'000);
 	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
-	std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<DummyPattern>();
+	std::shared_ptr<IPattern> PatternEvaluator = std::make_shared<EmptyCountPattern>();
 
 	PVSearch search(std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator));
 
 	for (int e = 0; e < 15; e++)
 		for (int d = 0; d < e; d++)
 		{
-			const CPosition pos(0, 0xFFFFFFFFFFFFFFFFULL << e);
+			const CPosition pos(0x0000000055AA55AAui64 << e, 0xFFFFFFFFAA55AA55ui64 << e);
 			ASSERT_EQ(pos.EmptyCount(), e);
 
 			const int score = search.Eval(pos, d, 0);
@@ -284,12 +289,12 @@ TEST(GetStableStones, none)
 {
 	const auto stables = CStabilityAnalyzer().GetStableStones(CPosition::StartPosition());
 
-	ASSERT_EQ(stables, 0ULL);
+	ASSERT_EQ(stables, 0ui64);
 }
 
 TEST(GetStableStones, none2)
 {
 	const auto stables = CStabilityAnalyzer().GetStableStones(CPosition(0, 0xFF));
 
-	ASSERT_EQ(stables, 0xFF);
+	ASSERT_EQ(stables, 0xFFui64);
 }

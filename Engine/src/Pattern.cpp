@@ -17,7 +17,7 @@ void CPattern::Initialize()
 {
 	static std::once_flag flag;
 	std::call_once(flag, []() {
-		const std::size_t size = (1ULL << 15);
+		const std::size_t size = (1ui64 << 15);
 		m_sumpow3_cache.reserve(size);
 		for (std::size_t i = 0; i < size; i++)
 		{
@@ -34,8 +34,8 @@ void CPattern::Initialize()
 
 void CPattern::For_each_configuration_in_pattern_do_fkt(const uint64_t pattern, std::function<void(const CPosition&)> fkt)
 {
-	const uint64_t PatternSize = 1ULL << PopCount(pattern);
-	const uint64_t ExtractedCenter = PExt(0x0000001818000000ULL, pattern);
+	const uint64_t PatternSize = 1ui64 << PopCount(pattern);
+	const uint64_t ExtractedCenter = PExt(0x0000001818000000ui64, pattern);
 	for (uint64_t i = 0; i < PatternSize; i++)
 	{
 		const uint64_t P = PDep(i, pattern);

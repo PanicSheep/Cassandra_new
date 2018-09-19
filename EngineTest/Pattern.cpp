@@ -12,10 +12,10 @@ protected:
 
 TEST_F(Pattern, NewPatternH)
 {
-	const auto pattern = CreatePattern(0x000000000000007EULL);
+	const auto pattern = CreatePattern(0x000000000000007Eui64);
 
 	ASSERT_TRUE(dynamic_cast<CPatternH*>(pattern.get()) != nullptr);
-	ASSERT_EQ(pattern->GetPattern(), 0x000000000000007EULL);
+	ASSERT_EQ(pattern->GetPattern(), 0x000000000000007Eui64);
 	ASSERT_EQ(pattern->Occurrences(), 4u);
 	ASSERT_EQ(pattern->FullSize(), 729u);
 	ASSERT_EQ(pattern->ReducedSize(), 378u);
@@ -23,10 +23,10 @@ TEST_F(Pattern, NewPatternH)
 
 TEST_F(Pattern, NewPatternD)
 {
-	const auto pattern = CreatePattern(0x0000000000000303ULL);
+	const auto pattern = CreatePattern(0x0000000000000303ui64);
 
 	ASSERT_TRUE(dynamic_cast<CPatternD*>(pattern.get()) != nullptr);
-	ASSERT_EQ(pattern->GetPattern(), 0x0000000000000303ULL);
+	ASSERT_EQ(pattern->GetPattern(), 0x0000000000000303ui64);
 	ASSERT_EQ(pattern->Occurrences(), 4u);
 	ASSERT_EQ(pattern->FullSize(), 81u);
 	ASSERT_EQ(pattern->ReducedSize(), 54u);
@@ -34,10 +34,10 @@ TEST_F(Pattern, NewPatternD)
 
 TEST_F(Pattern, NewPattern0)
 {
-	const auto pattern = CreatePattern(0x000000100000000FULL);
+	const auto pattern = CreatePattern(0x000000100000000Fui64);
 
 	ASSERT_TRUE(dynamic_cast<CPattern0*>(pattern.get()) != nullptr);
-	ASSERT_EQ(pattern->GetPattern(), 0x000000100000000FULL);
+	ASSERT_EQ(pattern->GetPattern(), 0x000000100000000Fui64);
 	ASSERT_EQ(pattern->Occurrences(), 8u);
 	ASSERT_EQ(pattern->FullSize(), 243u);
 	ASSERT_EQ(pattern->ReducedSize(), 162u);
@@ -66,7 +66,7 @@ void Test_LegalWeights(uint64_t bitpattern, CPattern* pattern)
 		case 6: bitpattern = FlipVertical(bitpattern); break;
 		case 7: bitpattern = FlipHorizontal(bitpattern); break;
 		}
-		uint64_t mid = ((bitpattern & 0x0000001818000000ULL) != 0ULL) ? 0x0000001818000000ULL : 0ULL;
+		uint64_t mid = ((bitpattern & 0x0000001818000000ui64) != 0ui64) ? 0x0000001818000000ui64 : 0ui64;
 		CPattern::For_each_configuration_in_pattern_do_fkt(bitpattern | mid, [&pattern](const CPosition& pos)
 		{
 			auto vec1 = pattern->GetScores(pos);
@@ -91,7 +91,7 @@ void Test_SymmetryIndependance(const uint64_t bitpattern, CPattern* pattern)
 	pattern->set_weights(compressed_weights);
 
 	// Assert score's independance of flips
-	uint64_t mid = ((bitpattern & 0x0000001818000000ULL) != 0ULL) ? 0x0000001818000000ULL : 0ULL;
+	uint64_t mid = ((bitpattern & 0x0000001818000000ui64) != 0ui64) ? 0x0000001818000000ui64 : 0ui64;
 	CPattern::For_each_configuration_in_pattern_do_fkt(bitpattern | mid, [&](CPosition pos)
 	{
 		auto score = pattern->Eval(pos);
@@ -135,189 +135,189 @@ void Test_IndexCovering(const uint64_t bitpattern, CPattern* pattern)
 
 TEST_F(Pattern, PatternH_LegalWeight1)
 {
-	const uint64_t bitpattern = 0x000000000000007EULL;
+	const uint64_t bitpattern = 0x000000000000007Eui64;
 	CPatternH pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_LegalWeight2)
 {
-	const uint64_t bitpattern = 0x000000001800007EULL;
+	const uint64_t bitpattern = 0x000000001800007Eui64;
 	CPatternH pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_LegalWeight3)
 {
-	const uint64_t bitpattern = 0x00000000FF000000ULL;
+	const uint64_t bitpattern = 0x00000000FF000000ui64;
 	CPatternH pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_SymmetryIndependance1)
 {
-	const uint64_t bitpattern = 0x000000000000007EULL;
+	const uint64_t bitpattern = 0x000000000000007Eui64;
 	CPatternH pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_SymmetryIndependance2)
 {
-	const uint64_t bitpattern = 0x000000001800817EULL;
+	const uint64_t bitpattern = 0x000000001800817Eui64;
 	CPatternH pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_SymmetryIndependance3)
 {
-	const uint64_t bitpattern = 0x00000000FF000000ULL;
+	const uint64_t bitpattern = 0x00000000FF000000ui64;
 	CPatternH pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_IndexCovering1)
 {
-	const uint64_t bitpattern = 0x000000000000007EULL;
+	const uint64_t bitpattern = 0x000000000000007Eui64;
 	CPatternH pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_IndexCovering2)
 {
-	const uint64_t bitpattern = 0x000000001800817EULL;
+	const uint64_t bitpattern = 0x000000001800817Eui64;
 	CPatternH pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternH_IndexCovering3)
 {
-	const uint64_t bitpattern = 0x00000000FF000000ULL;
+	const uint64_t bitpattern = 0x00000000FF000000ui64;
 	CPatternH pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_LegalWeight1)
 {
-	const uint64_t bitpattern = 0x0000000000070707ULL;
+	const uint64_t bitpattern = 0x0000000000070707ui64;
 	CPatternD pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_LegalWeight2)
 {
-	const uint64_t bitpattern = 0x8040201008040201ULL;
+	const uint64_t bitpattern = 0x8040201008040201ui64;
 	CPatternD pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_LegalWeight3)
 {
-	const uint64_t bitpattern = 0x0000241818240201ULL;
+	const uint64_t bitpattern = 0x0000241818240201ui64;
 	CPatternD pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_SymmetryIndependance1)
 {
-	const uint64_t bitpattern = 0x0000000000070707ULL;
+	const uint64_t bitpattern = 0x0000000000070707ui64;
 	CPatternD pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_SymmetryIndependance2)
 {
-	const uint64_t bitpattern = 0x8040201008040201ULL;
+	const uint64_t bitpattern = 0x8040201008040201ui64;
 	CPatternD pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_SymmetryIndependance3)
 {
-	const uint64_t bitpattern = 0x8040241818240201ULL;
+	const uint64_t bitpattern = 0x8040241818240201ui64;
 	CPatternD pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_IndexCovering1)
 {
-	const uint64_t bitpattern = 0x0000000000070707ULL;
+	const uint64_t bitpattern = 0x0000000000070707ui64;
 	CPatternD pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_IndexCovering2)
 {
-	const uint64_t bitpattern = 0x8040201008040201ULL;
+	const uint64_t bitpattern = 0x8040201008040201ui64;
 	CPatternD pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, PatternD_IndexCovering3)
 {
-	const uint64_t bitpattern = 0x8040241818240201ULL;
+	const uint64_t bitpattern = 0x8040241818240201ui64;
 	CPatternD pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_LegalWeight1)
 {
-	const uint64_t bitpattern = 0x000000080001000FULL;
+	const uint64_t bitpattern = 0x000000080001000Fui64;
 	CPattern0 pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_LegalWeight2)
 {
-	const uint64_t bitpattern = 0x0000000008000008ULL;
+	const uint64_t bitpattern = 0x0000000008000008ui64;
 	CPattern0 pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_LegalWeight3)
 {
-	const uint64_t bitpattern = 0x81810000000000C0ULL;
+	const uint64_t bitpattern = 0x81810000000000C0ui64;
 	CPattern0 pattern(bitpattern);
 	Test_LegalWeights(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_SymmetryIndependance1)
 {
-	const uint64_t bitpattern = 0x000000080001000FULL;
+	const uint64_t bitpattern = 0x000000080001000Fui64;
 	CPattern0 pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_SymmetryIndependance2)
 {
-	const uint64_t bitpattern = 0x0000000008000008ULL;
+	const uint64_t bitpattern = 0x0000000008000008ui64;
 	CPattern0 pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_SymmetryIndependance3)
 {
-	const uint64_t bitpattern = 0x81810000000000C0ULL;
+	const uint64_t bitpattern = 0x81810000000000C0ui64;
 	CPattern0 pattern(bitpattern);
 	Test_SymmetryIndependance(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_IndexCovering1)
 {
-	const uint64_t bitpattern = 0x000000080001000FULL;
+	const uint64_t bitpattern = 0x000000080001000Fui64;
 	CPattern0 pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_IndexCovering2)
 {
-	const uint64_t bitpattern = 0x0000000008000008ULL;
+	const uint64_t bitpattern = 0x0000000008000008ui64;
 	CPattern0 pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }
 
 TEST_F(Pattern, Pattern0_IndexCovering3)
 {
-	const uint64_t bitpattern = 0x81810000000000C0ULL;
+	const uint64_t bitpattern = 0x81810000000000C0ui64;
 	CPattern0 pattern(bitpattern);
 	Test_IndexCovering(bitpattern, &pattern);
 }

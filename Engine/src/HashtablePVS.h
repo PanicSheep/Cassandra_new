@@ -80,8 +80,8 @@ inline std::size_t HashTable<TwoNode, CPosition, PvsInfo>::Hash(const CPosition&
 
 	//P ^= P >> 33;
 	//O ^= O >> 33;
-	//P *= 0xFF14AFD7ED558CCDULL;
-	//O *= 0xFF14AFD7ED558CCDULL;
+	//P *= 0xFF14AFD7ED558CCDui64;
+	//O *= 0xFF14AFD7ED558CCDui64;
 	//O ^= O >> 33;
 	//return (P + O + (O << 41)) % table.size();
 }
