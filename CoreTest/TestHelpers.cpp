@@ -11,7 +11,7 @@ uint64_t line(CMove move, const int dX, const int dY)
 
 	while ((i >= 0) && (i < 8) && (j >= 0) && (j < 8)) // In between boundaries
 	{
-		ret |= 1ULL << (j * 8 + i);
+		ret |= MakeBit(j * 8 + i);
 		i += dX;
 		j += dY;
 	}
@@ -19,27 +19,26 @@ uint64_t line(CMove move, const int dX, const int dY)
 	return ret;
 }
 
-CPosition MakeRandomPosition(const uint64_t mask)
+CPosition MakeRandomPosition(uint64_t mask)
 {
-	static auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0,3), std::mt19937_64(13));
+	static auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0, 3), std::mt19937_64(13));
 	uint64_t P = 0;
 	uint64_t O = 0;
-	for (unsigned int i = 0; i < PopCount(mask); i++)
+	while (mask)
 	{
-		P <<= 1;
-		O <<= 1;
 		switch (rnd())
 		{
-			case 0: P |= 1ULL; break;
-			case 1: O |= 1ULL; break;
+			case 0: P |= GetLSB(mask); break;
+			case 1: O |= GetLSB(mask); break;
 		}
+		RemoveLSB(mask);
 	}
-	return CPosition(PDep(P, mask), PDep(O, mask));
+	return CPosition(P, O);
 }
 
 CPosition MakeFullRandomPosition(const uint64_t mask)
 {
-	static auto rnd = std::bind(std::uniform_int_distribution<uint64_t>(0,0xFFFFFFFFFFFFFFFFULL), std::mt19937_64(13));
+	static auto rnd = std::bind(std::uniform_int_distribution<uint64_t>(0, 0xFFFFFFFFFFFFFFFFui64), std::mt19937_64(13));
 	const uint64_t r = rnd();
 	return CPosition(r & mask, ~r & mask);
 }
