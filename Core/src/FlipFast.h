@@ -8,7 +8,7 @@ class CFlipper
 public:
 	CFlipper() {}
 
-	uint64_t Flip(const CPosition& pos, const CMove move) const noexcept;
+	uint64_t Flip(const CPosition& pos, CMove move) const noexcept;
 private:
 	// outflank array (indexed with inner 6 bits)
 	uint8_t OUTFLANK_2[64] = {
