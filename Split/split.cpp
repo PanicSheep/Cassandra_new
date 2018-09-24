@@ -4,6 +4,7 @@
 #include <iterator>
 #include <random>
 #include <vector>
+#include <iostream>
 
 PuzzleVector ExtractRandomSample(PuzzleVector& puzzles, const std::size_t count)
 {

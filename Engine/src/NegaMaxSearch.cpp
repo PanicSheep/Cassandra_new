@@ -68,12 +68,12 @@ int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove move1)
 	NodeCounter(1)++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
-	if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos, move1))
+	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
 		NodeCounter(0)++;
 		return score + Diff + 1;
 	}
-	else if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos.PlayPass(), move1))
+	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		NodeCounter(1)++;
 		NodeCounter(0)++;

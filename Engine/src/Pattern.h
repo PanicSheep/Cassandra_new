@@ -1,7 +1,7 @@
 #pragma once
 #include "Utility.h"
 #include "Position.h"
-#include "Environment.h"
+#include "Engine.h"
 #include <cstdint>
 #include <iostream>
 #include <vector>
@@ -127,7 +127,7 @@ public:
 };
 
 // Holds a PatternGroup for every Position.
-class CPatternCollection : public IPattern
+class CPatternCollection : public IEvaluator
 {
 	std::vector<std::shared_ptr<CPatternGroup>> m_collection;
 public:

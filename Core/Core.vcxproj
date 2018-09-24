@@ -24,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Args.h" />
-    <ClInclude Include="src\Environment.h" />
     <ClInclude Include="src\PuzzleCollection.h" />
     <ClInclude Include="src\Puzzles.h" />
     <ClInclude Include="src\FlipFast.h" />

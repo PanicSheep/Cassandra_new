@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Environment.h"
+#include "Engine.h"
 #include "Position.h"
 #include "Search.h"
 #include "Moves.h"
@@ -8,7 +8,7 @@
 class AlphaBetaFailSoftSearch : public Search
 {
 public:
-	AlphaBetaFailSoftSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
+	AlphaBetaFailSoftSearch(const std::shared_ptr<Engine>& env) : Search(env) {}
 
 	int Eval(const CPosition&) override;
 

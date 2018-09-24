@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Environment.h"
+#include "Engine.h"
 #include "Position.h"
 #include "Search.h"
 #include "Moves.h"
@@ -147,7 +147,7 @@ class PVSearch : public Search
 		}
 	};
 public:
-	PVSearch(const std::shared_ptr<Environment>& env) : Search(env) {}
+	PVSearch(const std::shared_ptr<Engine>& engine) : Search(engine) {}
 
 	int Eval(const CPosition&) override;
 	int Eval(const CPosition&, int8_t depth, uint8_t selectivity) override;

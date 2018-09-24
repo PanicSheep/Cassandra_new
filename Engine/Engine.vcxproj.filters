@@ -22,5 +22,6 @@
     <ClInclude Include="src\AlphaBetaFailSoftSearch.h" />
     <ClInclude Include="src\PVSearch.h" />
     <ClInclude Include="src\SortedMoves.h" />
+    <ClInclude Include="src\Engine.h" />
   </ItemGroup>
 </Project>

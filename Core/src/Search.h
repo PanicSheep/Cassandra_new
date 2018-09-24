@@ -2,13 +2,14 @@
 #include <cstdint>
 
 #include "Position.h"
-#include "Environment.h"
+
+class Engine;
 
 class Search
 {
 	uint64_t node_counter;
 public:
-	Search(const std::shared_ptr<Environment>&);
+	Search(const std::shared_ptr<Engine>&);
 
 	virtual int Eval(const CPosition&) = 0;
 	virtual int Eval(const CPosition& pos, int8_t depth, uint8_t selectivity) { return Eval(pos); }
@@ -18,7 +19,7 @@ public:
 	void ResetNodeCount();
 
 protected:
-	std::shared_ptr<Environment> environment;
+	std::shared_ptr<Engine> engine;
 
 	uint64_t& NodeCounter(std::size_t index);
 

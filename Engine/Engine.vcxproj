@@ -25,6 +25,7 @@
     <ClInclude Include="src\AlphaBetaFailHardSearch.h" />
     <ClInclude Include="src\AlphaBetaFailSoftSearch.h" />
     <ClInclude Include="src\ConfigFile.h" />
+    <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\HashtablePVS.h" />
     <ClInclude Include="src\LastFlipCounter.h" />
     <ClInclude Include="src\NegaMaxSearch.h" />

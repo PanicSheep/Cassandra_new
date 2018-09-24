@@ -51,7 +51,7 @@ PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 	{
 		switch (in.depth)
 		{
-		case 0: return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
+		case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
 		default: return PVS_N(in);
 		}
 	}
@@ -80,7 +80,7 @@ PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 	{
 		switch (in.depth)
 		{
-		case 0: return ReturnValues((int)environment->PatternEvaluator->Eval(in.pos), 0, 0);
+		case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
 		default: return ZWS_N(in);
 		}
 	}
@@ -152,12 +152,12 @@ int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove move1
 	NodeCounter(1)++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
-	if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos, move1))
+	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
 		NodeCounter(0)++;
 		return score + Diff + 1;
 	}
-	else if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos.PlayPass(), move1))
+	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		NodeCounter(1)++;
 		NodeCounter(0)++;
@@ -219,12 +219,12 @@ int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove move1)
 	NodeCounter(1)++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
-	if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos, move1))
+	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
 		NodeCounter(0)++;
 		return score + Diff + 1;
 	}
-	else if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos.PlayPass(), move1))
+	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		NodeCounter(1)++;
 		NodeCounter(0)++;
@@ -578,14 +578,14 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 
 PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
 {
-	const auto opponents_stable_stones = environment->StabilityAnalyzer->GetStableStones(in.pos);
+	const auto opponents_stable_stones = engine->GetStableStones(in.pos);
 	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stones));
 	return AnalysisReturnValues(-64, max_score + 1, in.pos.EmptyCount(), 0);
 }
 
 PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputValues& in)
 {
-	const auto ret = environment->HashTable->LookUp(in.pos);
+	const auto ret = engine->LookUp(in.pos);
 	const auto& ttValue = ret.second;
 	if (ret.first)
 		return AnalysisReturnValues(ttValue.alpha, ttValue.beta, ttValue.depth, ttValue.selectivity, ttValue.PV, ttValue.AV);
@@ -595,5 +595,5 @@ PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputV
 
 void PVSearch::UpdateTranspositionTable(const StatusValues& stat)
 {
-	environment->HashTable->Update(stat.pos, PvsInfo(GetNodeCount() - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
+	engine->Update(stat.pos, PvsInfo(GetNodeCount() - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
 }

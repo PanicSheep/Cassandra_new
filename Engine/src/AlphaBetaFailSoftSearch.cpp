@@ -73,7 +73,7 @@ int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove
 	NodeCounter(1)++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
-	if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos, move1))
+	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
 		NodeCounter(0)++;
 		return score + Diff + 1;
@@ -82,7 +82,7 @@ int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove
 	{
 		//if (score + 1 <= alpha)
 		//	return score + 1;
-		if (const auto Diff = environment->LastFlipCounter->CountLastFlip(pos.PlayPass(), move1))
+		if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 		{
 			NodeCounter(1)++;
 			NodeCounter(0)++;

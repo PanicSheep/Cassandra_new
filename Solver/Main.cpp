@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
 	CArgs args;
 	args.Set("config", "config.ini");
 	args.Set("RAM", "1GB");
+	args.Set("d", 99);
 	args.Set("t", std::thread::hardware_concurrency());
 	args.Load(argc, argv);
 
@@ -49,10 +50,11 @@ int main(int argc, char* argv[])
 	}
 
 	// Get arguments without config file
-	const CPath config_file = args.Get("config").back(); // TODO: search all .Get [0] and replace with .back().
+	const CPath config_file = args.Get("config").back();
 	const CPath filename = args.Get("f").back();
 	const std::string RAM = args.Get("RAM").back();
 	const std::size_t threads = std::stoll(args.Get("t").back());
+	const std::string depth = args.Get("d").back();
 	const bool test = args.Has("test");
 	const bool force = args.Has("force");
 	const bool print_each_puzzle = args.Has("v");
@@ -65,7 +67,7 @@ int main(int argc, char* argv[])
 		pattern_names = split(configs.Get("active pattern"), " ");
 
 	std::vector<std::shared_ptr<CPatternGroup>> pattern_collection;
-	std::shared_ptr<IPattern> PatternEvaluator = nullptr;
+	std::shared_ptr<IEvaluator> midgame_evaluator = nullptr;
 #ifndef _DEBUG
 	for (int range = 0; range < 20; range++)
 	{
@@ -87,6 +89,7 @@ int main(int argc, char* argv[])
 			catch (...)
 			{
 				Pattern->set_weights();
+				std::cerr << "WARNING: Can't set weights. " << weights.GetAbsoluteFilePath() << std::endl;
 			}
 			pattern_group.push_back(std::move(Pattern));
 		}
@@ -97,15 +100,16 @@ int main(int argc, char* argv[])
 		if (range == 0)
 			pattern_collection.push_back(shared_pattern_group);
 	}
-	PatternEvaluator = std::make_shared<CPatternCollection>(pattern_collection);
+	midgame_evaluator = std::make_shared<CPatternCollection>(pattern_collection);
 #endif
 	
-	//std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
-	//std::cout << "Config File: " << config_file.GetAbsoluteFilePath() << std::endl;
-	//std::cout << "RAM: " << RAM << std::endl;
-	//std::cout << "Threads: " << threads << std::endl;
-	//std::cout << "Run as Test: " << test << std::endl;
-	//std::cout << "Print each puzzle: " << print_each_puzzle << std::endl;
+	std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
+	std::cout << "Config File: " << config_file.GetAbsoluteFilePath() << std::endl;
+	std::cout << "RAM: " << RAM << std::endl;
+	std::cout << "Threads: " << threads << std::endl;
+	std::cout << "Depth: " << depth << std::endl;
+	std::cout << "Run as Test: " << test << std::endl;
+	std::cout << "Print each puzzle: " << print_each_puzzle << std::endl;
 	
 	std::unique_ptr<PuzzleVectorGuard> puzzles;
 	if (test)
@@ -113,14 +117,14 @@ int main(int argc, char* argv[])
 	else
 		puzzles = std::make_unique<AutoSavingPuzzleVector>(LoadPuzzles(filename), filename, std::chrono::seconds(300));
 
-	std::shared_ptr<ILastFlipCounter> LastFlipCounter = std::make_shared<CLastFlipCounter>();
-	std::shared_ptr<IHashTable<CPosition, PvsInfo>> HashTable = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
-	std::shared_ptr<IStabilityAnalyzer> StabilityAnalyzer = std::make_shared<CStabilityAnalyzer>();
-	std::shared_ptr<Environment> env = std::make_shared<Environment>(nullptr, LastFlipCounter, HashTable, StabilityAnalyzer, PatternEvaluator);
+	std::shared_ptr<ILastFlipCounter> last_flip_counter = std::make_shared<CLastFlipCounter>();
+	std::shared_ptr<IHashTable<CPosition, PvsInfo>> hash_table = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
+	std::shared_ptr<IStabilityAnalyzer> stability_analyzer = std::make_shared<CStabilityAnalyzer>();
+	std::shared_ptr<Engine> engine = std::make_shared<Engine>(nullptr, last_flip_counter, hash_table, stability_analyzer, midgame_evaluator);
 
 	std::vector<std::unique_ptr<Search>> searches;
 	for (std::size_t i = 0; i < puzzles->size(); i++)
-		searches.emplace_back(std::make_unique<PVSearch>(env));
+		searches.emplace_back(std::make_unique<PVSearch>(engine));
 
 	if (print_each_puzzle)
 	{
@@ -138,7 +142,7 @@ int main(int argc, char* argv[])
 		if (!force && !test && puzzle->IsSolved())
 			continue;
 
-		env->HashTable->AdvanceDate();
+		engine->AdvanceDate();
 
 		auto old_puzzle = puzzle->Clone();
 		if (test || force)
@@ -157,9 +161,9 @@ int main(int argc, char* argv[])
 					std::cout
 						<< std::setw(3) << i << "|"
 						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
-						<< (test && (old_puzzle != puzzle) ? "#" : " ")
+						<< (test && (*old_puzzle == *puzzle) ? " " : "#")
 							<< DoubleDigitSignedInt(puzzleScore->MaxScore())
-						<< (test && (old_puzzle != puzzle) ? "#" : " ") << "|"
+						<< (test && (*old_puzzle == *puzzle) ? " " : "#") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 
@@ -175,9 +179,10 @@ int main(int argc, char* argv[])
 					std::cout
 						<< std::setw(3) << i << "|"
 						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
-						<< (test && (old_puzzle != puzzle) ? "#" : " ")
+						<< (test && (*old_puzzle == *puzzle) ? " " : "#")
 						<< DoubleDigitSignedInt(puzzleScore->score)
-						<< (test && (old_puzzle != puzzle) ? "#" : " ") << "|"
+						<< DoubleDigitSignedInt(dynamic_cast<CPuzzleScore*>(old_puzzle.get())->score)
+						<< (test && (*old_puzzle == *puzzle) ? " " : "#") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 
@@ -194,9 +199,9 @@ int main(int argc, char* argv[])
 					std::cout
 						<< std::setw(3) << i << "|"
 						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
-						<< (test && (old_puzzle != puzzle) ? "#" : " ")
+						<< (test && (*old_puzzle == *puzzle) ? " " : "#")
 						<< DoubleDigitSignedInt(puzzleScore->score[puzzleScore->MaxSolvedDepth()])
-						<< (test && (old_puzzle != puzzle) ? "#" : " ") << "|"
+						<< (test && (*old_puzzle == *puzzle) ? " " : "#") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
 

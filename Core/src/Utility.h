@@ -18,10 +18,16 @@
 	#include <unistd.h>
 #endif
 
-inline int RoundInt(const double d) { return static_cast<int>(std::round(d)); }
-inline int RoundInt(const float  f) { return static_cast<int>(std::round(f)); }
+void replace_all(std::string& source, const std::string& find, const std::string& replace);
+
+std::vector<std::string> split(const std::string& source, const std::string& delimitter);
+std::string join(const std::vector<std::string>& parts, const std::string& delimitter);
 
 int64_t Pow_int(int64_t base, uint64_t exponent);
+
+
+inline int RoundInt(const double d) { return static_cast<int>(std::round(d)); } // TODO: Remove?
+inline int RoundInt(const float  f) { return static_cast<int>(std::round(f)); } // TODO: Remove?
 
 std::string time_format(const std::chrono::milliseconds duration);
 
@@ -35,12 +41,9 @@ std::string short_time_format(std::chrono::duration<long long, std::pico> durati
 std::string ThousandsSeparator(uint64_t n);
 std::string DateTimeNow();
 
-void replace_all(std::string& source, const std::string& find, const std::string& replace);
 
 std::string GetCurrentWorkingDirectory();
 
-std::vector<std::string> split(const std::string& src, const std::string& deli);
-std::string join(const std::vector<std::string>& parts, const std::string& deli);
 
 // Returns an int with either a '+' or a '-' prefix. Zero is represented '+0'.
 std::string SignedInt(int score);

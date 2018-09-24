@@ -1053,11 +1053,11 @@ uint64_t CFlipper::Flip(const CPosition& pos, const CMove move) const noexcept
 	}
 }
 
-static const CFlipper Flipper;
+static const CFlipper flipper;
 
 uint64_t Flip(const CPosition & pos, const CMove move) noexcept
 {
-	return Flipper.Flip(pos, move);
+	return flipper.Flip(pos, move);
 }
 
 #pragma warning(pop)

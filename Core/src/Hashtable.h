@@ -46,7 +46,7 @@ private:
 
 
 template <typename NodeType, typename KeyType, typename ValueType>
-HashTable<NodeType, KeyType, ValueType>::HashTable(uint64_t Buckets)
+inline HashTable<NodeType, KeyType, ValueType>::HashTable(uint64_t Buckets)
 	: date(0)
 	, UpdateCounter(0)
 	, LookUpCounter(0)
@@ -57,14 +57,14 @@ HashTable<NodeType, KeyType, ValueType>::HashTable(uint64_t Buckets)
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-void HashTable<NodeType, KeyType, ValueType>::Update(const KeyType& key, const ValueType& value)
+inline void HashTable<NodeType, KeyType, ValueType>::Update(const KeyType& key, const ValueType& value)
 {
 	UpdateCounter++;
 	table[Hash(key)].Update(key, value, date);
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-std::pair<bool, ValueType> HashTable<NodeType, KeyType, ValueType>::LookUp(const KeyType& key) const
+inline std::pair<bool, ValueType> HashTable<NodeType, KeyType, ValueType>::LookUp(const KeyType& key) const
 {
 	LookUpCounter++;
 	const auto ret = table[Hash(key)].LookUp(key);
@@ -74,20 +74,20 @@ std::pair<bool, ValueType> HashTable<NodeType, KeyType, ValueType>::LookUp(const
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-void HashTable<NodeType, KeyType, ValueType>::Refresh(const KeyType& key)
+inline void HashTable<NodeType, KeyType, ValueType>::Refresh(const KeyType& key)
 {
 	RefreshCounter++;
 	table[Hash(key)].Refresh(key, date);
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-void HashTable<NodeType, KeyType, ValueType>::AdvanceDate()
+inline void HashTable<NodeType, KeyType, ValueType>::AdvanceDate()
 {
 	date++;
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-void HashTable<NodeType, KeyType, ValueType>::Clear()
+inline void HashTable<NodeType, KeyType, ValueType>::Clear()
 {
 	UpdateCounter = 0;
 	LookUpCounter = 0;
@@ -99,7 +99,7 @@ void HashTable<NodeType, KeyType, ValueType>::Clear()
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-void HashTable<NodeType, KeyType, ValueType>::PrintStatistics()
+inline void HashTable<NodeType, KeyType, ValueType>::PrintStatistics()
 {
 	uint64_t counter[3] = { 0,0,0 };
 	for (const auto& it : table)
@@ -119,7 +119,7 @@ void HashTable<NodeType, KeyType, ValueType>::PrintStatistics()
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-uint64_t HashTable<NodeType, KeyType, ValueType>::OptimizedBucketSize(uint64_t Buckets)
+inline uint64_t HashTable<NodeType, KeyType, ValueType>::OptimizedBucketSize(uint64_t Buckets)
 {
 	assert(Buckets > 0);
 

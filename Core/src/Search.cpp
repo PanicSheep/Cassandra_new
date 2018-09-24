@@ -1,7 +1,7 @@
 #include "Search.h"
 
-Search::Search(const std::shared_ptr<Environment>& env)
-	: environment(env)
+Search::Search(const std::shared_ptr<Engine>& engine)
+	: engine(engine)
 	, node_counter(0)
 {}
 

@@ -2,6 +2,7 @@
 #include "IoPuzzleCollection.h"
 #include <algorithm>
 #include <iterator>
+#include <iostream>
 #include <random>
 #include <vector>
 

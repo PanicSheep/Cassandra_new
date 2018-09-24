@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cstdint>
 #include "Position.h"
-#include "Environment.h"
+#include "Engine.h"
 #include "HashtablePVS.h"
 
 class CSortedMoves
