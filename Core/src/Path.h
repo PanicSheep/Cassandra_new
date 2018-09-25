@@ -7,6 +7,8 @@ class CPath
 	std::string m_fullpath;
 public:
 	CPath() = default;
+	CPath(const CPath&) = default;
+	CPath(CPath&&) = default;
 	CPath(std::string path);
 	CPath(const char* path) : CPath(std::string(path)) {}
 
@@ -22,10 +24,16 @@ public:
 	std::string GetAbsoluteFilePath() const;
 	std::string GetRelativeFilePath() const;
 
+	CPath& operator=(const CPath&) = default;
+	CPath& operator=(CPath&&) = default;
+
 	bool operator==(const CPath&) const;
 private:
 	void ProcessFolderUps();
 	std::string GetRelativePath() const;
 };
 
+
 std::vector<CPath> to_Path(const std::vector<std::string>&);
+
+CPath GetCurrentWorkingDirectory();

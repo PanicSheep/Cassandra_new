@@ -84,14 +84,6 @@ std::string DateTimeNow()
 	return std::string(std::ctime(&t));
 }
 
-std::string GetCurrentWorkingDirectory()
-{
-	char * cwd = getcwd(nullptr, 0);
-	std::string ret(cwd);
-	std::free(cwd);
-	return ret;
-}
-
 void replace_all(std::string& source, const std::string& from, const std::string& to)
 {
 	assert(!from.empty());

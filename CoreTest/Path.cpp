@@ -2,6 +2,11 @@
 #include "Path.h"
 #include "Utility.h"
 
+std::string GetCurrentAbsoluteFolder()
+{
+	return GetCurrentWorkingDirectory().GetAbsoluteFolderPath();
+}
+
 TEST(Path, ProcessFolderUps1) { ASSERT_EQ(CPath(R"(X:/home/home/../)"), CPath(R"(X:/home/)")); }
 TEST(Path, ProcessFolderUps2) { ASSERT_EQ(CPath(R"(X:\home\home\..\)"), CPath(R"(X:\home\)")); }
 TEST(Path, ProcessFolderUps3) { ASSERT_EQ(CPath(R"(X:/home/../home/)"), CPath(R"(X:/home/)")); }
@@ -75,10 +80,10 @@ TEST(Path, GetAbsoluteFolderPath03) { GetAbsoluteFolderPath(CPath(R"(//computer/
 TEST(Path, GetAbsoluteFolderPath04) { GetAbsoluteFolderPath(CPath(R"(\\computer\home\)"), R"(\\computer\home\)"); }
 TEST(Path, GetAbsoluteFolderPath05) { GetAbsoluteFolderPath(CPath(R"(~/home/)"), R"(~/home/)"); }
 TEST(Path, GetAbsoluteFolderPath06) { GetAbsoluteFolderPath(CPath(R"(~\home\)"), R"(~\home\)"); }
-TEST(Path, GetAbsoluteFolderPath07) { GetAbsoluteFolderPath(CPath(R"(/home/)"), GetCurrentWorkingDirectory() + R"(/home/)"); }
-TEST(Path, GetAbsoluteFolderPath08) { GetAbsoluteFolderPath(CPath(R"(\home\)"), GetCurrentWorkingDirectory() + R"(\home\)"); }
-TEST(Path, GetAbsoluteFolderPath09) { GetAbsoluteFolderPath(CPath(R"(home/)"), GetCurrentWorkingDirectory() + R"(/home/)"); }
-TEST(Path, GetAbsoluteFolderPath10) { GetAbsoluteFolderPath(CPath(R"(home\)"), GetCurrentWorkingDirectory() + R"(\home\)"); }
+TEST(Path, GetAbsoluteFolderPath07) { GetAbsoluteFolderPath(CPath(R"(/home/)"), GetCurrentAbsoluteFolder() + R"(home/)"); }
+TEST(Path, GetAbsoluteFolderPath08) { GetAbsoluteFolderPath(CPath(R"(\home\)"), GetCurrentAbsoluteFolder() + R"(home\)"); }
+TEST(Path, GetAbsoluteFolderPath09) { GetAbsoluteFolderPath(CPath(R"(home/)"), GetCurrentAbsoluteFolder() + R"(home/)"); }
+TEST(Path, GetAbsoluteFolderPath10) { GetAbsoluteFolderPath(CPath(R"(home\)"), GetCurrentAbsoluteFolder() + R"(home\)"); }
 TEST(Path, GetAbsoluteFolderPath11) { GetAbsoluteFolderPath(CPath(R"(X:/home/file)"), R"(X:/home/)"); }
 TEST(Path, GetAbsoluteFolderPath12) { GetAbsoluteFolderPath(CPath(R"(X:/home/file.txt)"), R"(X:\home\)"); }
 TEST(Path, GetAbsoluteFolderPath13) { GetAbsoluteFolderPath(CPath(R"(X:\home\file)"), R"(X:/home/)"); }
@@ -91,14 +96,14 @@ TEST(Path, GetAbsoluteFolderPath19) { GetAbsoluteFolderPath(CPath(R"(~/home/file
 TEST(Path, GetAbsoluteFolderPath20) { GetAbsoluteFolderPath(CPath(R"(~/home/file.txt)"), R"(~/home/)"); }
 TEST(Path, GetAbsoluteFolderPath21) { GetAbsoluteFolderPath(CPath(R"(~\home\file)"), R"(~\home\)"); }
 TEST(Path, GetAbsoluteFolderPath22) { GetAbsoluteFolderPath(CPath(R"(~\home\file.txt)"), R"(~\home\)"); }
-TEST(Path, GetAbsoluteFolderPath23) { GetAbsoluteFolderPath(CPath(R"(/home/file)"), GetCurrentWorkingDirectory() + R"(/home/)"); }
-TEST(Path, GetAbsoluteFolderPath24) { GetAbsoluteFolderPath(CPath(R"(/home/file.txt)"), GetCurrentWorkingDirectory() + R"(/home/)"); }
-TEST(Path, GetAbsoluteFolderPath25) { GetAbsoluteFolderPath(CPath(R"(\home\file)"), GetCurrentWorkingDirectory() + R"(\home\)"); }
-TEST(Path, GetAbsoluteFolderPath26) { GetAbsoluteFolderPath(CPath(R"(\home\file.txt)"), GetCurrentWorkingDirectory() + R"(\home\)"); }
-TEST(Path, GetAbsoluteFolderPath27) { GetAbsoluteFolderPath(CPath(R"(home/file)"), GetCurrentWorkingDirectory() + R"(/home/)"); }
-TEST(Path, GetAbsoluteFolderPath28) { GetAbsoluteFolderPath(CPath(R"(home/file.txt)"), GetCurrentWorkingDirectory() + R"(/home/)"); }
-TEST(Path, GetAbsoluteFolderPath29) { GetAbsoluteFolderPath(CPath(R"(home\file)"), GetCurrentWorkingDirectory() + R"(\home\)"); }
-TEST(Path, GetAbsoluteFolderPath30) { GetAbsoluteFolderPath(CPath(R"(home\file.txt)"), GetCurrentWorkingDirectory() + R"(\home\)"); }
+TEST(Path, GetAbsoluteFolderPath23) { GetAbsoluteFolderPath(CPath(R"(/home/file)"), GetCurrentAbsoluteFolder() + R"(home/)"); }
+TEST(Path, GetAbsoluteFolderPath24) { GetAbsoluteFolderPath(CPath(R"(/home/file.txt)"), GetCurrentAbsoluteFolder() + R"(home/)"); }
+TEST(Path, GetAbsoluteFolderPath25) { GetAbsoluteFolderPath(CPath(R"(\home\file)"), GetCurrentAbsoluteFolder() + R"(home\)"); }
+TEST(Path, GetAbsoluteFolderPath26) { GetAbsoluteFolderPath(CPath(R"(\home\file.txt)"), GetCurrentAbsoluteFolder() + R"(home\)"); }
+TEST(Path, GetAbsoluteFolderPath27) { GetAbsoluteFolderPath(CPath(R"(home/file)"), GetCurrentAbsoluteFolder() + R"(home/)"); }
+TEST(Path, GetAbsoluteFolderPath28) { GetAbsoluteFolderPath(CPath(R"(home/file.txt)"), GetCurrentAbsoluteFolder() + R"(home/)"); }
+TEST(Path, GetAbsoluteFolderPath29) { GetAbsoluteFolderPath(CPath(R"(home\file)"), GetCurrentAbsoluteFolder() + R"(home\)"); }
+TEST(Path, GetAbsoluteFolderPath30) { GetAbsoluteFolderPath(CPath(R"(home\file.txt)"), GetCurrentAbsoluteFolder() + R"(home\)"); }
 
 void GetRelativeFolderPath(const CPath& path, std::string relative_folder_path)
 {
@@ -262,14 +267,14 @@ TEST(Path, GetAbsoluteFilePath09) { GetAbsoluteFilePath(CPath(R"(~/home/file)"),
 TEST(Path, GetAbsoluteFilePath10) { GetAbsoluteFilePath(CPath(R"(~/home/file.txt)"), R"(~/home/file.txt)"); }
 TEST(Path, GetAbsoluteFilePath11) { GetAbsoluteFilePath(CPath(R"(~\home\file)"), R"(~\home\file)"); }
 TEST(Path, GetAbsoluteFilePath12) { GetAbsoluteFilePath(CPath(R"(~\home\file.txt)"), R"(~\home\file.txt)"); }
-TEST(Path, GetAbsoluteFilePath13) { GetAbsoluteFilePath(CPath(R"(/home/file)"), GetCurrentWorkingDirectory() + R"(/home/file)"); }
-TEST(Path, GetAbsoluteFilePath14) { GetAbsoluteFilePath(CPath(R"(/home/file.txt)"), GetCurrentWorkingDirectory() + R"(/home/file.txt)"); }
-TEST(Path, GetAbsoluteFilePath15) { GetAbsoluteFilePath(CPath(R"(\home\file)"), GetCurrentWorkingDirectory() + R"(\home\file)"); }
-TEST(Path, GetAbsoluteFilePath16) { GetAbsoluteFilePath(CPath(R"(\home\file.txt)"), GetCurrentWorkingDirectory() + R"(\home\file.txt)"); }
-TEST(Path, GetAbsoluteFilePath17) { GetAbsoluteFilePath(CPath(R"(home/file)"), GetCurrentWorkingDirectory() + R"(/home/file)"); }
-TEST(Path, GetAbsoluteFilePath18) { GetAbsoluteFilePath(CPath(R"(home/file.txt)"), GetCurrentWorkingDirectory() + R"(/home/file.txt)"); }
-TEST(Path, GetAbsoluteFilePath19) { GetAbsoluteFilePath(CPath(R"(home\file)"), GetCurrentWorkingDirectory() + R"(\home\file)"); }
-TEST(Path, GetAbsoluteFilePath20) { GetAbsoluteFilePath(CPath(R"(home\file.txt)"), GetCurrentWorkingDirectory() + R"(\home\file.txt)"); }
+TEST(Path, GetAbsoluteFilePath13) { GetAbsoluteFilePath(CPath(R"(/home/file)"), GetCurrentAbsoluteFolder() + R"(home/file)"); }
+TEST(Path, GetAbsoluteFilePath14) { GetAbsoluteFilePath(CPath(R"(/home/file.txt)"), GetCurrentAbsoluteFolder() + R"(home/file.txt)"); }
+TEST(Path, GetAbsoluteFilePath15) { GetAbsoluteFilePath(CPath(R"(\home\file)"), GetCurrentAbsoluteFolder() + R"(home\file)"); }
+TEST(Path, GetAbsoluteFilePath16) { GetAbsoluteFilePath(CPath(R"(\home\file.txt)"), GetCurrentAbsoluteFolder() + R"(home\file.txt)"); }
+TEST(Path, GetAbsoluteFilePath17) { GetAbsoluteFilePath(CPath(R"(home/file)"), GetCurrentAbsoluteFolder() + R"(home/file)"); }
+TEST(Path, GetAbsoluteFilePath18) { GetAbsoluteFilePath(CPath(R"(home/file.txt)"), GetCurrentAbsoluteFolder() + R"(home/file.txt)"); }
+TEST(Path, GetAbsoluteFilePath19) { GetAbsoluteFilePath(CPath(R"(home\file)"), GetCurrentAbsoluteFolder() + R"(home\file)"); }
+TEST(Path, GetAbsoluteFilePath20) { GetAbsoluteFilePath(CPath(R"(home\file.txt)"), GetCurrentAbsoluteFolder() + R"(home\file.txt)"); }
 
 void GetRelativeFilePath(const CPath& path, std::string relative_file_path)
 {
@@ -319,7 +324,7 @@ void Test_Folder(
 TEST(Path, Folder_Relative1)
 {
 	std::string path_string          = "home/";
-	std::string absolute_folder_path = GetCurrentWorkingDirectory() + "/home/";
+	std::string absolute_folder_path = GetCurrentAbsoluteFolder() + "home/";
 	std::string folder_name          = "home/";
 	std::string relative_folder_path = "home/";
 
@@ -329,7 +334,7 @@ TEST(Path, Folder_Relative1)
 TEST(Path, Folder_Relative2)
 {
 	std::string path_string          = "etc/../home/";
-	std::string absolute_folder_path = GetCurrentWorkingDirectory() + "/home/";
+	std::string absolute_folder_path = GetCurrentAbsoluteFolder() + "home/";
 	std::string folder_name          = "home/";
 	std::string relative_folder_path = "home/";
 
@@ -338,8 +343,8 @@ TEST(Path, Folder_Relative2)
 
 TEST(Path, Folder_Absolute1)
 {
-	std::string path_string          = GetCurrentWorkingDirectory() + "/home/";
-	std::string absolute_folder_path = GetCurrentWorkingDirectory() + "/home/";
+	std::string path_string          = GetCurrentAbsoluteFolder() + "home/";
+	std::string absolute_folder_path = GetCurrentAbsoluteFolder() + "home/";
 	std::string folder_name          = "home/";
 	std::string relative_folder_path = "home/";
 
@@ -410,10 +415,10 @@ TEST(Path, File_Relative1)
 	std::string raw_file_name	     = "text";
 	std::string full_file_name	     = "text.txt";
 	std::string extension		     = "txt";
-	std::string absolute_file_path   = GetCurrentWorkingDirectory() + "/home/text.txt";
+	std::string absolute_file_path   = GetCurrentAbsoluteFolder() + "home/text.txt";
 	std::string relative_file_path   = "home/text.txt";
 	std::string folder_path			 = "home/";
-	std::string absolute_folder_path = GetCurrentWorkingDirectory() + "/home/";
+	std::string absolute_folder_path = GetCurrentAbsoluteFolder() + "home/";
 	std::string relative_folder_path = "home/";
 
 	Test_File(path_string, raw_file_name, full_file_name, extension, absolute_file_path, relative_file_path, folder_path, absolute_folder_path, relative_folder_path);
@@ -425,10 +430,10 @@ TEST(Path, File_Relative2)
 	std::string raw_file_name	     = "text";
 	std::string full_file_name	     = "text.txt";
 	std::string extension		     = "txt";
-	std::string absolute_file_path   = GetCurrentWorkingDirectory() + "/text.txt";
+	std::string absolute_file_path   = GetCurrentAbsoluteFolder() + "text.txt";
 	std::string relative_file_path   = "text.txt";
-	std::string folder_path			 = CPath(GetCurrentWorkingDirectory() + "/").GetFolderName();
-	std::string absolute_folder_path = GetCurrentWorkingDirectory() + "/";
+	std::string folder_path			 = GetCurrentWorkingDirectory().GetFolderName();
+	std::string absolute_folder_path = GetCurrentAbsoluteFolder();
 	std::string relative_folder_path = "";
 
 	Test_File(path_string, raw_file_name, full_file_name, extension, absolute_file_path, relative_file_path, folder_path, absolute_folder_path, relative_folder_path);
@@ -440,10 +445,10 @@ TEST(Path, File_Relative3)
 	std::string raw_file_name	     = "text";
 	std::string full_file_name	     = "text.txt";
 	std::string extension		     = "txt";
-	std::string absolute_file_path   = GetCurrentWorkingDirectory() + "/text.txt";
+	std::string absolute_file_path   = GetCurrentAbsoluteFolder() + "text.txt";
 	std::string relative_file_path   = "text.txt";
-	std::string folder_path			 = CPath(GetCurrentWorkingDirectory() + "/").GetFolderName();
-	std::string absolute_folder_path = GetCurrentWorkingDirectory() + "/";
+	std::string folder_path			 = GetCurrentWorkingDirectory().GetFolderName();
+	std::string absolute_folder_path = GetCurrentAbsoluteFolder();
 	std::string relative_folder_path = "";
 
 	Test_File(path_string, raw_file_name, full_file_name, extension, absolute_file_path, relative_file_path, folder_path, absolute_folder_path, relative_folder_path);
@@ -451,14 +456,14 @@ TEST(Path, File_Relative3)
 
 TEST(Path, File_Absolute1)
 {
-	std::string path_string		     = GetCurrentWorkingDirectory() + "/home/text.txt";
+	std::string path_string		     = GetCurrentAbsoluteFolder() + "home/text.txt";
 	std::string raw_file_name	     = "text";
 	std::string full_file_name	     = "text.txt";
 	std::string extension		     = "txt";
-	std::string absolute_file_path   = GetCurrentWorkingDirectory() + "/home/text.txt";
+	std::string absolute_file_path   = GetCurrentAbsoluteFolder() + "home/text.txt";
 	std::string relative_file_path   = "home/text.txt";
 	std::string folder_path			 = "home/";
-	std::string absolute_folder_path = GetCurrentWorkingDirectory() + "/home/";
+	std::string absolute_folder_path = GetCurrentAbsoluteFolder() + "home/";
 	std::string relative_folder_path = "home/";
 
 	Test_File(path_string, raw_file_name, full_file_name, extension, absolute_file_path, relative_file_path, folder_path, absolute_folder_path, relative_folder_path);

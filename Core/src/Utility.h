@@ -41,10 +41,6 @@ std::string short_time_format(std::chrono::duration<long long, std::pico> durati
 std::string ThousandsSeparator(uint64_t n);
 std::string DateTimeNow();
 
-
-std::string GetCurrentWorkingDirectory();
-
-
 // Returns an int with either a '+' or a '-' prefix. Zero is represented '+0'.
 std::string SignedInt(int score);
 
