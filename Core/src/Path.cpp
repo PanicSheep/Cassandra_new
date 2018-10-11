@@ -190,6 +190,6 @@ CPath GetCurrentWorkingDirectory()
 {
 	char * cwd = getcwd(nullptr, 0);
 	CPath ret(cwd + FOLDER_SEPARATOR);
-	std::free(cwd);
+	delete cwd;
 	return ret;
 }
