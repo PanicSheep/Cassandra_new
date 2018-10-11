@@ -6,6 +6,7 @@
     <ClCompile Include="src\SingleLineStreamArchive.cpp" />
     <ClCompile Include="src\BinaryStreamArchive.cpp" />
     <ClCompile Include="src\IoMoves.cpp" />
+    <ClCompile Include="src\IoPattern.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VectorIO.h" />
@@ -14,5 +15,6 @@
     <ClInclude Include="src\SingleLineStreamArchive.h" />
     <ClInclude Include="src\BinaryStreamArchive.h" />
     <ClInclude Include="src\IoMoves.h" />
+    <ClInclude Include="src\IoPattern.h" />
   </ItemGroup>
 </Project>

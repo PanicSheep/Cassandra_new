@@ -16,13 +16,13 @@ CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleVector& puzzles, const ui
 {
 	const std::size_t size = puzzles.size();
 
-	auto Pattern = CreatePattern(pattern);
+	auto Pattern = Pattern::Configurations::CreatePattern(pattern);
 	CMatrix_CSR<ValueType, SizeType> A(Pattern->ReducedSize());
 
 	#pragma omp parallel for ordered schedule(static, 1)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
-		auto indices = Pattern->GetConfigurations(puzzles[i]->GetPosition());
+		auto indices = Pattern->Configurations(puzzles[i]->GetPosition());
 
 		std::map<SizeType, ValueType> map;
 		for (SizeType it : indices)
@@ -60,7 +60,7 @@ std::vector<VectorValueType> to_Vector(const PuzzleVector& puzzles)
 //{
 //	std::vector<uint64_t> pattern;
 //	for (const auto& it : name)
-//		pattern.push_back(Pattern::LookupPattern(it));
+//		pattern.push_back(m_pattern::LookupPattern(it));
 //	return PositionToMatrix<ValueType, SizeType, VectorValueType>(pos, pattern);
 //}
 //

@@ -1,396 +1,426 @@
 #include "Pattern.h"
-#include <mutex>
 
-std::vector<uint32_t> CPattern::m_sumpow3_cache;
-
-uint32_t CPattern::FullPatternIndex(const CPosition& pos, const uint64_t mask)
+namespace Pattern
 {
-	return SumPow3(PExt(pos.GetP(), mask)) + SumPow3(PExt(pos.GetO(), mask)) * 2;
-}
+	std::array<uint32_t, (1ui64 << 15)> CSumPow3Cache::m_cache;
 
-uint32_t CPattern::SumPow3(const uint64_t index)
-{
-	return m_sumpow3_cache[index]; // OPTIMIZATION: Replace look-up by small calculation if possible.
-}
-
-void CPattern::Initialize()
-{
-	static std::once_flag flag;
-	std::call_once(flag, []() {
-		const std::size_t size = (1ui64 << 15);
-		m_sumpow3_cache.reserve(size);
-		for (std::size_t i = 0; i < size; i++)
-		{
-			uint64_t exp = i;
-			uint64_t sum = 0;
-			while (exp) {
-				sum += Pow_int(3, BitScanLSB(exp));
-				RemoveLSB(exp);
-			}
-			m_sumpow3_cache.push_back(sum);
-		}
-	});
-}
-
-void CPattern::For_each_configuration_in_pattern_do_fkt(const uint64_t pattern, std::function<void(const CPosition&)> fkt)
-{
-	const uint64_t PatternSize = 1ui64 << PopCount(pattern);
-	const uint64_t ExtractedCenter = PExt(0x0000001818000000ui64, pattern);
-	for (uint64_t i = 0; i < PatternSize; i++)
+	uint64_t sum_pow3(uint64_t exp)
 	{
-		const uint64_t P = PDep(i, pattern);
-		for (uint64_t j = 0; j < PatternSize; j++)
-		{
-			if (i & j) continue; // fields can only be taken by one player
-			if (((i | j) & ExtractedCenter) != ExtractedCenter) continue; // center fields can't be empty
-			const uint64_t O = PDep(j, pattern);
+		uint64_t sum = 0;
+		while (exp) {
+			sum += Pow_int(3, BitScanLSB(exp));
+			RemoveLSB(exp);
+		}
+		return sum;
+	}
 
-			fkt(CPosition(P, O));
+	CSumPow3Cache::CSumPow3Cache()
+	{
+		for (std::size_t i = 0; i < std::size(m_cache); i++)
+			m_cache[i] = sum_pow3(i);
+	}
+
+	uint64_t CSumPow3Cache::SumPow3(uint64_t exp) const
+	{
+		return m_cache[exp];
+	}
+
+	uint32_t CSumPow3Cache::FullIndex(const CPosition& pos, const uint64_t pattern) const
+	{
+		return SumPow3(PExt(pos.GetP(), pattern)) + SumPow3(PExt(pos.GetO(), pattern)) * 2;
+	}
+
+	namespace Configurations
+	{
+		CHorizontalSymmetric::CHorizontalSymmetric(uint64_t pattern)
+			: CBase(pattern)
+			, m_patternC(FlipCodiagonal(pattern))
+			, m_patternV(FlipVertical(pattern))
+			, m_patternD(FlipDiagonal(pattern))
+			, m_half_size(Pow_int(3, PopCount(pattern & HALF & ~MID)) * Pow_int(2, PopCount(pattern & HALF & MID)))
+		{
+			assert(pattern == FlipHorizontal(pattern));
+		}
+
+		std::vector<uint32_t> CHorizontalSymmetric::Configurations(const CPosition& pos) const
+		{
+			return { ReducedIndex0(pos), ReducedIndex1(pos), ReducedIndex2(pos), ReducedIndex3(pos) };
+		}
+
+		std::vector<uint64_t> CHorizontalSymmetric::Patterns() const
+		{
+			return { Pattern, m_patternC, m_patternV, m_patternD };
+		}
+
+		uint32_t CHorizontalSymmetric::ReducedSize() const
+		{
+			return m_half_size * (m_half_size + 1) / 2;
+		}
+
+		uint32_t CHorizontalSymmetric::Occurrences() const
+		{
+			return 4;
+		}
+
+		uint32_t CHorizontalSymmetric::ReducedIndex0(CPosition pos) const
+		{
+			const uint32_t indexA = (FullIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
+			pos.FlipHorizontal();
+			const uint32_t indexB = (FullIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
+
+			if (indexA > indexB)
+				return indexB * m_half_size + indexA - ((indexB * indexB + indexB) / 2);
+			else
+				return indexA * m_half_size + indexB - ((indexA * indexA + indexA) / 2);
+		}
+
+		uint32_t CHorizontalSymmetric::ReducedIndex1(CPosition pos) const
+		{
+			pos.FlipCodiagonal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CHorizontalSymmetric::ReducedIndex2(CPosition pos) const
+		{
+			pos.FlipVertical();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CHorizontalSymmetric::ReducedIndex3(CPosition pos) const
+		{
+			pos.FlipDiagonal();
+			return ReducedIndex0(pos);
+		}
+
+		CDiagonalSymmetric::CDiagonalSymmetric(uint64_t pattern)
+			: CBase(pattern)
+			, m_patternH(FlipHorizontal(pattern))
+			, m_patternC(FlipCodiagonal(pattern))
+			, m_patternV(FlipVertical(pattern))
+			, m_half_size(Pow_int(3, PopCount(pattern & HALF & ~MID)) * Pow_int(2, PopCount(pattern & HALF & MID)))
+			, m_diag_size(Pow_int(3, PopCount(pattern & DIAG & ~MID)) * Pow_int(2, PopCount(pattern & DIAG & MID)))
+		{
+			assert(pattern == FlipDiagonal(pattern));
+		}
+
+		std::vector<uint32_t> CDiagonalSymmetric::Configurations(const CPosition& pos) const
+		{
+			return { ReducedIndex0(pos), ReducedIndex1(pos), ReducedIndex2(pos), ReducedIndex3(pos) };
+		}
+
+		std::vector<uint64_t> CDiagonalSymmetric::Patterns() const
+		{
+			return { Pattern, m_patternH, m_patternC, m_patternV };
+		}
+
+		uint32_t CDiagonalSymmetric::ReducedSize() const
+		{
+			return m_diag_size * m_half_size * (m_half_size + 1) / 2;
+		}
+
+		uint32_t CDiagonalSymmetric::Occurrences() const
+		{
+			return 4;
+		}
+
+		uint32_t CDiagonalSymmetric::ReducedIndex0(CPosition pos) const
+		{
+			const uint32_t indexA = (FullIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
+			const uint32_t indexD = (FullIndex(pos, Pattern & DIAG & ~MID) << PopCount(Pattern & DIAG & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & DIAG & MID));
+			pos.FlipDiagonal();
+			const uint32_t indexB = (FullIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
+
+			if (indexA > indexB)
+				return m_diag_size * (indexB * m_half_size + indexA - ((indexB * indexB + indexB) / 2)) + indexD;
+			else
+				return m_diag_size * (indexA * m_half_size + indexB - ((indexA * indexA + indexA) / 2)) + indexD;
+		}
+
+		uint32_t CDiagonalSymmetric::ReducedIndex1(CPosition pos) const
+		{
+			pos.FlipHorizontal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CDiagonalSymmetric::ReducedIndex2(CPosition pos) const
+		{
+			pos.FlipCodiagonal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CDiagonalSymmetric::ReducedIndex3(CPosition pos) const
+		{
+			pos.FlipVertical();
+			return ReducedIndex0(pos);
+		}
+
+		CAsymmetric::CAsymmetric(uint64_t pattern)
+			: CBase(pattern)
+			, m_patternH(FlipHorizontal(pattern))
+			, m_patternV(FlipVertical(pattern))
+			, m_patternD(FlipDiagonal(pattern))
+			, m_patternC(FlipCodiagonal(pattern))
+			, m_patternHV(FlipVertical(FlipHorizontal(pattern)))
+			, m_patternHD(FlipDiagonal(FlipHorizontal(pattern)))
+			, m_patternHC(FlipCodiagonal(FlipHorizontal(pattern)))
+		{}
+
+		std::vector<uint32_t> CAsymmetric::Configurations(const CPosition& pos) const
+		{
+			return {
+				ReducedIndex0(pos), ReducedIndex1(pos), ReducedIndex2(pos), ReducedIndex3(pos),
+				ReducedIndex4(pos), ReducedIndex5(pos), ReducedIndex6(pos), ReducedIndex7(pos)
+			};
+		}
+
+		std::vector<uint64_t> CAsymmetric::Patterns() const
+		{
+			return { Pattern, m_patternH, m_patternV, m_patternD, m_patternC, m_patternHV, m_patternHD, m_patternHC };
+		}
+
+		uint32_t CAsymmetric::ReducedSize() const
+		{
+			return Pow_int(3, PopCount(Pattern & ~MID)) * Pow_int(2, PopCount(Pattern & MID));
+		}
+
+		uint32_t CAsymmetric::Occurrences() const
+		{
+			return 8;
+		}
+
+		uint32_t CAsymmetric::ReducedIndex0(CPosition pos) const
+		{
+			return (FullIndex(pos, Pattern & ~MID) << PopCount(Pattern & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & MID));
+		}
+
+		uint32_t CAsymmetric::ReducedIndex1(CPosition pos) const
+		{
+			pos.FlipHorizontal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CAsymmetric::ReducedIndex2(CPosition pos) const
+		{
+			pos.FlipVertical();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CAsymmetric::ReducedIndex3(CPosition pos) const
+		{
+			pos.FlipDiagonal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CAsymmetric::ReducedIndex4(CPosition pos) const
+		{
+			pos.FlipCodiagonal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CAsymmetric::ReducedIndex5(CPosition pos) const
+		{
+			pos.FlipVertical();
+			pos.FlipHorizontal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CAsymmetric::ReducedIndex6(CPosition pos) const
+		{
+			pos.FlipDiagonal();
+			pos.FlipHorizontal();
+			return ReducedIndex0(pos);
+		}
+
+		uint32_t CAsymmetric::ReducedIndex7(CPosition pos) const
+		{
+			pos.FlipCodiagonal();
+			pos.FlipHorizontal();
+			return ReducedIndex0(pos);
+		}
+
+		std::unique_ptr<CBase> CreatePattern(const uint64_t pattern)
+		{
+			if (pattern == FlipHorizontal(pattern))
+				return std::make_unique<CHorizontalSymmetric>(pattern);
+			if (pattern == FlipDiagonal(pattern))
+				return std::make_unique<CDiagonalSymmetric>(pattern);
+			else
+				return std::make_unique<CAsymmetric>(pattern);
 		}
 	}
-}
 
-CPattern::CPattern(uint64_t Pattern, uint32_t FullSize, uint32_t ReducedSize, uint32_t Occurrences)
-	: Pattern(Pattern)
-	, m_FullSize(FullSize)
-	, m_ReducedSize(ReducedSize)
-	, m_Occurrences(Occurrences)
-{}
+	namespace Eval
+	{
+		CHorizontalSymmetric::CHorizontalSymmetric(uint64_t pattern, std::vector<CWeights> weights)
+			: CBase(pattern)
+			, m_patternC(FlipCodiagonal(pattern))
+			, m_patternV(FlipVertical(pattern))
+			, m_patternD(FlipDiagonal(pattern))
+			, m_w0(std::move(weights[0]))
+			, m_w1(std::move(weights[1]))
+			, m_w2(std::move(weights[2]))
+			, m_w3(std::move(weights[3]))
+		{}
 
-CPatternH::CPatternH(uint64_t Pattern)
-	: CPattern(Pattern, Pow_int(3, PopCount(Pattern)), (Pow_int(3, PopCount(Pattern & HALF & ~MID)) * Pow_int(2, PopCount(Pattern & HALF & MID))) * ((Pow_int(3, PopCount(Pattern & HALF & ~MID)) * Pow_int(2, PopCount(Pattern & HALF & MID))) + 1) / 2, 4),
-	PatternC(FlipCodiagonal(Pattern)),
-	PatternV(FlipVertical(Pattern)),
-	PatternD(FlipDiagonal(Pattern)),
-	halfSize(Pow_int(3, PopCount(Pattern & HALF & ~MID)) * Pow_int(2, PopCount(Pattern & HALF & MID)))
-{
-	assert(Pattern == FlipHorizontal(Pattern));
-}
+		float CHorizontalSymmetric::Eval(const CPosition & pos) const
+		{
+			return m_w0[FullIndex(pos, Pattern)]
+				+ m_w1[FullIndex(pos, m_patternC)]
+				+ m_w2[FullIndex(pos, m_patternV)]
+				+ m_w3[FullIndex(pos, m_patternD)];
+		}
 
-void CPatternH::set_weights()
-{
-	m_weights.resize(m_Occurrences);
-	for (uint32_t i = 0; i < m_Occurrences; i++)
-		m_weights[i].resize(m_FullSize, NAN);
-}
+		CDiagonalSymmetric::CDiagonalSymmetric(uint64_t pattern, std::vector<CWeights> weights)
+			: CBase(pattern)
+			, m_patternH(FlipHorizontal(pattern))
+			, m_patternC(FlipCodiagonal(pattern))
+			, m_patternV(FlipVertical(pattern))
+			, m_w0(std::move(weights[0]))
+			, m_w1(std::move(weights[1]))
+			, m_w2(std::move(weights[2]))
+			, m_w3(std::move(weights[3]))
+		{}
 
-void CPatternH::set_weights(const std::vector<float>& compressed_weights)
-{
-	assert(compressed_weights.size() == m_ReducedSize);
-	set_weights();
+		float CDiagonalSymmetric::Eval(const CPosition & pos) const
+		{
+			return m_w0[FullIndex(pos, Pattern)]
+				+ m_w1[FullIndex(pos, m_patternH)]
+				+ m_w2[FullIndex(pos, m_patternC)]
+				+ m_w3[FullIndex(pos, m_patternV)];
+		}
 
-	For_each_configuration_in_pattern_do_fkt(Pattern,  [&](const CPosition& pos) { m_weights[0][FullPatternIndex(pos, Pattern )] = compressed_weights[ReducedPatternIndex0(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternC, [&](const CPosition& pos) { m_weights[1][FullPatternIndex(pos, PatternC)] = compressed_weights[ReducedPatternIndex1(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternV, [&](const CPosition& pos) { m_weights[2][FullPatternIndex(pos, PatternV)] = compressed_weights[ReducedPatternIndex2(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternD, [&](const CPosition& pos) { m_weights[3][FullPatternIndex(pos, PatternD)] = compressed_weights[ReducedPatternIndex3(pos)]; });
-}
+		Pattern::Eval::CAsymmetric::CAsymmetric(uint64_t pattern, std::vector<CWeights> weights)
+			: CBase(pattern)
+			, m_patternH(FlipHorizontal(pattern))
+			, m_patternV(FlipVertical(pattern))
+			, m_patternD(FlipDiagonal(pattern))
+			, m_patternC(FlipCodiagonal(pattern))
+			, m_patternHV(FlipVertical(FlipHorizontal(pattern)))
+			, m_patternHD(FlipDiagonal(FlipHorizontal(pattern)))
+			, m_patternHC(FlipCodiagonal(FlipHorizontal(pattern)))
+			, m_w0(std::move(weights[0]))
+			, m_w1(std::move(weights[1]))
+			, m_w2(std::move(weights[2]))
+			, m_w3(std::move(weights[3]))
+			, m_w4(std::move(weights[4]))
+			, m_w5(std::move(weights[5]))
+			, m_w6(std::move(weights[6]))
+			, m_w7(std::move(weights[7]))
+		{}
 
-float CPatternH::Eval(const CPosition& pos) const
-{
-	return m_weights[0][FullPatternIndex(pos, Pattern )]
-	     + m_weights[1][FullPatternIndex(pos, PatternC)]
-	     + m_weights[2][FullPatternIndex(pos, PatternV)]
-	     + m_weights[3][FullPatternIndex(pos, PatternD)];
-}
+		float CAsymmetric::Eval(const CPosition & pos) const
+		{
+			return m_w0[FullIndex(pos, Pattern)]
+				+ m_w1[FullIndex(pos, m_patternH)]
+				+ m_w2[FullIndex(pos, m_patternV)]
+				+ m_w3[FullIndex(pos, m_patternD)]
+				+ m_w4[FullIndex(pos, m_patternC)]
+				+ m_w5[FullIndex(pos, m_patternHV)]
+				+ m_w6[FullIndex(pos, m_patternHD)]
+				+ m_w7[FullIndex(pos, m_patternHC)];
+		}
 
-std::vector<float> CPatternH::GetScores(const CPosition& pos) const
-{
-	return std::vector<float>{
-		m_weights[0][FullPatternIndex(pos, Pattern )],
-		m_weights[1][FullPatternIndex(pos, PatternC)],
-		m_weights[2][FullPatternIndex(pos, PatternV)],
-		m_weights[3][FullPatternIndex(pos, PatternD)]};
-}
+		std::unique_ptr<CBase> CreatePattern(uint64_t pattern, std::vector<CWeights> weights)
+		{
+			if (pattern == FlipHorizontal(pattern))
+				return std::make_unique<CHorizontalSymmetric>(pattern, std::move(weights));
+			if (pattern == FlipDiagonal(pattern))
+				return std::make_unique<CDiagonalSymmetric>(pattern, std::move(weights));
+			else
+				return std::make_unique<CAsymmetric>(pattern, std::move(weights));
+		}
 
-std::vector<uint32_t> CPatternH::GetConfigurations(const CPosition& pos) const
-{
-	return std::vector<uint32_t>{
-		ReducedPatternIndex0(pos),
-		ReducedPatternIndex1(pos),
-		ReducedPatternIndex2(pos),
-		ReducedPatternIndex3(pos)
-	};
-}
+		void For_each_config(const uint64_t pattern, std::function<void(CPosition)> fkt)
+		{
+			const uint64_t MID = 0x0000001818000000ui64;
+			const uint64_t size = 1ui64 << PopCount(pattern);
+			const uint64_t extracted_center = PExt(MID, pattern);
+			for (uint64_t i = 0; i < size; i++)
+			{
+				const uint64_t P = PDep(i, pattern);
+				for (uint64_t j = 0; j < size; j++)
+				{
+					if (i & j) continue; // fields can only be taken by one player
+					if (((i | j) & extracted_center) != extracted_center) continue; // center fields can't be empty
+					const uint64_t O = PDep(j, pattern);
 
-float CPatternD::Eval(const CPosition& pos) const
-{
-	return m_weights[0][FullPatternIndex(pos, Pattern )]
-	     + m_weights[1][FullPatternIndex(pos, PatternH)]
-	     + m_weights[2][FullPatternIndex(pos, PatternC)]
-	     + m_weights[3][FullPatternIndex(pos, PatternV)];
-}
+					fkt(CPosition(P, O));
+				}
+			}
+		}
 
-std::vector<float> CPatternD::GetScores(const CPosition& pos) const
-{
-	return std::vector<float>{
-		m_weights[0][FullPatternIndex(pos, Pattern )],
-		m_weights[1][FullPatternIndex(pos, PatternH)],
-		m_weights[2][FullPatternIndex(pos, PatternC)],
-		m_weights[3][FullPatternIndex(pos, PatternV)]
-	};
-}
+		uint32_t FullSize(uint64_t pattern)
+		{
+			return Pow_int(3, PopCount(pattern));
+		}
 
-std::vector<uint32_t> CPatternD::GetConfigurations(const CPosition& pos) const
-{
-	return std::vector<uint32_t>{
-		ReducedPatternIndex0(pos),
-		ReducedPatternIndex1(pos),
-		ReducedPatternIndex2(pos),
-		ReducedPatternIndex3(pos)
-	};
-}
+		std::unique_ptr<CBase> CreatePattern(const uint64_t pattern, const CWeights& compressed)
+		{
+			CSumPow3Cache cache;
+			auto config = Configurations::CreatePattern(pattern);
 
-float CPattern0::Eval(const CPosition& pos) const
-{
-	return m_weights[0][FullPatternIndex(pos, Pattern  )]
-	     + m_weights[1][FullPatternIndex(pos, PatternH )]
-	     + m_weights[2][FullPatternIndex(pos, PatternV )]
-	     + m_weights[3][FullPatternIndex(pos, PatternD )]
-	     + m_weights[4][FullPatternIndex(pos, PatternC )]
-	     + m_weights[5][FullPatternIndex(pos, PatternHV)]
-	     + m_weights[6][FullPatternIndex(pos, PatternHD)]
-	     + m_weights[7][FullPatternIndex(pos, PatternHC)];
-}
+			// Reserve memory
+			const auto occurrences = config->Occurrences();
+			std::vector<CWeights> weights(occurrences);
+			for (auto& weight : weights)
+				weight.resize(FullSize(pattern));
 
-std::vector<float> CPattern0::GetScores(const CPosition& pos) const
-{
-	return std::vector<float>{
-		m_weights[0][FullPatternIndex(pos, Pattern  )],
-		m_weights[1][FullPatternIndex(pos, PatternH )],
-		m_weights[2][FullPatternIndex(pos, PatternV )],
-		m_weights[3][FullPatternIndex(pos, PatternD )],
-		m_weights[4][FullPatternIndex(pos, PatternC )],
-		m_weights[5][FullPatternIndex(pos, PatternHV)],
-		m_weights[6][FullPatternIndex(pos, PatternHD)],
-		m_weights[7][FullPatternIndex(pos, PatternHC)]
-	};
-}
+			//Decompress
+			const auto patterns = config->Patterns();
+			for (std::size_t i = 0; i < occurrences; i++)
+			{
+				For_each_config(patterns[i],
+					[&](const CPosition& pos) {
+						const auto configurations = config->Configurations(pos);
+						weights[i][cache.FullIndex(pos, patterns[i])] = compressed[configurations[i]];
+					}
+				);
+			}
 
-std::vector<uint32_t> CPattern0::GetConfigurations(const CPosition& pos) const
-{
-	return std::vector<uint32_t>{
-		ReducedPatternIndex0(pos),
-		ReducedPatternIndex1(pos),
-		ReducedPatternIndex2(pos),
-		ReducedPatternIndex3(pos),
-		ReducedPatternIndex4(pos),
-		ReducedPatternIndex5(pos),
-		ReducedPatternIndex6(pos),
-		ReducedPatternIndex7(pos)
-	};
-}
+			return Eval::CreatePattern(pattern, std::move(weights));
+		}
 
-uint32_t CPatternH::ReducedPatternIndex0(CPosition pos) const
-{
-	const uint32_t indexA = (FullPatternIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
-	pos.FlipHorizontal();
-	const uint32_t indexB = (FullPatternIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
+		CPack::CPack(const std::vector<std::pair<uint64_t, CWeights>>& pair)
+		{
+			for (const auto& it : pair)
+				Add(CreatePattern(it.first, it.second));
+		}
 
-	if (indexA > indexB)
-		return indexB * halfSize + indexA - ((indexB * indexB + indexB) >> 1);
-	else
-		return indexA * halfSize + indexB - ((indexA * indexA + indexA) >> 1);
-}
+		void CPack::Add(std::unique_ptr<CBase>&& elem)
+		{
+			m_pack.emplace_back(std::move(elem));
+		}
 
-uint32_t CPatternH::ReducedPatternIndex1(CPosition pos) const
-{
-	pos.FlipCodiagonal();
-	return ReducedPatternIndex0(pos);
-}
+		std::size_t CPack::size() const
+		{
+			return m_pack.size();
+		}
 
-uint32_t CPatternH::ReducedPatternIndex2(CPosition pos) const
-{
-	pos.FlipVertical();
-	return ReducedPatternIndex0(pos);
-}
+		std::vector<uint64_t> CPack::Pattern() const
+		{
+			std::vector<uint64_t> ret;
+			ret.reserve(m_pack.size());
+			for (const auto& it : m_pack)
+				ret.push_back(it->Pattern);
+			return ret;
+		}
 
-uint32_t CPatternH::ReducedPatternIndex3(CPosition pos) const
-{
-	pos.FlipDiagonal();
-	return ReducedPatternIndex0(pos);
-}
+		float CPack::Eval(const CPosition& pos) const
+		{
+			float sum = 0;
+			for (const auto& it : m_pack)
+				sum += it->Eval(pos);
+			return sum;
+		}
 
-CPatternD::CPatternD(uint64_t Pattern)
-	: CPattern(Pattern, Pow_int(3, PopCount(Pattern)), (Pow_int(3, PopCount(Pattern & DIAG & ~MID)) * Pow_int(2, PopCount(Pattern & DIAG & MID))) * (Pow_int(3, PopCount(Pattern & HALF & ~MID)) * Pow_int(2, PopCount(Pattern & HALF & MID))) * ((Pow_int(3, PopCount(Pattern & HALF & ~MID)) * Pow_int(2, PopCount(Pattern & HALF & MID))) + 1) / 2, 4),
-	PatternH(FlipHorizontal(Pattern)),
-	PatternC(FlipCodiagonal(Pattern)),
-	PatternV(FlipVertical(Pattern)),
-	halfSize(Pow_int(3, PopCount(Pattern & HALF & ~MID)) * Pow_int(2, PopCount(Pattern & HALF & MID))),
-	diagSize(Pow_int(3, PopCount(Pattern & DIAG & ~MID)) * Pow_int(2, PopCount(Pattern & DIAG & MID)))
-{
-	assert(Pattern == FlipDiagonal(Pattern));
-}
+		void CEnsemble::Set(uint8_t empty_count, std::shared_ptr<CPack> pack)
+		{
+			m_packs[empty_count] = std::move(pack);
+		}
 
-void CPatternD::set_weights()
-{
-	m_weights.resize(m_Occurrences);
-	for (uint32_t i = 0; i < m_Occurrences; i++)
-		m_weights[i].resize(m_FullSize, NAN);
-}
-
-void CPatternD::set_weights(const std::vector<float>& compressed_weights)
-{
-	assert(compressed_weights.size() == m_ReducedSize);
-	set_weights();
-
-	For_each_configuration_in_pattern_do_fkt(Pattern , [&](const CPosition& pos) { m_weights[0][FullPatternIndex(pos, Pattern )] = compressed_weights[ReducedPatternIndex0(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternH, [&](const CPosition& pos) { m_weights[1][FullPatternIndex(pos, PatternH)] = compressed_weights[ReducedPatternIndex1(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternC, [&](const CPosition& pos) { m_weights[2][FullPatternIndex(pos, PatternC)] = compressed_weights[ReducedPatternIndex2(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternV, [&](const CPosition& pos) { m_weights[3][FullPatternIndex(pos, PatternV)] = compressed_weights[ReducedPatternIndex3(pos)]; });
-}
-
-uint32_t CPatternD::ReducedPatternIndex0(CPosition pos) const
-{
-	const uint32_t indexA = (FullPatternIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
-	const uint32_t indexD = (FullPatternIndex(pos, Pattern & DIAG & ~MID) << PopCount(Pattern & DIAG & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & DIAG & MID));
-	pos.FlipDiagonal();
-	const uint32_t indexB = (FullPatternIndex(pos, Pattern & HALF & ~MID) << PopCount(Pattern & HALF & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & HALF & MID));
-
-	if (indexA > indexB)
-		return diagSize * (indexB * halfSize + indexA - ((indexB * indexB + indexB) >> 1)) + indexD;
-	else
-		return diagSize * (indexA * halfSize + indexB - ((indexA * indexA + indexA) >> 1)) + indexD;
-}
-
-uint32_t CPatternD::ReducedPatternIndex1(CPosition pos) const
-{
-	pos.FlipHorizontal();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPatternD::ReducedPatternIndex2(CPosition pos) const
-{
-	pos.FlipCodiagonal();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPatternD::ReducedPatternIndex3(CPosition pos) const
-{
-	pos.FlipVertical();
-	return ReducedPatternIndex0(pos);
-}
-
-CPattern0::CPattern0(uint64_t Pattern)
-	: CPattern(Pattern, Pow_int(3, PopCount(Pattern)), Pow_int(3, PopCount(Pattern & ~MID)) * Pow_int(2, PopCount(Pattern & MID)), 8),
-	PatternH(FlipHorizontal(Pattern)),
-	PatternV(FlipVertical(Pattern)),
-	PatternD(FlipDiagonal(Pattern)),
-	PatternC(FlipCodiagonal(Pattern)),
-	PatternHV(FlipVertical(FlipHorizontal(Pattern))),
-	PatternHD(FlipDiagonal(FlipHorizontal(Pattern))),
-	PatternHC(FlipCodiagonal(FlipHorizontal(Pattern)))
-{}
-
-void CPattern0::set_weights()
-{
-	m_weights.resize(m_Occurrences);
-	for (uint32_t i = 0; i < m_Occurrences; i++)
-		m_weights[i].resize(m_FullSize, NAN);
-}
-
-void CPattern0::set_weights(const std::vector<float>& compressed_weights)
-{
-	assert(compressed_weights.size() == m_ReducedSize);
-	set_weights();
-
-	For_each_configuration_in_pattern_do_fkt(Pattern  , [&](const CPosition& pos) { m_weights[0][FullPatternIndex(pos, Pattern  )] = compressed_weights[ReducedPatternIndex0(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternH , [&](const CPosition& pos) { m_weights[1][FullPatternIndex(pos, PatternH )] = compressed_weights[ReducedPatternIndex1(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternV , [&](const CPosition& pos) { m_weights[2][FullPatternIndex(pos, PatternV )] = compressed_weights[ReducedPatternIndex2(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternD , [&](const CPosition& pos) { m_weights[3][FullPatternIndex(pos, PatternD )] = compressed_weights[ReducedPatternIndex3(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternC , [&](const CPosition& pos) { m_weights[4][FullPatternIndex(pos, PatternC )] = compressed_weights[ReducedPatternIndex4(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternHV, [&](const CPosition& pos) { m_weights[5][FullPatternIndex(pos, PatternHV)] = compressed_weights[ReducedPatternIndex5(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternHD, [&](const CPosition& pos) { m_weights[6][FullPatternIndex(pos, PatternHD)] = compressed_weights[ReducedPatternIndex6(pos)]; });
-	For_each_configuration_in_pattern_do_fkt(PatternHC, [&](const CPosition& pos) { m_weights[7][FullPatternIndex(pos, PatternHC)] = compressed_weights[ReducedPatternIndex7(pos)]; });
-}
-
-uint32_t CPattern0::ReducedPatternIndex0(CPosition pos) const
-{
-	return (FullPatternIndex(pos, Pattern & ~MID) << PopCount(Pattern & MID)) + static_cast<uint32_t>(PExt(pos.GetO(), Pattern & MID));
-}
-
-uint32_t CPattern0::ReducedPatternIndex1(CPosition pos) const
-{
-	pos.FlipHorizontal();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPattern0::ReducedPatternIndex2(CPosition pos) const
-{
-	pos.FlipVertical();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPattern0::ReducedPatternIndex3(CPosition pos) const
-{
-	pos.FlipDiagonal();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPattern0::ReducedPatternIndex4(CPosition pos) const
-{
-	pos.FlipCodiagonal();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPattern0::ReducedPatternIndex5(CPosition pos) const
-{
-	pos.FlipVertical();
-	pos.FlipHorizontal();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPattern0::ReducedPatternIndex6(CPosition pos) const
-{
-	pos.FlipDiagonal();
-	pos.FlipHorizontal();
-	return ReducedPatternIndex0(pos);
-}
-
-uint32_t CPattern0::ReducedPatternIndex7(CPosition pos) const
-{
-	pos.FlipCodiagonal();
-	pos.FlipHorizontal();
-	return ReducedPatternIndex0(pos);
-}
-
-float CPatternGroup::Eval(const CPosition & pos) const
-{
-	float sum = 0;
-	for (const auto& it : m_group)
-		sum += it->Eval(pos);
-	return sum;
-}
-
-std::vector<std::vector<uint32_t>> CPatternGroup::GetConfigurations(const CPosition& pos) const
-{
-	std::vector<std::vector<uint32_t>> ret;
-	ret.reserve(m_group.size());
-	for (const auto& it : m_group)
-		ret.push_back(std::move(it->GetConfigurations(pos)));
-	return ret;
-}
-
-CPatternCollection::CPatternCollection(std::vector<std::shared_ptr<CPatternGroup>> collection)
-	: m_collection(collection)
-{
-}
-
-float CPatternCollection::Eval(const CPosition & pos) const
-{
-	return m_collection[pos.EmptyCount()]->Eval(pos);
-}
-
-std::vector<std::vector<uint32_t>> CPatternCollection::GetConfigurations(const CPosition & pos) const
-{
-	return m_collection[pos.EmptyCount()]->GetConfigurations(pos);
-}
-
-std::unique_ptr<CPattern> CreatePattern(const uint64_t pattern)
-{
-	if (pattern == FlipHorizontal(pattern))
-		return std::make_unique<CPatternH>(pattern);
-	if (pattern == FlipDiagonal(pattern))
-		return std::make_unique<CPatternD>(pattern);
-	else
-		return std::make_unique<CPattern0>(pattern);
+		float CEnsemble::Eval(const CPosition& pos) const
+		{
+			return m_packs[pos.EmptyCount()]->Eval(pos);
+		}
+	}
 }

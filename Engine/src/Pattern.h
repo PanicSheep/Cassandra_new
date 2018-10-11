@@ -1,141 +1,231 @@
 #pragma once
 #include "Utility.h"
+#include "Path.h"
 #include "Position.h"
 #include "Engine.h"
+#include <array>
 #include <cstdint>
-#include <iostream>
 #include <vector>
 #include <memory>
 #include <functional>
+#include <unordered_map>
 
-class CPattern
+namespace Pattern
 {
-	static std::vector<uint32_t> m_sumpow3_cache;
-protected:
-	static uint32_t FullPatternIndex(const CPosition& pos, const uint64_t mask);
-	static uint32_t SumPow3(const uint64_t index);
-public:
-	static void Initialize();
-	static void For_each_configuration_in_pattern_do_fkt(const uint64_t pattern, std::function<void(const CPosition&)> fkt);
+	class CSumPow3Cache
+	{
+		static std::array<uint32_t, (1ui64 << 15)> m_cache;
+	public:
+		CSumPow3Cache();
+		uint64_t SumPow3(uint64_t exp) const;
+		uint32_t FullIndex(const CPosition& pos, const uint64_t pattern) const;
+	};
 
-protected:
-	const uint64_t Pattern;
-	const uint32_t m_FullSize, m_ReducedSize, m_Occurrences;
+	namespace Configurations
+	{
+		class CBase : protected CSumPow3Cache
+		{
+		public:
+			CBase(uint64_t pattern) : Pattern(pattern) {}
+			virtual ~CBase() {}
 
-public:
-	CPattern(uint64_t Pattern, uint32_t FullSize, uint32_t ReducedSize, uint32_t Occurrences);
-	virtual ~CPattern() {}
+			virtual std::vector<uint32_t> Configurations(const CPosition&) const = 0;
+			virtual std::vector<uint64_t> Patterns() const = 0;
 
-	uint64_t GetPattern() const { return Pattern; }
-	uint32_t Occurrences() const { return m_Occurrences; }
-	uint32_t FullSize() const { return m_FullSize; }
-	uint32_t ReducedSize() const { return m_ReducedSize; }
+			virtual uint32_t ReducedSize() const = 0;
+			virtual uint32_t Occurrences() const = 0; // TODO: This is Configurations(any).size().
 
-	virtual void set_weights() = 0;
-	virtual void set_weights(const std::vector<float>& compressed_weights) = 0;
+			const uint64_t Pattern;
+		};
 
-	virtual float Eval(const CPosition&) const = 0;
-	virtual std::vector<float> GetScores(const CPosition&) const = 0;
-	virtual std::vector<uint32_t> GetConfigurations(const CPosition&) const = 0;
-};
+		class CHorizontalSymmetric : public CBase
+		{
+			static inline uint64_t HALF = 0x0F0F0F0F0F0F0F0Fui64;
+			static inline uint64_t MID = 0x0000001818000000ui64;
+			const uint64_t m_patternC, m_patternV, m_patternD;
+			const uint32_t m_half_size;
 
-class CPatternH : public CPattern
-{
-	static const uint64_t HALF = 0x0F0F0F0F0F0F0F0Fui64;
-	static const uint64_t MID  = 0x0000001818000000ui64;
-	const uint64_t PatternC, PatternV, PatternD;
-	const uint32_t halfSize;
-	std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
+		public:
+			CHorizontalSymmetric(uint64_t pattern);
 
-public:
-	CPatternH(uint64_t Pattern);
+			std::vector<uint32_t> Configurations(const CPosition&) const override;
+			std::vector<uint64_t> Patterns() const override;
 
-	void set_weights() override;
-	void set_weights(const std::vector<float>& compressed_weights) override;
+			uint32_t ReducedSize() const override;
+			uint32_t Occurrences() const override;
+		private:
+			uint32_t ReducedIndex0(CPosition) const;
+			uint32_t ReducedIndex1(CPosition) const;
+			uint32_t ReducedIndex2(CPosition) const;
+			uint32_t ReducedIndex3(CPosition) const;
+		};
 
-	float Eval(const CPosition&) const override;
-	std::vector<float> GetScores(const CPosition&) const override;
-	std::vector<uint32_t> GetConfigurations(const CPosition&) const override;
-private:
-	uint32_t ReducedPatternIndex0(CPosition) const;
-	uint32_t ReducedPatternIndex1(CPosition) const;
-	uint32_t ReducedPatternIndex2(CPosition) const;
-	uint32_t ReducedPatternIndex3(CPosition) const;
-};
+		class CDiagonalSymmetric : public CBase
+		{
+			static const uint64_t HALF = 0x0080C0E0F0F8FCFEui64;
+			static const uint64_t DIAG = 0x8040201008040201ui64;
+			static const uint64_t MID = 0x0000001818000000ui64;
+			const uint64_t m_patternH, m_patternC, m_patternV;
+			const uint32_t m_half_size, m_diag_size;
 
-class CPatternD : public CPattern
-{
-	static const uint64_t HALF = 0x0080C0E0F0F8FCFEui64;
-	static const uint64_t DIAG = 0x8040201008040201ui64;
-	static const uint64_t MID  = 0x0000001818000000ui64;
-	const uint64_t PatternH, PatternC, PatternV;
-	const uint32_t halfSize, diagSize;
-	std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
+		public:
+			CDiagonalSymmetric(uint64_t pattern);
 
-public:
-	CPatternD(uint64_t Pattern);
+			std::vector<uint32_t> Configurations(const CPosition&) const override;
+			std::vector<uint64_t> Patterns() const override;
 
-	void set_weights() override;
-	void set_weights(const std::vector<float>& compressed_weights) override;
+			uint32_t ReducedSize() const override;
+			uint32_t Occurrences() const override;
+		private:
+			uint32_t ReducedIndex0(CPosition) const;
+			uint32_t ReducedIndex1(CPosition) const;
+			uint32_t ReducedIndex2(CPosition) const;
+			uint32_t ReducedIndex3(CPosition) const;
+		};
 
-	float Eval(const CPosition&) const override;
-	std::vector<float> GetScores(const CPosition&) const override;
-	std::vector<uint32_t> GetConfigurations(const CPosition&) const override;
-private:
-	uint32_t ReducedPatternIndex0(CPosition) const;
-	uint32_t ReducedPatternIndex1(CPosition) const;
-	uint32_t ReducedPatternIndex2(CPosition) const;
-	uint32_t ReducedPatternIndex3(CPosition) const;
-};
+		class CAsymmetric : public CBase
+		{
+			static inline uint64_t MID = 0x0000001818000000ui64;
+			const uint64_t m_patternH, m_patternV, m_patternD, m_patternC, m_patternHV, m_patternHD, m_patternHC;
 
-class CPattern0 : public CPattern
-{
-	static const uint64_t MID = 0x0000001818000000ui64;
-	const uint64_t PatternH, PatternV, PatternD, PatternC, PatternHV, PatternHD, PatternHC;
-	std::vector<std::vector<float>> m_weights; //m_weights[Index][FullIndex]
+		public:
+			CAsymmetric(uint64_t pattern);
 
-public:
-	CPattern0(uint64_t Pattern);
+			std::vector<uint32_t> Configurations(const CPosition&) const override;
+			std::vector<uint64_t> Patterns() const override;
 
-	void set_weights() override;
-	void set_weights(const std::vector<float>& compressed_weights) override;
+			uint32_t ReducedSize() const override;
+			uint32_t Occurrences() const override;
+		private:
+			uint32_t ReducedIndex0(CPosition) const;
+			uint32_t ReducedIndex1(CPosition) const;
+			uint32_t ReducedIndex2(CPosition) const;
+			uint32_t ReducedIndex3(CPosition) const;
+			uint32_t ReducedIndex4(CPosition) const;
+			uint32_t ReducedIndex5(CPosition) const;
+			uint32_t ReducedIndex6(CPosition) const;
+			uint32_t ReducedIndex7(CPosition) const;
+		};
 
-	float Eval(const CPosition&) const override;
-	std::vector<float> GetScores(const CPosition&) const override;
-	std::vector<uint32_t> GetConfigurations(const CPosition&) const override;
-private:
-	uint32_t ReducedPatternIndex0(CPosition) const;
-	uint32_t ReducedPatternIndex1(CPosition) const;
-	uint32_t ReducedPatternIndex2(CPosition) const;
-	uint32_t ReducedPatternIndex3(CPosition) const;
-	uint32_t ReducedPatternIndex4(CPosition) const;
-	uint32_t ReducedPatternIndex5(CPosition) const;
-	uint32_t ReducedPatternIndex6(CPosition) const;
-	uint32_t ReducedPatternIndex7(CPosition) const;
-};
+		std::unique_ptr<CBase> CreatePattern(uint64_t pattern);
+	}
 
-// Pattern in a group belong together and shoud never be evaluated separately.
-class CPatternGroup
-{
-	std::vector<std::shared_ptr<CPattern>> m_group;
-public:
-	CPatternGroup(std::vector<std::shared_ptr<CPattern>> group) : m_group(std::move(group)) {}
-	virtual ~CPatternGroup() {}
+	namespace Eval
+	{
+		using CWeights = std::vector<float>;
 
-	float Eval(const CPosition&) const;
-	std::vector<std::vector<uint32_t>> GetConfigurations(const CPosition&) const;
-};
+		void For_each_config(const uint64_t pattern, std::function<void(CPosition)>);
 
-// Holds a PatternGroup for every Position.
-class CPatternCollection : public IEvaluator
-{
-	std::vector<std::shared_ptr<CPatternGroup>> m_collection;
-public:
-	CPatternCollection(std::vector<std::shared_ptr<CPatternGroup>> collection);
-	virtual ~CPatternCollection() {}
+		class CBase : public IEvaluator, protected CSumPow3Cache
+		{
+		public:
+			CBase(uint64_t pattern) : Pattern(pattern) {}
 
-	float Eval(const CPosition&) const override;
-	std::vector<std::vector<uint32_t>> GetConfigurations(const CPosition&) const;
-};
+			virtual float Eval(const CPosition&) const = 0;
 
-std::unique_ptr<CPattern> CreatePattern(const uint64_t pattern);
+			const uint64_t Pattern;
+		};
+
+		class CHorizontalSymmetric : public CBase
+		{
+			const uint64_t m_patternC, m_patternV, m_patternD;
+			CWeights m_w0, m_w1, m_w2, m_w3;
+		public:
+			CHorizontalSymmetric(uint64_t pattern, std::vector<CWeights>);
+
+			float Eval(const CPosition& pos) const override;
+		};
+
+		class CDiagonalSymmetric : public CBase
+		{
+			const uint64_t m_patternH, m_patternC, m_patternV;
+			CWeights m_w0, m_w1, m_w2, m_w3;
+		public:
+			CDiagonalSymmetric(uint64_t pattern, std::vector<CWeights>);
+
+			float Eval(const CPosition& pos) const override;
+		};
+
+		class CAsymmetric : public CBase
+		{
+			const uint64_t m_patternH, m_patternV, m_patternD, m_patternC, m_patternHV, m_patternHD, m_patternHC;
+			CWeights m_w0, m_w1, m_w2, m_w3, m_w4, m_w5, m_w6, m_w7;
+		public:
+			CAsymmetric(uint64_t pattern, std::vector<CWeights>);
+
+			float Eval(const CPosition& pos) const override;
+		};
+
+		std::unique_ptr<CBase> CreatePattern(uint64_t pattern, std::vector<CWeights>);
+		std::unique_ptr<CBase> CreatePattern(uint64_t pattern, const CWeights& compressed);
+
+
+		// Patterns in a pack always evaluate together.
+		class CPack : public IEvaluator
+		{
+			std::vector<std::unique_ptr<CBase>> m_pack;
+		public:
+			CPack() {}
+			CPack(std::size_t size) : m_pack(size) {}
+			CPack(const std::vector<std::pair<uint64_t, CWeights>>&);
+
+			void Add(std::unique_ptr<CBase>&&);
+			std::size_t size() const;
+
+			std::vector<uint64_t> Pattern() const;
+
+			float Eval(const CPosition&) const;
+		};
+
+		// Holds a Pack for every 'empty_count'.
+		class CEnsemble : public IEvaluator
+		{
+			std::array<std::shared_ptr<CPack>, 61> m_packs;
+		public:
+			void Set(uint8_t empty_count, std::shared_ptr<CPack>);
+
+			float Eval(const CPosition&) const override;
+		};
+	}
+}
+
+
+//namespace name_pending
+//{
+//
+//	// Holds a PatternGroup for every 'empty_count'.
+//	class CPatternEvaluator : public IEvaluator
+//	{
+//		std::array<std::shared_ptr<CPack>, 61> m_packs;
+//	public:
+//		void Set(uint8_t empty_count, std::shared_ptr<CPack> group) { m_packs[empty_count] = std::move(group); }
+//
+//		float Eval(const CPosition&) const override;
+//		std::vector<std::vector<uint32_t>> GetConfigurations(const CPosition&) const;
+//	};
+//
+//	//class CFactory
+//	//{
+//	//	CNameLookupTable m_names;
+//	//	std::array<std::shared_ptr<CPack>, 61> m_packs;
+//	//public:
+//	//	CFactory(CNameLookupTable name_table) : m_names(std::move(name_table)) {}
+//	//	std::unique_ptr<Pattern::Eval::CBase> Pattern::IO::CFactory::Create(uint64_t pattern, const Pattern::Eval::CWeights & compressed) { return Pattern::Eval::CreatePattern(pattern, compressed); }
+//	//	CFactory(const CPath& name_table) : CFactory(CNameLookupTable(name_table)) {}
+//
+//	//	std::unique_ptr<CBase> Create(uint64_t pattern, std::vector<float> compressed_weights);
+//	//	std::unique_ptr<CBase> Create(uint64_t pattern, const CPath& compressed_weights);
+//	//	std::unique_ptr<CBase> Create(const std::string& pattern, std::vector<float> compressed_weights);
+//	//	std::unique_ptr<CBase> Create(const std::string& pattern, const CPath& compressed_weights);
+//	//};
+//
+//	class CEnsembleFactory
+//	{
+//		CFactory m_pattern_factory;
+//	public:
+//		CEnsembleFactory(CFactory pf) : m_pattern_factory(pf) {}
+//		CEnsembleFactory(const CPath& name_table) : m_pattern_factory(name_table) {}
+//
+//		std::unique_ptr<CPatternEvaluator> Create(const CPath&);
+//	};
+//}

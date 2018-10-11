@@ -38,9 +38,6 @@
     <ProjectReference Include="..\Core\Core.vcxproj">
       <Project>{7394ad84-df32-4be8-b07c-15f10a762125}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\IO\IO.vcxproj">
-      <Project>{067fbe70-efc7-4a63-be81-6fa42988f6df}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

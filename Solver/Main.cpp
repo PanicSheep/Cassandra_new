@@ -1,16 +1,18 @@
 #include "Args.h"
-#include "IoPuzzleCollection.h"
 #include "ConfigFile.h"
 #include "HashTablePVS.h"
+#include "IoPattern.h"
+#include "IoPuzzleCollection.h"
 #include "LastFlipCounter.h"
 #include "Path.h"
-#include "PVSearch.h"
-#include "Utility.h"
 #include "Pattern.h"
 #include "PositionGenerator.h"
+#include "PVSearch.h"
 #include "Search.h"
 #include "Stability.h"
+#include "Utility.h"
 #include "VectorIO.h"
+
 #include <thread>
 #include <iostream>
 #include <iomanip>
@@ -30,13 +32,23 @@ void PrintHelp()
 
 int main(int argc, char* argv[])
 {
-	CPattern::Initialize();
+	// Use cases:
+	// Solve all unsolved puzzles:			solver.exe -f e10.pos
+	// Solve all puzzles but don't save:	solver.exe -f e10.pos -test
+	// Solve all puzzles:					solver.exe -f e10.pos -force
+	// Solve a given depth:					solver.exe -f e10.pos -d 0
+	// Solve given depths:					solver.exe -f e10.pos -d 1-8 // TODO: Implement!
 
+	const auto exe_folder = CPath(argv[0]).GetAbsoluteFolderPath();
 	CArgs args;
-	args.Set("config", "config.ini");
+
+	// Set defaults.
+	args.Set("pattern_names", exe_folder + "pattern_names.ini");
+	args.Set("pattern_use", exe_folder + "pattern_use.ini");
 	args.Set("RAM", "1GB");
 	args.Set("d", 99);
 	args.Set("t", std::thread::hardware_concurrency());
+
 	args.Load(argc, argv);
 
 	if (args.Has("h")) {
@@ -49,8 +61,9 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	// Get arguments without config file
-	const CPath config_file = args.Get("config").back();
+	// Get arguments
+	const CPath pattern_names = args.Get("pattern_names").back();
+	const CPath pattern_use = args.Get("pattern_use").back();
 	const CPath filename = args.Get("f").back();
 	const std::string RAM = args.Get("RAM").back();
 	const std::size_t threads = std::stoll(args.Get("t").back());
@@ -58,53 +71,10 @@ int main(int argc, char* argv[])
 	const bool test = args.Has("test");
 	const bool force = args.Has("force");
 	const bool print_each_puzzle = args.Has("v");
-
-	CConfigurations configs(config_file);
-	
-	// Get arguments with config file
-	std::vector<std::string> pattern_names;
-	if (configs.Has("active pattern"))
-		pattern_names = split(configs.Get("active pattern"), " ");
-
-	std::vector<std::shared_ptr<CPatternGroup>> pattern_collection;
-	std::shared_ptr<IEvaluator> midgame_evaluator = nullptr;
-#ifndef _DEBUG
-	for (int range = 0; range < 20; range++)
-	{
-		std::vector<std::shared_ptr<CPattern>> pattern_group;
-		for (const auto& pat : pattern_names)
-		{
-			uint64_t pattern;
-			if (configs.Has("pattern " + pat))
-				pattern = std::stoull(configs.Get("pattern " + pat), nullptr, 16);
-			else
-				std::cerr << "WARNING: Unknown pattern '" << pat << "'." << std::endl;
-
-			CPath weights(config_file.GetAbsoluteFolderPath() + configs.Get("weights" + std::to_string(range)) + pat + ".w");
-			auto Pattern = CreatePattern(pattern);
-			try
-			{
-				Pattern->set_weights(read_vector<float>(weights));
-			}
-			catch (...)
-			{
-				Pattern->set_weights();
-				std::cerr << "WARNING: Can't set weights. " << weights.GetAbsoluteFilePath() << std::endl;
-			}
-			pattern_group.push_back(std::move(Pattern));
-		}
-		auto shared_pattern_group = std::make_shared<CPatternGroup>(pattern_group);
-		pattern_collection.push_back(shared_pattern_group);
-		pattern_collection.push_back(shared_pattern_group);
-		pattern_collection.push_back(shared_pattern_group);
-		if (range == 0)
-			pattern_collection.push_back(shared_pattern_group);
-	}
-	midgame_evaluator = std::make_shared<CPatternCollection>(pattern_collection);
-#endif
 	
 	std::cout << "Filename: " << filename.GetAbsoluteFilePath() << std::endl;
-	std::cout << "Config File: " << config_file.GetAbsoluteFilePath() << std::endl;
+	std::cout << "Filename: " << pattern_names.GetAbsoluteFilePath() << std::endl;
+	std::cout << "Filename: " << pattern_use.GetAbsoluteFilePath() << std::endl;
 	std::cout << "RAM: " << RAM << std::endl;
 	std::cout << "Threads: " << threads << std::endl;
 	std::cout << "Depth: " << depth << std::endl;
@@ -120,6 +90,7 @@ int main(int argc, char* argv[])
 	std::shared_ptr<ILastFlipCounter> last_flip_counter = std::make_shared<CLastFlipCounter>();
 	std::shared_ptr<IHashTable<CPosition, PvsInfo>> hash_table = std::make_shared<CHashTablePVS>(ParseBytes(RAM) / sizeof(TwoNode));
 	std::shared_ptr<IStabilityAnalyzer> stability_analyzer = std::make_shared<CStabilityAnalyzer>();
+	std::shared_ptr<IEvaluator> midgame_evaluator = Pattern::IO::CreateEnsemble(pattern_names, pattern_use);
 	std::shared_ptr<Engine> engine = std::make_shared<Engine>(nullptr, last_flip_counter, hash_table, stability_analyzer, midgame_evaluator);
 
 	std::vector<std::unique_ptr<Search>> searches;
@@ -162,7 +133,7 @@ int main(int argc, char* argv[])
 						<< std::setw(3) << i << "|"
 						<< std::setw(6) << puzzle->GetPosition().EmptyCount() << "|"
 						<< (test && (*old_puzzle == *puzzle) ? " " : "#")
-							<< DoubleDigitSignedInt(puzzleScore->MaxScore())
+						<< DoubleDigitSignedInt(puzzleScore->MaxScore())
 						<< (test && (*old_puzzle == *puzzle) ? " " : "#") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
 						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";

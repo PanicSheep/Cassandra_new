@@ -60,6 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\Core\src; ..\Engine\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -75,6 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\Core\src; ..\Engine\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,13 +84,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.vcxproj">
-      <Project>{7394ad84-df32-4be8-b07c-15f10a762125}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\BinaryStreamArchive.cpp" />
     <ClCompile Include="src\IoMoves.cpp" />
+    <ClCompile Include="src\IoPattern.cpp" />
     <ClCompile Include="src\MultiLineStreamArchive.cpp" />
     <ClCompile Include="src\IoPuzzleCollection.cpp" />
     <ClCompile Include="src\SingleLineStreamArchive.cpp" />
@@ -96,10 +94,19 @@
   <ItemGroup>
     <ClInclude Include="src\BinaryStreamArchive.h" />
     <ClInclude Include="src\IoMoves.h" />
+    <ClInclude Include="src\IoPattern.h" />
     <ClInclude Include="src\MultiLineStreamArchive.h" />
     <ClInclude Include="src\IoPuzzleCollection.h" />
     <ClInclude Include="src\SingleLineStreamArchive.h" />
     <ClInclude Include="src\VectorIO.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.vcxproj">
+      <Project>{7394ad84-df32-4be8-b07c-15f10a762125}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\Engine.vcxproj">
+      <Project>{fc8e2aa2-09b4-410e-ba19-5d9f41fa1a73}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

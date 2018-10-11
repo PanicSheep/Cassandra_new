@@ -55,8 +55,6 @@ void PrintHelp()
 
 int main(int argc, char* argv[])
 {
-	CPattern::Initialize();
-
 	CArgs args;
 	args.Set("config", "config.ini");
 	args.Load(argc, argv);
