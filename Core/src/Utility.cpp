@@ -72,7 +72,8 @@ std::string short_time_format(std::chrono::duration<long long, std::pico> durati
 std::string ThousandsSeparator(uint64_t n)
 {
 	std::ostringstream oss;
-	oss.imbue(std::locale(""));
+	std::locale locale("");
+	oss.imbue(locale);
 	oss << n;
 	return oss.str();
 }
