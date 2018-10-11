@@ -1,3 +1,4 @@
 - Draw Architecture.
-- Rename Environment to IEngine and make it have Play(...) and stuff
-- Make CSearch have a protected IEngine interface.
+- Implement CSearch.Eval(depth)
+- Improve 'CArgs' wo work with single-values and vector-values, because args.Get("config").back() ist too complicated.
+- Make PopCount constexpr.
