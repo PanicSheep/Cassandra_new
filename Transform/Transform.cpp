@@ -60,7 +60,7 @@ Mode TryParseMode(const CArgs& args)
 	catch (std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
-		throw e;
+		throw;
 	}
 }
 
