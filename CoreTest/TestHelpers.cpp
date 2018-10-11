@@ -21,7 +21,7 @@ uint64_t line(CMove move, const int dX, const int dY)
 
 CPosition MakeRandomPosition(uint64_t mask)
 {
-	static auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0, 3), std::mt19937_64(13));
+	static auto rnd = std::bind(std::uniform_int_distribution<unsigned int>(0, 2), std::mt19937_64(13));
 	uint64_t P = 0;
 	uint64_t O = 0;
 	while (mask)
@@ -30,6 +30,7 @@ CPosition MakeRandomPosition(uint64_t mask)
 		{
 			case 0: P |= GetLSB(mask); break;
 			case 1: O |= GetLSB(mask); break;
+			default: break;
 		}
 		RemoveLSB(mask);
 	}
