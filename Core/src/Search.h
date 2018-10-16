@@ -7,22 +7,19 @@ class Engine;
 
 class Search
 {
-	uint64_t node_counter;
 public:
 	Search(const std::shared_ptr<Engine>&);
 
 	virtual int Eval(const CPosition&) = 0;
 	virtual int Eval(const CPosition& pos, int8_t depth, uint8_t selectivity) { return Eval(pos); }
 
-	uint64_t GetNodeCount() const;
-	uint64_t GetNodeCount(uint64_t EmptyCount) const;
+	uint64_t NodeCount() const;
 	void ResetNodeCount();
 
 protected:
+	uint64_t node_counter;
 	std::shared_ptr<Engine> engine;
-
-	uint64_t& NodeCounter(std::size_t index);
-
+	
 	template <int EmptyCount>
 	static int EvalGameOver(const CPosition&);
 	static int EvalGameOver(const CPosition&);

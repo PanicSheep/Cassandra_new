@@ -136,10 +136,10 @@ int main(int argc, char* argv[])
 						<< DoubleDigitSignedInt(puzzleScore->MaxScore())
 						<< (test && (*old_puzzle == *puzzle) ? " " : "#") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
-						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
+						<< std::setw(16) << ThousandsSeparator(search->NodeCount()) << "|";
 
 					if (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() > 0)
-						std::cout << std::setw(12) << ThousandsSeparator(search->GetNodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
+						std::cout << std::setw(12) << ThousandsSeparator(search->NodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
 					std::cout << std::endl;
 				}
 			}
@@ -155,10 +155,10 @@ int main(int argc, char* argv[])
 						<< DoubleDigitSignedInt(dynamic_cast<CPuzzleScore*>(old_puzzle.get())->score)
 						<< (test && (*old_puzzle == *puzzle) ? " " : "#") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
-						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
+						<< std::setw(16) << ThousandsSeparator(search->NodeCount()) << "|";
 
 					if (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() > 0)
-						std::cout << std::setw(12) << ThousandsSeparator(search->GetNodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
+						std::cout << std::setw(12) << ThousandsSeparator(search->NodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
 					std::cout << std::endl;
 				}
 			}
@@ -174,10 +174,10 @@ int main(int argc, char* argv[])
 						<< DoubleDigitSignedInt(puzzleScore->score[puzzleScore->MaxSolvedDepth()])
 						<< (test && (*old_puzzle == *puzzle) ? " " : "#") << "|"
 						<< std::setw(16) << time_format(endTime - startTime) << "|"
-						<< std::setw(16) << ThousandsSeparator(search->GetNodeCount()) << "|";
+						<< std::setw(16) << ThousandsSeparator(search->NodeCount()) << "|";
 
 					if (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() > 0)
-						std::cout << std::setw(12) << ThousandsSeparator(search->GetNodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
+						std::cout << std::setw(12) << ThousandsSeparator(search->NodeCount() * 1'000'000 / std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count());
 					std::cout << std::endl;
 				}
 			}
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
 
 	std::size_t NodeCounter = 0;
 	for (auto& search : searches)
-		NodeCounter += search->GetNodeCount();
+		NodeCounter += search->NodeCount();
 
 	const double time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - GlobalStartTime).count();
 

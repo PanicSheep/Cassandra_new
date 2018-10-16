@@ -35,7 +35,7 @@ void PvsInfo::Upgrade(const PvsInfo& NewValue)
 
 		// TODO: This should be subject to a broad range of tests.
 		//cost = std::max(cost, NewValue.cost);
-		SetCost(GetNodeCount() + NewValue.GetNodeCount());
+		SetCost(NodeCount() + NewValue.NodeCount());
 		alpha = std::max(alpha, NewValue.alpha);
 		beta = std::min(beta, NewValue.beta);
 		if (NewValue.PV != Field::invalid) PV = NewValue.PV;
@@ -48,7 +48,7 @@ void PvsInfo::SetCost(uint64_t NodeCount)
 	cost = static_cast<int8_t>(BitScanMSB(NodeCount + 1)); // +1 prevents it from failing at NodeCount == 0.
 }
 
-uint64_t PvsInfo::GetNodeCount() const
+uint64_t PvsInfo::NodeCount() const
 {
 	return MakeBit(cost);
 }

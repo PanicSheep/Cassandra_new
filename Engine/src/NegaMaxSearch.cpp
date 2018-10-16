@@ -59,24 +59,24 @@ int NegaMaxSearch::Eval_4(const CPosition& pos)
 
 int NegaMaxSearch::Eval_0(const CPosition& pos)
 {
-	NodeCounter(0)++;
+	node_counter++;
 	return EvalGameOver<0>(pos);
 }
 
 int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove move1)
 {
-	NodeCounter(1)++;
+	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
 	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
-		NodeCounter(0)++;
+		node_counter++;
 		return score + Diff + 1;
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		NodeCounter(1)++;
-		NodeCounter(0)++;
+		node_counter++;
+		node_counter++;
 		return score - Diff - 1;
 	}
 	else
@@ -85,7 +85,7 @@ int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove move1)
 
 int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 {
-	NodeCounter(2)++;
+	node_counter++;
 	int score = -128;
 
 	if (const auto flips = Flip(pos, move1))
@@ -107,7 +107,7 @@ int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove move1, const CMove m
 		score = std::min(score, Eval_1(posPass.Play(move2, flips), move1));
 
 	if (score != 128) {
-		NodeCounter(2)++;
+		node_counter++;
 		return score;
 	}
 	else
@@ -116,7 +116,7 @@ int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove move1, const CMove m
 
 int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3)
 {
-	NodeCounter(3)++;
+	node_counter++;
 	int score = -128;
 
 	if (const auto flips = Flip(pos, move1))
@@ -144,7 +144,7 @@ int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove move1, const CMove m
 		score = std::min(score, Eval_2(posPass.Play(move3, flips), move1, move2));
 
 	if (score != 128) {
-		NodeCounter(3)++;
+		node_counter++;
 		return score;
 	}
 	else
@@ -153,7 +153,7 @@ int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove move1, const CMove m
 
 int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
-	NodeCounter(4)++;
+	node_counter++;
 	int score = -128;
 
 	if (const auto flips = Flip(pos, move1))
@@ -187,7 +187,7 @@ int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove move1, const CMove m
 		score = std::min(score, Eval_3(posPass.Play(move4, flips), move1, move2, move3));
 
 	if (score != 128) {
-		NodeCounter(4)++;
+		node_counter++;
 		return score;
 	}
 	else
@@ -200,7 +200,7 @@ int NegaMaxSearch::Eval_N(const CPosition& pos)
 	if (EmptyCount == 4)
 		return Eval_4(pos);
 
-	NodeCounter(EmptyCount)++;
+	node_counter++;
 
 	CMoves moves = pos.PossibleMoves();
 	if (moves.empty()) {

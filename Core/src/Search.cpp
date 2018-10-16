@@ -5,12 +5,7 @@ Search::Search(const std::shared_ptr<Engine>& engine)
 	, node_counter(0)
 {}
 
-uint64_t Search::GetNodeCount() const
-{
-	return node_counter;
-}
-
-uint64_t Search::GetNodeCount(uint64_t EmptyCount) const
+uint64_t Search::NodeCount() const
 {
 	return node_counter;
 }
@@ -18,11 +13,6 @@ uint64_t Search::GetNodeCount(uint64_t EmptyCount) const
 void Search::ResetNodeCount()
 {
 	node_counter = 0;
-}
-
-uint64_t & Search::NodeCounter(std::size_t index)
-{
-	return node_counter;
 }
 
 int Search::EvalGameOver(const CPosition& pos)

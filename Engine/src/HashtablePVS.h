@@ -24,7 +24,7 @@ public:
 
 	void Upgrade(const PvsInfo& NewValue);
 
-	uint64_t GetNodeCount() const;
+	uint64_t NodeCount() const;
 private:
 	void SetCost(uint64_t NodeCount);
 };

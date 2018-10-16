@@ -64,24 +64,24 @@ int AlphaBetaFailHardSearch::Eval_4(const CPosition& pos, int alpha, int beta)
 
 int AlphaBetaFailHardSearch::Eval_0(const CPosition& pos, int alpha, int beta)
 {
-	NodeCounter(0)++;
+	node_counter++;
 	return std::clamp(EvalGameOver<0>(pos), alpha, beta);
 }
 
 int AlphaBetaFailHardSearch::Eval_1(const CPosition& pos, const int alpha, const int beta, const CMove move1)
 {
-	NodeCounter(1)++;
+	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
 	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
-		NodeCounter(0)++;
+		node_counter++;
 		return std::clamp(score + Diff + 1, alpha, beta);
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		NodeCounter(1)++;
-		NodeCounter(0)++;
+		node_counter++;
+		node_counter++;
 		return std::clamp(score - Diff - 1, alpha, beta);
 	}
 	else
@@ -90,7 +90,7 @@ int AlphaBetaFailHardSearch::Eval_1(const CPosition& pos, const int alpha, const
 
 int AlphaBetaFailHardSearch::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
 {
-	NodeCounter(2)++;
+	node_counter++;
 	int score = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -123,7 +123,7 @@ int AlphaBetaFailHardSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 	}
 
 	if (score != -128) {
-		NodeCounter(2)++;
+		node_counter++;
 		return beta;
 	}
 	else
@@ -132,7 +132,7 @@ int AlphaBetaFailHardSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 
 int AlphaBetaFailHardSearch::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
 {
-	NodeCounter(3)++;
+	node_counter++;
 	int score = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -177,7 +177,7 @@ int AlphaBetaFailHardSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 	}
 
 	if (score != -128) {
-		NodeCounter(3)++;
+		node_counter++;
 		return beta;
 	}
 	else
@@ -186,7 +186,7 @@ int AlphaBetaFailHardSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 
 int AlphaBetaFailHardSearch::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
-	NodeCounter(4)++;
+	node_counter++;
 	int score = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -243,7 +243,7 @@ int AlphaBetaFailHardSearch::Eval_4(const CPosition& pos, int alpha, int beta, c
 	}
 
 	if (score != -128) {
-		NodeCounter(4)++;
+		node_counter++;
 		return beta;
 	}
 	else
@@ -256,7 +256,7 @@ int AlphaBetaFailHardSearch::Eval_N(const CPosition& pos, int alpha, int beta)
 	if (EmptyCount == 4)
 		return Eval_4(pos, alpha, beta);
 
-	NodeCounter(EmptyCount)++;
+	node_counter++;
 
 	CMoves moves = pos.PossibleMoves();
 	if (moves.empty()) {

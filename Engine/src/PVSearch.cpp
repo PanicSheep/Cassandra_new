@@ -88,7 +88,7 @@ PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 
 int PVSearch::Eval_0(const CPosition& pos)
 {
-	NodeCounter(0)++;
+	node_counter++;
 	return EvalGameOver<0>(pos);
 }
 
@@ -149,18 +149,18 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha)
 
 int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove move1)
 {
-	NodeCounter(1)++;
+	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
 	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
-		NodeCounter(0)++;
+		node_counter++;
 		return score + Diff + 1;
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		NodeCounter(1)++;
-		NodeCounter(0)++;
+		node_counter++;
+		node_counter++;
 		return score - Diff - 1;
 	}
 	else
@@ -169,7 +169,7 @@ int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove move1
 
 int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
 {
-	NodeCounter(2)++;
+	node_counter++;
 	int bestscore = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -207,7 +207,7 @@ int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove move1
 	}
 
 	if (bestscore != 128) {
-		NodeCounter(2)++;
+		node_counter++;
 		return bestscore;
 	}
 	else
@@ -216,18 +216,18 @@ int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove move1
 
 int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove move1)
 {
-	NodeCounter(1)++;
+	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
 	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
-		NodeCounter(0)++;
+		node_counter++;
 		return score + Diff + 1;
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		NodeCounter(1)++;
-		NodeCounter(0)++;
+		node_counter++;
+		node_counter++;
 		return score - Diff - 1;
 	}
 	else
@@ -236,7 +236,7 @@ int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove move1)
 
 int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove move1, const CMove move2)
 {
-	NodeCounter(2)++;
+	node_counter++;
 	int bestscore = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -266,7 +266,7 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove move1, co
 	}
 
 	if (bestscore != 128) {
-		NodeCounter(2)++;
+		node_counter++;
 		return bestscore;
 	}
 	else
@@ -275,7 +275,7 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove move1, co
 
 int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CMove move2, const CMove move3)
 {
-	NodeCounter(3)++;
+	node_counter++;
 	int bestscore = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -317,7 +317,7 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CM
 	}
 
 	if (bestscore != 128) {
-		NodeCounter(3)++;
+		node_counter++;
 		return bestscore;
 	}
 	else
@@ -326,7 +326,7 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CM
 
 int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
-	NodeCounter(4)++;
+	node_counter++;
 	int bestscore = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -380,7 +380,7 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CM
 		}
 
 	if (bestscore != 128) {
-		NodeCounter(4)++;
+		node_counter++;
 		return bestscore;
 	}
 	else
@@ -392,7 +392,7 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 	assert(in.beta == in.alpha + 1);
 
 	const auto EmptyCount = in.pos.EmptyCount();
-	NodeCounter(EmptyCount)++;
+	node_counter++;
 
 	const CMoves moves = in.pos.PossibleMoves();
 	if (moves.empty()) {
@@ -406,7 +406,7 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 		}
 	}
 
-	StatusValues stat(in, GetNodeCount());
+	StatusValues stat(in, NodeCount());
 	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	//if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
 
@@ -444,7 +444,7 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 	assert(in.beta == in.alpha + 1);
 
 	const auto EmptyCount = in.pos.EmptyCount();
-	NodeCounter(EmptyCount)++;
+	node_counter++;
 
 	if (in.pos.HasMoves() == false) {
 		const auto Pass = in.PlayPass();
@@ -457,7 +457,7 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 		}
 	}
 
-	StatusValues stat(in, GetNodeCount());
+	StatusValues stat(in, NodeCount());
 	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	const auto TTRet = TranspositionTableAnalysis(in);
 	if (const auto ret = stat.ImproveWith(TTRet); ret.CausesCut) return ret.Values;
@@ -500,7 +500,7 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
-	NodeCounter(EmptyCount)++;
+	node_counter++;
 
 	if (in.pos.HasMoves() == false) {
 		const auto Pass = in.PlayPass();
@@ -513,7 +513,7 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 		}
 	}
 
-	StatusValues stat(in, GetNodeCount());
+	StatusValues stat(in, NodeCount());
 	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
 	const auto TTRet = TranspositionTableAnalysis(in);
 
@@ -595,5 +595,5 @@ PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputV
 
 void PVSearch::UpdateTranspositionTable(const StatusValues& stat)
 {
-	engine->Update(stat.pos, PvsInfo(GetNodeCount() - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
+	engine->Update(stat.pos, PvsInfo(NodeCount() - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
 }

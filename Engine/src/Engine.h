@@ -65,4 +65,5 @@ public:
 	void Clear() override { hash_table->Clear(); }
 	uint64_t GetStableStones(const CPosition& pos) const override { return stability_analyzer->GetStableStones(pos); }
 	float Eval(const CPosition& pos) const override { return midgame_evaluator->Eval(pos); }
+	float EvalGameOver(const CPosition& pos) const { return game_over_evaluator->Eval(pos); }
 };

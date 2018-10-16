@@ -64,18 +64,18 @@ int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta)
 
 int AlphaBetaFailSoftSearch::Eval_0(const CPosition& pos)
 {
-	NodeCounter(0)++;
+	node_counter++;
 	return EvalGameOver<0>(pos);
 }
 
 int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove move1)
 {
-	NodeCounter(1)++;
+	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
 	if (const auto Diff = engine->CountLastFlip(pos, move1))
 	{
-		NodeCounter(0)++;
+		node_counter++;
 		return score + Diff + 1;
 	}
 	else
@@ -84,8 +84,8 @@ int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove
 		//	return score + 1;
 		if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 		{
-			NodeCounter(1)++;
-			NodeCounter(0)++;
+			node_counter++;
+			node_counter++;
 			return score - Diff - 1;
 		}
 		else
@@ -95,7 +95,7 @@ int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove
 
 int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
 {
-	NodeCounter(2)++;
+	node_counter++;
 	int bestscore = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -129,7 +129,7 @@ int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 	}
 
 	if (bestscore != 128) {
-		NodeCounter(2)++;
+		node_counter++;
 		return bestscore;
 	}
 	else
@@ -138,7 +138,7 @@ int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 
 int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
 {
-	NodeCounter(3)++;
+	node_counter++;
 	int bestscore = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -191,7 +191,7 @@ int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 	}
 
 	if (bestscore != 128) {
-		NodeCounter(3)++;
+		node_counter++;
 		return bestscore;
 	}
 	else
@@ -200,7 +200,7 @@ int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 
 int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
-	NodeCounter(4)++;
+	node_counter++;
 	int bestscore = -128;
 
 	if (const auto flips = Flip(pos, move1)) {
@@ -266,7 +266,7 @@ int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta, c
 	}
 
 	if (bestscore != 128) {
-		NodeCounter(4)++;
+		node_counter++;
 		return bestscore;
 	}
 	else
@@ -279,7 +279,7 @@ int AlphaBetaFailSoftSearch::Eval_N(const CPosition& pos, int alpha, int beta)
 	if (EmptyCount == 4)
 		return Eval_4(pos, alpha, beta);
 
-	NodeCounter(EmptyCount)++;
+	node_counter++;
 
 	CMoves moves = pos.PossibleMoves();
 	if (moves.empty()) {
