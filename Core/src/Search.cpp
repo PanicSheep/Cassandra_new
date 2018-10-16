@@ -21,17 +21,3 @@ int Search::EvalGameOver(const CPosition& pos)
 	else
 		return Ps - Os;
 }
-
-int Search::EvalGameOver(const CPosition& pos, const uint64_t EmptyCount)
-{
-	assert(EmptyCount >= 0);
-	assert(EmptyCount <= 64);
-
-	const int Diff = static_cast<int>(2 * PopCount(pos.GetP()) + EmptyCount) - 64;
-	if (Diff > 0) 
-		return Diff + static_cast<int>(EmptyCount);
-	else if (Diff < 0)
-		return Diff - static_cast<int>(EmptyCount);
-	else
-		return Diff;
-}

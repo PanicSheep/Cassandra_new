@@ -4,10 +4,7 @@
 class Search_Test : public Search
 {
 public:
-	template <int EmptyCount>
-	static int EvalGameOver(const CPosition& pos) { return Search::EvalGameOver<EmptyCount>(pos); }
 	static int EvalGameOver(const CPosition& pos) { return Search::EvalGameOver(pos); }
-	static int EvalGameOver(const CPosition& pos, const uint64_t EmptyCount) { return Search::EvalGameOver(pos, EmptyCount); }
 };
 
 TEST(Search, EvalGameOver)
@@ -22,16 +19,10 @@ TEST(Search, EvalGameOver)
 	const int score3 = 0;
 	const int score4 = -48;
 	const int score5 = -64;
-
-	ASSERT_EQ(Search_Test::EvalGameOver(pos1, 64), score1);
-	ASSERT_EQ(Search_Test::EvalGameOver(pos2, 56), score2);
-	ASSERT_EQ(Search_Test::EvalGameOver(pos3, 48), score3);
-	ASSERT_EQ(Search_Test::EvalGameOver(pos4, 47), score4);
-	ASSERT_EQ(Search_Test::EvalGameOver(pos5, 63), score5);
-
-	ASSERT_EQ(Search_Test::EvalGameOver<64>(pos1), score1);
-	ASSERT_EQ(Search_Test::EvalGameOver<56>(pos2), score2);
-	ASSERT_EQ(Search_Test::EvalGameOver<48>(pos3), score3);
-	ASSERT_EQ(Search_Test::EvalGameOver<47>(pos4), score4);
-	ASSERT_EQ(Search_Test::EvalGameOver<63>(pos5), score5);
+	
+	ASSERT_EQ(Search_Test::EvalGameOver(pos1), score1);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos2), score2);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos3), score3);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos4), score4);
+	ASSERT_EQ(Search_Test::EvalGameOver(pos5), score5);
 }

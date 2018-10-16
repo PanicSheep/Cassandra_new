@@ -89,7 +89,7 @@ PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 int PVSearch::Eval_0(const CPosition& pos)
 {
 	node_counter++;
-	return EvalGameOver<0>(pos);
+	return EvalGameOver(pos);
 }
 
 int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta)
@@ -211,7 +211,7 @@ int PVSearch::PVS_2(const CPosition& pos, int alpha, int beta, const CMove move1
 		return bestscore;
 	}
 	else
-		return -EvalGameOver<2>(posPass);
+		return -EvalGameOver(posPass);
 }
 
 int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove move1)
@@ -270,7 +270,7 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove move1, co
 		return bestscore;
 	}
 	else
-		return -EvalGameOver<2>(posPass);
+		return -EvalGameOver(posPass);
 }
 
 int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CMove move2, const CMove move3)
@@ -321,7 +321,7 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CM
 		return bestscore;
 	}
 	else
-		return -EvalGameOver<3>(posPass);
+		return -EvalGameOver(posPass);
 }
 
 int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
@@ -384,14 +384,13 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CM
 		return bestscore;
 	}
 	else
-		return -EvalGameOver<4>(posPass);
+		return -EvalGameOver(posPass);
 }
 
 PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 {
 	assert(in.beta == in.alpha + 1);
 
-	const auto EmptyCount = in.pos.EmptyCount();
 	node_counter++;
 
 	const CMoves moves = in.pos.PossibleMoves();
@@ -401,7 +400,8 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 			return -ZWS_A(Pass);
 		else
 		{
-			const auto score = EvalGameOver(in.pos, EmptyCount);
+			const auto score = EvalGameOver(in.pos);
+			const auto EmptyCount = in.pos.EmptyCount();
 			return ReturnValues(score, score, EmptyCount, 0);
 		}
 	}
@@ -443,7 +443,6 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 {
 	assert(in.beta == in.alpha + 1);
 
-	const auto EmptyCount = in.pos.EmptyCount();
 	node_counter++;
 
 	if (in.pos.HasMoves() == false) {
@@ -452,7 +451,8 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 			return -ZWS_N(Pass);
 		else
 		{
-			const auto score = EvalGameOver(in.pos, EmptyCount);
+			const auto score = EvalGameOver(in.pos);
+			const auto EmptyCount = in.pos.EmptyCount();
 			return ReturnValues(score, score, EmptyCount, 0);
 		}
 	}
@@ -499,7 +499,6 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 
 PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 {
-	const auto EmptyCount = in.pos.EmptyCount();
 	node_counter++;
 
 	if (in.pos.HasMoves() == false) {
@@ -508,7 +507,8 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 			return -PVS_N(Pass);
 		else
 		{
-			const auto score = EvalGameOver(in.pos, EmptyCount);
+			const auto score = EvalGameOver(in.pos);
+			const auto EmptyCount = in.pos.EmptyCount();
 			return ReturnValues(score, score, EmptyCount, 0);
 		}
 	}

@@ -65,7 +65,7 @@ int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta)
 int AlphaBetaFailSoftSearch::Eval_0(const CPosition& pos)
 {
 	node_counter++;
-	return EvalGameOver<0>(pos);
+	return EvalGameOver(pos);
 }
 
 int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove move1)
@@ -133,7 +133,7 @@ int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 		return bestscore;
 	}
 	else
-		return -EvalGameOver<2>(posPass);
+		return -EvalGameOver(posPass);
 }
 
 int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
@@ -195,7 +195,7 @@ int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 		return bestscore;
 	}
 	else
-		return -EvalGameOver<3>(posPass);
+		return -EvalGameOver(posPass);
 }
 
 int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
@@ -270,13 +270,12 @@ int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta, c
 		return bestscore;
 	}
 	else
-		return -EvalGameOver<4>(posPass);
+		return -EvalGameOver(posPass);
 }
 
 int AlphaBetaFailSoftSearch::Eval_N(const CPosition& pos, int alpha, int beta)
 {
-	const auto EmptyCount = pos.EmptyCount();
-	if (EmptyCount == 4)
+	if (pos.EmptyCount() == 4)
 		return Eval_4(pos, alpha, beta);
 
 	node_counter++;
@@ -287,7 +286,7 @@ int AlphaBetaFailSoftSearch::Eval_N(const CPosition& pos, int alpha, int beta)
 		if (PosPass.HasMoves())
 			return -Eval_N(PosPass, -beta, -alpha);
 		else
-			return EvalGameOver(pos, EmptyCount);
+			return EvalGameOver(pos);
 	}
 
 	int bestscore = -128;

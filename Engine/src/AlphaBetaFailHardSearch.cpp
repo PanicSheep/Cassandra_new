@@ -65,7 +65,7 @@ int AlphaBetaFailHardSearch::Eval_4(const CPosition& pos, int alpha, int beta)
 int AlphaBetaFailHardSearch::Eval_0(const CPosition& pos, int alpha, int beta)
 {
 	node_counter++;
-	return std::clamp(EvalGameOver<0>(pos), alpha, beta);
+	return std::clamp(EvalGameOver(pos), alpha, beta);
 }
 
 int AlphaBetaFailHardSearch::Eval_1(const CPosition& pos, const int alpha, const int beta, const CMove move1)
@@ -127,7 +127,7 @@ int AlphaBetaFailHardSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 		return beta;
 	}
 	else
-		return std::clamp(-EvalGameOver<2>(posPass), alpha, beta);
+		return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
 int AlphaBetaFailHardSearch::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
@@ -181,7 +181,7 @@ int AlphaBetaFailHardSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 		return beta;
 	}
 	else
-		return std::clamp(-EvalGameOver<3>(posPass), alpha, beta);
+		return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
 int AlphaBetaFailHardSearch::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
@@ -247,7 +247,7 @@ int AlphaBetaFailHardSearch::Eval_4(const CPosition& pos, int alpha, int beta, c
 		return beta;
 	}
 	else
-		return std::clamp(-EvalGameOver<4>(posPass), alpha, beta);
+		return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
 int AlphaBetaFailHardSearch::Eval_N(const CPosition& pos, int alpha, int beta)
@@ -264,7 +264,7 @@ int AlphaBetaFailHardSearch::Eval_N(const CPosition& pos, int alpha, int beta)
 		if (PosPass.HasMoves())
 			return -Eval(PosPass, -beta, -alpha);
 		else
-			return std::clamp(EvalGameOver(pos, EmptyCount), alpha, beta);
+			return std::clamp(EvalGameOver(pos), alpha, beta);
 	}
 
 	int score = -128;
