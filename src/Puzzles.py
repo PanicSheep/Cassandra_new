@@ -1,5 +1,8 @@
 import struct
 
+def PopCount(b):
+    return bin(b).count('1')
+
 class Puzzle:
     def __init__(self):
         self.P = 0
@@ -10,6 +13,8 @@ class Puzzle:
     def __init__(self, pack):
         self.P = pack[0]
         self.O = pack[1]
+    def EmptyCount(self):
+        return 64 - PopCount(self.P | self.O)
 
 class PuzzleScore:
     __DEFAULT_SCORE = -99
@@ -26,6 +31,8 @@ class PuzzleScore:
         self.P = pack[0]
         self.O = pack[1]
         self.score = pack[2]
+    def EmptyCount(self):
+        return 64 - PopCount(self.P | self.O)
     def IsSolved(self):
         return self.score != self.__DEFAULT_SCORE
 
@@ -46,9 +53,10 @@ class PuzzleAllDepthScore:
         self.P = pack[0]
         self.O = pack[1]
         self.score = pack[2:]
+    def EmptyCount(self):
+        return 64 - PopCount(self.P | self.O)
     def IsSolved(self):
-        emptycount = bin(~(self.P | self.O)).count('1')
-        for i in range(0, emptycount+1):
+        for i in range(0, EmptyCount()+1):
             if self.score[i] == self.__DEFAULT_SCORE:
                 return False
         return True
