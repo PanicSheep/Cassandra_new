@@ -14,7 +14,6 @@ public:
 	virtual int Eval(const CPosition& pos, int8_t depth, uint8_t selectivity) { return Eval(pos); }
 
 	uint64_t NodeCount() const;
-	void ResetNodeCount();
 
 protected:
 	uint64_t node_counter;

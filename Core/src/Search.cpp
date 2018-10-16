@@ -10,11 +10,6 @@ uint64_t Search::NodeCount() const
 	return node_counter;
 }
 
-void Search::ResetNodeCount()
-{
-	node_counter = 0;
-}
-
 int Search::EvalGameOver(const CPosition& pos)
 {
 	const auto Ps = static_cast<unsigned int>(PopCount(pos.GetP()));
