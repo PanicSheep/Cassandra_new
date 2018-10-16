@@ -36,23 +36,22 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
-
 	if (in.depth == EmptyCount)
 	{
 		switch (EmptyCount)
 		{
-		case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
-		case 1: return ReturnValues(PVS_1(in.pos, in.alpha, in.beta), 1, 0);
-		case 2: return ReturnValues(PVS_2(in.pos, in.alpha, in.beta), 2, 0);
-		default: return PVS_N(in);
+			case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
+			case 1: return ReturnValues(PVS_1(in.pos, in.alpha, in.beta), 1, 0);
+			case 2: return ReturnValues(PVS_2(in.pos, in.alpha, in.beta), 2, 0);
+			default: return PVS_N(in);
 		}
 	}
 	else
 	{
 		switch (in.depth)
 		{
-		case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
-		default: return PVS_N(in);
+			case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
+			default: return PVS_N(in);
 		}
 	}
 }
@@ -64,24 +63,24 @@ PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 	{
 		switch (EmptyCount)
 		{
-		case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
-		case 1: return ReturnValues(ZWS_1(in.pos, in.alpha), 1, 0);
-		case 2: return ReturnValues(ZWS_2(in.pos, in.alpha), 2, 0);
-		case 3: return ReturnValues(ZWS_3(in.pos, in.alpha), 3, 0);
-		case 4: return ReturnValues(ZWS_4(in.pos, in.alpha), 4, 0);
-		case 5:
-		case 6:
-		case 7:
-			return ZWS_A(in);
-		default: return ZWS_N(in);
+			case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
+			case 1: return ReturnValues(ZWS_1(in.pos, in.alpha), 1, 0);
+			case 2: return ReturnValues(ZWS_2(in.pos, in.alpha), 2, 0);
+			case 3: return ReturnValues(ZWS_3(in.pos, in.alpha), 3, 0);
+			case 4: return ReturnValues(ZWS_4(in.pos, in.alpha), 4, 0);
+			case 5:
+			case 6:
+			case 7:
+				return ZWS_A(in);
+			default: return ZWS_N(in);
 		}
 	}
 	else
 	{
 		switch (in.depth)
 		{
-		case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
-		default: return ZWS_N(in);
+			case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
+			default: return ZWS_N(in);
 		}
 	}
 }
@@ -377,7 +376,7 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CM
 
 	if (const auto flips = Flip(posPass, move4)) {
 		return std::min(bestscore, ZWS_3(posPass.Play(move4, flips), alpha, move1, move2, move3));
-		}
+	}
 
 	if (bestscore != 128) {
 		node_counter++;
@@ -401,8 +400,7 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 		else
 		{
 			const auto score = EvalGameOver(in.pos);
-			const auto EmptyCount = in.pos.EmptyCount();
-			return ReturnValues(score, score, EmptyCount, 0);
+			return ReturnValues(score, score, in.pos.EmptyCount(), 0);
 		}
 	}
 
@@ -452,8 +450,7 @@ PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
 		else
 		{
 			const auto score = EvalGameOver(in.pos);
-			const auto EmptyCount = in.pos.EmptyCount();
-			return ReturnValues(score, score, EmptyCount, 0);
+			return ReturnValues(score, score, in.pos.EmptyCount(), 0);
 		}
 	}
 
@@ -508,8 +505,7 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 		else
 		{
 			const auto score = EvalGameOver(in.pos);
-			const auto EmptyCount = in.pos.EmptyCount();
-			return ReturnValues(score, score, EmptyCount, 0);
+			return ReturnValues(score, score, in.pos.EmptyCount(), 0);
 		}
 	}
 
