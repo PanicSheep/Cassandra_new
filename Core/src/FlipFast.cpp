@@ -975,79 +975,81 @@ uint64_t CFlipper::H8(const uint64_t P, const uint64_t O) const noexcept
 
 uint64_t CFlipper::Flip(const CPosition& pos, const CMove move) const noexcept
 {
+	const auto P = pos.GetP();
+	const auto O = pos.GetO();
 	switch (move)
 	{
-		case CMove::A1: return A1(pos.GetP(), pos.GetO());
-		case CMove::B1: return B1(pos.GetP(), pos.GetO());
-		case CMove::C1: return C1(pos.GetP(), pos.GetO());
-		case CMove::D1: return D1(pos.GetP(), pos.GetO());
-		case CMove::E1: return E1(pos.GetP(), pos.GetO());
-		case CMove::F1: return F1(pos.GetP(), pos.GetO());
-		case CMove::G1: return G1(pos.GetP(), pos.GetO());
-		case CMove::H1: return H1(pos.GetP(), pos.GetO());
+		case CMove::A1: return A1(P, O);
+		case CMove::B1: return B1(P, O);
+		case CMove::C1: return C1(P, O);
+		case CMove::D1: return D1(P, O);
+		case CMove::E1: return E1(P, O);
+		case CMove::F1: return F1(P, O);
+		case CMove::G1: return G1(P, O);
+		case CMove::H1: return H1(P, O);
 
-		case CMove::A2: return A2(pos.GetP(), pos.GetO());
-		case CMove::B2: return B2(pos.GetP(), pos.GetO());
-		case CMove::C2: return C2(pos.GetP(), pos.GetO());
-		case CMove::D2: return D2(pos.GetP(), pos.GetO());
-		case CMove::E2: return E2(pos.GetP(), pos.GetO());
-		case CMove::F2: return F2(pos.GetP(), pos.GetO());
-		case CMove::G2: return G2(pos.GetP(), pos.GetO());
-		case CMove::H2: return H2(pos.GetP(), pos.GetO());
+		case CMove::A2: return A2(P, O);
+		case CMove::B2: return B2(P, O);
+		case CMove::C2: return C2(P, O);
+		case CMove::D2: return D2(P, O);
+		case CMove::E2: return E2(P, O);
+		case CMove::F2: return F2(P, O);
+		case CMove::G2: return G2(P, O);
+		case CMove::H2: return H2(P, O);
 
-		case CMove::A3: return A3(pos.GetP(), pos.GetO());
-		case CMove::B3: return B3(pos.GetP(), pos.GetO());
-		case CMove::C3: return C3(pos.GetP(), pos.GetO());
-		case CMove::D3: return D3(pos.GetP(), pos.GetO());
-		case CMove::E3: return E3(pos.GetP(), pos.GetO());
-		case CMove::F3: return F3(pos.GetP(), pos.GetO());
-		case CMove::G3: return G3(pos.GetP(), pos.GetO());
-		case CMove::H3: return H3(pos.GetP(), pos.GetO());
+		case CMove::A3: return A3(P, O);
+		case CMove::B3: return B3(P, O);
+		case CMove::C3: return C3(P, O);
+		case CMove::D3: return D3(P, O);
+		case CMove::E3: return E3(P, O);
+		case CMove::F3: return F3(P, O);
+		case CMove::G3: return G3(P, O);
+		case CMove::H3: return H3(P, O);
 
-		case CMove::A4: return A4(pos.GetP(), pos.GetO());
-		case CMove::B4: return B4(pos.GetP(), pos.GetO());
-		case CMove::C4: return C4(pos.GetP(), pos.GetO());
-		case CMove::D4: return D4(pos.GetP(), pos.GetO());
-		case CMove::E4: return E4(pos.GetP(), pos.GetO());
-		case CMove::F4: return F4(pos.GetP(), pos.GetO());
-		case CMove::G4: return G4(pos.GetP(), pos.GetO());
-		case CMove::H4: return H4(pos.GetP(), pos.GetO());
+		case CMove::A4: return A4(P, O);
+		case CMove::B4: return B4(P, O);
+		case CMove::C4: return C4(P, O);
+		case CMove::D4: return D4(P, O);
+		case CMove::E4: return E4(P, O);
+		case CMove::F4: return F4(P, O);
+		case CMove::G4: return G4(P, O);
+		case CMove::H4: return H4(P, O);
 
-		case CMove::A5: return A5(pos.GetP(), pos.GetO());
-		case CMove::B5: return B5(pos.GetP(), pos.GetO());
-		case CMove::C5: return C5(pos.GetP(), pos.GetO());
-		case CMove::D5: return D5(pos.GetP(), pos.GetO());
-		case CMove::E5: return E5(pos.GetP(), pos.GetO());
-		case CMove::F5: return F5(pos.GetP(), pos.GetO());
-		case CMove::G5: return G5(pos.GetP(), pos.GetO());
-		case CMove::H5: return H5(pos.GetP(), pos.GetO());
+		case CMove::A5: return A5(P, O);
+		case CMove::B5: return B5(P, O);
+		case CMove::C5: return C5(P, O);
+		case CMove::D5: return D5(P, O);
+		case CMove::E5: return E5(P, O);
+		case CMove::F5: return F5(P, O);
+		case CMove::G5: return G5(P, O);
+		case CMove::H5: return H5(P, O);
 
-		case CMove::A6: return A6(pos.GetP(), pos.GetO());
-		case CMove::B6: return B6(pos.GetP(), pos.GetO());
-		case CMove::C6: return C6(pos.GetP(), pos.GetO());
-		case CMove::D6: return D6(pos.GetP(), pos.GetO());
-		case CMove::E6: return E6(pos.GetP(), pos.GetO());
-		case CMove::F6: return F6(pos.GetP(), pos.GetO());
-		case CMove::G6: return G6(pos.GetP(), pos.GetO());
-		case CMove::H6: return H6(pos.GetP(), pos.GetO());
+		case CMove::A6: return A6(P, O);
+		case CMove::B6: return B6(P, O);
+		case CMove::C6: return C6(P, O);
+		case CMove::D6: return D6(P, O);
+		case CMove::E6: return E6(P, O);
+		case CMove::F6: return F6(P, O);
+		case CMove::G6: return G6(P, O);
+		case CMove::H6: return H6(P, O);
 
-		case CMove::A7: return A7(pos.GetP(), pos.GetO());
-		case CMove::B7: return B7(pos.GetP(), pos.GetO());
-		case CMove::C7: return C7(pos.GetP(), pos.GetO());
-		case CMove::D7: return D7(pos.GetP(), pos.GetO());
-		case CMove::E7: return E7(pos.GetP(), pos.GetO());
-		case CMove::F7: return F7(pos.GetP(), pos.GetO());
-		case CMove::G7: return G7(pos.GetP(), pos.GetO());
-		case CMove::H7: return H7(pos.GetP(), pos.GetO());
+		case CMove::A7: return A7(P, O);
+		case CMove::B7: return B7(P, O);
+		case CMove::C7: return C7(P, O);
+		case CMove::D7: return D7(P, O);
+		case CMove::E7: return E7(P, O);
+		case CMove::F7: return F7(P, O);
+		case CMove::G7: return G7(P, O);
+		case CMove::H7: return H7(P, O);
 
-		case CMove::A8: return A8(pos.GetP(), pos.GetO());
-		case CMove::B8: return B8(pos.GetP(), pos.GetO());
-		case CMove::C8: return C8(pos.GetP(), pos.GetO());
-		case CMove::D8: return D8(pos.GetP(), pos.GetO());
-		case CMove::E8: return E8(pos.GetP(), pos.GetO());
-		case CMove::F8: return F8(pos.GetP(), pos.GetO());
-		case CMove::G8: return G8(pos.GetP(), pos.GetO());
-		case CMove::H8: return H8(pos.GetP(), pos.GetO());
+		case CMove::A8: return A8(P, O);
+		case CMove::B8: return B8(P, O);
+		case CMove::C8: return C8(P, O);
+		case CMove::D8: return D8(P, O);
+		case CMove::E8: return E8(P, O);
+		case CMove::F8: return F8(P, O);
+		case CMove::G8: return G8(P, O);
+		case CMove::H8: return H8(P, O);
 
 		default: return 0;
 	}
