@@ -147,6 +147,28 @@ bool CPath::operator==(const CPath& o) const
 	return m_fullpath == o.m_fullpath;
 }
 
+CPath& CPath::operator+=(const std::string& o)
+{
+	*this = CPath(m_fullpath + o);
+	return *this;
+}
+
+CPath& CPath::operator+=(const char* o)
+{
+	*this = CPath(m_fullpath + o);
+	return *this;
+}
+
+CPath operator+(const CPath& lhs, const std::string& rhs)
+{
+	return CPath(lhs.m_fullpath + rhs);
+}
+
+CPath operator+(const CPath& lhs, const char* rhs)
+{
+	return CPath(lhs.m_fullpath + rhs);
+}
+
 void CPath::ProcessFolderUps()
 {
 	std::string Token = FOLDER_SEPARATOR + "..";

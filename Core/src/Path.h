@@ -27,12 +27,17 @@ public:
 	CPath& operator=(const CPath&) = default;
 	CPath& operator=(CPath&&) = default;
 
+	CPath& operator+=(const std::string&);
+	CPath& operator+=(const char*);
+
+	friend CPath operator+(const CPath&, const std::string&);
+	friend CPath operator+(const CPath&, const char*);
+
 	bool operator==(const CPath&) const;
 private:
 	void ProcessFolderUps();
 	std::string GetRelativePath() const;
 };
-
 
 std::vector<CPath> to_Path(const std::vector<std::string>&);
 
