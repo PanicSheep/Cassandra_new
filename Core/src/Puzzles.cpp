@@ -19,10 +19,22 @@ bool CPuzzleAllDepthScore::Test() const
 
 bool CPuzzleAllDepthScore::IsSolved() const
 {
-	for (uint64_t i = 0; i <= GetPosition().EmptyCount(); i++)
-		if (score[i] == DEFAULT_SCORE)
+	for (uint64_t d = 0; d <= GetPosition().EmptyCount(); d++)
+		if (IsSolved(d))
 			return false;
 	return true;
+}
+
+bool CPuzzleAllDepthScore::IsSolved(int8_t depth) const
+{
+	return score[depth] == DEFAULT_SCORE;
+}
+
+void CPuzzleAllDepthScore::Solve(Search& search)
+{
+	for (int8_t d = 0; d < sizeof(score); d++)
+		if (IsSolved(d) && (d <= pos.EmptyCount()))
+			score[d] = search.Eval(pos, d, 0);
 }
 
 template <typename T> struct reversion_wrapper { T& iterable; };
@@ -51,13 +63,6 @@ bool CPuzzleAllDepthScore::isEqual(const CPuzzle & o) const
 		if (score[i] != O.score[i])
 			return false;
 	return true;
-}
-
-void CPuzzleAllDepthScore::Solve(Search& search)
-{
-	for (int8_t i = 0; i < sizeof(score); i++)
-		if ((score[i] == DEFAULT_SCORE) && (i <= pos.EmptyCount()))
-			score[i] = search.Eval(pos, i, 0);
 }
 
 bool CPuzzleAllMoveScore::Test() const
@@ -95,6 +100,17 @@ bool CPuzzleAllMoveScore::IsSolved() const
 	return true;
 }
 
+void CPuzzleAllMoveScore::Solve(Search& search)
+{
+	auto moves = pos.PossibleMoves();
+	while (!moves.empty())
+	{
+		const CMove move = moves.ExtractMove();
+		if (score[move] == DEFAULT_SCORE)
+			score[move] = search.Eval(pos.Play(move));
+	}
+}
+
 bool CPuzzleAllMoveScore::isEqual(const CPuzzle & o) const
 {
 	if (CPuzzle::isEqual(o) == false)
@@ -127,17 +143,6 @@ bool CPuzzleScoreDepth::isEqual(const CPuzzle & o) const
 {
 	const auto& O = dynamic_cast<const CPuzzleScoreDepth&>(o);
 	return CPuzzle::isEqual(o) && (depth == O.depth) && (selectivity == O.selectivity);
-}
-
-void CPuzzleAllMoveScore::Solve(Search& search)
-{
-	auto moves = pos.PossibleMoves();
-	while (!moves.empty())
-	{
-		const CMove move = moves.ExtractMove();
-		if (score[move] == DEFAULT_SCORE)
-			score[move] = search.Eval(pos.Play(move));
-	}
 }
 
 std::unique_ptr<CPuzzleAllDepthScore> to_PuzzleAllDepthScore(const CPuzzle & puzzle)

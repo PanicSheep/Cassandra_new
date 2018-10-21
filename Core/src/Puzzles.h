@@ -88,7 +88,7 @@ public:
 	std::unique_ptr<CPuzzle> Play(CMove move) const override { return std::make_unique<CPuzzleAllDepthScore>(pos.Play(move)); }
 	bool Test() const override;
 	bool IsSolved() const override;
-	bool IsSolved(int8_t depth) const { return MaxSolvedDepth() >= depth; }
+	bool IsSolved(int8_t depth) const;
 	void Solve(Search&) override;
 
 	void Reset() override { std::fill(std::begin(score), std::end(score), DEFAULT_SCORE); }
