@@ -32,7 +32,7 @@ protected:
 
 class CPuzzleScore : public CPuzzle
 {
-	static const int8_t DEFAULT_SCORE = -99;
+	static inline int8_t DEFAULT_SCORE = -99;
 public:
 	int8_t score;
 
@@ -54,8 +54,8 @@ protected:
 
 class CPuzzleScoreDepth : public CPuzzleScore
 {
-	static const  int8_t DEFAULT_DEPTH = -1;
-	static const uint8_t DEFAULT_SELECTIVITY = 0;
+	static inline  int8_t DEFAULT_DEPTH = -1;
+	static inline uint8_t DEFAULT_SELECTIVITY = 0;
 public:
 	int8_t depth;
 	uint8_t selectivity;
@@ -78,7 +78,7 @@ protected:
 
 class CPuzzleAllDepthScore : public CPuzzle
 {
-	static const int8_t DEFAULT_SCORE = -99;
+	static inline int8_t DEFAULT_SCORE = -99;
 public:
 	int8_t score[61];
 
@@ -103,7 +103,7 @@ protected:
 
 class CPuzzleAllMoveScore : public CPuzzle
 {
-	static const int8_t DEFAULT_SCORE = -99;
+	static inline int8_t DEFAULT_SCORE = -99;
 public:
 	int8_t score[64];
 
