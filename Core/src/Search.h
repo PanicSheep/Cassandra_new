@@ -10,8 +10,10 @@ class Search
 public:
 	Search(const std::shared_ptr<Engine>&);
 
+	virtual std::unique_ptr<Search> Clone() const = 0;
+
 	virtual int Eval(const CPosition&) = 0;
-	virtual int Eval(const CPosition& pos, int8_t depth, uint8_t selectivity) { return Eval(pos); } // TODO: Implement!
+	virtual int Eval(const CPosition& pos, int8_t depth, uint8_t selectivity) { return Eval(pos); }
 
 	uint64_t NodeCount() const;
 

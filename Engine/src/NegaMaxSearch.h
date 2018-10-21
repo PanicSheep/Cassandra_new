@@ -8,9 +8,12 @@
 class NegaMaxSearch : public Search
 {
 public:
+	NegaMaxSearch(const NegaMaxSearch&) = default;
 	NegaMaxSearch(const std::shared_ptr<Engine>& env) : Search(env) {}
 
 	int Eval(const CPosition&) override;
+
+	std::unique_ptr<Search> Clone() const override;
 private:
 	int Eval_1(const CPosition&);
 	int Eval_2(const CPosition&);

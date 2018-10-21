@@ -8,7 +8,10 @@
 class AlphaBetaFailSoftSearch : public Search
 {
 public:
+	AlphaBetaFailSoftSearch(const AlphaBetaFailSoftSearch&) = default;
 	AlphaBetaFailSoftSearch(const std::shared_ptr<Engine>& env) : Search(env) {}
+
+	std::unique_ptr<Search> Clone() const override;
 
 	int Eval(const CPosition&) override;
 

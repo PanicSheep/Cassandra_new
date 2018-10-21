@@ -19,6 +19,11 @@ int NegaMaxSearch::Eval(const CPosition& pos)
 	}
 }
 
+std::unique_ptr<Search> NegaMaxSearch::Clone() const
+{
+	return std::make_unique<NegaMaxSearch>(*this);
+}
+
 int NegaMaxSearch::Eval_1(const CPosition& pos)
 {
 	auto moves = CMoves(pos.Empties());

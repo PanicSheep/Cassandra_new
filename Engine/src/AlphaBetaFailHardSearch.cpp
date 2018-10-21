@@ -5,6 +5,11 @@
 #include "LastFlipCounter.h"
 #include "FlipFast.h"
 
+std::unique_ptr<Search> AlphaBetaFailHardSearch::Clone() const
+{
+	return std::make_unique<AlphaBetaFailHardSearch>(*this);
+}
+
 int AlphaBetaFailHardSearch::Eval(const CPosition& pos)
 {
 	return Eval(pos, -64, 64);

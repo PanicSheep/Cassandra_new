@@ -5,6 +5,11 @@
 #include "SortedMoves.h"
 #include <algorithm>
 
+std::unique_ptr<Search> PVSearch::Clone() const
+{
+	return std::make_unique<PVSearch>(*this);
+}
+
 int PVSearch::Eval(const CPosition& pos)
 {
 	return Eval(pos, -64, 64, pos.EmptyCount(), 0);
@@ -29,7 +34,8 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 	}
 	else
 	{
-		return PVS(InputValues(pos, alpha, beta, depth, selectivity)).GetScore();
+		const auto in = InputValues(pos, alpha, beta, depth, selectivity);
+		return PVS(in).GetScore();
 	}
 }
 

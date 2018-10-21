@@ -147,7 +147,10 @@ class PVSearch : public Search
 		}
 	};
 public:
+	PVSearch(const PVSearch&) = default;
 	PVSearch(const std::shared_ptr<Engine>& engine) : Search(engine) {}
+
+	std::unique_ptr<Search> Clone() const override;
 
 	int Eval(const CPosition&) override;
 	int Eval(const CPosition&, int8_t depth, uint8_t selectivity) override;
