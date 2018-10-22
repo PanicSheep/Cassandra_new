@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 	const auto EndTime_load = std::chrono::high_resolution_clock::now();
 	std::cout << "done. " << time_format(EndTime_load - StartTime_load) << std::endl;
 
-	#pragma omp parallel for schedule(static, 1)
+	#pragma omp parallel for schedule(dynamic, 1)
 	for (int64_t i = 0; i < static_cast<int64_t>(pattern_names.size()); i++)
 	{
 		const auto& pat = pattern_names[i];

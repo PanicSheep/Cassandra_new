@@ -19,7 +19,7 @@ CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleVector& puzzles, const ui
 	auto Pattern = Pattern::Configurations::CreatePattern(pattern);
 	CMatrix_CSR<ValueType, SizeType> A(Pattern->ReducedSize());
 
-	#pragma omp parallel for ordered schedule(static, 1)
+	#pragma omp parallel for ordered schedule(dynamic, 1)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
 		auto indices = Pattern->Configurations(puzzles[i]->GetPosition());
@@ -46,7 +46,7 @@ std::vector<VectorValueType> to_Vector(const PuzzleVector& puzzles)
 	std::vector<VectorValueType> Score;
 	Score.resize(size);
 
-	#pragma omp parallel for schedule(static, 256)
+	#pragma omp parallel for schedule(dynamic, 256)
 	for (int64_t i = 0; i < static_cast<int64_t>(size); i++)
 	{
 		Score[i] = dynamic_cast<CPuzzleScore*>(puzzles[i].get())->score;

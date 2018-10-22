@@ -209,7 +209,7 @@ namespace Perft
 			PosMap.clear();
 
 			std::size_t sum = 0;
-			#pragma omp parallel for schedule(static,1) reduction(+:sum)
+			#pragma omp parallel for schedule(dynamic,1) reduction(+:sum)
 			for (int64_t i = 0; i < size; i++)
 			{
 				sum += perft_HT(vec[i].first, depth - initialDepth) * vec[i].second;
