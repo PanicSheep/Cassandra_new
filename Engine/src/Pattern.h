@@ -14,22 +14,24 @@ namespace Pattern
 {
 	class CSumPow3Cache
 	{
-		static std::array<uint32_t, (1ui64 << 15)> m_cache;
+		std::array<uint32_t, (1ui64 << 15)> m_cache;
 	public:
 		CSumPow3Cache();
 		uint64_t SumPow3(uint64_t exp) const;
-		uint32_t FullIndex(const CPosition& pos, const uint64_t pattern) const;
 	};
+		
+	uint32_t FullIndex(const CPosition&, const uint64_t pattern);
 
 	namespace Configurations
 	{
-		class CBase : protected CSumPow3Cache
+		class CBase
 		{
 		public:
 			CBase(uint64_t pattern) : Pattern(pattern) {}
 			virtual ~CBase() {}
 
 			virtual std::vector<uint32_t> Configurations(const CPosition&) const = 0;
+			virtual uint32_t Configuration(const CPosition&, std::size_t index) const = 0;
 			virtual std::vector<uint64_t> Patterns() const = 0;
 
 			virtual uint32_t ReducedSize() const = 0;
@@ -49,6 +51,7 @@ namespace Pattern
 			CHorizontalSymmetric(uint64_t pattern);
 
 			std::vector<uint32_t> Configurations(const CPosition&) const override;
+			uint32_t Configuration(const CPosition&, std::size_t index) const override;
 			std::vector<uint64_t> Patterns() const override;
 
 			uint32_t ReducedSize() const override;
@@ -72,6 +75,7 @@ namespace Pattern
 			CDiagonalSymmetric(uint64_t pattern);
 
 			std::vector<uint32_t> Configurations(const CPosition&) const override;
+			uint32_t Configuration(const CPosition&, std::size_t index) const override;
 			std::vector<uint64_t> Patterns() const override;
 
 			uint32_t ReducedSize() const override;
@@ -92,6 +96,7 @@ namespace Pattern
 			CAsymmetric(uint64_t pattern);
 
 			std::vector<uint32_t> Configurations(const CPosition&) const override;
+			uint32_t Configuration(const CPosition&, std::size_t index) const override;
 			std::vector<uint64_t> Patterns() const override;
 
 			uint32_t ReducedSize() const override;
@@ -116,7 +121,7 @@ namespace Pattern
 
 		void For_each_config(const uint64_t pattern, std::function<void(CPosition)>);
 
-		class CBase : public IEvaluator, protected CSumPow3Cache
+		class CBase : public IEvaluator
 		{
 		public:
 			CBase(uint64_t pattern) : Pattern(pattern) {}
@@ -188,44 +193,3 @@ namespace Pattern
 		};
 	}
 }
-
-
-//namespace name_pending
-//{
-//
-//	// Holds a PatternGroup for every 'empty_count'.
-//	class CPatternEvaluator : public IEvaluator
-//	{
-//		std::array<std::shared_ptr<CPack>, 61> m_packs;
-//	public:
-//		void Set(uint8_t empty_count, std::shared_ptr<CPack> group) { m_packs[empty_count] = std::move(group); }
-//
-//		float Eval(const CPosition&) const override;
-//		std::vector<std::vector<uint32_t>> GetConfigurations(const CPosition&) const;
-//	};
-//
-//	//class CFactory
-//	//{
-//	//	CNameLookupTable m_names;
-//	//	std::array<std::shared_ptr<CPack>, 61> m_packs;
-//	//public:
-//	//	CFactory(CNameLookupTable name_table) : m_names(std::move(name_table)) {}
-//	//	std::unique_ptr<Pattern::Eval::CBase> Pattern::IO::CFactory::Create(uint64_t pattern, const Pattern::Eval::CWeights & compressed) { return Pattern::Eval::CreatePattern(pattern, compressed); }
-//	//	CFactory(const CPath& name_table) : CFactory(CNameLookupTable(name_table)) {}
-//
-//	//	std::unique_ptr<CBase> Create(uint64_t pattern, std::vector<float> compressed_weights);
-//	//	std::unique_ptr<CBase> Create(uint64_t pattern, const CPath& compressed_weights);
-//	//	std::unique_ptr<CBase> Create(const std::string& pattern, std::vector<float> compressed_weights);
-//	//	std::unique_ptr<CBase> Create(const std::string& pattern, const CPath& compressed_weights);
-//	//};
-//
-//	class CEnsembleFactory
-//	{
-//		CFactory m_pattern_factory;
-//	public:
-//		CEnsembleFactory(CFactory pf) : m_pattern_factory(pf) {}
-//		CEnsembleFactory(const CPath& name_table) : m_pattern_factory(name_table) {}
-//
-//		std::unique_ptr<CPatternEvaluator> Create(const CPath&);
-//	};
-//}

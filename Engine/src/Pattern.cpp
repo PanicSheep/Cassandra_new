@@ -2,7 +2,7 @@
 
 namespace Pattern
 {
-	std::array<uint32_t, (1ui64 << 15)> CSumPow3Cache::m_cache;
+	static CSumPow3Cache sum_pow_3_cache;
 
 	uint64_t sum_pow3(uint64_t exp)
 	{
@@ -25,9 +25,9 @@ namespace Pattern
 		return m_cache[exp];
 	}
 
-	uint32_t CSumPow3Cache::FullIndex(const CPosition& pos, const uint64_t pattern) const
+	uint32_t FullIndex(const CPosition& pos, const uint64_t pattern)
 	{
-		return SumPow3(PExt(pos.GetP(), pattern)) + SumPow3(PExt(pos.GetO(), pattern)) * 2;
+		return sum_pow_3_cache.SumPow3(PExt(pos.GetP(), pattern)) + sum_pow_3_cache.SumPow3(PExt(pos.GetO(), pattern)) * 2;
 	}
 
 	namespace Configurations
@@ -45,6 +45,18 @@ namespace Pattern
 		std::vector<uint32_t> CHorizontalSymmetric::Configurations(const CPosition& pos) const
 		{
 			return { ReducedIndex0(pos), ReducedIndex1(pos), ReducedIndex2(pos), ReducedIndex3(pos) };
+		}
+
+		uint32_t CHorizontalSymmetric::Configuration(const CPosition& pos, std::size_t index) const
+		{
+			switch (index)
+			{
+				case 0: return ReducedIndex0(pos);
+				case 1: return ReducedIndex1(pos);
+				case 2: return ReducedIndex2(pos);
+				case 3: return ReducedIndex3(pos);
+				default: throw;
+			}
 		}
 
 		std::vector<uint64_t> CHorizontalSymmetric::Patterns() const
@@ -106,6 +118,18 @@ namespace Pattern
 		std::vector<uint32_t> CDiagonalSymmetric::Configurations(const CPosition& pos) const
 		{
 			return { ReducedIndex0(pos), ReducedIndex1(pos), ReducedIndex2(pos), ReducedIndex3(pos) };
+		}
+
+		uint32_t CDiagonalSymmetric::Configuration(const CPosition& pos, std::size_t index) const
+		{
+			switch (index)
+			{
+				case 0: return ReducedIndex0(pos);
+				case 1: return ReducedIndex1(pos);
+				case 2: return ReducedIndex2(pos);
+				case 3: return ReducedIndex3(pos);
+				default: throw;
+			}
 		}
 
 		std::vector<uint64_t> CDiagonalSymmetric::Patterns() const
@@ -171,6 +195,22 @@ namespace Pattern
 				ReducedIndex0(pos), ReducedIndex1(pos), ReducedIndex2(pos), ReducedIndex3(pos),
 				ReducedIndex4(pos), ReducedIndex5(pos), ReducedIndex6(pos), ReducedIndex7(pos)
 			};
+		}
+
+		uint32_t CAsymmetric::Configuration(const CPosition& pos, std::size_t index) const
+		{
+			switch (index)
+			{
+				case 0: return ReducedIndex0(pos);
+				case 1: return ReducedIndex1(pos);
+				case 2: return ReducedIndex2(pos);
+				case 3: return ReducedIndex3(pos);
+				case 4: return ReducedIndex4(pos);
+				case 5: return ReducedIndex5(pos);
+				case 6: return ReducedIndex6(pos);
+				case 7: return ReducedIndex7(pos);
+				default: throw;
+			}
 		}
 
 		std::vector<uint64_t> CAsymmetric::Patterns() const
@@ -247,7 +287,7 @@ namespace Pattern
 			else
 				return std::make_unique<CAsymmetric>(pattern);
 		}
-	}
+}
 
 	namespace Eval
 	{
@@ -356,7 +396,6 @@ namespace Pattern
 
 		std::unique_ptr<CBase> CreatePattern(const uint64_t pattern, const CWeights& compressed)
 		{
-			CSumPow3Cache cache;
 			auto config = Configurations::CreatePattern(pattern);
 
 			// Reserve memory
@@ -370,10 +409,7 @@ namespace Pattern
 			for (std::size_t i = 0; i < occurrences; i++)
 			{
 				For_each_config(patterns[i],
-					[&](const CPosition& pos) {
-						const auto configurations = config->Configurations(pos);
-						weights[i][cache.FullIndex(pos, patterns[i])] = compressed[configurations[i]];
-					}
+					[&](const CPosition& pos) { weights[i][FullIndex(pos, patterns[i])] = compressed[config->Configuration(pos, i)]; }
 				);
 			}
 
