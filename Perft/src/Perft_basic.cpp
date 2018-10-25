@@ -144,11 +144,11 @@ namespace Perft
 			HashTablePerft ht;
 			std::map<CPosition, std::size_t> PosMap;
 
-			uint64_t perft_HT(const CPosition& pos, const uint8_t depth);
-			void fill_unique(CPosition pos, const uint8_t depth);
+			uint64_t perft_HT(const CPosition&, uint8_t depth);
+			void fill_unique(CPosition, uint8_t depth);
 		public:
-			CPerft(const uint64_t BytesRAM) : ht(BytesRAM / sizeof(HashTablePerft::nodetype)) {}
-			uint64_t calculate(const CPosition& pos, const uint8_t depth);
+			CPerft(uint64_t BytesRAM) : ht(BytesRAM / sizeof(HashTablePerft::nodetype)) {}
+			uint64_t calculate(const CPosition&, uint8_t depth);
 		};
 
 		uint64_t CPerft::perft_HT(const CPosition& pos, const uint8_t depth)
