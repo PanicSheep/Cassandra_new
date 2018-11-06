@@ -4,15 +4,16 @@
 #include <numeric>
 #include <random>
 
+using namespace Pattern;
 using namespace Pattern::Eval;
 using namespace Pattern::Configurations;
 
 constexpr uint64_t PatternH = 0x00000000000000E7ui64; // HorizontalSymmetric
 constexpr uint64_t PatternD = 0x8040201008040303ui64; // DiagonalSymmetric
 constexpr uint64_t PatternA = 0x000000000000000Fui64; // Asymmetric
-static const auto WeightsH = CWeights(CreatePattern(PatternH)->ReducedSize());
-static const auto WeightsD = CWeights(CreatePattern(PatternD)->ReducedSize());
-static const auto WeightsA = CWeights(CreatePattern(PatternA)->ReducedSize());
+static const auto WeightsH = CWeights(CreatePattern(PatternH)->ReducedSize(), 0);
+static const auto WeightsD = CWeights(CreatePattern(PatternD)->ReducedSize(), 0);
+static const auto WeightsA = CWeights(CreatePattern(PatternA)->ReducedSize(), 0);
 
 TEST(Pattern_MetaTest, HorizontalSymmetric)
 {

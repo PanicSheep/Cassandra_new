@@ -5,9 +5,5 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PositionToMatrix.h" />
-    <ClInclude Include="..\src\VecVec.h" />
-    <ClInclude Include="..\src\Array2D.h" />
-    <ClInclude Include="..\src\MatrixCSR.h" />
-    <ClInclude Include="..\src\MatrixCSR_Grid.h" />
   </ItemGroup>
 </Project>

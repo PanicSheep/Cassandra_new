@@ -15,7 +15,7 @@
     <ProjectGuid>{17F2D495-2A11-4B66-A2AD-9C739CA878B7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Benchmark</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -58,7 +58,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\IO\src;..\Math\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -75,7 +75,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Core\src;..\Engine\src;..\IO\src;..\Math\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

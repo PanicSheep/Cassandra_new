@@ -1,25 +1,113 @@
 #pragma once
-#include <cstdint>
-
 #include "Position.h"
+
+#include <cstdint>
+#include <chrono>
 
 class Engine;
 
-class Search
+namespace Search
 {
-public:
-	Search(const std::shared_ptr<Engine>&);
+	struct CSpecification
+	{
+		int alpha, beta;
+		int8_t depth;
+		uint8_t selectivity;
 
-	virtual std::unique_ptr<Search> Clone() const = 0;
+		CSpecification(int alpha, int beta, int8_t depth, uint8_t selectivity);
+		static CSpecification SolveExact(CPosition pos) { return CSpecification(-64, 64, pos.EmptyCount(), 0); }
+	};
 
-	virtual int Eval(const CPosition&) = 0;
-	virtual int Eval(const CPosition& pos, int8_t depth, uint8_t selectivity) { return Eval(pos); }
+	struct CResult
+	{
+		int score;
+		std::size_t node_count;
+		std::chrono::nanoseconds duration;
 
-	uint64_t NodeCount() const;
+		CResult(int score, std::size_t node_count, std::chrono::nanoseconds duration);
+	};
 
-protected:
-	uint64_t node_counter;
-	std::shared_ptr<Engine> engine;
-	
-	static int EvalGameOver(const CPosition&);
-};
+	class CAlgorithm
+	{
+	protected:
+		std::shared_ptr<Engine> engine;
+		std::size_t node_counter = 0;
+
+		static int EvalGameOver(const CPosition&); // TODO: Remove!
+	public:
+		CAlgorithm(const std::shared_ptr<Engine>&);
+
+		virtual std::unique_ptr<CAlgorithm> Clone() const = 0;
+
+		virtual CResult Eval(const CPosition& pos) { return Eval(pos, CSpecification::SolveExact(pos)); }
+		virtual CResult Eval(const CPosition&, CSpecification) = 0;
+
+		std::size_t NodeCount() const { return node_counter; }
+	};
+
+	class oArchive;
+
+	struct ILog
+	{
+		struct CEntry
+		{
+			CPosition position;
+			std::size_t index;
+			int original_score;
+			CSpecification specification;
+			CResult result;
+
+			CEntry(CPosition position, std::size_t index, int original_score, CSpecification specification, CResult result)
+				: position(position), index(index), original_score(original_score), specification(specification), result(result)
+			{}
+		};
+		std::size_t index;
+
+		virtual std::unique_ptr<ILog> Clone() const = 0;
+		virtual void push_back(CPosition, int original_score, CSpecification, CResult) = 0;
+		virtual void Serialize(oArchive&) const = 0;
+	};
+
+	class oArchive
+	{
+	public:
+		virtual ~oArchive() {}
+
+		virtual void Header() {}
+		virtual void Footer() {}
+		virtual void Serialize(const ILog::CEntry&) = 0;
+		oArchive& operator<<(const ILog& obj) { obj.Serialize(*this); return *this; }
+	};
+
+	class CLogNull : public ILog
+	{
+	public:
+		std::unique_ptr<ILog> Clone() const override;
+		void push_back(CPosition, int, CSpecification, CResult) override {}
+		void Serialize(oArchive&) const override {}
+	};
+
+	class CLogCollector : public ILog
+	{
+		std::vector<CEntry> m_vec;
+	public:
+		CLogCollector() {}
+		CLogCollector(const CLogCollector&);
+
+		std::unique_ptr<ILog> Clone() const override;
+		void push_back(CPosition pos, int original_score, CSpecification spec, CResult result) override { m_vec.push_back(CLogCollector::CEntry(pos, index, original_score, spec, result)); }
+		void Serialize(oArchive& archive) const override { for (const auto& it : m_vec) archive.Serialize(it); }
+	};
+
+	class CLogPassThrough : public ILog
+	{
+		oArchive& m_archive;
+	public:
+		CLogPassThrough(oArchive& archive) : m_archive(archive) {}
+		CLogPassThrough(const CLogPassThrough&);
+
+		std::unique_ptr<ILog> Clone() const override;
+		void push_back(CPosition pos, int original_score, CSpecification spec, CResult result) override { m_archive.Serialize(CLogCollector::CEntry(pos, index, original_score, spec, result)); }
+		void Serialize(oArchive&) const override {}
+	};
+}

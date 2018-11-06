@@ -5,27 +5,29 @@
 #include "Search.h"
 #include "Moves.h"
 
-class AlphaBetaFailHardSearch : public Search
+namespace Search
 {
-public:
-	AlphaBetaFailHardSearch(const AlphaBetaFailHardSearch&) = default;
-	AlphaBetaFailHardSearch(const std::shared_ptr<Engine>& env) : Search(env) {}
+	class AlphaBetaFailHard : public CAlgorithm
+	{
+	public:
+		AlphaBetaFailHard(const AlphaBetaFailHard&) = default;
+		AlphaBetaFailHard(const std::shared_ptr<Engine>& engine) : CAlgorithm(engine) {}
 
-	std::unique_ptr<Search> Clone() const override;
+		std::unique_ptr<CAlgorithm> Clone() const override;
 
-	int Eval(const CPosition&) override;
+		CResult Eval(const CPosition&, CSpecification) override;
+	private:
+		int Eval  (const CPosition&, int alpha, int beta);
+		int Eval_1(const CPosition&, int alpha, int beta);
+		int Eval_2(const CPosition&, int alpha, int beta);
+		int Eval_3(const CPosition&, int alpha, int beta);
+		int Eval_4(const CPosition&, int alpha, int beta);
 
-	int Eval(const CPosition&, int alpha, int beta);
-private:
-	int Eval_1(const CPosition&, int alpha, int beta);
-	int Eval_2(const CPosition&, int alpha, int beta);
-	int Eval_3(const CPosition&, int alpha, int beta);
-	int Eval_4(const CPosition&, int alpha, int beta);
-
-	int Eval_0(const CPosition&, int alpha, int beta);
-	int Eval_1(const CPosition&, int alpha, int beta, CMove move1);
-	int Eval_2(const CPosition&, int alpha, int beta, CMove move1, CMove move2);
-	int Eval_3(const CPosition&, int alpha, int beta, CMove move1, CMove move2, CMove move3);
-	int Eval_4(const CPosition&, int alpha, int beta, CMove move1, CMove move2, CMove move3, CMove move4);
-	int Eval_N(const CPosition&, int alpha, int beta);
-};
+		int Eval_0(const CPosition&, int alpha, int beta);
+		int Eval_1(const CPosition&, int alpha, int beta, CMove);
+		int Eval_2(const CPosition&, int alpha, int beta, CMove, CMove);
+		int Eval_3(const CPosition&, int alpha, int beta, CMove, CMove, CMove);
+		int Eval_4(const CPosition&, int alpha, int beta, CMove, CMove, CMove, CMove);
+		int Eval_N(const CPosition&, int alpha, int beta);
+	};
+}

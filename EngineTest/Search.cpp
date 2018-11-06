@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "Search.h"
 
-class Search_Test : public Search
+class Search_Test : public Search::CAlgorithm
 {
 public:
-	static int EvalGameOver(const CPosition& pos) { return Search::EvalGameOver(pos); }
+	static int EvalGameOver(const CPosition& pos) { return CAlgorithm::EvalGameOver(pos); }
 };
 
-TEST(Search, EvalGameOver)
+TEST(CAlgorithm, EvalGameOver)
 {
 	const auto pos1 = CPosition(0x0000000000000000ui64, 0x0000000000000000ui64); // Player: 0   Opponent: 0   Empty: 64   Score: 0-0=0
 	const auto pos2 = CPosition(0x00000000000000FFui64, 0x0000000000000000ui64); // Player: 8   Opponent: 0   Empty: 56   Score: 8-0+56=64

@@ -28,6 +28,7 @@ namespace Pattern::IO
 		uint64_t Get(const std::string&) const;
 		std::string Get(uint64_t) const;
 
+		uint64_t Translate(const std::string&) const;
 	private:
 		void Read(std::iostream&);
 		std::vector<std::string>::const_iterator Find(const std::string&) const;
@@ -42,9 +43,11 @@ namespace Pattern::IO
 		CFactory() {}
 		CFactory(CNameLookupTable);
 
-		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, Eval::CWeights compressed_weights) const;
-		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, const CPath& compressed_weights) const;
+		CWeights CreateDefaultWeight(const std::string& name) const;
 
+		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, CWeights compressed_weights) const;
+		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, const CPath& compressed_weights) const;
+		
 		Eval::CEnsemble CreateEnsemble(const CPath&) const;
 
 		uint64_t Translate(const std::string& name) const;

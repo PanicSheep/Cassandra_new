@@ -7,8 +7,8 @@ import array
 
 from Puzzles import *
 
-for empties in range(0, 23):
-    filename = "C:\\Users\\dohof_000\\Documents\\GitHub\\Cassandra_new.git\\pos\\rnd\\e%s.pos" % empties
+for r in range(0, 6):
+    filename = "C:\\Users\\dohof_000\\Documents\\GitHub\\Cassandra_new.git\\pos\\test\\range%s.pos" % r
     scores = [puzzle.score for puzzle in Deserialize_Puzzles(filename) if type(puzzle) is PuzzleScore and puzzle.IsSolved()]
 
     n, bins, patches = plt.hist(scores, 65, (-64, 64))
@@ -16,7 +16,7 @@ for empties in range(0, 23):
     (mu, sigma) = norm.fit(scores)
     y = mlab.normpdf(bins, mu, sigma);
 
-    plt.title("e%s.pos" % empties)
+    plt.title("range%s.pos" % r)
     plt.xlabel('Score')
     plt.ylabel('Count')
     plt.text(-7, 10000, '$\mu=$%s\n$\sigma=$%s' % (round(mu,1), round(sigma,1)))

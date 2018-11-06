@@ -41,34 +41,34 @@ def MagicFormula(D, d, E, alpha, beta, gamma, delta, epsilon):
 Measurements = [] # D, d, E, stddev
 
 start = timeit.default_timer()
-for empties in range(1, 20):
-    filename = "C:\\Users\\dohof_000\\Documents\\GitHub\\Cassandra_new.git\\pos\\EvalSet\\e%s.pos" % empties
-    scores = np.array([puzzle.score[:empties+1] for puzzle in Deserialize_Puzzles(filename) if type(puzzle) is PuzzleAllDepthScore])
-                
-    exact_score = scores[:,empties]
-    heuristic_score = scores[:,0]
+for r in range(0, 6):
+    filename = "C:\\Users\\dohof_000\\Documents\\GitHub\\Cassandra_new.git\\pos\\test\\range%s_eval.pos" % r
+    puzzles = [puzzle for puzzle in Deserialize_Puzzles(filename) if type(puzzle) is PuzzleAllDepthScore]
+    
+    score_heuristic = np.array([puzzle.score[0] for puzzle in puzzles])
+    score_exact = np.array([puzzle.score[puzzle.EmptyCount()] for puzzle in puzzles])
         
-    plt.suptitle("e%s.pos" % empties)
+    plt.suptitle("range %s.pos" % r)
     
     plot = plt.subplot(2, 2, 1)
     plot.xaxis.tick_top()
     plot.xaxis.set_label_position("top")
     plt.xlabel('Exact score')
-    plt.hist(exact_score, 129, (-64, 64))
+    plt.hist(score_exact, 129, (-64, 64))
     
     plt.subplot(2, 2, 3)
-    plt.hist2d(exact_score, heuristic_score, bins=[129,129], range=[[-64,64],[-64,64]], cmap='hot')
+    plt.hist2d(score_exact, score_heuristic, bins=[129,129], range=[[-64,64],[-64,64]], cmap='hot')
     
     plot = plt.subplot(2, 2, 4)
     plot.yaxis.tick_right()
     plot.yaxis.set_label_position("right")
     plt.ylabel('Estimated score')
-    plt.hist(heuristic_score, 129, (-64, 64), orientation="horizontal")
+    plt.hist(score_heuristic, 129, (-64, 64), orientation="horizontal")
     
-    plt.text(10,200,'$\sigma(error)=$%s' % np.std(np.subtract(heuristic_score, exact_score), ddof=1))
-    plt.text(10,215,'$score=0$ : %s' % sum(1 for x in heuristic_score if x == 0))
+    plt.text(10,200,'$\sigma(error)=$%s' % np.std(np.subtract(score_heuristic, score_exact), ddof=1))
+    plt.text(10,215,'$score=0$ : %s' % sum(1 for x in score_heuristic if x == 0))
 
-    plt.savefig("C:\\Users\\dohof_000\\Documents\\GitHub\\Cassandra_new.git\\pos\\EvalSet\\histogram\\e%s.png" % empties)
+    #plt.savefig("C:\\Users\\dohof_000\\Documents\\GitHub\\Cassandra_new.git\\pos\\test\\histogram\\e%s.png" % empties)
     plt.show()
     plt.clf()
     

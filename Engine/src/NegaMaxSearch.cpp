@@ -5,26 +5,36 @@
 #include "LastFlipCounter.h"
 #include "FlipFast.h"
 
-int NegaMaxSearch::Eval(const CPosition& pos)
+using namespace Search;
+
+std::unique_ptr<CAlgorithm> NegaMax::Clone() const
 {
-	const auto EmptyCount = pos.EmptyCount();
-	switch (EmptyCount)
+	return std::make_unique<NegaMax>(*this);
+}
+
+CResult NegaMax::Eval(const CPosition& pos, CSpecification)
+{
+	const auto old_node_counter = node_counter;
+	const auto start_time = std::chrono::high_resolution_clock::now();
+	
+	int score;
+	switch (pos.EmptyCount())
 	{
-		case 0: return Eval_0(pos);
-		case 1: return Eval_1(pos);
-		case 2: return Eval_2(pos);
-		case 3: return Eval_3(pos);
-		case 4: return Eval_4(pos);
-		default: return Eval_N(pos);
+		case 0: score = Eval_0(pos); break;
+		case 1: score = Eval_1(pos); break;
+		case 2: score = Eval_2(pos); break;
+		case 3: score = Eval_3(pos); break;
+		case 4: score = Eval_4(pos); break;
+		default: score = Eval_N(pos); break;
 	}
+
+	const auto end_time = std::chrono::high_resolution_clock::now();
+	const auto duration = end_time - start_time;
+	const auto node_count = node_counter - old_node_counter;
+	return CResult(score, node_count, duration);
 }
 
-std::unique_ptr<Search> NegaMaxSearch::Clone() const
-{
-	return std::make_unique<NegaMaxSearch>(*this);
-}
-
-int NegaMaxSearch::Eval_1(const CPosition& pos)
+int NegaMax::Eval_1(const CPosition& pos)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -32,7 +42,7 @@ int NegaMaxSearch::Eval_1(const CPosition& pos)
 	return Eval_1(pos, move1);
 }
 
-int NegaMaxSearch::Eval_2(const CPosition& pos)
+int NegaMax::Eval_2(const CPosition& pos)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -41,7 +51,7 @@ int NegaMaxSearch::Eval_2(const CPosition& pos)
 	return Eval_2(pos, move1, move2);
 }
 
-int NegaMaxSearch::Eval_3(const CPosition& pos)
+int NegaMax::Eval_3(const CPosition& pos)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -51,7 +61,7 @@ int NegaMaxSearch::Eval_3(const CPosition& pos)
 	return Eval_3(pos, move1, move2, move3);
 }
 
-int NegaMaxSearch::Eval_4(const CPosition& pos)
+int NegaMax::Eval_4(const CPosition& pos)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -62,13 +72,13 @@ int NegaMaxSearch::Eval_4(const CPosition& pos)
 	return Eval_4(pos, move1, move2, move3, move4);
 }
 
-int NegaMaxSearch::Eval_0(const CPosition& pos)
+int NegaMax::Eval_0(const CPosition& pos)
 {
 	node_counter++;
 	return EvalGameOver(pos);
 }
 
-int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove move1)
+int NegaMax::Eval_1(const CPosition& pos, const CMove move1)
 {
 	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
@@ -88,7 +98,7 @@ int NegaMaxSearch::Eval_1(const CPosition& pos, const CMove move1)
 		return (score > 0) ? score + 1 : score - 1;
 }
 
-int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
+int NegaMax::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 {
 	node_counter++;
 	int score = -128;
@@ -119,7 +129,7 @@ int NegaMaxSearch::Eval_2(const CPosition& pos, const CMove move1, const CMove m
 		return -EvalGameOver(posPass);
 }
 
-int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3)
+int NegaMax::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3)
 {
 	node_counter++;
 	int score = -128;
@@ -156,7 +166,7 @@ int NegaMaxSearch::Eval_3(const CPosition& pos, const CMove move1, const CMove m
 		return -EvalGameOver(posPass);
 }
 
-int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
+int NegaMax::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
 	node_counter++;
 	int score = -128;
@@ -199,7 +209,7 @@ int NegaMaxSearch::Eval_4(const CPosition& pos, const CMove move1, const CMove m
 		return -EvalGameOver(posPass);
 }
 
-int NegaMaxSearch::Eval_N(const CPosition& pos)
+int NegaMax::Eval_N(const CPosition& pos)
 {
 	if (pos.EmptyCount() == 4)
 		return Eval_4(pos);

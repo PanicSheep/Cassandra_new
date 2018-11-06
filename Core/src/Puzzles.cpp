@@ -1,5 +1,19 @@
 #include "Puzzles.h"
 
+void CPuzzle::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
+{
+	return Solve(algorithm, log, Search::CSpecification::SolveExact(pos));
+}
+
+void CPuzzle::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CSpecification spec)
+{
+	if (spec.depth > pos.EmptyCount())
+		spec.depth = pos.EmptyCount();
+
+	const auto result = algorithm.Eval(pos, spec);
+	log.push_back(pos, Puzzle::DEFAULT_SCORE, spec, result);
+}
+
 bool CPuzzleAllDepthScore::Test() const
 {
 	if (CPuzzle::Test() == false)
@@ -9,10 +23,10 @@ bool CPuzzleAllDepthScore::Test() const
 	const uint64_t size = std::distance(std::begin(score), std::end(score));
 	const auto UpperLimit = std::min(emptyCount, size - 1);
 	for (uint64_t i = 0; i <= UpperLimit; i++)
-		if (!(((score[i] >= -64) && (score[i] <= 64)) || (score[i] == DEFAULT_SCORE)))
+		if (!(((score[i] >= -64) && (score[i] <= 64)) || (score[i] == Puzzle::DEFAULT_SCORE)))
 			return false;
 	for (uint64_t i = emptyCount + 1; i < size; i++)
-		if (score[i] != DEFAULT_SCORE)
+		if (score[i] != Puzzle::DEFAULT_SCORE)
 			return false;
 	return true;
 }
@@ -27,14 +41,28 @@ bool CPuzzleAllDepthScore::IsSolved() const
 
 bool CPuzzleAllDepthScore::IsSolved(int8_t depth) const
 {
-	return score[depth] == DEFAULT_SCORE;
+	return score[depth] == Puzzle::DEFAULT_SCORE;
 }
 
-void CPuzzleAllDepthScore::Solve(Search& search)
+void CPuzzleAllDepthScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
 {
-	for (int8_t d = 0; d < sizeof(score); d++)
-		if (IsSolved(d) && (d <= pos.EmptyCount()))
-			score[d] = search.Eval(pos, d, 0);
+	return Solve(algorithm, log, Search::CSpecification::SolveExact(pos));
+}
+
+void CPuzzleAllDepthScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CSpecification spec)
+{
+	if (spec.depth > pos.EmptyCount())
+		spec.depth = pos.EmptyCount();
+	const auto original_depth = spec.depth;
+
+	for (int8_t d = 0; d <= original_depth; d++)
+	{
+		const int original_score = score[d];
+		spec.depth = d;
+		const auto result = algorithm.Eval(pos, spec);
+		score[d] = result.score;
+		log.push_back(pos, original_score, spec, result);
+	}
 }
 
 template <typename T> struct reversion_wrapper { T& iterable; };
@@ -48,7 +76,7 @@ template <typename T> reversion_wrapper<T> reverse(T&& iterable) { return { iter
 int8_t CPuzzleAllDepthScore::MaxSolvedDepth() const
 {
 	for (const auto& it : reverse(score))
-		if (it != DEFAULT_SCORE)
+		if (it != Puzzle::DEFAULT_SCORE)
 			return static_cast<int8_t>(std::distance(std::begin(score), &it));
 	return -1;
 }
@@ -65,67 +93,20 @@ bool CPuzzleAllDepthScore::isEqual(const CPuzzle & o) const
 	return true;
 }
 
-bool CPuzzleAllMoveScore::Test() const
+void CPuzzleScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
 {
-	if (CPuzzle::Test() == false)
-		return false;
-
-	const auto possibleMoves = GetPosition().PossibleMoves();
-	for (const auto& it : score)
-	{
-		const auto move = static_cast<CMove>(std::distance(std::begin(score), &it));
-		if (possibleMoves.HasMove(move))
-		{
-			if (!(((it >= -64) && (it <= 64)) || (it == DEFAULT_SCORE)))
-				return false;
-		}
-		else
-		{
-			if (it != DEFAULT_SCORE)
-				return false;
-		}
-	}
-	return true;
+	return Solve(algorithm, log, Search::CSpecification::SolveExact(pos));
 }
 
-bool CPuzzleAllMoveScore::IsSolved() const
+void CPuzzleScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CSpecification spec)
 {
-	auto possibleMoves = GetPosition().PossibleMoves();
-	while (!possibleMoves.empty())
-	{
-		const auto move = possibleMoves.ExtractMove();
-		if (score[move] == DEFAULT_SCORE)
-			return false;
-	}
-	return true;
-}
+	if (spec.depth > pos.EmptyCount())
+		spec.depth = pos.EmptyCount();
 
-void CPuzzleAllMoveScore::Solve(Search& search)
-{
-	auto moves = pos.PossibleMoves();
-	while (!moves.empty())
-	{
-		const CMove move = moves.ExtractMove();
-		if (score[move] == DEFAULT_SCORE)
-			score[move] = search.Eval(pos.Play(move));
-	}
-}
-
-bool CPuzzleAllMoveScore::isEqual(const CPuzzle & o) const
-{
-	if (CPuzzle::isEqual(o) == false)
-		return false;
-
-	const auto& O = dynamic_cast<const CPuzzleAllMoveScore&>(o);
-	for (std::size_t i = 0; i < sizeof(score); i++)
-		if (score[i] != O.score[i])
-			return false;
-	return true;
-}
-
-void CPuzzleScore::Solve(Search& search)
-{
-	score = search.Eval(pos);
+	const int original_score = score;
+	const auto result = algorithm.Eval(pos, spec);
+	score = result.score;
+	log.push_back(pos, original_score, spec, result);
 }
 
 bool CPuzzleScore::isEqual(const CPuzzle & o) const
@@ -134,9 +115,22 @@ bool CPuzzleScore::isEqual(const CPuzzle & o) const
 	return CPuzzle::isEqual(o) && (score == O.score);
 }
 
-void CPuzzleScoreDepth::Solve(Search& search)
+void CPuzzleScoreDepth::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
 {
-	score = search.Eval(pos, depth, selectivity);
+	return Solve(algorithm, log, Search::CSpecification(-64, 64, depth, selectivity));
+}
+
+void CPuzzleScoreDepth::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CSpecification spec)
+{
+	if (spec.depth > pos.EmptyCount())
+		spec.depth = pos.EmptyCount();
+
+	const int original_score = score;
+	const auto result = algorithm.Eval(pos, spec);
+	score = result.score;
+	depth = spec.depth;
+	selectivity = spec.selectivity;
+	log.push_back(pos, original_score, spec, result);
 }
 
 bool CPuzzleScoreDepth::isEqual(const CPuzzle & o) const
@@ -155,4 +149,89 @@ std::unique_ptr<CPuzzleAllDepthScore> to_PuzzleAllDepthScore(const CPuzzle & puz
 		return ret;
 	}
 	throw std::runtime_error("not implemented");
+}
+
+bool CPuzzleAllMoveScore::Test() const
+{
+	if (CPuzzle::Test() == false)
+		return false;
+
+	const auto possibleMoves = GetPosition().PossibleMoves();
+	for (const auto& it : score)
+	{
+		const auto move = static_cast<CMove>(std::distance(std::begin(score), &it));
+		if (possibleMoves.HasMove(move))
+		{
+			if (!(((it >= -64) && (it <= 64)) || (it == Puzzle::DEFAULT_SCORE)))
+				return false;
+		}
+		else
+		{
+			if (it != Puzzle::DEFAULT_SCORE)
+				return false;
+		}
+	}
+	return true;
+}
+
+bool CPuzzleAllMoveScore::IsSolved() const
+{
+	auto possibleMoves = GetPosition().PossibleMoves();
+	while (!possibleMoves.empty())
+	{
+		const auto move = possibleMoves.ExtractMove();
+		if (score[move] == Puzzle::DEFAULT_SCORE)
+			return false;
+	}
+	return true;
+}
+
+void CPuzzleAllMoveScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
+{
+	auto moves = pos.PossibleMoves();
+	while (!moves.empty())
+	{
+		const CMove move = moves.ExtractMove();
+		if (score[move] == Puzzle::DEFAULT_SCORE)
+		{
+			const auto original_pos = pos.Play(move);
+			const int original_score = score[move];
+			const auto result = algorithm.Eval(original_pos);
+			score[move] = result.score;
+			log.push_back(original_pos, original_score, Search::CSpecification::SolveExact(original_pos), result);
+		}
+	}
+}
+
+void CPuzzleAllMoveScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CSpecification spec)
+{
+	if (spec.depth > pos.EmptyCount())
+		spec.depth = pos.EmptyCount();
+	spec.depth--;
+
+	auto moves = pos.PossibleMoves();
+	while (!moves.empty())
+	{
+		const CMove move = moves.ExtractMove();
+		if (score[move] == Puzzle::DEFAULT_SCORE)
+		{
+			const auto original_pos = pos.Play(move);
+			const int original_score = score[move];
+			const auto result = algorithm.Eval(original_pos, spec);
+			score[move] = result.score;
+			log.push_back(original_pos, original_score, spec, result);
+		}
+	}
+}
+
+bool CPuzzleAllMoveScore::isEqual(const CPuzzle & o) const
+{
+	if (CPuzzle::isEqual(o) == false)
+		return false;
+
+	const auto& O = dynamic_cast<const CPuzzleAllMoveScore&>(o);
+	for (std::size_t i = 0; i < sizeof(score); i++)
+		if (score[i] != O.score[i])
+			return false;
+	return true;
 }

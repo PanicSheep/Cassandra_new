@@ -2,7 +2,7 @@
 #include <memory>
 
 // Forward declarations
-class Archive;
+class oArchive;
 class CPuzzle;
 class CPuzzleScore;
 class CPuzzleScoreDepth;
@@ -13,14 +13,20 @@ class Serializable
 {
 public:
 	virtual ~Serializable() {}
-	virtual void Serialize(Archive&) const = 0;
+	virtual void Serialize(oArchive&) const = 0;
 };
 
-// A generic archive to serialize and deserialize puzzles.
-class Archive
+class iArchive
 {
 public:
-	virtual ~Archive() {}
+	virtual ~iArchive() {}
+	virtual std::unique_ptr<CPuzzle> Deserialize() = 0;
+};
+
+class oArchive
+{
+public:
+	virtual ~oArchive() {}
 
 	virtual void Serialize(const CPuzzle&) = 0;
 	virtual void Serialize(const CPuzzleScore&) = 0;
@@ -28,7 +34,12 @@ public:
 	virtual void Serialize(const CPuzzleAllDepthScore&) = 0;
 	virtual void Serialize(const CPuzzleAllMoveScore&) = 0;
 
-	virtual std::unique_ptr<CPuzzle> Deserialize() = 0;
+	oArchive& operator<<(const Serializable& obj) { obj.Serialize(*this); return *this; }
+};
 
-	Archive& operator<<(const Serializable& obj) { obj.Serialize(*this); return *this; }
+// A generic archive to serialize and deserialize puzzles.
+class Archive : public iArchive, public oArchive
+{
+public:
+	virtual ~Archive() {}
 };

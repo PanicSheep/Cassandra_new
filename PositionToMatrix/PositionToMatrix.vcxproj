@@ -22,10 +22,6 @@
     <ClCompile Include="PositionToMatrix.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Array2D.h" />
-    <ClInclude Include="..\src\MatrixCSR.h" />
-    <ClInclude Include="..\src\MatrixCSR_Grid.h" />
-    <ClInclude Include="..\src\VecVec.h" />
     <ClInclude Include="PositionToMatrix.h" />
   </ItemGroup>
   <ItemGroup>
@@ -44,7 +40,7 @@
     <ProjectGuid>{D3C83F0F-C01A-4533-BB99-67B72027A9A0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>PositionToMatrix</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -112,7 +108,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
-      <AdditionalIncludeDirectories>..\src;..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\Core\src;..\Engine\src;..\IO\src;..\Math\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,7 +139,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
-      <AdditionalIncludeDirectories>..\src;..\Core\src;..\Engine\src;..\IO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\Core\src;..\Engine\src;..\IO\src;..\Math\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

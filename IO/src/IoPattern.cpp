@@ -102,6 +102,20 @@ namespace Pattern::IO
 		return m_names[std::distance(std::cbegin(m_patterns), it)];
 	}
 
+	uint64_t CNameLookupTable::Translate(const std::string& name) const
+	{
+		if (Has(name))
+			return Get(name);
+		else
+		{
+			auto ull = std::stoull(name, nullptr, 16);
+			if (ull != 0)
+				return ull;
+			else
+				throw std::runtime_error("Invalid pattern name");
+		}
+	}
+
 	void CNameLookupTable::Read(std::iostream& stream)
 	{
 		if (!stream.good())
@@ -141,7 +155,13 @@ namespace Pattern::IO
 		: m_names(std::move(names))
 	{}
 
-	std::unique_ptr<Eval::CBase> CFactory::CreatePattern(const std::string& name, Eval::CWeights compressed_weights) const
+	CWeights CFactory::CreateDefaultWeight(const std::string & name) const
+	{
+		const uint64_t pattern = Translate(name);
+		return Configurations::CreateDefaultWeight(pattern);
+	}
+
+	std::unique_ptr<Eval::CBase> CFactory::CreatePattern(const std::string& name, CWeights compressed_weights) const
 	{
 		const uint64_t pattern = Translate(name);
 		return Eval::CreatePattern(pattern, compressed_weights);
@@ -150,11 +170,11 @@ namespace Pattern::IO
 	std::unique_ptr<Eval::CBase> CFactory::CreatePattern(const std::string& name, const CPath& file) const
 	{
 		const uint64_t pattern = Translate(name);
-		Eval::CWeights compressed_weights = ::IO::read_vector<float>(file);
+		CWeights compressed_weights = ::IO::read_vector<float>(file);
 		return Eval::CreatePattern(pattern, compressed_weights);
 	}
 
-	std::vector<uint8_t> GetDepths(const std::string& str)
+	std::vector<uint8_t> ParseEmpties(const std::string& str)
 	{
 		const auto vec = split(str, " ");
 		std::vector<uint8_t> ret;
@@ -163,7 +183,7 @@ namespace Pattern::IO
 			ret.push_back(static_cast<uint8_t>(std::stoi(it)));
 		return ret;
 	}
-
+	
 	Eval::CEnsemble CFactory::CreateEnsemble(const CPath& file) const
 	{
 		std::fstream stream(file.GetAbsoluteFilePath(), std::ios::in | std::ios::binary);
@@ -179,7 +199,7 @@ namespace Pattern::IO
 			const std::size_t begin = line.find("{");
 			const std::size_t end = line.find("}");
 			const std::string str_depths = line.substr(begin + 1, end - begin - 1);
-			const auto depths = GetDepths(str_depths);
+			const auto empties = ParseEmpties(str_depths);
 
 			const std::size_t end_of_line = line.find('\r', end);
 			const std::string remainder = line.substr(end + 2, end_of_line - end - 2);
@@ -195,8 +215,8 @@ namespace Pattern::IO
 				pack->Add(CreatePattern(it, file.GetAbsoluteFolderPath() + compressed_weights));
 			}
 
-			for (const auto& it : depths)
-				ensemble.Set(it, pack);
+			for (const auto& e : empties)
+				ensemble.Set(e, pack);
 		}
 		return ensemble;
 	}

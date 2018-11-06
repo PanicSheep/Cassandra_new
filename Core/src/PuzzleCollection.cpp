@@ -7,7 +7,9 @@ PuzzleVectorGuard::PuzzleVectorGuard(PuzzleVector&& puzzles)
 PuzzleVector PuzzleVectorGuard::Release()
 {
 	std::unique_lock<std::mutex> lock(m_mtx);
-	return std::move(m_puzzles);
+	auto ret = std::move(m_puzzles);
+	m_puzzles.clear();
+	return std::move(ret);
 }
 
 void PuzzleVectorGuard::push_back(std::unique_ptr<CPuzzle>&& puzzle)

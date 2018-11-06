@@ -5,19 +5,24 @@
 #include "SortedMoves.h"
 #include <algorithm>
 
-std::unique_ptr<Search> PVSearch::Clone() const
+using namespace Search;
+
+std::unique_ptr<CAlgorithm> PVSearch::Clone() const
 {
 	return std::make_unique<PVSearch>(*this);
 }
 
-int PVSearch::Eval(const CPosition& pos)
+CResult PVSearch::Eval(const CPosition& pos, CSpecification spec)
 {
-	return Eval(pos, -64, 64, pos.EmptyCount(), 0);
-}
+	const auto old_node_counter = node_counter;
+	const auto start_time = std::chrono::high_resolution_clock::now();
 
-int PVSearch::Eval(const CPosition& pos, int8_t depth, uint8_t selectivity)
-{
-	return Eval(pos, -64, 64, depth, selectivity);
+	const auto score = Eval(pos, -64, 64, spec.depth, spec.selectivity);
+
+	const auto end_time = std::chrono::high_resolution_clock::now();
+	const auto duration = end_time - start_time;
+	const auto node_count = node_counter - old_node_counter;
+	return CResult(score, node_count, duration);
 }
 
 int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity)
@@ -597,5 +602,5 @@ PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputV
 
 void PVSearch::UpdateTranspositionTable(const StatusValues& stat)
 {
-	engine->Update(stat.pos, PvsInfo(NodeCount() - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
+	engine->Update(stat.pos, PvsInfo(node_counter - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
 }

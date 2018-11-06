@@ -1,4 +1,4 @@
 - Draw Architecture.
-- Implement CSearch.Eval(depth)
 - Improve 'CArgs' wo work with single-values and vector-values, because args.Get("config").back() ist too complicated.
 - Make PopCount constexpr.
+- Rename Solver\Config.cpp + .h to InputParse

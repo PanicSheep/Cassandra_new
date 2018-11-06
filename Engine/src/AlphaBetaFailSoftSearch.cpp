@@ -5,20 +5,29 @@
 #include "LastFlipCounter.h"
 #include "FlipFast.h"
 
-std::unique_ptr<Search> AlphaBetaFailSoftSearch::Clone() const
+using namespace Search;
+
+std::unique_ptr<CAlgorithm> AlphaBetaFailSoft::Clone() const
 {
-	return std::make_unique<AlphaBetaFailSoftSearch>(*this);
+	return std::make_unique<AlphaBetaFailSoft>(*this);
 }
 
-int AlphaBetaFailSoftSearch::Eval(const CPosition& pos)
+CResult AlphaBetaFailSoft::Eval(const CPosition& pos, CSpecification spec)
 {
-	return Eval(pos, -64, 64);
+	const auto old_node_counter = node_counter;
+	const auto start_time = std::chrono::high_resolution_clock::now();
+	
+	const auto score = Eval(pos, spec.alpha, spec.beta);
+
+	const auto end_time = std::chrono::high_resolution_clock::now();
+	const auto duration = end_time - start_time;
+	const auto node_count = node_counter - old_node_counter;
+	return CResult(score, node_count, duration);
 }
 
-int AlphaBetaFailSoftSearch::Eval(const CPosition& pos, int alpha, int beta)
+int AlphaBetaFailSoft::Eval(const CPosition& pos, int alpha, int beta)
 {
-	const auto EmptyCount = pos.EmptyCount();
-	switch (EmptyCount)
+	switch (pos.EmptyCount())
 	{
 		case 0: return Eval_0(pos);
 		case 1: return Eval_1(pos, alpha);
@@ -29,7 +38,7 @@ int AlphaBetaFailSoftSearch::Eval(const CPosition& pos, int alpha, int beta)
 	}
 }
 
-int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha)
+int AlphaBetaFailSoft::Eval_1(const CPosition& pos, int alpha)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -37,7 +46,7 @@ int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha)
 	return Eval_1(pos, alpha, move1);
 }
 
-int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta)
+int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -46,7 +55,7 @@ int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta)
 	return Eval_2(pos, alpha, beta, move1, move2);
 }
 
-int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta)
+int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -56,7 +65,7 @@ int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta)
 	return Eval_3(pos, alpha, beta, move1, move2, move3);
 }
 
-int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta)
+int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta)
 {
 	auto moves = CMoves(pos.Empties());
 	const auto move1 = moves.ExtractMove();
@@ -67,13 +76,13 @@ int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta)
 	return Eval_4(pos, alpha, beta, move1, move2, move3, move4);
 }
 
-int AlphaBetaFailSoftSearch::Eval_0(const CPosition& pos)
+int AlphaBetaFailSoft::Eval_0(const CPosition& pos)
 {
 	node_counter++;
 	return EvalGameOver(pos);
 }
 
-int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove move1)
+int AlphaBetaFailSoft::Eval_1(const CPosition& pos, int alpha, const CMove move1)
 {
 	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
@@ -98,7 +107,7 @@ int AlphaBetaFailSoftSearch::Eval_1(const CPosition& pos, int alpha, const CMove
 	}
 }
 
-int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
+int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
 {
 	node_counter++;
 	int bestscore = -128;
@@ -141,7 +150,7 @@ int AlphaBetaFailSoftSearch::Eval_2(const CPosition& pos, int alpha, int beta, c
 		return -EvalGameOver(posPass);
 }
 
-int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
+int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
 {
 	node_counter++;
 	int bestscore = -128;
@@ -203,7 +212,7 @@ int AlphaBetaFailSoftSearch::Eval_3(const CPosition& pos, int alpha, int beta, c
 		return -EvalGameOver(posPass);
 }
 
-int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
+int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
 	node_counter++;
 	int bestscore = -128;
@@ -278,7 +287,7 @@ int AlphaBetaFailSoftSearch::Eval_4(const CPosition& pos, int alpha, int beta, c
 		return -EvalGameOver(posPass);
 }
 
-int AlphaBetaFailSoftSearch::Eval_N(const CPosition& pos, int alpha, int beta)
+int AlphaBetaFailSoft::Eval_N(const CPosition& pos, int alpha, int beta)
 {
 	if (pos.EmptyCount() == 4)
 		return Eval_4(pos, alpha, beta);

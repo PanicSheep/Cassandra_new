@@ -12,6 +12,8 @@
 
 namespace Pattern
 {
+	using CWeights = std::vector<float>;
+
 	class CSumPow3Cache
 	{
 		std::array<uint32_t, (1ui64 << 15)> m_cache;
@@ -113,12 +115,12 @@ namespace Pattern
 		};
 
 		std::unique_ptr<CBase> CreatePattern(uint64_t pattern);
+		
+		CWeights CreateDefaultWeight(uint64_t pattern);
 	}
 
 	namespace Eval
 	{
-		using CWeights = std::vector<float>;
-
 		void For_each_config(const uint64_t pattern, std::function<void(CPosition)>);
 
 		class CBase : public IEvaluator
