@@ -31,10 +31,10 @@ public:
 	void load(const std::string & filename);
 	void save(const std::string & filename) const;
 
-	inline std::size_t n() const;
-	inline std::size_t m() const;
+	inline std::size_t n() const noexcept;
+	inline std::size_t m() const noexcept;
 	inline std::size_t nnz() const;
-	inline std::size_t size() const;
+	inline std::size_t size() const noexcept;
 
 	void push_back(const std::vector<SizeType>& Col_Indices, const std::vector<ValueType>& Data);
 	void push_back(const SizeType& col, const ValueType& Data);
@@ -132,13 +132,13 @@ void CMatrix_CSR<ValueType, SizeType>::save(const std::string & filename) const
 }
 
 template <typename ValueType, typename SizeType>
-inline std::size_t CMatrix_CSR<ValueType, SizeType>::n() const
+inline std::size_t CMatrix_CSR<ValueType, SizeType>::n() const noexcept
 {
 	return m_n;
 }
 
 template <typename ValueType, typename SizeType>
-inline std::size_t CMatrix_CSR<ValueType, SizeType>::m() const
+inline std::size_t CMatrix_CSR<ValueType, SizeType>::m() const noexcept
 {
 	return m_m;
 }
@@ -150,7 +150,7 @@ inline std::size_t CMatrix_CSR<ValueType, SizeType>::nnz() const
 }
 
 template <typename ValueType, typename SizeType>
-inline std::size_t CMatrix_CSR<ValueType, SizeType>::size() const
+inline std::size_t CMatrix_CSR<ValueType, SizeType>::size() const noexcept
 {
 	return col_indices.size();
 }

@@ -23,19 +23,19 @@ class CMoves
 {
 	uint64_t m_moves;
 public:
-	CMoves() : m_moves(0) {}
-	CMoves(uint64_t moves) : m_moves(moves) {}
+	CMoves() noexcept : m_moves(0) {}
+	CMoves(uint64_t moves) noexcept : m_moves(moves) {}
 
-	bool operator==(const CMoves& o) const { return m_moves == o.m_moves; }
+	bool operator==(const CMoves& o) const noexcept { return m_moves == o.m_moves; }
 
-	std::size_t size() const { return PopCount(m_moves); }
-	bool empty() const { return m_moves == 0; }
+	std::size_t size() const noexcept { return PopCount(m_moves); }
+	bool empty() const noexcept { return m_moves == 0; }
 
-	bool HasMove(CMove) const;
-	CMove PeekMove() const;
-	CMove ExtractMove();
+	bool HasMove(CMove) const noexcept;
+	CMove PeekMove() const noexcept;
+	CMove ExtractMove() noexcept;
 
-	void Remove(CMove);
-	void Remove(uint64_t moves);
-	void Filter(uint64_t moves);
+	void Remove(CMove) noexcept;
+	void Remove(uint64_t moves) noexcept;
+	void Filter(uint64_t moves) noexcept;
 };

@@ -175,21 +175,21 @@
 	#pragma intrinsic(_BitScanReverse64)
 	#pragma intrinsic(_BitScanReverse)
 
-	FORCE_INLINE unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) { return _BitScanForward64(index, mask); }
-	FORCE_INLINE unsigned long BitScanLSB(const uint64_t mask){ assert(mask); unsigned long index; _BitScanForward64(&index, mask); return index; }
-	template <typename T> FORCE_INLINE unsigned char bsf(unsigned long * index, const T mask) { return BitScanLSB(index, mask); }
+	FORCE_INLINE unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) noexcept { return _BitScanForward64(index, mask); }
+	FORCE_INLINE unsigned long BitScanLSB(const uint64_t mask) noexcept { assert(mask); unsigned long index; _BitScanForward64(&index, mask); return index; }
+	template <typename T> FORCE_INLINE unsigned char bsf(unsigned long * index, const T mask) noexcept { return BitScanLSB(index, mask); }
 
-	FORCE_INLINE unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) { return _BitScanReverse64(index, mask); }
-	FORCE_INLINE unsigned long BitScanMSB(const uint64_t mask){ assert(mask); unsigned long index; _BitScanReverse64(&index, mask); return index; }
-	template <typename T> FORCE_INLINE unsigned char bsr(unsigned long * index, const T mask) { return BitScanMSB(index, mask); }
+	FORCE_INLINE unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) noexcept { return _BitScanReverse64(index, mask); }
+	FORCE_INLINE unsigned long BitScanMSB(const uint64_t mask) noexcept { assert(mask); unsigned long index; _BitScanReverse64(&index, mask); return index; }
+	template <typename T> FORCE_INLINE unsigned char bsr(unsigned long * index, const T mask) noexcept { return BitScanMSB(index, mask); }
 #elif defined(__GNUC__)
-	FORCE_INLINE unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) { *index = __builtin_ctzll(mask); return mask != 0; }
-	FORCE_INLINE unsigned long BitScanLSB(const uint64_t mask){ assert(mask); return __builtin_ctzll(mask); }
-	template <typename T> FORCE_INLINE unsigned char bsf(unsigned long * index, const T mask) { return BitScanLSB(index, mask); }
+	FORCE_INLINE unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) noexcept { *index = __builtin_ctzll(mask); return mask != 0; }
+	FORCE_INLINE unsigned long BitScanLSB(const uint64_t mask) noexcept { assert(mask); return __builtin_ctzll(mask); }
+	template <typename T> FORCE_INLINE unsigned char bsf(unsigned long * index, const T mask) noexcept { return BitScanLSB(index, mask); }
 
-	FORCE_INLINE unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) { *index = __builtin_clzll(mask) ^ 63; return mask != 0; }
-	FORCE_INLINE unsigned long BitScanMSB(const uint64_t mask){ assert(mask); return __builtin_clzll(mask) ^ 63; }
-	template <typename T> FORCE_INLINE unsigned char bsr(unsigned long * index, const T mask) { return BitScanMSB(index, mask); }
+	FORCE_INLINE unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) noexcept { *index = __builtin_clzll(mask) ^ 63; return mask != 0; }
+	FORCE_INLINE unsigned long BitScanMSB(const uint64_t mask) noexcept { assert(mask); return __builtin_clzll(mask) ^ 63; }
+	template <typename T> FORCE_INLINE unsigned char bsr(unsigned long * index, const T mask) noexcept { return BitScanMSB(index, mask); }
 #endif
 
 
@@ -197,63 +197,65 @@
 // _lzcnt_u64(0) == 64
 // __builtin_clzll(0) is undefined
 #if defined(_MSC_VER)
-	FORCE_INLINE uint64_t CountLeadingZeros(const uint64_t mask) { assert(mask); return _lzcnt_u64(mask); }
+	FORCE_INLINE uint64_t CountLeadingZeros(const uint64_t mask) noexcept { assert(mask); return _lzcnt_u64(mask); }
 #elif defined(__GNUC__)
-	FORCE_INLINE uint64_t CountLeadingZeros(const uint64_t mask) { assert(mask); return __builtin_clzll(mask); }
+	FORCE_INLINE uint64_t CountLeadingZeros(const uint64_t mask) noexcept { assert(mask); return __builtin_clzll(mask); }
 #endif
-	template <typename T> FORCE_INLINE T clz(const T mask) { return CountLeadingZeros(mask); }
+	template <typename T> FORCE_INLINE T clz(const T mask) noexcept { return CountLeadingZeros(mask); }
 
 // Count Trailing Zeros
 // _tzcnt_u64(0) is undefined
 // __builtin_ctzll(0) is undefined
 #if defined(_MSC_VER)
-	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) { assert(mask); return _tzcnt_u64(mask); }
+	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) noexcept { assert(mask); return _tzcnt_u64(mask); }
 #elif defined(__GNUC__)
-	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) { assert(mask); return __builtin_ctzll(mask); }
+	FORCE_INLINE uint64_t CountTrailingZeros(const uint64_t mask) noexcept { assert(mask); return __builtin_ctzll(mask); }
 #endif
-	template <typename T> FORCE_INLINE T ctz(const T mask) { return CountTrailingZeros(mask); }
+	template <typename T> FORCE_INLINE T ctz(const T mask) noexcept { return CountTrailingZeros(mask); }
 
 
 #ifdef HAS_BLSI
-	FORCE_INLINE uint64_t GetLSB(const uint64_t b) { return _blsi_u64(b); }
+	FORCE_INLINE uint64_t GetLSB(const uint64_t b) noexcept { return _blsi_u64(b); }
 #else
 	#pragma warning(disable : 4146)
-	FORCE_INLINE uint64_t GetLSB(const uint64_t b) { return b & -b; }
+	FORCE_INLINE uint64_t GetLSB(const uint64_t b) noexcept { return b & -b; }
 #endif
 
-FORCE_INLINE uint64_t GetMSB(const uint64_t b) { return b ? 0x8000000000000000ui64 >> CountLeadingZeros(b) : 0; }
+FORCE_INLINE uint64_t GetMSB(const uint64_t b) noexcept { return b ? 0x8000000000000000ui64 >> CountLeadingZeros(b) : 0; }
 
 #ifdef HAS_BLSR
-	FORCE_INLINE void RemoveLSB(uint64_t & b) { b = _blsr_u64(b); }
+	FORCE_INLINE void RemoveLSB(uint64_t & b) noexcept { b = _blsr_u64(b); }
 #else
-	FORCE_INLINE void RemoveLSB(uint64_t & b) { b &= b - 1; }
+	FORCE_INLINE void RemoveLSB(uint64_t & b) noexcept { b &= b - 1; }
 #endif
 
-FORCE_INLINE void RemoveMSB(uint64_t & b) { b ^= GetMSB(b); }
+FORCE_INLINE void RemoveMSB(uint64_t & b) noexcept { b ^= GetMSB(b); }
 
-template <typename T> FORCE_INLINE uint64_t  MakeBit (                   const T pos ) { assert(pos < 64); return         1ui64 << pos; }
-template <typename T> FORCE_INLINE void       SetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b |=  (1ui64 << pos); }
-template <typename T> FORCE_INLINE void     ResetBit (      uint64_t& b, const T pos ) { assert(pos < 64);         b &= ~(1ui64 << pos); }
-template <typename T> FORCE_INLINE bool      TestBit (const uint64_t  b, const T pos ) { assert(pos < 64); return (b &   (1ui64 << pos)) != 0; }
-template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T mask) { return (b & mask) == mask; }
+template <typename T> FORCE_INLINE uint64_t  MakeBit (                   const T pos ) noexcept { assert(pos < 64); return         1ui64 << pos; }
+template <typename T> FORCE_INLINE void       SetBit (      uint64_t& b, const T pos ) noexcept { assert(pos < 64);         b |=  (1ui64 << pos); }
+template <typename T> FORCE_INLINE void     ResetBit (      uint64_t& b, const T pos ) noexcept { assert(pos < 64);         b &= ~(1ui64 << pos); }
+template <typename T> FORCE_INLINE bool      TestBit (const uint64_t  b, const T pos ) noexcept { assert(pos < 64); return (b &   (1ui64 << pos)) != 0; }
+template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T mask) noexcept { return (b & mask) == mask; }
 
 // PopCount
 #ifdef HAS_POPCNT
 	#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-		FORCE_INLINE uint64_t PopCount(const uint64_t b) { return _mm_popcnt_u64(b); }
-		FORCE_INLINE uint64_t PopCount_max15(const uint64_t b) { return PopCount(b); }
+		FORCE_INLINE uint64_t PopCount(const uint64_t b) noexcept { return _mm_popcnt_u64(b); }
+		FORCE_INLINE uint64_t PopCount_max15(const uint64_t b) noexcept { return PopCount(b); }
 	#else
-		FORCE_INLINE uint64_t PopCount(uint64_t b){ return __builtin_popcountll(b); }
-		FORCE_INLINE uint64_t PopCount_max15(uint64_t b) { return PopCount(b); }
+		FORCE_INLINE uint64_t PopCount(uint64_t b) noexcept { return __builtin_popcountll(b); }
+		FORCE_INLINE uint64_t PopCount_max15(uint64_t b) noexcept { return PopCount(b); }
 	#endif
 #else
-	inline uint64_t PopCount(uint64_t b){
+	inline uint64_t PopCount(uint64_t b) noexcept
+	{
 		b -=  (b >> 1) & 0x5555555555555555ui64;
 		b  = ((b >> 2) & 0x3333333333333333ui64) + (b & 0x3333333333333333ui64);
 		b  = ((b >> 4) + b) & 0x0F0F0F0F0F0F0F0Fui64;
 		return (b * 0x0101010101010101ui64) >> 56;
 	}
-	inline uint64_t PopCount_max15(uint64_t b){
+	inline uint64_t PopCount_max15(uint64_t b) noexcept
+	{
 		assert(PopCount(b) < 16);
 		b -=  (b >> 1) & 0x5555555555555555ui64;
 		b  = ((b >> 2) & 0x3333333333333333ui64) + (b & 0x3333333333333333ui64);
@@ -264,17 +266,17 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 
 // BExtr
 #if defined(HAS_BEXTR) || defined(HAS_TBM)
-	FORCE_INLINE uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) { return _bextr_u64(src, start, len); }
+	FORCE_INLINE uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) noexcept { return _bextr_u64(src, start, len); }
 #else
-	FORCE_INLINE uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) { return (src >> start) & ((1ui64 << len) - 1); }
+	FORCE_INLINE uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) noexcept { return (src >> start) & ((1ui64 << len) - 1); }
 #endif
 
 
 // BZHI
 #ifdef HAS_BZHI
-	FORCE_INLINE uint64_t BZHI(const uint64_t src, const uint32_t index) { return _bzhi_u64(src, index); }
+	FORCE_INLINE uint64_t BZHI(const uint64_t src, const uint32_t index) noexcept { return _bzhi_u64(src, index); }
 #else
-	FORCE_INLINE uint64_t BZHI(const uint64_t src, const uint32_t index) { return src & ((1ui64 << index) - 1); }
+	FORCE_INLINE uint64_t BZHI(const uint64_t src, const uint32_t index) noexcept { return src & ((1ui64 << index) - 1); }
 #endif
 
 #ifdef HAS_BLCFILL
@@ -316,9 +318,10 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 
 // PDep
 #ifdef HAS_PDEP
-	FORCE_INLINE uint64_t PDep(const uint64_t src, const uint64_t mask) { return _pdep_u64(src, mask); }
+	FORCE_INLINE uint64_t PDep(const uint64_t src, const uint64_t mask) noexcept { return _pdep_u64(src, mask); }
 #else
-	inline uint64_t PDep(uint64_t src, uint64_t mask){
+	inline uint64_t PDep(uint64_t src, uint64_t mask) noexcept
+	{
 		uint64_t res = 0;
 		for (uint64_t bb = 1; mask; bb += bb)
 		{
@@ -333,9 +336,10 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 
 // PExt
 #ifdef HAS_PEXT
-	FORCE_INLINE uint64_t PExt(const uint64_t src, const uint64_t mask) { return _pext_u64(src, mask); }
+	FORCE_INLINE uint64_t PExt(const uint64_t src, const uint64_t mask) noexcept { return _pext_u64(src, mask); }
 #else
-	inline uint64_t PExt(uint64_t src, uint64_t mask){
+	inline uint64_t PExt(uint64_t src, uint64_t mask) noexcept
+	{
 		uint64_t res = 0;
 		for (uint64_t bb = 1; mask; bb += bb)
 		{
@@ -349,84 +353,84 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 
 // BSWAP
 #if defined(_MSC_VER)
-	FORCE_INLINE uint64_t BSwap(const uint64_t b) { return _byteswap_uint64(b); }
+	FORCE_INLINE uint64_t BSwap(const uint64_t b) noexcept { return _byteswap_uint64(b); }
 #elif defined(__GNUC__)
-	FORCE_INLINE uint64_t BSwap(const uint64_t b) { return __builtin_bswap64(b); }
+	FORCE_INLINE uint64_t BSwap(const uint64_t b) noexcept { return __builtin_bswap64(b); }
 #endif
 
 
 #if defined(_MSC_VER)
     #ifdef HAS_SSE2
-        FORCE_INLINE __m128i operator~(const __m128i& a) { return _mm_andnot_si128(a, _mm_set1_epi64x(0xFFFFFFFFFFFFFFFFui64)); }
+        FORCE_INLINE __m128i operator~(const __m128i& a) noexcept { return _mm_andnot_si128(a, _mm_set1_epi64x(0xFFFFFFFFFFFFFFFFui64)); }
 
-        FORCE_INLINE __m128i operator+(const __m128i& a, const __m128i& b) { return _mm_add_epi64(a, b); }
-        FORCE_INLINE __m128i operator-(const __m128i& a, const __m128i& b) { return _mm_sub_epi64(a, b); }
-        FORCE_INLINE __m128i operator&(const __m128i& a, const __m128i& b) { return _mm_and_si128(a, b); }
-        FORCE_INLINE __m128i operator|(const __m128i& a, const __m128i& b) { return _mm_or_si128(a, b); }
-        FORCE_INLINE __m128i operator^(const __m128i& a, const __m128i& b) { return _mm_xor_si128(a, b); }
-        FORCE_INLINE __m128i operator<<(const __m128i& a, const int b) { return _mm_slli_epi64(a, b); }
-        FORCE_INLINE __m128i operator>>(const __m128i& a, const int b) { return _mm_srli_epi64(a, b); }
+        FORCE_INLINE __m128i operator+(const __m128i& a, const __m128i& b) noexcept { return _mm_add_epi64(a, b); }
+        FORCE_INLINE __m128i operator-(const __m128i& a, const __m128i& b) noexcept { return _mm_sub_epi64(a, b); }
+        FORCE_INLINE __m128i operator&(const __m128i& a, const __m128i& b) noexcept { return _mm_and_si128(a, b); }
+        FORCE_INLINE __m128i operator|(const __m128i& a, const __m128i& b) noexcept { return _mm_or_si128(a, b); }
+        FORCE_INLINE __m128i operator^(const __m128i& a, const __m128i& b) noexcept { return _mm_xor_si128(a, b); }
+        FORCE_INLINE __m128i operator<<(const __m128i& a, const int b) noexcept { return _mm_slli_epi64(a, b); }
+        FORCE_INLINE __m128i operator>>(const __m128i& a, const int b) noexcept { return _mm_srli_epi64(a, b); }
 
-        FORCE_INLINE __m128i operator+=(__m128i& a, const __m128i& b) { return a = a + b; }
-        FORCE_INLINE __m128i operator-=(__m128i& a, const __m128i& b) { return a = a - b; }
-        FORCE_INLINE __m128i operator&=(__m128i& a, const __m128i& b) { return a = a & b; }
-        FORCE_INLINE __m128i operator|=(__m128i& a, const __m128i& b) { return a = a | b; }
-        FORCE_INLINE __m128i operator^=(__m128i& a, const __m128i& b) { return a = a ^ b; }
-        FORCE_INLINE __m128i operator<<=(__m128i& a, const int b) { return a = a << b; }
-        FORCE_INLINE __m128i operator>>=(__m128i& a, const int b) { return a = a >> b; }
+        FORCE_INLINE __m128i operator+=(__m128i& a, const __m128i& b) noexcept { return a = a + b; }
+        FORCE_INLINE __m128i operator-=(__m128i& a, const __m128i& b) noexcept { return a = a - b; }
+        FORCE_INLINE __m128i operator&=(__m128i& a, const __m128i& b) noexcept { return a = a & b; }
+        FORCE_INLINE __m128i operator|=(__m128i& a, const __m128i& b) noexcept { return a = a | b; }
+        FORCE_INLINE __m128i operator^=(__m128i& a, const __m128i& b) noexcept { return a = a ^ b; }
+        FORCE_INLINE __m128i operator<<=(__m128i& a, const int b) noexcept { return a = a << b; }
+        FORCE_INLINE __m128i operator>>=(__m128i& a, const int b) noexcept { return a = a >> b; }
     #endif
     #ifdef HAS_SSE4_1
-        FORCE_INLINE __m128i operator==(const __m128i& a, const __m128i& b) { return _mm_cmpeq_epi64(a, b); }
+        FORCE_INLINE __m128i operator==(const __m128i& a, const __m128i& b) noexcept { return _mm_cmpeq_epi64(a, b); }
     #endif
     #ifdef HAS_SSE4_2
-        FORCE_INLINE __m128i operator>(const __m128i& a, const __m128i& b) { return _mm_cmpgt_epi64(a, b); }
-        FORCE_INLINE __m128i operator<(const __m128i& a, const __m128i& b) { return b > a; }
-        FORCE_INLINE __m128i operator>=(const __m128i& a, const __m128i& b) { return ~(a < b); }
-        FORCE_INLINE __m128i operator<=(const __m128i& a, const __m128i& b) { return ~(a > b); }
+        FORCE_INLINE __m128i operator>(const __m128i& a, const __m128i& b) noexcept { return _mm_cmpgt_epi64(a, b); }
+        FORCE_INLINE __m128i operator<(const __m128i& a, const __m128i& b) noexcept { return b > a; }
+        FORCE_INLINE __m128i operator>=(const __m128i& a, const __m128i& b) noexcept { return ~(a < b); }
+        FORCE_INLINE __m128i operator<=(const __m128i& a, const __m128i& b) noexcept { return ~(a > b); }
     #endif
     #ifdef HAS_AVX2
-		FORCE_INLINE __m256i operator~(const __m256i& a) { return _mm256_xor_si256(a, _mm256_set1_epi64x(0xFFFFFFFFFFFFFFFFui64)); }
+		FORCE_INLINE __m256i operator~(const __m256i& a) noexcept { return _mm256_xor_si256(a, _mm256_set1_epi64x(0xFFFFFFFFFFFFFFFFui64)); }
 
-        FORCE_INLINE __m256i operator+(const __m256i& a, const __m256i& b) { return _mm256_add_epi64(a, b); }
-        FORCE_INLINE __m256i operator-(const __m256i& a, const __m256i& b) { return _mm256_sub_epi64(a, b); }
-        FORCE_INLINE __m256i operator&(const __m256i& a, const __m256i& b) { return _mm256_and_si256(a, b); }
-        FORCE_INLINE __m256i operator|(const __m256i& a, const __m256i& b) { return _mm256_or_si256(a, b); }
-        FORCE_INLINE __m256i operator^(const __m256i& a, const __m256i& b) { return _mm256_xor_si256(a, b); }
-        FORCE_INLINE __m256i operator<<(const __m256i& a, const int b) { return _mm256_slli_epi64(a, b); }
-        FORCE_INLINE __m256i operator>>(const __m256i& a, const int b) { return _mm256_srli_epi64(a, b); }
+        FORCE_INLINE __m256i operator+(const __m256i& a, const __m256i& b) noexcept { return _mm256_add_epi64(a, b); }
+        FORCE_INLINE __m256i operator-(const __m256i& a, const __m256i& b) noexcept { return _mm256_sub_epi64(a, b); }
+        FORCE_INLINE __m256i operator&(const __m256i& a, const __m256i& b) noexcept { return _mm256_and_si256(a, b); }
+        FORCE_INLINE __m256i operator|(const __m256i& a, const __m256i& b) noexcept { return _mm256_or_si256(a, b); }
+        FORCE_INLINE __m256i operator^(const __m256i& a, const __m256i& b) noexcept { return _mm256_xor_si256(a, b); }
+        FORCE_INLINE __m256i operator<<(const __m256i& a, const int b) noexcept { return _mm256_slli_epi64(a, b); }
+        FORCE_INLINE __m256i operator>>(const __m256i& a, const int b) noexcept { return _mm256_srli_epi64(a, b); }
 
-        FORCE_INLINE __m256i operator+=(__m256i& a, const __m256i& b) { return a = a + b; }
-        FORCE_INLINE __m256i operator-=(__m256i& a, const __m256i& b) { return a = a - b; }
-        FORCE_INLINE __m256i operator&=(__m256i& a, const __m256i& b) { return a = a & b; }
-        FORCE_INLINE __m256i operator|=(__m256i& a, const __m256i& b) { return a = a | b; }
-        FORCE_INLINE __m256i operator^=(__m256i& a, const __m256i& b) { return a = a ^ b; }
-        FORCE_INLINE __m256i operator<<=(__m256i& a, const int b) { return a = a << b; }
-        FORCE_INLINE __m256i operator>>=(__m256i& a, const int b) { return a = a >> b; }
+        FORCE_INLINE __m256i operator+=(__m256i& a, const __m256i& b) noexcept { return a = a + b; }
+        FORCE_INLINE __m256i operator-=(__m256i& a, const __m256i& b) noexcept { return a = a - b; }
+        FORCE_INLINE __m256i operator&=(__m256i& a, const __m256i& b) noexcept { return a = a & b; }
+        FORCE_INLINE __m256i operator|=(__m256i& a, const __m256i& b) noexcept { return a = a | b; }
+        FORCE_INLINE __m256i operator^=(__m256i& a, const __m256i& b) noexcept { return a = a ^ b; }
+        FORCE_INLINE __m256i operator<<=(__m256i& a, const int b) noexcept { return a = a << b; }
+        FORCE_INLINE __m256i operator>>=(__m256i& a, const int b) noexcept { return a = a >> b; }
     #endif
 	#ifdef HAS_AVX512
-		FORCE_INLINE __m512i operator~(const __m512i& a) { return _mm512_xor_si512(a, _mm512_set1_epi64(0xFFFFFFFFFFFFFFFFui64)); }
+		FORCE_INLINE __m512i operator~(const __m512i& a) noexcept { return _mm512_xor_si512(a, _mm512_set1_epi64(0xFFFFFFFFFFFFFFFFui64)); }
 
-		FORCE_INLINE __m512i operator+(const __m512i& a, const __m512i& b) { return _mm512_add_epi64(a, b); }
-		FORCE_INLINE __m512i operator-(const __m512i& a, const __m512i& b) { return _mm512_sub_epi64(a, b); }
-		FORCE_INLINE __m512i operator&(const __m512i& a, const __m512i& b) { return _mm512_and_si512(a, b); }
-		FORCE_INLINE __m512i operator|(const __m512i& a, const __m512i& b) { return _mm512_or_si512(a, b); }
-		FORCE_INLINE __m512i operator^(const __m512i& a, const __m512i& b) { return _mm512_xor_si512(a, b); }
-		FORCE_INLINE __m512i operator<<(const __m512i& a, const int b) { return _mm512_slli_epi64(a, b); }
-		FORCE_INLINE __m512i operator>>(const __m512i& a, const int b) { return _mm512_srli_epi64(a, b); }
+		FORCE_INLINE __m512i operator+(const __m512i& a, const __m512i& b) noexcept { return _mm512_add_epi64(a, b); }
+		FORCE_INLINE __m512i operator-(const __m512i& a, const __m512i& b) noexcept { return _mm512_sub_epi64(a, b); }
+		FORCE_INLINE __m512i operator&(const __m512i& a, const __m512i& b) noexcept { return _mm512_and_si512(a, b); }
+		FORCE_INLINE __m512i operator|(const __m512i& a, const __m512i& b) noexcept { return _mm512_or_si512(a, b); }
+		FORCE_INLINE __m512i operator^(const __m512i& a, const __m512i& b) noexcept { return _mm512_xor_si512(a, b); }
+		FORCE_INLINE __m512i operator<<(const __m512i& a, const int b) noexcept { return _mm512_slli_epi64(a, b); }
+		FORCE_INLINE __m512i operator>>(const __m512i& a, const int b) noexcept { return _mm512_srli_epi64(a, b); }
 
-		FORCE_INLINE __m512i operator+=(__m512i& a, const __m512i& b) { return a = a + b; }
-		FORCE_INLINE __m512i operator-=(__m512i& a, const __m512i& b) { return a = a - b; }
-		FORCE_INLINE __m512i operator&=(__m512i& a, const __m512i& b) { return a = a & b; }
-		FORCE_INLINE __m512i operator|=(__m512i& a, const __m512i& b) { return a = a | b; }
-		FORCE_INLINE __m512i operator^=(__m512i& a, const __m512i& b) { return a = a ^ b; }
-		FORCE_INLINE __m512i operator<<=(__m512i& a, const int b) { return a = a << b; }
-		FORCE_INLINE __m512i operator>>=(__m512i& a, const int b) { return a = a >> b; }
+		FORCE_INLINE __m512i operator+=(__m512i& a, const __m512i& b) noexcept { return a = a + b; }
+		FORCE_INLINE __m512i operator-=(__m512i& a, const __m512i& b) noexcept { return a = a - b; }
+		FORCE_INLINE __m512i operator&=(__m512i& a, const __m512i& b) noexcept { return a = a & b; }
+		FORCE_INLINE __m512i operator|=(__m512i& a, const __m512i& b) noexcept { return a = a | b; }
+		FORCE_INLINE __m512i operator^=(__m512i& a, const __m512i& b) noexcept { return a = a ^ b; }
+		FORCE_INLINE __m512i operator<<=(__m512i& a, const int b) noexcept { return a = a << b; }
+		FORCE_INLINE __m512i operator>>=(__m512i& a, const int b) noexcept { return a = a >> b; }
 	#endif
 #endif
 
 // ### Fix for Visual Studio bug ###
 #if defined(HAS_AVX2) && defined(_MSC_VER)
-inline uint64_t _mm256_extract_epi64(__m256i X, const unsigned int N)
+inline uint64_t _mm256_extract_epi64(__m256i X, const unsigned int N) noexcept
 {
 	const __m128i Y = _mm256_extracti128_si256(X, N >> 1);
 	if (N & 1)
