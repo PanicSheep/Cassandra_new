@@ -45,28 +45,16 @@ std::string time_format(const std::chrono::milliseconds duration)
 
 std::string short_time_format(std::chrono::duration<long long, std::pico> duration)
 {
-	// TODO: Refactor and test!
-	char buff[16];
+	static const char prefix[] = { 'y', 'z', 'a', 'f', 'p', 'n', 'u', 'm', ' ', 'k', 'M', 'G', 'T', 'P', 'E'};
 
-	unsigned long long millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-	unsigned long long micros = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-	unsigned long long nanoss = std::chrono::duration_cast<std::chrono::nanoseconds >(duration).count();
-	unsigned long long picos = duration.count();
+	const auto ps = duration.count();
+	const int magnitude = static_cast<int>(std::floor(std::log10(std::abs(ps)) / 3));
+	const double normalized = ps * std::pow(1000.0, -magnitude);
 
-	     if (millis >= 100) sprintf(buff, "%4lldms", millis);
-	else if (millis >=  10) sprintf(buff, "%2.1fms", static_cast<double>(micros) / 1000.0);
-	else if (millis >=   1) sprintf(buff, "%1.2fms", static_cast<double>(micros) / 1000.0);
-	else if (micros >= 100) sprintf(buff, "%4lldus", micros);
-	else if (micros >=  10) sprintf(buff, "%2.1fus", static_cast<double>(nanoss) / 1000.0);
-	else if (micros >=   1) sprintf(buff, "%1.2fus", static_cast<double>(nanoss) / 1000.0);
-	else if (nanoss >= 100) sprintf(buff, "%4lldns", nanoss);
-	else if (nanoss >=  10) sprintf(buff, "%2.1fns", static_cast<double>(picos) / 1000.0);
-	else if (nanoss >=   1) sprintf(buff, "%1.2fns", static_cast<double>(picos) / 1000.0);
-	else if (picos        ) sprintf(buff, "%4lldps", picos);
-	else
-		sprintf(buff, "Error!");
-
-	return std::string(buff);
+	std::ostringstream oss;
+	oss.precision(2 - std::floor(std::log10(std::abs(normalized))));
+	oss << std::fixed << std::setw(4) << std::setfill(' ') << normalized << prefix[magnitude + 4] << 's';
+	return oss.str();
 }
 
 std::string ThousandsSeparator(uint64_t n)
