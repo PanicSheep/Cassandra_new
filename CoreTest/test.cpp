@@ -7,11 +7,25 @@
 #include "Moves.h"
 #include "PositionGenerator.h"
 #include "Utility.h"
+#include <string>
+
+using namespace std::string_literals;
 
 TEST(Utility, pow_int_1) { ASSERT_EQ(Pow_int(0, 0), 1); }
 TEST(Utility, pow_int_2) { ASSERT_EQ(Pow_int(10, 3), 1000); }
 TEST(Utility, pow_int_3) { ASSERT_EQ(Pow_int(-10, 3), -1000); }
 
+TEST(Utility, short_time_format) {
+	ASSERT_EQ(short_time_format(std::chrono::nanoseconds(1)), "1.00ns"s);
+	ASSERT_EQ(short_time_format(std::chrono::nanoseconds(11)), "11.0ns"s);
+	ASSERT_EQ(short_time_format(std::chrono::nanoseconds(111)), " 111ns"s);
+	ASSERT_EQ(short_time_format(std::chrono::nanoseconds(1111)), "1.11us"s);
+	ASSERT_EQ(short_time_format(std::chrono::nanoseconds(11111)), "11.1us"s);
+	ASSERT_EQ(short_time_format(std::chrono::microseconds(111)), " 111us"s);
+	ASSERT_EQ(short_time_format(std::chrono::microseconds(1111)), "1.11ms"s);
+	ASSERT_EQ(short_time_format(std::chrono::microseconds(11111)), "11.1ms"s);
+	ASSERT_EQ(short_time_format(std::chrono::milliseconds(111)), " 111ms"s);
+}
 TEST(Utility, SignedInt) {
 	ASSERT_EQ(SignedInt(-10), "-10");
 	ASSERT_EQ(SignedInt(-1), "-1");
