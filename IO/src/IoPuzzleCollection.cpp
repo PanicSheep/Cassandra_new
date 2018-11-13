@@ -81,7 +81,8 @@ namespace IO
 	{
 		m_terminate.store(true, std::memory_order_release);
 		m_cv.notify_all();
-		m_thread.join();
+		if (m_thread.joinable())
+			m_thread.join();
 	}
 
 	PuzzleVector AutoSavingPuzzleVector::Release()
