@@ -79,7 +79,7 @@ class MainDialog(wx.Frame):
         for filename in filenames:
             label = wx.StaticText(panel, label=filename)
             gauge = wx.Gauge(panel, range=100, style=wx.GA_HORIZONTAL)
-            #gauge.Value = PercentageOfSolvedPositions(directory + '\\' + filename)
+            gauge.Value = PercentageOfSolvedPositions(directory + '\\' + filename)
             percentage = wx.StaticText(panel, label = str(gauge.Value) + '%')
 
             fgs.AddMany([(label, 1, wx.EXPAND), (gauge), (percentage)])
