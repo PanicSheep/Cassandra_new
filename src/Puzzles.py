@@ -56,7 +56,7 @@ class PuzzleAllDepthScore:
     def EmptyCount(self):
         return 64 - PopCount(self.P | self.O)
     def IsSolved(self):
-        for i in range(0, EmptyCount()+1):
+        for i in range(0, self.EmptyCount()+1):
             if self.score[i] == self.__DEFAULT_SCORE:
                 return False
         return True
