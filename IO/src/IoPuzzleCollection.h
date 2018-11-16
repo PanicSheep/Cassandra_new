@@ -23,7 +23,7 @@ namespace IO
 	class AutoSavingPuzzleVector : public PuzzleVectorGuard
 	{
 		std::atomic_bool m_terminate;
-		std::condition_variable m_cv;
+		std::condition_variable_any m_cv;
 		std::thread m_thread;
 
 	public:

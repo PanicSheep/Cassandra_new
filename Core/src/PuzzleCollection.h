@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
-#include <mutex>
+#include <shared_mutex>
 
 #include "Puzzles.h"
 
@@ -13,7 +13,7 @@ class PuzzleVectorGuard
 {
 protected:
 	PuzzleVector m_puzzles;
-	mutable std::mutex m_mtx;
+	mutable std::shared_mutex m_mtx;
 
 public:
 	PuzzleVectorGuard() = delete;

@@ -66,7 +66,7 @@ namespace IO
 		m_thread = std::thread(
 			[this, output_file, interval]()
 		{
-			std::unique_lock<std::mutex> lock(m_mtx);
+			std::unique_lock<std::shared_mutex> lock(m_mtx);
 			while (m_terminate.load(std::memory_order_acquire) == false)
 			{
 				m_cv.wait_for(lock, interval);
@@ -95,7 +95,7 @@ namespace IO
 
 	void AutoSavingPuzzleVector::Save(const CPath & file) const
 	{
-		std::unique_lock<std::mutex> lock(m_mtx);
+		std::unique_lock<std::shared_mutex> lock(m_mtx);
 		SavePuzzles(m_puzzles, file);
 	}
 }

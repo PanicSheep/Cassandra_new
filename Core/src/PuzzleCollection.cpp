@@ -6,7 +6,7 @@ PuzzleVectorGuard::PuzzleVectorGuard(PuzzleVector&& puzzles)
 
 PuzzleVector PuzzleVectorGuard::Release()
 {
-	std::unique_lock<std::mutex> lock(m_mtx);
+	std::unique_lock<std::shared_mutex> lock(m_mtx);
 	auto ret = std::move(m_puzzles);
 	m_puzzles.clear();
 	return std::move(ret);
@@ -14,25 +14,25 @@ PuzzleVector PuzzleVectorGuard::Release()
 
 void PuzzleVectorGuard::push_back(std::unique_ptr<CPuzzle>&& puzzle)
 {
-	std::unique_lock<std::mutex> lock(m_mtx);
+	std::unique_lock<std::shared_mutex> lock(m_mtx);
 	m_puzzles.push_back(std::move(puzzle));
 }
 
 std::size_t PuzzleVectorGuard::size() const
 {
-	std::unique_lock<std::mutex> lock(m_mtx);
+	std::unique_lock<std::shared_mutex> lock(m_mtx);
 	return m_puzzles.size();
 }
 
 std::unique_ptr<CPuzzle> PuzzleVectorGuard::Get(std::size_t index) const
 {
-	std::unique_lock<std::mutex> lock(m_mtx);
+	std::shared_lock<std::shared_mutex> lock(m_mtx);
 	return m_puzzles[index]->Clone();
 }
 
 void PuzzleVectorGuard::Set(std::size_t index, std::unique_ptr<CPuzzle>&& puzzle)
 {
-	std::unique_lock<std::mutex> lock(m_mtx);
+	std::unique_lock<std::shared_mutex> lock(m_mtx);
 	m_puzzles[index] = std::move(puzzle);
 }
 
