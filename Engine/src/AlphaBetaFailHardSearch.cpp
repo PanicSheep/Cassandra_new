@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "LastFlipCounter.h"
 #include "FlipFast.h"
 
 using namespace Search;
@@ -94,8 +93,7 @@ int AlphaBetaFailHard::Eval_1(const CPosition& pos, const int alpha, const int b
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		node_counter++;
-		node_counter++;
+		node_counter += 2;
 		return std::clamp(score - Diff - 1, alpha, beta);
 	}
 	else
