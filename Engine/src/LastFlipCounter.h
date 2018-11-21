@@ -9,7 +9,7 @@ class CLastFlipCounter : public ILastFlipCounter
 public:
 	CLastFlipCounter();
 
-	uint8_t CountLastFlip(const CPosition&, CMove) const;
+	uint8_t CountLastFlip(const CPosition&, CMove) const noexcept;
 
 private:
 	uint8_t CountFlip(uint8_t P, CMove);

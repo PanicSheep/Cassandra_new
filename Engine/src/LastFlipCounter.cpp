@@ -47,7 +47,7 @@ uint64_t CLastFlipCounter::Flip_dir(const CPosition& pos, const CMove move, cons
 	return 0;
 }
 
-uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove move) const
+uint8_t CLastFlipCounter::CountLastFlip(const CPosition& pos, const CMove move) const noexcept
 {
 	const auto P = pos.GetP();
 	switch (move)
