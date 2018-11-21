@@ -19,8 +19,7 @@ namespace Search
 
 			InputValues(CPosition pos, int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
 				: pos(pos), alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
-			{
-			}
+			{}
 
 			InputValues PlayPass() const { return InputValues(pos.PlayPass(), -beta, -alpha, depth, selectivity); }
 			InputValues ToZWS() const { return InputValues(pos, alpha - 1, alpha, depth, selectivity); }
@@ -37,8 +36,7 @@ namespace Search
 			AnalysisReturnValues() : AnalysisReturnValues(0, 0, -1, 0) {}
 			AnalysisReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity, CMove PV = Field::invalid, CMove AV = Field::invalid)
 				: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity), PV(PV), AV(AV)
-			{
-			}
+			{}
 
 			bool empty() const { return depth == -1; }
 		};
@@ -51,12 +49,10 @@ namespace Search
 
 			ReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
 				: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
-			{
-			}
+			{}
 			ReturnValues(int8_t score, int8_t depth, uint8_t selectivity)
 				: ReturnValues(score, score, depth, selectivity)
-			{
-			}
+			{}
 			ReturnValues() {}
 
 			friend ReturnValues operator-(ReturnValues o) { std::swap(o.alpha, o.beta); o.alpha = -o.alpha; o.beta = -o.beta; return o; }
@@ -163,7 +159,7 @@ namespace Search
 		CResult Eval(const CPosition&, CSpecification) override;
 	private:
 		// --- Triage ---------
-		int Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity);
+		int Eval(const CPosition&, int alpha, int beta, int8_t depth, uint8_t selectivity);
 		ReturnValues PVS(const InputValues&);
 		ReturnValues ZWS(const InputValues&);
 		// --------------------
@@ -172,21 +168,21 @@ namespace Search
 		ReturnValues ZWS_N(const InputValues&);
 
 		// --- Optimized ------
-		int Eval_0(const CPosition& pos);
+		int Eval_0(const CPosition&);
 
-		int PVS_1(const CPosition& pos, int alpha, int beta);
-		int PVS_1(const CPosition& pos, int alpha, int beta, CMove move1);
-		int PVS_2(const CPosition& pos, int alpha, int beta);
-		int PVS_2(const CPosition& pos, int alpha, int beta, CMove move1, CMove move2);
+		int PVS_1(const CPosition&, int alpha, int beta);
+		int PVS_1(const CPosition&, int alpha, int beta, CMove);
+		int PVS_2(const CPosition&, int alpha, int beta);
+		int PVS_2(const CPosition&, int alpha, int beta, CMove, CMove);
 
-		int ZWS_1(const CPosition& pos, int alpha);
-		int ZWS_1(const CPosition& pos, int alpha, CMove move1);
-		int ZWS_2(const CPosition& pos, int alpha);
-		int ZWS_2(const CPosition& pos, int alpha, CMove move1, CMove move2);
-		int ZWS_3(const CPosition& pos, int alpha);
-		int ZWS_3(const CPosition& pos, int alpha, CMove move1, CMove move2, CMove move3);
-		int ZWS_4(const CPosition& pos, int alpha);
-		int ZWS_4(const CPosition& pos, int alpha, CMove move1, CMove move2, CMove move3, CMove move4);
+		int ZWS_1(const CPosition&, int alpha);
+		int ZWS_1(const CPosition&, int alpha, CMove);
+		int ZWS_2(const CPosition&, int alpha);
+		int ZWS_2(const CPosition&, int alpha, CMove, CMove);
+		int ZWS_3(const CPosition&, int alpha);
+		int ZWS_3(const CPosition&, int alpha, CMove, CMove, CMove);
+		int ZWS_4(const CPosition&, int alpha);
+		int ZWS_4(const CPosition&, int alpha, CMove, CMove, CMove, CMove);
 		ReturnValues ZWS_A(const InputValues&);
 		// --------------------
 
