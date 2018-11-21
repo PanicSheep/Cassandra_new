@@ -30,6 +30,7 @@ namespace Search
 	class CAlgorithm
 	{
 	protected:
+		static inline int infinity = +65;
 		std::shared_ptr<Engine> engine;
 		std::size_t node_counter = 0;
 
