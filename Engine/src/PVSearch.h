@@ -188,6 +188,7 @@ namespace Search
 
 		AnalysisReturnValues StabilityAnalysis(const InputValues&);
 		AnalysisReturnValues TranspositionTableAnalysis(const InputValues&);
+		AnalysisReturnValues MPCAnalysis(const InputValues&);
 
 		void UpdateTranspositionTable(const StatusValues&);
 	};

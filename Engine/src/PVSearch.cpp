@@ -604,3 +604,36 @@ void PVSearch::UpdateTranspositionTable(const StatusValues& stat)
 {
 	engine->Update(stat.pos, PvsInfo(node_counter - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
 }
+
+float Sigma(const int D, const int d, const int E) noexcept
+{
+	const double alpha = -0.21311527;
+	const double beta = 1.06454983;
+	const double gamma = 0.26639884;
+	const double delta = -0.02005392;
+	const double epsilon = 2.09164003;
+
+	return (std::exp(alpha*d) + beta) * std::pow((D - d), gamma) * (delta*E + epsilon);
+}
+
+PVSearch::AnalysisReturnValues PVSearch::MPCAnalysis(const InputValues& in)
+{
+	if (in.selectivity == 0 || in.depth < 4)
+		return AnalysisReturnValues();
+
+	const int D = in.depth;
+	const int d = D / 2;
+	const int E = in.pos.EmptyCount();
+	const float sigma = Sigma(D, d, E);
+	const float sigmas = in.selectivity ? in.selectivity / 10.0f : 100.0f;;
+	const int upper_bound = std::round(in.beta + sigmas * sigma);
+	const int lower_bound = std::round(in.alpha - sigmas * sigma);
+
+	//if (const auto ret = ZWS(InputValues(in.pos, upper_bound - 1, upper_bound, d, 0)); ret.alpha >= upper_bound)
+	//	return AnalysisReturnValues(in.beta, +infinity, in.depth, in.selectivity);
+
+	//if (const auto ret = ZWS(InputValues(in.pos, lower_bound, lower_bound + 1, d, 0)); ret.beta <= lower_bound)
+	//	return AnalysisReturnValues(-infinity, in.alpha, in.depth, in.selectivity);
+
+	return AnalysisReturnValues();
+}
