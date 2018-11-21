@@ -31,11 +31,11 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 	if (depth == empties)
 	{
 		if (empties <= 14)
-			return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
+			return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), selectivity)).GetScore();
 
 		for (int d = 0; d < empties - 10; d++)
-			PVS(InputValues(pos, alpha, beta, d, 0));
-		return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), 0)).GetScore();
+			PVS(InputValues(pos, alpha, beta, d, selectivity));
+		return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), selectivity)).GetScore();
 	}
 	else
 	{
