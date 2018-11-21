@@ -101,7 +101,7 @@ int NegaMax::Eval_1(const CPosition& pos, const CMove move1)
 int NegaMax::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 {
 	node_counter++;
-	int score = -128;
+	int score = -infinity;
 
 	if (const auto flips = Flip(pos, move1))
 		score = std::max(score, -Eval_1(pos.Play(move1, flips), move2));
@@ -109,11 +109,11 @@ int NegaMax::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 	if (const auto flips = Flip(pos, move2))
 		score = std::max(score, -Eval_1(pos.Play(move2, flips), move1));
 
-	if (score != -128)
+	if (score != -infinity)
 		return score;
 
 	const auto posPass = pos.PlayPass();
-	score = 128;
+	score = infinity;
 
 	if (const auto flips = Flip(posPass, move1))
 		score = std::min(score, Eval_1(posPass.Play(move1, flips), move2));
@@ -121,7 +121,7 @@ int NegaMax::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 	if (const auto flips = Flip(posPass, move2))
 		score = std::min(score, Eval_1(posPass.Play(move2, flips), move1));
 
-	if (score != 128) {
+	if (score != infinity) {
 		node_counter++;
 		return score;
 	}
@@ -132,7 +132,7 @@ int NegaMax::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 int NegaMax::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3)
 {
 	node_counter++;
-	int score = -128;
+	int score = -infinity;
 
 	if (const auto flips = Flip(pos, move1))
 		score = std::max(score, -Eval_2(pos.Play(move1, flips), move2, move3));
@@ -143,11 +143,11 @@ int NegaMax::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, 
 	if (const auto flips = Flip(pos, move3))
 		score = std::max(score, -Eval_2(pos.Play(move3, flips), move1, move2));
 
-	if (score != -128)
+	if (score != -infinity)
 		return score;
 
 	const auto posPass = pos.PlayPass();
-	score = 128;
+	score = infinity;
 
 	if (const auto flips = Flip(posPass, move1))
 		score = std::min(score, Eval_2(posPass.Play(move1, flips), move2, move3));
@@ -158,7 +158,7 @@ int NegaMax::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, 
 	if (const auto flips = Flip(posPass, move3))
 		score = std::min(score, Eval_2(posPass.Play(move3, flips), move1, move2));
 
-	if (score != 128) {
+	if (score != infinity) {
 		node_counter++;
 		return score;
 	}
@@ -169,7 +169,7 @@ int NegaMax::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, 
 int NegaMax::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
 {
 	node_counter++;
-	int score = -128;
+	int score = -infinity;
 
 	if (const auto flips = Flip(pos, move1))
 		score = std::max(score, -Eval_3(pos.Play(move1, flips), move2, move3, move4));
@@ -183,11 +183,11 @@ int NegaMax::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, 
 	if (const auto flips = Flip(pos, move4))
 		score = std::max(score, -Eval_3(pos.Play(move4, flips), move1, move2, move3));
 
-	if (score != -128)
+	if (score != -infinity)
 		return score;
 
 	const auto posPass = pos.PlayPass();
-	score = 128;
+	score = infinity;
 
 	if (const auto flips = Flip(posPass, move1))
 		score = std::min(score, Eval_3(posPass.Play(move1, flips), move2, move3, move4));
@@ -201,7 +201,7 @@ int NegaMax::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, 
 	if (const auto flips = Flip(posPass, move4))
 		score = std::min(score, Eval_3(posPass.Play(move4, flips), move1, move2, move3));
 
-	if (score != 128) {
+	if (score != infinity) {
 		node_counter++;
 		return score;
 	}
@@ -225,7 +225,7 @@ int NegaMax::Eval_N(const CPosition& pos)
 			return EvalGameOver(pos);
 	}
 
-	int score = -128;
+	int score = -infinity;
 	while (!moves.empty())
 		score = std::max(score, -Eval_N(pos.Play(moves.ExtractMove())));
 

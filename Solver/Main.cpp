@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 
 	// Algorithm
 	std::unique_ptr<Search::CAlgorithm> algorithm = std::make_unique<Search::PVSearch>(engine);
-	Search::CSpecification spec(-64, 64, input.depth, 0);
+	Search::CSpecification spec(-65, 65, input.depth, 0);
 
 	// Output
 	std::unique_ptr<Search::oArchive> archive = Search::CreateArchive(input.test, input.print_each_puzzle, std::cout);

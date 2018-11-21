@@ -59,7 +59,7 @@ namespace Search
 
 			int GetScore() const
 			{
-				if (alpha == -64)
+				if (alpha == -infinity)
 					return beta;
 				return alpha;
 			}
@@ -97,7 +97,7 @@ namespace Search
 				if ((ret.depth >= depth) && (ret.selectivity <= selectivity))
 				{
 					if (ret.beta <= alpha) // Alpha Cut.
-						return AAA(true, ReturnValues(-64, ret.beta, ret.depth, ret.selectivity));
+						return AAA(true, ReturnValues(-infinity, ret.beta, ret.depth, ret.selectivity));
 					if (ret.alpha >= beta) // Beta Cut.
 						return AAA(true, ReturnValues(ret.alpha, +64, ret.depth, ret.selectivity));
 					else if (ret.alpha > alpha)
@@ -146,7 +146,7 @@ namespace Search
 			{
 				beta = alpha;
 				if (!improved)
-					alpha = -64;
+					alpha = -infinity;
 				return ReturnValues(alpha, beta, depth, selectivity);
 			}
 		};

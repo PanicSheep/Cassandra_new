@@ -8,6 +8,8 @@ class Engine;
 
 namespace Search
 {
+	static inline int infinity = +65;
+
 	struct CSpecification
 	{
 		int alpha, beta;
@@ -15,7 +17,7 @@ namespace Search
 		uint8_t selectivity;
 
 		CSpecification(int alpha, int beta, int8_t depth, uint8_t selectivity);
-		static CSpecification SolveExact(CPosition pos) { return CSpecification(-64, 64, pos.EmptyCount(), 0); }
+		static CSpecification SolveExact(CPosition pos) { return CSpecification(-infinity, infinity, pos.EmptyCount(), 0); }
 	};
 
 	struct CResult
@@ -30,7 +32,6 @@ namespace Search
 	class CAlgorithm
 	{
 	protected:
-		static inline int infinity = +65;
 		std::shared_ptr<Engine> engine;
 		std::size_t node_counter = 0;
 

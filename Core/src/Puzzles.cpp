@@ -117,7 +117,7 @@ bool CPuzzleScore::isEqual(const CPuzzle & o) const
 
 void CPuzzleScoreDepth::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
 {
-	return Solve(algorithm, log, Search::CSpecification(-64, 64, depth, selectivity));
+	return Solve(algorithm, log, Search::CSpecification(-65, 65, depth, selectivity));
 }
 
 void CPuzzleScoreDepth::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CSpecification spec)
