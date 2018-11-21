@@ -53,7 +53,7 @@ void CVerboseCliArchive::Serialize(const ILog::CEntry& entry)
 
 	const auto nano_seconds = entry.result.duration.count();
 	if (nano_seconds > 0)
-		stream << std::setw(12) << ThousandsSeparator(entry.result.node_count * std::nano::den / nano_seconds);
+		stream << std::setw(12) << ThousandsSeparator(static_cast<uint64_t>(static_cast<double>(entry.result.node_count) * std::nano::den / nano_seconds));
 	stream << std::endl;
 }
 
@@ -116,7 +116,7 @@ void CVerboseCliTestArchive::Serialize(const ILog::CEntry& entry)
 
 	const auto nano_seconds = entry.result.duration.count();
 	if (nano_seconds > 0)
-		stream << std::setw(12) << ThousandsSeparator(entry.result.node_count * std::nano::den / nano_seconds);
+		stream << std::setw(12) << ThousandsSeparator(static_cast<uint64_t>(static_cast<double>(entry.result.node_count) * std::nano::den / nano_seconds));
 	stream << std::endl;
 }
 
