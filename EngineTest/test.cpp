@@ -282,7 +282,7 @@ namespace test
 				const CPosition pos(0x0000000055AA55AAui64 << e, 0xFFFFFFFFAA55AA55ui64 << e);
 				ASSERT_EQ(pos.EmptyCount(), e);
 
-				const int score = search.Eval(pos, Search::CSpecification(-65, 65, d, 0)).score;
+				const int score = search.Eval(pos, Search::CSpecification(d, 0)).score;
 				ASSERT_EQ(score, pos.EmptyCount());
 			}
 	}

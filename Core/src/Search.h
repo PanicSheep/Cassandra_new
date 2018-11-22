@@ -12,21 +12,20 @@ namespace Search
 
 	struct CSpecification
 	{
-		int alpha, beta;
 		int8_t depth;
 		uint8_t selectivity;
 
-		CSpecification(int alpha, int beta, int8_t depth, uint8_t selectivity);
-		static CSpecification SolveExact(CPosition pos) { return CSpecification(-infinity, infinity, pos.EmptyCount(), 0); }
+		CSpecification(int8_t depth, uint8_t selectivity);
+		static CSpecification SolveExact(CPosition pos) { return CSpecification(pos.EmptyCount(), 0); }
 	};
 
 	struct CResult
 	{
-		int score;
+		int8_t score;
 		std::size_t node_count;
 		std::chrono::nanoseconds duration;
 
-		CResult(int score, std::size_t node_count, std::chrono::nanoseconds duration);
+		CResult(int8_t score, std::size_t node_count, std::chrono::nanoseconds duration);
 	};
 
 	class CAlgorithm
@@ -41,8 +40,8 @@ namespace Search
 
 		virtual std::unique_ptr<CAlgorithm> Clone() const = 0;
 
-		virtual CResult Eval(const CPosition& pos) { return Eval(pos, CSpecification::SolveExact(pos)); }
 		virtual CResult Eval(const CPosition&, CSpecification) = 0;
+		virtual CResult Eval(const CPosition&);
 
 		std::size_t NodeCount() const { return node_counter; }
 	};

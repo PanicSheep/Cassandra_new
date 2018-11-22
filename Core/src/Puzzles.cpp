@@ -117,7 +117,7 @@ bool CPuzzleScore::isEqual(const CPuzzle & o) const
 
 void CPuzzleScoreDepth::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
 {
-	return Solve(algorithm, log, Search::CSpecification(-65, 65, depth, selectivity));
+	return Solve(algorithm, log, Search::CSpecification(depth, selectivity));
 }
 
 void CPuzzleScoreDepth::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CSpecification spec)
@@ -186,7 +186,7 @@ bool CPuzzleAllMoveScore::IsSolved() const
 	return true;
 }
 
-void CPuzzleAllMoveScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
+void CPuzzleAllMoveScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log) // TODO: Remove!
 {
 	auto moves = pos.PossibleMoves();
 	while (!moves.empty())
@@ -196,9 +196,10 @@ void CPuzzleAllMoveScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log
 		{
 			const auto original_pos = pos.Play(move);
 			const int original_score = score[move];
-			const auto result = algorithm.Eval(original_pos);
+			const auto spec = Search::CSpecification::SolveExact(original_pos);
+			const auto result = algorithm.Eval(original_pos, spec);
 			score[move] = result.score;
-			log.push_back(original_pos, original_score, Search::CSpecification::SolveExact(original_pos), result);
+			log.push_back(original_pos, original_score, spec, result);
 		}
 	}
 }

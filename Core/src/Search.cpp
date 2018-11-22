@@ -2,17 +2,22 @@
 
 namespace Search
 {
-	CSpecification::CSpecification(int alpha, int beta, int8_t depth, uint8_t selectivity)
-		: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
+	CSpecification::CSpecification(int8_t depth, uint8_t selectivity)
+		: depth(depth), selectivity(selectivity)
 	{}
 
-	CResult::CResult(int score, std::size_t node_count, std::chrono::nanoseconds duration)
+	CResult::CResult(int8_t score, std::size_t node_count, std::chrono::nanoseconds duration)
 		: score(score), node_count(node_count), duration(duration)
 	{}
 
 	CAlgorithm::CAlgorithm(const std::shared_ptr<Engine>& engine)
 		: engine(engine)
 	{}
+
+	CResult CAlgorithm::Eval(const CPosition& pos)
+	{
+		return Eval(pos, CSpecification::SolveExact(pos));
+	}
 
 	int CAlgorithm::EvalGameOver(const CPosition& pos)
 	{

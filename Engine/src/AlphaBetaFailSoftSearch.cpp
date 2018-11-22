@@ -16,7 +16,7 @@ CResult AlphaBetaFailSoft::Eval(const CPosition& pos, CSpecification spec)
 	const auto old_node_counter = node_counter;
 	const auto start_time = std::chrono::high_resolution_clock::now();
 	
-	const auto score = Eval(pos, spec.alpha, spec.beta);
+	const auto score = Eval(pos, -infinity, infinity);
 
 	const auto end_time = std::chrono::high_resolution_clock::now();
 	const auto duration = end_time - start_time;
