@@ -11,16 +11,14 @@
 class PvsInfo
 {
 public:
-	int8_t alpha;
-	int8_t beta;
+	int8_t min, max;
 	int8_t depth;
 	uint8_t selectivity;
-	Field   PV;
-	Field   AV;
+	CMove PV, AV;
 	uint8_t cost;
 
 	PvsInfo();
-	PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t alpha, int8_t beta, CMove PV, CMove AV);
+	PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t min, int8_t max, CMove PV, CMove AV);
 
 	void Upgrade(const PvsInfo& NewValue);
 

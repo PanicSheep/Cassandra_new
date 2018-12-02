@@ -6,17 +6,17 @@ PvsInfo::PvsInfo()
 	: cost(0)
 	, depth(-1)
 	, selectivity(0)
-	, alpha(-99)
-	, beta(99)
+	, min(-65)
+	, max(+65)
 	, PV(Field::invalid)
 	, AV(Field::invalid)
 {}
 
-PvsInfo::PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t alpha, int8_t beta, CMove PV, CMove AV)
+PvsInfo::PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t min, int8_t max, CMove PV, CMove AV)
 	: depth(depth)
 	, selectivity(selectivity)
-	, alpha(alpha)
-	, beta(beta)
+	, min(min)
+	, max(max)
 	, PV(PV)
 	, AV(AV)
 {
@@ -31,13 +31,13 @@ void PvsInfo::Upgrade(const PvsInfo& NewValue)
 	}
 	else if ((NewValue.depth == depth) && (NewValue.selectivity == selectivity))
 	{	// Evaluation is the same
-		assert(std::max(alpha, NewValue.alpha) <= std::min(beta, NewValue.beta));
+		assert(std::max(min, NewValue.min) <= std::min(max, NewValue.max));
 
 		// TODO: This should be subject to a broad range of tests.
 		//cost = std::max(cost, NewValue.cost);
 		SetCost(NodeCount() + NewValue.NodeCount());
-		alpha = std::max(alpha, NewValue.alpha);
-		beta = std::min(beta, NewValue.beta);
+		min = std::max(min, NewValue.min);
+		max = std::min(max, NewValue.max);
 		if (NewValue.PV != Field::invalid) PV = NewValue.PV;
 		if (NewValue.AV != Field::invalid) AV = NewValue.AV;
 	}
