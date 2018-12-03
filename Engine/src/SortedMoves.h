@@ -20,7 +20,9 @@ public:
 	CMove ExtractMove();
 
 	auto begin() const { return moves.rbegin(); }
+	auto cbegin() const { return moves.crbegin(); }
 	auto end() const { return moves.rend(); }
+	auto cend() const { return moves.crend(); }
 private:
 	int32_t Score(CMove, const CPosition&);
 };
