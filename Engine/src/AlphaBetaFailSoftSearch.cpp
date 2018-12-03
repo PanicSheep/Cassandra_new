@@ -287,16 +287,13 @@ int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const C
 
 int AlphaBetaFailSoft::Eval_N(const CPosition& pos, int alpha, int beta)
 {
-	if (pos.EmptyCount() == 4)
-		return Eval_4(pos, alpha, beta);
-
 	node_counter++;
 
 	CMoves moves = pos.PossibleMoves();
 	if (moves.empty()) {
 		const auto PosPass = pos.PlayPass();
 		if (PosPass.HasMoves())
-			return -Eval_N(PosPass, -beta, -alpha);
+			return -Eval(PosPass, -beta, -alpha);
 		else
 			return EvalGameOver(pos);
 	}
@@ -304,7 +301,7 @@ int AlphaBetaFailSoft::Eval_N(const CPosition& pos, int alpha, int beta)
 	int bestscore = -infinity;
 	while (!moves.empty())
 	{
-		const auto score = -Eval_N(pos.Play(moves.ExtractMove()), -beta, -alpha);
+		const auto score = -Eval(pos.Play(moves.ExtractMove()), -beta, -alpha);
 		if (score >= beta) return score;
 		alpha = std::max(score, alpha);
 		bestscore = std::max(score, bestscore);
