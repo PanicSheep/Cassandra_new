@@ -264,17 +264,13 @@ int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta, const C
 
 int AlphaBetaFailHard::Eval_N(const CPosition& pos, int alpha, int beta)
 {
-	const auto EmptyCount = pos.EmptyCount();
-	if (EmptyCount == 4)
-		return Eval_4(pos, alpha, beta);
-
 	node_counter++;
 
 	CMoves moves = pos.PossibleMoves();
 	if (moves.empty()) {
 		const auto PosPass = pos.PlayPass();
 		if (PosPass.HasMoves())
-			return -Eval_N(PosPass, -beta, -alpha);
+			return -Eval(PosPass, -beta, -alpha);
 		else
 			return std::clamp(EvalGameOver(pos), alpha, beta);
 	}
@@ -282,7 +278,7 @@ int AlphaBetaFailHard::Eval_N(const CPosition& pos, int alpha, int beta)
 	int score = -infinity;
 	while (!moves.empty())
 	{
-		score = -Eval_N(pos.Play(moves.ExtractMove()), -beta, -alpha);
+		score = -Eval(pos.Play(moves.ExtractMove()), -beta, -alpha);
 		if (score >= beta) return beta;
 		if (score > alpha) alpha = score;
 	}
