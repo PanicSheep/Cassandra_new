@@ -17,21 +17,25 @@ CResult NegaMax::Eval(const CPosition& pos, CSpecification)
 	const auto old_node_counter = node_counter;
 	const auto start_time = std::chrono::high_resolution_clock::now();
 	
-	int score;
-	switch (pos.EmptyCount())
-	{
-		case 0: score = Eval_0(pos); break;
-		case 1: score = Eval_1(pos); break;
-		case 2: score = Eval_2(pos); break;
-		case 3: score = Eval_3(pos); break;
-		case 4: score = Eval_4(pos); break;
-		default: score = Eval_N(pos); break;
-	}
+	const auto score = Eval_(pos);
 
 	const auto end_time = std::chrono::high_resolution_clock::now();
 	const auto duration = end_time - start_time;
 	const auto node_count = node_counter - old_node_counter;
 	return CResult(score, node_count, duration);
+}
+
+int NegaMax::Eval_(const CPosition& pos)
+{
+	switch (pos.EmptyCount())
+	{
+		case 0: return Eval_0(pos);
+		case 1: return Eval_1(pos);
+		case 2: return Eval_2(pos);
+		case 3: return Eval_3(pos);
+		case 4: return Eval_4(pos);
+		default: return Eval_N(pos);;
+	}
 }
 
 int NegaMax::Eval_1(const CPosition& pos)
@@ -90,8 +94,7 @@ int NegaMax::Eval_1(const CPosition& pos, const CMove move1)
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		node_counter++;
-		node_counter++;
+		node_counter += 2;
 		return score - Diff - 1;
 	}
 	else
@@ -211,23 +214,20 @@ int NegaMax::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, 
 
 int NegaMax::Eval_N(const CPosition& pos)
 {
-	if (pos.EmptyCount() == 4)
-		return Eval_4(pos);
-
 	node_counter++;
 
 	CMoves moves = pos.PossibleMoves();
 	if (moves.empty()) {
 		const auto PosPass = pos.PlayPass();
 		if (PosPass.HasMoves())
-			return -Eval_N(PosPass);
+			return -Eval_(PosPass);
 		else
 			return EvalGameOver(pos);
 	}
 
 	int score = -infinity;
 	while (!moves.empty())
-		score = std::max(score, -Eval_N(pos.Play(moves.ExtractMove())));
+		score = std::max(score, -Eval_(pos.Play(moves.ExtractMove())));
 
 	return score;
 }
