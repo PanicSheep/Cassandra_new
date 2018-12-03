@@ -1,155 +1,21 @@
 #pragma once
-#include <memory>
 #include "Engine.h"
 #include "Position.h"
 #include "Search.h"
 #include "Moves.h"
+#include <memory>
+#include <optional>
 
 namespace Search
 {
 	class PVSearch : public CAlgorithm
 	{
-		struct InputValues
-		{
-			CPosition pos;
-			int8_t alpha;
-			int8_t beta;
-			int8_t depth;
-			uint8_t selectivity;
+		class CInput;
+		class COutput;
+		class CStatusQuo;
+		
+		COutput Result(const CInput& in, int score, int8_t depth, uint8_t selectivity);
 
-			InputValues(CPosition pos, int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
-				: pos(pos), alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
-			{}
-
-			InputValues PlayPass() const { return InputValues(pos.PlayPass(), -beta, -alpha, depth, selectivity); }
-			InputValues ToZWS() const { return InputValues(pos, alpha - 1, alpha, depth, selectivity); }
-		};
-		struct AnalysisReturnValues
-		{
-			int8_t alpha;
-			int8_t beta;
-			int8_t depth;
-			uint8_t selectivity;
-			CMove PV;
-			CMove AV;
-
-			AnalysisReturnValues() : AnalysisReturnValues(0, 0, -1, 0) {}
-			AnalysisReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity, CMove PV = Field::invalid, CMove AV = Field::invalid)
-				: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity), PV(PV), AV(AV)
-			{}
-
-			bool empty() const { return depth == -1; }
-		};
-		struct ReturnValues
-		{
-			int8_t alpha;
-			int8_t beta;
-			int8_t depth;
-			uint8_t selectivity;
-
-			ReturnValues(int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
-				: alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
-			{}
-			ReturnValues(int8_t score, int8_t depth, uint8_t selectivity)
-				: ReturnValues(score, score, depth, selectivity)
-			{}
-			ReturnValues() {}
-
-			friend ReturnValues operator-(ReturnValues o) { std::swap(o.alpha, o.beta); o.alpha = -o.alpha; o.beta = -o.beta; return o; }
-
-			int GetScore() const
-			{
-				if (alpha == -infinity)
-					return beta;
-				return alpha;
-			}
-		};
-		struct AAA
-		{
-			bool CausesCut;
-			ReturnValues Values;
-
-			AAA(bool CausesCut, ReturnValues Values) : CausesCut(CausesCut), Values(Values) {}
-		};
-		struct StatusValues
-		{
-			uint64_t InitialNodeCount;
-			const CPosition& pos;
-			int8_t alpha;
-			int8_t beta;
-			int8_t depth;
-			uint8_t selectivity;
-			CMove PV;
-			CMove AV;
-			bool improved = false;
-
-			StatusValues(const InputValues& in, uint64_t NodeCount)
-				: alpha(in.alpha), beta(in.beta), depth(in.depth), selectivity(in.selectivity), PV(Field::invalid), AV(Field::invalid)
-				, InitialNodeCount(NodeCount), pos(in.pos)
-			{
-			}
-
-			InputValues Play(CMove move) const { return InputValues(pos.Play(move), -beta, -alpha, depth - 1, selectivity); }
-			InputValues PlayZWS(CMove move) const { return InputValues(pos.Play(move), -alpha - 1, -alpha, depth - 1, selectivity); }
-
-			AAA ImproveWith(const AnalysisReturnValues& ret)
-			{
-				if ((ret.depth >= depth) && (ret.selectivity <= selectivity))
-				{
-					if (ret.beta <= alpha) // Alpha Cut.
-						return AAA(true, ReturnValues(-infinity, ret.beta, ret.depth, ret.selectivity));
-					if (ret.alpha >= beta) // Beta Cut.
-						return AAA(true, ReturnValues(ret.alpha, +64, ret.depth, ret.selectivity));
-					else if (ret.alpha > alpha)
-					{
-						alpha = alpha;
-						//beta = std::min(beta, ret.beta);
-						depth = ret.depth;
-						selectivity = ret.selectivity;
-						if (ret.PV != Field::invalid) PV = ret.PV; // TODO: Test this, and decide what to do.
-						if (ret.AV != Field::invalid) AV = ret.AV; // TODO: Test this, and decide what to do.
-					}
-				}
-				return AAA(false, ReturnValues());
-			}
-			AAA ImproveWith(const ReturnValues& ret, CMove move)
-			{
-				if ((ret.depth + 1 >= depth) && (ret.selectivity <= selectivity))
-				{
-					if (ret.alpha >= beta) { // Beta Cut.
-						alpha = ret.alpha;
-						beta = +64;
-						depth = ret.depth + 1;
-						selectivity = ret.selectivity;
-						if (move != PV) {
-							AV = PV;
-							PV = move;
-						}
-						improved = true;
-						return AAA(true, ReturnValues(alpha, beta, depth, selectivity));
-					}
-					else if (ret.alpha > alpha)
-					{
-						alpha = ret.alpha;
-						depth = ret.depth + 1;
-						selectivity = ret.selectivity;
-						if (move != PV) {
-							AV = PV;
-							PV = move;
-						}
-						improved = true;
-					}
-				}
-				return AAA(false, ReturnValues());
-			}
-			ReturnValues AllMovesSearched()
-			{
-				beta = alpha;
-				if (!improved)
-					alpha = -infinity;
-				return ReturnValues(alpha, beta, depth, selectivity);
-			}
-		};
 	public:
 		PVSearch(const PVSearch&) = default;
 		PVSearch(const std::shared_ptr<Engine>& engine) : CAlgorithm(engine) {}
@@ -160,12 +26,12 @@ namespace Search
 	private:
 		// --- Triage ---------
 		int Eval(const CPosition&, int alpha, int beta, int8_t depth, uint8_t selectivity);
-		ReturnValues PVS(const InputValues&);
-		ReturnValues ZWS(const InputValues&);
+		COutput PVS(const CInput&);
+		COutput ZWS(const CInput&);
 		// --------------------
 
-		ReturnValues PVS_N(const InputValues&);
-		ReturnValues ZWS_N(const InputValues&);
+		COutput PVS_N(const CInput&);
+		COutput ZWS_N(const CInput&);
 
 		// --- Optimized ------
 		int Eval_0(const CPosition&);
@@ -183,13 +49,156 @@ namespace Search
 		int ZWS_3(const CPosition&, int alpha, CMove, CMove, CMove);
 		int ZWS_4(const CPosition&, int alpha);
 		int ZWS_4(const CPosition&, int alpha, CMove, CMove, CMove, CMove);
-		ReturnValues ZWS_A(const InputValues&);
+		COutput ZWS_A(const CInput&);
 		// --------------------
 
-		AnalysisReturnValues StabilityAnalysis(const InputValues&);
-		AnalysisReturnValues TranspositionTableAnalysis(const InputValues&);
-		AnalysisReturnValues MPCAnalysis(const InputValues&);
+		COutput StabilityAnalysis(const CPosition&);
+		COutput TranspositionTableAnalysis(const CPosition&);
+		COutput MpcAnalysis(const CInput&);
 
-		void UpdateTranspositionTable(const StatusValues&);
+		void TranspositionTableUpdate(const CPosition&, std::size_t initial_node_count, const COutput&);
+	};
+
+
+	class PVSearch::CInput
+	{
+	public:
+		const CPosition pos;
+		const int8_t alpha, beta;
+		const int8_t depth;
+		const uint8_t selectivity;
+
+		CInput(CPosition pos, int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
+			: pos(pos), alpha(alpha), beta(beta), depth(depth), selectivity(selectivity)
+		{
+			assert(alpha < beta);
+		}
+
+		CInput PlayPass() const { return CInput(pos.PlayPass(), -beta, -alpha, depth, selectivity); }
+	};
+
+	class PVSearch::COutput
+	{
+		bool Constrained() const { return (min >= -64) && (max <= +64) && (min <= max); }
+	public:
+		int8_t min, max;
+		int8_t depth;
+		uint8_t selectivity;
+		CMove PV, AV;
+
+		COutput() : min(-64), max(+64), depth(-1), selectivity(0), PV(CMove::invalid), AV(CMove::invalid)
+		{
+			assert(Constrained());
+		}
+
+		COutput(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CMove PV = CMove::invalid, CMove AV = CMove::invalid)
+			: min(min), max(max), depth(depth), selectivity(selectivity), PV(PV), AV(AV)
+		{
+			assert(Constrained());
+		}
+
+		COutput(int8_t score, int8_t depth, uint8_t selectivity, CMove PV = CMove::invalid, CMove AV = CMove::invalid)
+			: COutput(score, score, depth, selectivity, PV, AV)
+		{
+			assert(Constrained());
+		}
+
+		friend COutput operator-(const COutput& o) { return COutput(-o.max, -o.min, o.depth, o.selectivity, o.PV, o.AV); }
+	};
+
+	class PVSearch::CStatusQuo
+	{
+	public:
+		int8_t alpha, beta;
+		const int8_t depth;
+		const uint8_t selectivity;
+		int8_t best_score = -infinity; // best score achieved
+		CMove PV = Field::invalid;
+		CMove AV = Field::invalid;
+		const CPosition& pos;
+
+		CStatusQuo(const CInput& in)
+			: alpha(in.alpha)
+			, beta(in.beta)
+			, depth(in.depth)
+			, selectivity(in.selectivity)
+			, pos(in.pos)
+		{
+			assert(alpha < beta);
+		}
+
+		CInput Play(CMove move) const { return CInput(pos.Play(move), -beta, -alpha, depth - 1, selectivity); }
+		CInput PlayZWS(CMove move) const { return CInput(pos.Play(move), -alpha - 1, -alpha, depth - 1, selectivity); }
+
+		std::optional<COutput> ImproveWith(const COutput& new_data)
+		{
+			assert(alpha < beta);
+			assert(best_score <= alpha);
+			if ((new_data.depth >= depth) && (new_data.selectivity <= selectivity))
+			{
+				if ((new_data.min == new_data.max) // exact score
+					|| (new_data.min >= beta) // upper cut
+					|| (new_data.max <= alpha)) // lower cut
+				{
+					if (new_data.PV != Field::invalid) PV = new_data.PV; // TODO: Test this, and decide what to do.
+					if (new_data.AV != Field::invalid) AV = new_data.AV; // TODO: Test this, and decide what to do.
+					return COutput(new_data.min, new_data.max, new_data.depth, new_data.selectivity, PV, AV);
+				}
+
+				// You can't be sure to find a value within min and max when there is probability involved.
+				if (selectivity == 0)
+				{
+					if (new_data.max + 1 < beta)
+					{
+						beta = new_data.max + 1;
+						if (new_data.PV != Field::invalid) PV = new_data.PV; // TODO: Test this, and decide what to do.
+						if (new_data.AV != Field::invalid) AV = new_data.AV; // TODO: Test this, and decide what to do.
+					}
+					if (new_data.min - 1 > alpha)
+					{
+						alpha = new_data.min - 1;
+						if (new_data.PV != Field::invalid) PV = new_data.PV; // TODO: Test this, and decide what to do.
+						if (new_data.AV != Field::invalid) AV = new_data.AV; // TODO: Test this, and decide what to do.
+					}
+				}
+			}
+			if (PV == Field::invalid) PV = new_data.PV;
+			if (AV == Field::invalid) AV = new_data.AV;
+			assert(alpha < beta);
+			assert(best_score <= alpha);
+			return {};
+		}
+		std::optional<COutput> ImproveWith(const COutput& new_data, CMove move)
+		{
+			assert(alpha < beta);
+			assert(best_score <= alpha);
+			if ((new_data.depth + 1 >= depth) && (new_data.selectivity <= selectivity)) // TODO: Probably an irrelevant check.
+			{
+				if (new_data.min >= beta) // upper cut
+					return COutput(new_data.min, +64, new_data.depth + 1, new_data.selectivity, move, PV);
+
+				if (new_data.min > best_score)
+				{
+					best_score = new_data.min;
+					//depth = new_data.depth + 1; // TODO: implement best_depth.
+					//selectivity = new_data.selectivity; // TODO: implement best_selectivity.
+					if (move != PV) {
+						AV = PV;
+						PV = move;
+					}
+				}
+				alpha = std::max(alpha, new_data.min);
+			}
+			assert(alpha < beta);
+			assert(best_score <= alpha);
+			return {};
+		}
+
+		COutput AllMovesTried()
+		{
+			assert(alpha < beta);
+			assert(best_score <= alpha);
+			return COutput(best_score, alpha, depth, selectivity, PV, AV);
+		}
 	};
 }

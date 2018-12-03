@@ -7,6 +7,16 @@
 
 using namespace Search;
 
+PVSearch::COutput PVSearch::Result(const CInput & in, int score, int8_t depth, uint8_t selectivity)
+{
+	if (score >= in.beta) // upper cut
+		return COutput(score, +64, depth, selectivity, CMove::invalid, CMove::invalid);
+	if (score <= in.alpha) // lower cut
+		return COutput(-64, score, depth, selectivity, CMove::invalid, CMove::invalid);
+
+	return COutput(score, score, depth, selectivity, CMove::invalid, CMove::invalid);
+}
+
 std::unique_ptr<CAlgorithm> PVSearch::Clone() const
 {
 	return std::make_unique<PVSearch>(*this);
@@ -31,29 +41,32 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 	if (depth == empties)
 	{
 		if (empties <= 14)
-			return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), selectivity)).GetScore();
+			return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
 
 		for (int d = 0; d < empties - 10; d++)
-			PVS(InputValues(pos, alpha, beta, d, selectivity));
-		return PVS(InputValues(pos, alpha, beta, pos.EmptyCount(), selectivity)).GetScore();
+			PVS(CInput(pos, alpha, beta, d, 33));
+		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
+		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 19)).min;
+		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 11)).min;
+		return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
 	}
 	else
 	{
-		const auto in = InputValues(pos, alpha, beta, depth, selectivity);
-		return PVS(in).GetScore();
+		const auto in = CInput(pos, alpha, beta, depth, selectivity);
+		return PVS(in).min;
 	}
 }
 
-PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
+PVSearch::COutput PVSearch::PVS(const CInput& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
 	if (in.depth == EmptyCount)
 	{
 		switch (EmptyCount)
 		{
-			case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
-			case 1: return ReturnValues(PVS_1(in.pos, in.alpha, in.beta), 1, 0);
-			case 2: return ReturnValues(PVS_2(in.pos, in.alpha, in.beta), 2, 0);
+			case 0: return Result(in, Eval_0(in.pos), 0, 0);
+			case 1: return Result(in, PVS_1(in.pos, in.alpha, in.beta), 1, 0);
+			case 2: return Result(in, PVS_2(in.pos, in.alpha, in.beta), 2, 0);
 			default: return PVS_N(in);
 		}
 	}
@@ -61,24 +74,24 @@ PVSearch::ReturnValues PVSearch::PVS(const InputValues& in)
 	{
 		switch (in.depth)
 		{
-			case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
+			case 0: return Result(in, static_cast<int>(engine->Eval(in.pos)), 0, 0);
 			default: return PVS_N(in);
 		}
 	}
 }
 
-PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
+PVSearch::COutput PVSearch::ZWS(const CInput& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
 	if (in.depth == EmptyCount)
 	{
 		switch (EmptyCount)
 		{
-			case 0: return ReturnValues(Eval_0(in.pos), 0, 0);
-			case 1: return ReturnValues(ZWS_1(in.pos, in.alpha), 1, 0);
-			case 2: return ReturnValues(ZWS_2(in.pos, in.alpha), 2, 0);
-			case 3: return ReturnValues(ZWS_3(in.pos, in.alpha), 3, 0);
-			case 4: return ReturnValues(ZWS_4(in.pos, in.alpha), 4, 0);
+			case 0: return Result(in, Eval_0(in.pos), 0, 0);
+			case 1: return Result(in, ZWS_1(in.pos, in.alpha), 1, 0);
+			case 2: return Result(in, ZWS_2(in.pos, in.alpha), 2, 0);
+			case 3: return Result(in, ZWS_3(in.pos, in.alpha), 3, 0);
+			case 4: return Result(in, ZWS_4(in.pos, in.alpha), 4, 0);
 			case 5:
 			case 6:
 			case 7:
@@ -90,7 +103,7 @@ PVSearch::ReturnValues PVSearch::ZWS(const InputValues& in)
 	{
 		switch (in.depth)
 		{
-			case 0: return ReturnValues((int)engine->Eval(in.pos), 0, 0);
+			case 0: return Result(in, static_cast<int>(engine->Eval(in.pos)), 0, 0);
 			default: return ZWS_N(in);
 		}
 	}
@@ -157,7 +170,7 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha)
 	return ZWS_4(pos, alpha, move1, move2, move3, move4);
 }
 
-int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove move1)
+int PVSearch::PVS_1(const CPosition& pos, int, int, const CMove move1)
 {
 	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
@@ -169,8 +182,7 @@ int PVSearch::PVS_1(const CPosition& pos, int alpha, int beta, const CMove move1
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		node_counter++;
-		node_counter++;
+		node_counter += 2;
 		return score - Diff - 1;
 	}
 	else
@@ -236,8 +248,7 @@ int PVSearch::ZWS_1(const CPosition& pos, int alpha, const CMove move1)
 	}
 	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
-		node_counter++;
-		node_counter++;
+		node_counter += 2;
 		return score - Diff - 1;
 	}
 	else
@@ -397,7 +408,7 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CM
 		return -EvalGameOver(posPass);
 }
 
-PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
+PVSearch::COutput PVSearch::ZWS_A(const CInput& in)
 {
 	assert(in.beta == in.alpha + 1);
 
@@ -409,108 +420,108 @@ PVSearch::ReturnValues PVSearch::ZWS_A(const InputValues& in)
 		if (Pass.pos.HasMoves())
 			return -ZWS_A(Pass);
 		else
-		{
-			const auto score = EvalGameOver(in.pos);
-			return ReturnValues(score, score, in.pos.EmptyCount(), 0);
-		}
+			return COutput(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
-	StatusValues stat(in, NodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
-	//if (const auto ret = stat.ImproveWith(TranspositionTableAnalysis(in)); ret.CausesCut) return ret.Values;
+	CStatusQuo status_quo(in);
 
-	int bestscore = -infinity;
+	const auto stability = StabilityAnalysis(in.pos);
+	if (const auto ret = status_quo.ImproveWith(stability); ret) return ret.value();
+
 	CMoves parity_moves = moves;
 	parity_moves.Filter(in.pos.GetParityQuadrants());
 	while (!parity_moves.empty())
 	{
 		const auto move = parity_moves.ExtractMove();
-		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
-		if (ret.CausesCut) {
-			//UpdateTranspositionTable(stat);
-			return ret.Values;
-		}
+		const auto zws = -ZWS(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(zws, move);
+		if (ret)
+			return ret.value();
 	}
+
 	CMoves non_parity_moves = moves;
 	non_parity_moves.Remove(in.pos.GetParityQuadrants());
 	while (!non_parity_moves.empty())
 	{
 		const auto move = non_parity_moves.ExtractMove();
-		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
-		if (ret.CausesCut) {
-			//UpdateTranspositionTable(stat);
-			return ret.Values;
-		}
+		const auto zws = -ZWS(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(zws, move);
+		if (ret)
+			return ret.value();
 	}
 
-	const auto ret = stat.AllMovesSearched();
-	//UpdateTranspositionTable(stat);
-	return ret;
+	return status_quo.AllMovesTried();
 }
 
-PVSearch::ReturnValues PVSearch::ZWS_N(const InputValues& in)
+PVSearch::COutput PVSearch::ZWS_N(const CInput& in)
 {
-	assert(in.beta == in.alpha + 1);
-
-	node_counter++;
+	assert(in.alpha + 1 == in.beta);
+	
+	const uint64_t initial_node_count = node_counter++;
 
 	if (in.pos.HasMoves() == false) {
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
 			return -ZWS_N(Pass);
 		else
-		{
-			const auto score = EvalGameOver(in.pos);
-			return ReturnValues(score, score, in.pos.EmptyCount(), 0);
-		}
+			return COutput(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
-	StatusValues stat(in, NodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
-	const auto TTRet = TranspositionTableAnalysis(in);
-	if (const auto ret = stat.ImproveWith(TTRet); ret.CausesCut) return ret.Values;
+	CStatusQuo status_quo(in);
 
-	//if (const auto ret = stat.ImproveWith(MPCAnalysis(in)); ret.CausesCut)
-	//	return ret.Values;
+	const auto stability = StabilityAnalysis(in.pos);
+	if (const auto ret = status_quo.ImproveWith(stability); ret) return ret.value();
 
-	if (TTRet.PV != Field::invalid)
+	const auto transposition = TranspositionTableAnalysis(in.pos);
+	if (const auto ret = status_quo.ImproveWith(transposition); ret) return ret.value();
+
+	const auto mpc = MpcAnalysis(in);
+	if (const auto ret = status_quo.ImproveWith(mpc); ret) return ret.value();
+
+	const auto PV = status_quo.PV;
+	const auto AV = status_quo.AV;
+
+	if (PV != Field::invalid)
 	{
-		const auto& move = TTRet.PV;
-		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
-		if (ret.CausesCut) {
-			UpdateTranspositionTable(stat);
-			return ret.Values;
+		const auto& move = PV;
+		const auto zws = -ZWS(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(zws, move);
+		if (ret) {
+			TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+			return ret.value();
 		}
 	}
-	if (TTRet.AV != Field::invalid)
+	if (AV != Field::invalid)
 	{
-		const auto& move = TTRet.AV;
-		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
-		if (ret.CausesCut) {
-			UpdateTranspositionTable(stat);
-			return ret.Values;
+		const auto& move = AV;
+		const auto zws = -ZWS(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(zws, move);
+		if (ret) {
+			TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+			return ret.value();
 		}
 	}
 
-	CSortedMoves moves(in.pos, TTRet.PV, TTRet.AV);
+	CSortedMoves moves(in.pos, PV, AV);
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
-		const auto ret = stat.ImproveWith(-ZWS(stat.Play(move)), move);
-		if (ret.CausesCut) {
-			UpdateTranspositionTable(stat);
-			return ret.Values;
+		const auto zws = -ZWS(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(zws, move);
+		if (ret) {
+			TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+			return ret.value();
 		}
 	}
 
-	const auto ret = stat.AllMovesSearched();
-	UpdateTranspositionTable(stat);
+	const auto ret = status_quo.AllMovesTried();
+	TranspositionTableUpdate(in.pos, initial_node_count, ret);
 	return ret;
 }
 
-PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
+PVSearch::COutput PVSearch::PVS_N(const CInput& in)
 {
-	node_counter++;
+	const uint64_t initial_node_count = node_counter++;
 
 	if (in.pos.HasMoves() == false) {
 		const auto Pass = in.PlayPass();
@@ -519,93 +530,111 @@ PVSearch::ReturnValues PVSearch::PVS_N(const InputValues& in)
 		else
 		{
 			const auto score = EvalGameOver(in.pos);
-			return ReturnValues(score, score, in.pos.EmptyCount(), 0);
+			return COutput(score, score, in.pos.EmptyCount(), 0);
 		}
 	}
 
-	StatusValues stat(in, NodeCount());
-	if (const auto ret = stat.ImproveWith(StabilityAnalysis(in)); ret.CausesCut) return ret.Values;
-	const auto TTRet = TranspositionTableAnalysis(in);
+	CStatusQuo status_quo(in);
 
-	if (TTRet.PV != Field::invalid)
+	const auto stability = StabilityAnalysis(in.pos);
+	if (const auto ret = status_quo.ImproveWith(stability); ret) return ret.value();
+
+	const auto transposition = TranspositionTableAnalysis(in.pos);
+	if (const auto ret = status_quo.ImproveWith(transposition); ret) return ret.value();
+
+	const auto PV = status_quo.PV;
+	const auto AV = status_quo.AV;
+	bool searched_pv = false;
+
+	if (PV != Field::invalid)
 	{
-		const auto& move = TTRet.PV;
-		const auto zws_ret = -ZWS(stat.PlayZWS(move));
-		if (zws_ret.GetScore() >= stat.beta) { // TODO: Try using ImproveWith and test for a cut.
-			const auto ret = stat.ImproveWith(zws_ret, move);
-			UpdateTranspositionTable(stat);
-			return ret.Values;
+		const auto& move = PV;
+		const auto pvs = -PVS(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(pvs, move);
+		if (ret) {
+			TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+			return ret.value();
 		}
-		if (zws_ret.GetScore() > stat.alpha) { // if ZWS failed high.
-			const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
-			if (ret.CausesCut) {
-				UpdateTranspositionTable(stat);
-				return ret.Values;
+		searched_pv = true;
+	}
+	if (AV != Field::invalid)
+	{
+		const auto& move = AV;
+		COutput zws;
+		if (searched_pv)
+		{
+			zws = -ZWS(status_quo.PlayZWS(move));
+			if (zws.min >= status_quo.beta) {
+				const auto ret = status_quo.ImproveWith(zws, move);
+				assert(ret);
+				TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+				return ret.value();
+			}
+		}
+		if (!searched_pv || (zws.min > status_quo.alpha))
+		{
+			const auto pvs = -PVS(status_quo.Play(move));
+			const auto ret = status_quo.ImproveWith(pvs, move);
+			if (ret) {
+				TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+				return ret.value();
 			}
 		}
 	}
-	if (TTRet.AV != Field::invalid)
-	{
-		const auto& move = TTRet.AV;
-		const auto zws_ret = -ZWS(stat.PlayZWS(move));
-		if (zws_ret.GetScore() >= stat.beta) { // TODO: Try using ImproveWith and test for a cut.
-			const auto ret = stat.ImproveWith(zws_ret, move);
-			UpdateTranspositionTable(stat);
-			return ret.Values;
-		}
-		if (zws_ret.GetScore() > stat.alpha) { // if ZWS failed high.
-			const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
-			if (ret.CausesCut) {
-				UpdateTranspositionTable(stat);
-				return ret.Values;
-			}
-		}
-	}
 
-	CSortedMoves moves(in.pos, TTRet.PV, TTRet.AV);
+	CSortedMoves moves(in.pos, PV, AV);
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
-		const auto zws_ret = -ZWS(stat.PlayZWS(move));
-		if (zws_ret.GetScore() >= stat.beta) { // TODO: Try using ImproveWith and test for a cut.
-			const auto ret = stat.ImproveWith(zws_ret, move);
-			UpdateTranspositionTable(stat);
-			return ret.Values;
+		COutput zws;
+		if (searched_pv)
+		{
+			zws = -ZWS(status_quo.PlayZWS(move));
+			if (zws.min >= status_quo.beta) {
+				const auto ret = status_quo.ImproveWith(zws, move);
+				assert(ret);
+				TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+				return ret.value();
+			}
 		}
-		if (zws_ret.GetScore() > stat.alpha) { // if ZWS failed high.
-			const auto ret = stat.ImproveWith(-PVS(stat.Play(move)), move);
-			if (ret.CausesCut) {
-				UpdateTranspositionTable(stat);
-				return ret.Values;
+		if (!searched_pv || (zws.min > status_quo.alpha))
+		{
+			const auto pvs = -PVS(status_quo.Play(move));
+			const auto ret = status_quo.ImproveWith(pvs, move);
+			if (ret) {
+				TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
+				return ret.value();
 			}
 		}
 	}
 
-	const auto ret = stat.AllMovesSearched();
-	UpdateTranspositionTable(stat);
+	const auto ret = status_quo.AllMovesTried();
+	TranspositionTableUpdate(in.pos, initial_node_count, ret);
 	return ret;
 }
 
-PVSearch::AnalysisReturnValues PVSearch::StabilityAnalysis(const InputValues& in)
+PVSearch::COutput PVSearch::StabilityAnalysis(const CPosition& pos)
 {
-	const auto opponents_stable_stones = engine->GetStableStones(in.pos);
+	const auto opponents_stable_stones = engine->GetStableStones(pos);
 	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stones));
-	return AnalysisReturnValues(-infinity, max_score + 1, in.pos.EmptyCount(), 0);
+	return COutput(-64, max_score, pos.EmptyCount(), 0);
 }
 
-PVSearch::AnalysisReturnValues PVSearch::TranspositionTableAnalysis(const InputValues& in)
+PVSearch::COutput PVSearch::TranspositionTableAnalysis(const CPosition& pos)
 {
-	const auto ret = engine->LookUp(in.pos);
+	const auto ret = engine->LookUp(pos);
 	const auto& ttValue = ret.second;
 	if (ret.first)
-		return AnalysisReturnValues(ttValue.alpha, ttValue.beta, ttValue.depth, ttValue.selectivity, ttValue.PV, ttValue.AV);
+		return COutput(ttValue.min, ttValue.max, ttValue.depth, ttValue.selectivity, ttValue.PV, ttValue.AV);
 	else
-		return AnalysisReturnValues();
+		return COutput();
 }
 
-void PVSearch::UpdateTranspositionTable(const StatusValues& stat)
+void PVSearch::TranspositionTableUpdate(const CPosition& pos, std::size_t initial_node_count, const COutput& new_data)
 {
-	engine->Update(stat.pos, PvsInfo(node_counter - stat.InitialNodeCount, stat.depth, stat.selectivity, stat.alpha, stat.beta, stat.PV, stat.AV));
+	engine->Update(pos, 
+				   PvsInfo(node_counter - initial_node_count,
+						   new_data.depth, new_data.selectivity, new_data.min, new_data.max, new_data.PV, new_data.AV));
 }
 
 float Sigma(const int D, const int d, const int E) noexcept
@@ -619,24 +648,30 @@ float Sigma(const int D, const int d, const int E) noexcept
 	return (std::exp(alpha*d) + beta) * std::pow((D - d), gamma) * (delta*E + epsilon);
 }
 
-PVSearch::AnalysisReturnValues PVSearch::MPCAnalysis(const InputValues& in)
+PVSearch::COutput PVSearch::MpcAnalysis(const CInput& in)
 {
 	if (in.selectivity == 0 || in.depth < 4)
-		return AnalysisReturnValues();
+		return COutput();
 
 	const int D = in.depth;
 	const int d = D / 2;
 	const int E = in.pos.EmptyCount();
 	const float sigma = Sigma(D, d, E);
-	const float sigmas = in.selectivity ? in.selectivity / 10.0f : 100.0f;;
+	const float sigmas = 32.0f /(in.selectivity + 8.0f);
 	const int upper_bound = std::round(in.beta + sigmas * sigma);
 	const int lower_bound = std::round(in.alpha - sigmas * sigma);
 
-	//if (const auto ret = ZWS(InputValues(in.pos, upper_bound - 1, upper_bound, d, 0)); ret.alpha >= upper_bound)
-	//	return AnalysisReturnValues(in.beta, +infinity, in.depth, in.selectivity);
+	if (const auto ret = ZWS(CInput(in.pos, upper_bound - 1, upper_bound, d, 0)); ret.min >= upper_bound)
+	{
+		//std::cout << "High ProbCut\n";
+		return COutput(in.beta, +64, in.depth, in.selectivity);
+	}
 
-	//if (const auto ret = ZWS(InputValues(in.pos, lower_bound, lower_bound + 1, d, 0)); ret.beta <= lower_bound)
-	//	return AnalysisReturnValues(-infinity, in.alpha, in.depth, in.selectivity);
+	if (const auto ret = ZWS(CInput(in.pos, lower_bound, lower_bound + 1, d, 0)); ret.max <= lower_bound)
+	{
+		//std::cout << "Low ProbCut\n";
+		return COutput(-64, in.alpha, in.depth, in.selectivity);
+	}
 
-	return AnalysisReturnValues();
+	return COutput();
 }
