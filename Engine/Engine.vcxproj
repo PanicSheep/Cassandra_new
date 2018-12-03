@@ -19,6 +19,9 @@
     <ClCompile Include="src\NegaMaxSearch.cpp" />
     <ClCompile Include="src\Pattern.cpp" />
     <ClCompile Include="src\PVSearch.cpp" />
+    <ClCompile Include="src\SearchInput.cpp" />
+    <ClCompile Include="src\SearchOutput.cpp" />
+    <ClCompile Include="src\SearchStatusQuo.cpp" />
     <ClCompile Include="src\Stability.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +34,9 @@
     <ClInclude Include="src\NegaMaxSearch.h" />
     <ClInclude Include="src\Pattern.h" />
     <ClInclude Include="src\PVSearch.h" />
+    <ClInclude Include="src\SearchInput.h" />
+    <ClInclude Include="src\SearchOutput.h" />
+    <ClInclude Include="src\SearchStatusQuo.h" />
     <ClInclude Include="src\SortedMoves.h" />
     <ClInclude Include="src\Stability.h" />
   </ItemGroup>

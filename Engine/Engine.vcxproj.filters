@@ -10,6 +10,9 @@
     <ClCompile Include="src\Stability.cpp" />
     <ClCompile Include="src\Pattern.cpp" />
     <ClCompile Include="src\ConfigFile.cpp" />
+    <ClCompile Include="src\SearchInput.cpp" />
+    <ClCompile Include="src\SearchOutput.cpp" />
+    <ClCompile Include="src\SearchStatusQuo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HashtablePVS.h" />
@@ -23,5 +26,8 @@
     <ClInclude Include="src\PVSearch.h" />
     <ClInclude Include="src\SortedMoves.h" />
     <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\SearchInput.h" />
+    <ClInclude Include="src\SearchOutput.h" />
+    <ClInclude Include="src\SearchStatusQuo.h" />
   </ItemGroup>
 </Project>

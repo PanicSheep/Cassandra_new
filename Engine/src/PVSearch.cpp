@@ -7,7 +7,7 @@
 
 using namespace Search;
 
-PVSearch::COutput PVSearch::Result(const CInput & in, int score, int8_t depth, uint8_t selectivity)
+COutput PVSearch::Result(const CInput & in, int score, int8_t depth, uint8_t selectivity)
 {
 	if (score >= in.beta) // upper cut
 		return COutput(score, +64, depth, selectivity, CMove::invalid, CMove::invalid);
@@ -57,7 +57,7 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 	}
 }
 
-PVSearch::COutput PVSearch::PVS(const CInput& in)
+COutput PVSearch::PVS(const CInput& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
 	if (in.depth == EmptyCount)
@@ -80,7 +80,7 @@ PVSearch::COutput PVSearch::PVS(const CInput& in)
 	}
 }
 
-PVSearch::COutput PVSearch::ZWS(const CInput& in)
+COutput PVSearch::ZWS(const CInput& in)
 {
 	const auto EmptyCount = in.pos.EmptyCount();
 	if (in.depth == EmptyCount)
@@ -408,7 +408,7 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CM
 		return -EvalGameOver(posPass);
 }
 
-PVSearch::COutput PVSearch::ZWS_A(const CInput& in)
+COutput PVSearch::ZWS_A(const CInput& in)
 {
 	assert(in.beta == in.alpha + 1);
 
@@ -453,7 +453,7 @@ PVSearch::COutput PVSearch::ZWS_A(const CInput& in)
 	return status_quo.AllMovesTried();
 }
 
-PVSearch::COutput PVSearch::ZWS_N(const CInput& in)
+COutput PVSearch::ZWS_N(const CInput& in)
 {
 	assert(in.alpha + 1 == in.beta);
 	
@@ -519,7 +519,7 @@ PVSearch::COutput PVSearch::ZWS_N(const CInput& in)
 	return ret;
 }
 
-PVSearch::COutput PVSearch::PVS_N(const CInput& in)
+COutput PVSearch::PVS_N(const CInput& in)
 {
 	const uint64_t initial_node_count = node_counter++;
 
@@ -613,14 +613,14 @@ PVSearch::COutput PVSearch::PVS_N(const CInput& in)
 	return ret;
 }
 
-PVSearch::COutput PVSearch::StabilityAnalysis(const CPosition& pos)
+COutput PVSearch::StabilityAnalysis(const CPosition& pos)
 {
 	const auto opponents_stable_stones = engine->GetStableStones(pos);
 	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stones));
 	return COutput(-64, max_score, pos.EmptyCount(), 0);
 }
 
-PVSearch::COutput PVSearch::TranspositionTableAnalysis(const CPosition& pos)
+COutput PVSearch::TranspositionTableAnalysis(const CPosition& pos)
 {
 	const auto ret = engine->LookUp(pos);
 	const auto& ttValue = ret.second;
@@ -648,7 +648,7 @@ float Sigma(const int D, const int d, const int E) noexcept
 	return (std::exp(alpha*d) + beta) * std::pow((D - d), gamma) * (delta*E + epsilon);
 }
 
-PVSearch::COutput PVSearch::MpcAnalysis(const CInput& in)
+COutput PVSearch::MpcAnalysis(const CInput& in)
 {
 	if (in.selectivity == 0 || in.depth < 4)
 		return COutput();
