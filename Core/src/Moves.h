@@ -30,6 +30,7 @@ public:
 
 	std::size_t size() const noexcept { return PopCount(m_moves); }
 	bool empty() const noexcept { return m_moves == 0; }
+	void clear() noexcept { m_moves = 0; }
 
 	bool HasMove(CMove) const noexcept;
 	CMove PeekMove() const noexcept;
