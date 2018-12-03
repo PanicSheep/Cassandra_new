@@ -1,8 +1,9 @@
 #pragma once
+#include "MacrosHell.h"
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <vector>
-#include "MacrosHell.h"
 
 enum Field : uint8_t
 {
