@@ -1,6 +1,5 @@
 #pragma once
 #include "Position.h"
-
 #include <cstdint>
 #include <chrono>
 
