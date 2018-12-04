@@ -266,9 +266,8 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove move1, co
 		bestscore = std::max(score, bestscore);
 	}
 
-	if (const auto flips = Flip(pos, move2)) {
+	if (const auto flips = Flip(pos, move2))
 		return std::max(bestscore, -ZWS_1(pos.Play(move2, flips), -alpha - 1, move1));
-	}
 
 	if (bestscore != -infinity)
 		return bestscore;
@@ -282,9 +281,8 @@ int PVSearch::ZWS_2(const CPosition& pos, const int alpha, const CMove move1, co
 		bestscore = std::min(score, bestscore);
 	}
 
-	if (const auto flips = Flip(posPass, move2)) {
+	if (const auto flips = Flip(posPass, move2))
 		return std::min(bestscore, ZWS_1(posPass.Play(move2, flips), alpha, move1));
-	}
 
 	if (bestscore != infinity) {
 		node_counter++;
@@ -311,9 +309,8 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CM
 		bestscore = std::max(score, bestscore);
 	}
 
-	if (const auto flips = Flip(pos, move3)) {
+	if (const auto flips = Flip(pos, move3))
 		return std::max(bestscore, -ZWS_2(pos.Play(move3, flips), -alpha - 1, move1, move2));
-	}
 
 	if (bestscore != -infinity)
 		return bestscore;
@@ -333,9 +330,8 @@ int PVSearch::ZWS_3(const CPosition& pos, int alpha, const CMove move1, const CM
 		bestscore = std::min(score, bestscore);
 	}
 
-	if (const auto flips = Flip(posPass, move3)) {
+	if (const auto flips = Flip(posPass, move3))
 		return std::min(bestscore, ZWS_2(posPass.Play(move3, flips), alpha, move1, move2));
-	}
 
 	if (bestscore != infinity) {
 		node_counter++;
@@ -368,9 +364,8 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CM
 		bestscore = std::max(score, bestscore);
 	}
 
-	if (const auto flips = Flip(pos, move4)) {
+	if (const auto flips = Flip(pos, move4))
 		return std::max(bestscore, -ZWS_3(pos.Play(move4, flips), -alpha - 1, move1, move2, move3));
-	}
 
 	if (bestscore != -infinity)
 		return bestscore;
@@ -396,9 +391,8 @@ int PVSearch::ZWS_4(const CPosition& pos, int alpha, const CMove move1, const CM
 		bestscore = std::min(score, bestscore);
 	}
 
-	if (const auto flips = Flip(posPass, move4)) {
+	if (const auto flips = Flip(posPass, move4))
 		return std::min(bestscore, ZWS_3(posPass.Play(move4, flips), alpha, move1, move2, move3));
-	}
 
 	if (bestscore != infinity) {
 		node_counter++;
