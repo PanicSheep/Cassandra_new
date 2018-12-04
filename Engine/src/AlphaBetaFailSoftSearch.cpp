@@ -116,11 +116,8 @@ int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const C
 		bestscore = std::max(score, bestscore);
 	}
 
-	if (const auto flips = Flip(pos, move2)) {
-		const auto score = -Eval_1(pos.Play(move2, flips), -beta, move1);
-		if (score >= beta) return score;
-		bestscore = std::max(score, bestscore);
-	}
+	if (const auto flips = Flip(pos, move2))
+		return std::max(bestscore, -Eval_1(pos.Play(move2, flips), -beta, move1));
 
 	if (bestscore != -infinity)
 		return bestscore;
@@ -134,11 +131,8 @@ int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const C
 		bestscore = std::min(score, bestscore);
 	}
 
-	if (const auto flips = Flip(posPass, move2)) {
-		const auto score = Eval_1(posPass.Play(move2, flips), alpha, move1);
-		if (score <= alpha) return score;
-		bestscore = std::min(score, bestscore);
-	}
+	if (const auto flips = Flip(posPass, move2))
+		return std::min(bestscore, Eval_1(posPass.Play(move2, flips), alpha, move1));
 
 	if (bestscore != infinity) {
 		node_counter++;
@@ -167,12 +161,8 @@ int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const C
 		bestscore = std::max(score, bestscore);
 	}
 
-	if (const auto flips = Flip(pos, move3)) {
-		const auto score = -Eval_2(pos.Play(move3, flips), -beta, -alpha, move1, move2);
-		if (score >= beta) return score;
-		alpha = std::max(score, alpha);
-		bestscore = std::max(score, bestscore);
-	}
+	if (const auto flips = Flip(pos, move3))
+		return std::max(bestscore, -Eval_2(pos.Play(move3, flips), -beta, -alpha, move1, move2));
 
 	if (bestscore != -infinity)
 		return bestscore;
@@ -195,12 +185,8 @@ int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const C
 		bestscore = std::min(score, bestscore);
 	}
 
-	if (const auto flips = Flip(posPass, move3)) {
-		const auto score = Eval_2(posPass.Play(move3, flips), alpha, beta, move1, move2);
-		if (score <= alpha) return score;
-		beta = std::min(score, beta);
-		bestscore = std::min(score, bestscore);
-	}
+	if (const auto flips = Flip(posPass, move3))
+		return std::min(bestscore, Eval_2(posPass.Play(move3, flips), alpha, beta, move1, move2));
 
 	if (bestscore != infinity) {
 		node_counter++;
@@ -236,12 +222,8 @@ int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const C
 		bestscore = std::max(score, bestscore);
 	}
 
-	if (const auto flips = Flip(pos, move4)) {
-		const auto score = -Eval_3(pos.Play(move4, flips), -beta, -alpha, move1, move2, move3);
-		if (score >= beta) return score;
-		alpha = std::max(score, alpha);
-		bestscore = std::max(score, bestscore);
-	}
+	if (const auto flips = Flip(pos, move4))
+		return std::max(bestscore, -Eval_3(pos.Play(move4, flips), -beta, -alpha, move1, move2, move3));
 
 	if (bestscore != -infinity)
 		return bestscore;
@@ -270,12 +252,8 @@ int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const C
 		bestscore = std::min(score, bestscore);
 	}
 
-	if (const auto flips = Flip(posPass, move4)) {
-		const auto score = Eval_3(posPass.Play(move4, flips), alpha, beta, move1, move2, move3);
-		if (score <= alpha) return score;
-		beta = std::min(score, beta);
-		bestscore = std::min(score, bestscore);
-	}
+	if (const auto flips = Flip(posPass, move4))
+		return std::min(bestscore, Eval_3(posPass.Play(move4, flips), alpha, beta, move1, move2, move3));
 
 	if (bestscore != infinity) {
 		node_counter++;
