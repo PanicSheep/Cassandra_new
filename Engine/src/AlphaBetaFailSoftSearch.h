@@ -16,7 +16,7 @@ namespace Search
 		std::unique_ptr<CAlgorithm> Clone() const override;
 		
 		CResult Eval(const CPosition&, CSpecification) override;
-	private:
+	protected:
 		int Eval  (const CPosition&, int alpha, int beta);
 		int Eval_0(const CPosition&);
 		int Eval_1(const CPosition&);
