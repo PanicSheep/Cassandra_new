@@ -2,6 +2,7 @@
 #include "Position.h"
 #include <cstdint>
 #include <chrono>
+#include <memory>
 
 class Engine;
 

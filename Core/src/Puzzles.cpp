@@ -1,4 +1,5 @@
 #include "Puzzles.h"
+#include <stdexcept>
 
 void CPuzzle::Solve(Search::CAlgorithm& algorithm, Search::ILog& log)
 {
