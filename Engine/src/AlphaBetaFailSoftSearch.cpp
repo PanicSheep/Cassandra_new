@@ -86,15 +86,15 @@ int AlphaBetaFailSoft::Eval_1(const CPosition& pos, const CMove move1)
 	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
-	if (const auto Diff = engine->CountLastFlip(pos, move1))
+	if (const auto diff = engine->CountLastFlip(pos, move1))
 	{
 		node_counter++;
-		return score + Diff + 1;
+		return score + diff + 1;
 	}
-	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
+	else if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		node_counter += 2;
-		return score - Diff - 1;
+		return score - diff - 1;
 	}
 	else
 		return (score > 0) ? score + 1 : score - 1;

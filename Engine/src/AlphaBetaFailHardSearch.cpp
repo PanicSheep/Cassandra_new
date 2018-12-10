@@ -86,15 +86,15 @@ int AlphaBetaFailHard::Eval_1(const CPosition& pos, const int alpha, const int b
 	node_counter++;
 	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
 
-	if (const auto Diff = engine->CountLastFlip(pos, move1))
+	if (const auto diff = engine->CountLastFlip(pos, move1))
 	{
 		node_counter++;
-		return std::clamp(score + Diff + 1, alpha, beta);
+		return std::clamp(score + diff + 1, alpha, beta);
 	}
-	else if (const auto Diff = engine->CountLastFlip(pos.PlayPass(), move1))
+	else if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		node_counter += 2;
-		return std::clamp(score - Diff - 1, alpha, beta);
+		return std::clamp(score - diff - 1, alpha, beta);
 	}
 	else
 		return std::clamp((score > 0) ? score + 1 : score - 1, alpha, beta);
