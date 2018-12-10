@@ -4,6 +4,7 @@
 #include <atomic>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include "Moves.h"
 #include "Position.h"
 #include "Hashtable.h"
@@ -45,7 +46,7 @@ public:
 
 class /*alignas(64)*/ TwoNode
 {
-	mutable std::atomic_flag spinlock;
+	mutable std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
 	Node node1, node2;
 
 	void lock() const; // blocking
@@ -58,7 +59,7 @@ public:
 	TwoNode& operator=(const TwoNode&);
 
 	void Update(const CPosition& key, const PvsInfo& value, uint8_t date);
-	std::pair<bool, PvsInfo> LookUp(const CPosition& key) const;
+	std::optional<PvsInfo> LookUp(const CPosition& key) const;
 	void Refresh(const CPosition& key, uint8_t date);
 	void Clear();
 

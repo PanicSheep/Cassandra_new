@@ -36,14 +36,16 @@ public:
 		// This function is intentionally empty. Because this class does not contain a date.
 	}
 
-	std::pair<bool, uint64_t> LookUp(const PerftKey& key) const
+	std::optional<uint64_t> LookUp(const PerftKey& key) const
 	{
 		const uint64_t old_value = lock();
 		const bool KeyIsEqual = (key.pos.GetP() == m_P.load(std::memory_order_relaxed))
 			      && (key.pos.GetO() == m_O.load(std::memory_order_relaxed))
 			      && (key.depth  == m_depth.load(std::memory_order_relaxed));
 		unlock(old_value);
-		return std::pair<bool, uint64_t>(KeyIsEqual, old_value);
+		if (KeyIsEqual)
+			return old_value;
+		return {};
 	}
 
 	void Clear()

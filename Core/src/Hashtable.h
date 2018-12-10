@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <atomic>
 #include <iostream>
+#include <optional>
 #include "Position.h"
 
 template <typename KeyType, typename ValueType>
@@ -11,7 +12,7 @@ class IHashTable
 public:
 	virtual ~IHashTable() {}
 	virtual void Update(const KeyType& key, const ValueType& value) = 0;
-	virtual std::pair<bool, ValueType> LookUp(const KeyType& key) const = 0;
+	virtual std::optional<ValueType> LookUp(const KeyType& key) const = 0;
 	virtual void Refresh(const KeyType& key) = 0;
 	virtual void AdvanceDate() = 0;
 	virtual void Clear() = 0;
@@ -29,7 +30,7 @@ public:
 	HashTable() : HashTable(1) {}
 
 	void Update(const KeyType& key, const ValueType& value) override;
-	std::pair<bool, ValueType> LookUp(const KeyType& key) const override;
+	std::optional<ValueType> LookUp(const KeyType& key) const override;
 	void Refresh(const KeyType& key) override;
 	void AdvanceDate() override;
 	void Clear() override;
@@ -64,11 +65,11 @@ inline void HashTable<NodeType, KeyType, ValueType>::Update(const KeyType& key, 
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
-inline std::pair<bool, ValueType> HashTable<NodeType, KeyType, ValueType>::LookUp(const KeyType& key) const
+inline std::optional<ValueType> HashTable<NodeType, KeyType, ValueType>::LookUp(const KeyType& key) const
 {
 	LookUpCounter++;
 	const auto ret = table[Hash(key)].LookUp(key);
-	if (ret.first)
+	if (ret.has_value())
 		HitCounter++;
 	return ret;
 }

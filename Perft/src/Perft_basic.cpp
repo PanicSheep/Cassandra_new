@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <unordered_map>
+#include <optional>
 
 namespace Perft
 {
@@ -167,8 +168,8 @@ namespace Perft
 					return 0ui64;
 			}
 
-			if (const auto ret = ht.LookUp(PerftKey(pos, depth)); ret.first)
-				return ret.second;
+			if (const auto ret = ht.LookUp(PerftKey(pos, depth)); ret.has_value())
+				return ret.value();
 
 			uint64_t sum = 0ui64;
 			while (!moves.empty())

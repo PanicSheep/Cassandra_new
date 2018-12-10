@@ -59,7 +59,7 @@ public:
 	CPosition Play(const CPosition& pos, CMove move) const override { return flipper->Play(pos, move); }
 	uint8_t CountLastFlip(const CPosition& pos, CMove move) const override { return last_flip_counter->CountLastFlip(pos, move); }
 	void Update(const CPosition& pos, const PvsInfo& info) override { hash_table->Update(pos, info); }
-	std::pair<bool, PvsInfo> LookUp(const CPosition& pos) const override { return hash_table->LookUp(pos); }
+	std::optional<PvsInfo> LookUp(const CPosition& pos) const override { return hash_table->LookUp(pos); }
 	void Refresh(const CPosition& pos) override { hash_table->Refresh(pos); }
 	void AdvanceDate() override { hash_table->AdvanceDate(); }
 	void Clear() override { hash_table->Clear(); }

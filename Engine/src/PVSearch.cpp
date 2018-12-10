@@ -324,9 +324,8 @@ COutput PVSearch::StabilityAnalysis(const CPosition& pos)
 COutput PVSearch::TranspositionTableAnalysis(const CPosition& pos)
 {
 	const auto ret = engine->LookUp(pos);
-	const auto& ttValue = ret.second;
-	if (ret.first)
-		return COutput(ttValue.min, ttValue.max, ttValue.depth, ttValue.selectivity, ttValue.PV, ttValue.AV);
+	if (ret.has_value())
+		return COutput(ret.value().min, ret.value().max, ret.value().depth, ret.value().selectivity, ret.value().PV, ret.value().AV);
 	else
 		return COutput();
 }
