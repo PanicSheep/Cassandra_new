@@ -7,7 +7,7 @@ PvsInfo::PvsInfo(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBes
 	, max(max)
 	, depth(depth)
 	, selectivity(selectivity)
-	, cost(static_cast<uint8_t>(BitScanMSB(node_count + 1))) // +1 prevents it from failing at NodeCount == 0.
+	, cost(static_cast<uint8_t>(BitScanMSB(node_count + 1))) // +1 prevents it from failing at node_count == 0.
 	, best_moves(best_moves)
 {}
 
