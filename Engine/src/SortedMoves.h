@@ -9,7 +9,6 @@ class CSortedMoves
 {
 	std::vector<std::pair<int32_t, CMove>> moves;
 public:
-	CSortedMoves() {}
 	CSortedMoves(const CPosition&);
 	CSortedMoves(const CPosition&, CMove filter1, CMove filter2);
 
