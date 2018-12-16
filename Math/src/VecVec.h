@@ -7,7 +7,7 @@
 template <typename T>
 class Vecvec
 {
-	std::size_t m_n;
+	std::size_t m_n = 0;
 	std::vector<std::vector<T>> m_vec;
 public:
 	Vecvec(std::size_t n) : m_n(n) { m_vec.resize(n); }
