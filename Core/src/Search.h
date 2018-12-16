@@ -8,7 +8,7 @@ class Engine;
 
 namespace Search
 {
-	static inline int infinity = +65;
+	constexpr int infinity = +65;
 
 	struct CSpecification
 	{
