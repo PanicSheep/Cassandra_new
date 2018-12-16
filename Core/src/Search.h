@@ -62,7 +62,7 @@ namespace Search
 				: position(position), index(index), original_score(original_score), specification(specification), result(result)
 			{}
 		};
-		std::size_t index;
+		std::size_t index = 0;
 
 		virtual std::unique_ptr<ILog> Clone() const = 0;
 		virtual void push_back(CPosition, int original_score, CSpecification, CResult) = 0;
