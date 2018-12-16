@@ -41,7 +41,7 @@ public:
 	bool IsOld(uint8_t CompareDate) const;
 };
 
-class /*alignas(64)*/ TwoNode
+class /*alignas(CACHE_LINE_SIZE)*/ TwoNode
 {
 	mutable std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
 	Node node1, node2;
@@ -63,7 +63,7 @@ public:
 	int NumberOfNonEmptyNodes() const;
 };
 
-static_assert(sizeof(TwoNode) <= CACHE_LINE_SIZE);
+//static_assert(sizeof(TwoNode) <= CACHE_LINE_SIZE);
 
 typedef HashTable<TwoNode, CPosition, PvsInfo> CHashTablePVS;
 
