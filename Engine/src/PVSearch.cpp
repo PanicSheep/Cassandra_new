@@ -10,11 +10,11 @@ using namespace Search;
 COutput PVSearch::Result(const CInput & in, int score, int8_t depth, uint8_t selectivity)
 {
 	if (score >= in.beta) // upper cut
-		return COutput(score, +64, depth, selectivity, CMove::invalid, CMove::invalid);
+		return COutput::MinBound(score, depth, selectivity);
 	if (score <= in.alpha) // lower cut
-		return COutput(-64, score, depth, selectivity, CMove::invalid, CMove::invalid);
+		return COutput::MaxBound(score, depth, selectivity);
 
-	return COutput(score, score, depth, selectivity, CMove::invalid, CMove::invalid);
+	return COutput::ExactScore(score, depth, selectivity);
 }
 
 std::unique_ptr<CAlgorithm> PVSearch::Clone() const
@@ -35,7 +35,7 @@ CResult PVSearch::Eval(const CPosition& pos, CSpecification spec)
 	return CResult(score, node_count, duration);
 }
 
-int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity)
+int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity) // TODO: Replace parameters with CInput.
 {
 	const auto empties = pos.EmptyCount();
 	if (depth == empties)
@@ -46,8 +46,8 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 		for (int d = 0; d < empties - 10; d++)
 			PVS(CInput(pos, alpha, beta, d, 33));
 		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
-		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 19)).min;
-		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 11)).min;
+		//PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 19)).min;
+		//PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 11)).min;
 		return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
 	}
 	else
@@ -67,17 +67,13 @@ COutput PVSearch::PVS(const CInput& in)
 			case 0: return Result(in, Eval_0(in.pos), 0, 0);
 			case 1: return Result(in, Eval_1(in.pos), 1, 0);
 			case 2: return Result(in, Eval_2(in.pos, in.alpha, in.beta), 2, 0);
-			default: return PVS_N(in);
+			default:
+				break;
 		}
 	}
-	else
-	{
-		switch (in.depth)
-		{
-			case 0: return Result(in, static_cast<int>(engine->Eval(in.pos)), 0, 0);
-			default: return PVS_N(in);
-		}
-	}
+	else if (in.depth == 0)
+		return Result(in, std::clamp(static_cast<int8_t>(engine->Eval(in.pos)), (int8_t)-64, (int8_t)+64), 0, 0);
+	return PVS_N(in);
 }
 
 COutput PVSearch::ZWS(const CInput& in)
@@ -96,17 +92,53 @@ COutput PVSearch::ZWS(const CInput& in)
 			case 6:
 			case 7:
 				return ZWS_A(in);
-			default: return ZWS_N(in);
+			default:
+				break;
 		}
 	}
 	else
 	{
 		switch (in.depth)
 		{
-			case 0: return Result(in, static_cast<int>(engine->Eval(in.pos)), 0, 0);
-			default: return ZWS_N(in);
+			case 0: return Eval_d0(in);
+			case 1: return Eval_d1(in);
+			default:
+				break;
 		}
 	}
+	return ZWS_N(in);
+}
+
+COutput PVSearch::Eval_d0(const CInput& in)
+{
+	return Result(in, std::clamp(static_cast<int>(engine->Eval(in.pos)), -64, +64), 0, 0);
+}
+
+COutput PVSearch::Eval_d1(const CInput& in)
+{
+	node_counter++;
+
+	CMoves moves = in.pos.PossibleMoves();
+	if (moves.empty()) {
+		const auto Pass = in.PlayPass();
+		if (Pass.pos.HasMoves())
+			return -Eval_d1(Pass);
+		else
+			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+	}
+
+	CStatusQuo status_quo(in);
+	
+	while (!moves.empty())
+	{
+		const auto move = moves.ExtractMove();
+		const auto zws = -Eval_d0(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(zws, move);
+		if (ret)
+			return ret.value();
+	}
+
+	return status_quo.AllMovesTried();
 }
 
 COutput PVSearch::ZWS_A(const CInput& in)
@@ -121,7 +153,7 @@ COutput PVSearch::ZWS_A(const CInput& in)
 		if (Pass.pos.HasMoves())
 			return -ZWS_A(Pass);
 		else
-			return COutput(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -165,7 +197,7 @@ COutput PVSearch::ZWS_N(const CInput& in)
 		if (Pass.pos.HasMoves())
 			return -ZWS_N(Pass);
 		else
-			return COutput(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -179,8 +211,8 @@ COutput PVSearch::ZWS_N(const CInput& in)
 	const auto mpc = MpcAnalysis(in);
 	if (const auto ret = status_quo.ImproveWith(mpc); ret) return ret.value();
 
-	const auto PV = status_quo.PV;
-	const auto AV = status_quo.AV;
+	const auto PV = status_quo.best_moves.PV;
+	const auto AV = status_quo.best_moves.AV;
 
 	if (PV != Field::invalid)
 	{
@@ -229,10 +261,7 @@ COutput PVSearch::PVS_N(const CInput& in)
 		if (Pass.pos.HasMoves())
 			return -PVS_N(Pass);
 		else
-		{
-			const auto score = EvalGameOver(in.pos);
-			return COutput(score, score, in.pos.EmptyCount(), 0);
-		}
+			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -243,8 +272,8 @@ COutput PVSearch::PVS_N(const CInput& in)
 	const auto transposition = TranspositionTableAnalysis(in.pos);
 	if (const auto ret = status_quo.ImproveWith(transposition); ret) return ret.value();
 
-	const auto PV = status_quo.PV;
-	const auto AV = status_quo.AV;
+	const auto PV = status_quo.best_moves.PV;
+	const auto AV = status_quo.best_moves.AV;
 	bool searched_pv = false;
 
 	if (PV != Field::invalid)
@@ -280,6 +309,7 @@ COutput PVSearch::PVS_N(const CInput& in)
 				TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
 				return ret.value();
 			}
+			searched_pv = true;
 		}
 	}
 
@@ -306,6 +336,7 @@ COutput PVSearch::PVS_N(const CInput& in)
 				TranspositionTableUpdate(in.pos, initial_node_count, ret.value());
 				return ret.value();
 			}
+			searched_pv = true;
 		}
 	}
 
@@ -316,25 +347,39 @@ COutput PVSearch::PVS_N(const CInput& in)
 
 COutput PVSearch::StabilityAnalysis(const CPosition& pos)
 {
+	//static const char stability_cutoff_limits[64] = {
+	//	99, 99, 99, 99,  6,  8, 10, 12,
+	//	14, 16, 20, 22, 24, 26, 28, 30,
+	//	32, 34, 36, 38, 40, 42, 44, 46,
+	//	48, 48, 50, 50, 52, 52, 54, 54,
+	//	56, 56, 58, 58, 60, 60, 62, 62,
+	//	64, 64, 64, 64, 64, 64, 64, 64,
+	//	99, 99, 99, 99, 99, 99, 99, 99
+	//	};
+	//if (PopCount(pos.GetP()) - PopCount(pos.GetO()) > stability_cutoff_limits[pos.EmptyCount()])
+	//	return COutput();
+	//if (((pos.GetP() | pos.GetO()) & 0x8100000000000081ui64) == 0)
+	//	return COutput();
 	const auto opponents_stable_stones = engine->GetStableStones(pos);
 	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stones));
-	return COutput(-64, max_score, pos.EmptyCount(), 0);
+	return COutput::MaxBound(max_score, pos.EmptyCount(), 0);
 }
 
 COutput PVSearch::TranspositionTableAnalysis(const CPosition& pos)
 {
 	const auto ret = engine->LookUp(pos);
 	if (ret.has_value())
-		return COutput(ret.value().min, ret.value().max, ret.value().depth, ret.value().selectivity, ret.value().PV, ret.value().AV);
+		return COutput(ret.value().min, ret.value().max, ret.value().depth, ret.value().selectivity, ret.value().best_moves);
 	else
 		return COutput();
 }
 
-void PVSearch::TranspositionTableUpdate(const CPosition& pos, std::size_t initial_node_count, const COutput& new_data)
+void PVSearch::TranspositionTableUpdate(const CPosition& pos, std::size_t initial_node_count, const COutput& novum)
 {
 	engine->Update(pos, 
-				   PvsInfo(node_counter - initial_node_count,
-						   new_data.depth, new_data.selectivity, new_data.min, new_data.max, new_data.PV, new_data.AV));
+				   PvsInfo(novum.min, novum.max,
+					   novum.depth, novum.selectivity,
+					   novum.best_moves, node_counter - initial_node_count));
 }
 
 float Sigma(const int D, const int d, const int E) noexcept
@@ -358,20 +403,22 @@ COutput PVSearch::MpcAnalysis(const CInput& in)
 	const int E = in.pos.EmptyCount();
 	const float sigma = Sigma(D, d, E);
 	const float sigmas = 32.0f /(in.selectivity + 8.0f);
-	const int upper_bound = std::round(in.beta + sigmas * sigma);
-	const int lower_bound = std::round(in.alpha - sigmas * sigma);
+	const auto upper_bound = static_cast<int8_t>(in.beta + sigmas * sigma);
+	const auto lower_bound = static_cast<int8_t>(in.alpha - sigmas * sigma);
 
-	if (const auto ret = ZWS(CInput(in.pos, upper_bound - 1, upper_bound, d, 0)); ret.min >= upper_bound)
-	{
-		//std::cout << "High ProbCut\n";
-		return COutput(in.beta, +64, in.depth, in.selectivity);
-	}
+	if (upper_bound - 1 >= -65 && upper_bound <= +65)
+		if (const auto ret = ZWS(CInput(in.pos, upper_bound - 1, upper_bound, d, 0)); ret.min >= upper_bound)
+		{
+			//std::cout << "High ProbCut\n";
+			return COutput::MinBound(in.beta, in.depth, in.selectivity, ret.best_moves);
+		}
 
-	if (const auto ret = ZWS(CInput(in.pos, lower_bound, lower_bound + 1, d, 0)); ret.max <= lower_bound)
-	{
-		//std::cout << "Low ProbCut\n";
-		return COutput(-64, in.alpha, in.depth, in.selectivity);
-	}
+	if (lower_bound >= -65 && lower_bound + 1 <= +65)
+		if (const auto ret = ZWS(CInput(in.pos, lower_bound, lower_bound + 1, d, 0)); ret.max <= lower_bound)
+		{
+			//std::cout << "Low ProbCut\n";
+			return COutput::MaxBound(in.alpha, in.depth, in.selectivity, ret.best_moves);
+		}
 
 	return COutput();
 }

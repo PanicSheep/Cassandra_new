@@ -28,62 +28,47 @@ CInput CStatusQuo::PlayZWS(CMove move) const
 	return CInput(pos.Play(move), -alpha - 1, -alpha, depth - 1, selectivity);
 }
 
-std::optional<COutput> CStatusQuo::ImproveWith(const COutput & new_data)
+std::optional<COutput> CStatusQuo::ImproveWith(const COutput & novum)
 {
 	assert(Constrained());
-	if ((new_data.depth >= depth) && (new_data.selectivity <= selectivity))
+	const bool novum_is_better = (novum.depth >= depth) && (novum.selectivity <= selectivity);
+	if ((best_moves.PV == Field::invalid) || (novum_is_better && (novum.best_moves.PV != Field::invalid)))
+		best_moves = novum.best_moves;
+	if (novum_is_better)
 	{
-		if ((new_data.min == new_data.max) // exact score
-			|| (new_data.min >= beta) // upper cut
-			|| (new_data.max <= alpha)) // lower cut
-		{
-			if (new_data.PV != Field::invalid) PV = new_data.PV; // TODO: Test this, and decide what to do.
-			if (new_data.AV != Field::invalid) AV = new_data.AV; // TODO: Test this, and decide what to do.
-			return COutput(new_data.min, new_data.max, new_data.depth, new_data.selectivity, PV, AV);
-		}
+		if (novum.min == novum.max) // exact score
+			return COutput::ExactScore(novum.min, novum.depth, novum.selectivity, best_moves);
+		if (novum.min >= beta) // upper cut
+			return COutput::MinBound(novum.min, novum.depth, novum.selectivity, best_moves);
+		if (novum.max <= alpha) // lower cut
+			return COutput::MaxBound(novum.max, novum.depth, novum.selectivity, best_moves);
 
-		// You can't be sure to find a value within min and max when there is probability involved.
-		if (selectivity == 0)
-		{
-			if (new_data.max + 1 < beta)
-			{
-				beta = new_data.max + 1;
-				if (new_data.PV != Field::invalid) PV = new_data.PV; // TODO: Test this, and decide what to do.
-				if (new_data.AV != Field::invalid) AV = new_data.AV; // TODO: Test this, and decide what to do.
-			}
-			if (new_data.min - 1 > alpha)
-			{
-				alpha = new_data.min - 1;
-				if (new_data.PV != Field::invalid) PV = new_data.PV; // TODO: Test this, and decide what to do.
-				if (new_data.AV != Field::invalid) AV = new_data.AV; // TODO: Test this, and decide what to do.
-			}
-		}
+		alpha = std::max(alpha, static_cast<int8_t>(novum.min - 1));
+		beta = std::min(beta, static_cast<int8_t>(novum.max + 1));
 	}
-	if (PV == Field::invalid) PV = new_data.PV;
-	if (AV == Field::invalid) AV = new_data.AV;
 	assert(Constrained());
 	return {};
 }
 
-std::optional<COutput> CStatusQuo::ImproveWith(const COutput & new_data, CMove move)
+std::optional<COutput> CStatusQuo::ImproveWith(const COutput & novum, CMove move)
 {
 	assert(Constrained());
-	if ((new_data.depth + 1 >= depth) && (new_data.selectivity <= selectivity)) // TODO: Probably an irrelevant check.
+	if ((novum.depth + 1 >= depth) && (novum.selectivity <= selectivity)) // TODO: Probably an irrelevant check.
 	{
-		if (new_data.min >= beta) // upper cut
-			return COutput(new_data.min, +64, new_data.depth + 1, new_data.selectivity, move, PV);
+		if (novum.min >= beta) // upper cut
+			return COutput::MinBound(novum.min, novum.depth + 1, novum.selectivity, { move, best_moves.PV });
 
-		if (new_data.min > best_score)
+		if (novum.min > best_score)
 		{
-			best_score = new_data.min;
-			//depth = new_data.depth + 1; // TODO: implement best_depth.
-			//selectivity = new_data.selectivity; // TODO: implement best_selectivity.
-			if (move != PV) {
-				AV = PV;
-				PV = move;
+			best_score = novum.min;
+			//depth = novum.depth + 1; // TODO: implement best_depth.
+			//selectivity = novum.selectivity; // TODO: implement best_selectivity.
+			if (move != best_moves.PV) {
+				best_moves.AV = best_moves.PV;
+				best_moves.PV = move;
 			}
 		}
-		alpha = std::max(alpha, new_data.min);
+		alpha = std::max(alpha, novum.min);
 	}
 	assert(Constrained());
 	return {};
@@ -92,5 +77,5 @@ std::optional<COutput> CStatusQuo::ImproveWith(const COutput & new_data, CMove m
 COutput CStatusQuo::AllMovesTried()
 {
 	assert(Constrained());
-	return COutput(best_score, alpha, depth, selectivity, PV, AV);
+	return COutput(best_score, alpha, depth, selectivity, best_moves);
 }

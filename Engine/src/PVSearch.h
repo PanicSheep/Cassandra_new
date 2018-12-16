@@ -14,8 +14,6 @@ namespace Search
 {
 	class PVSearch : public AlphaBetaFailSoft
 	{
-		COutput Result(const CInput& in, int score, int8_t depth, uint8_t selectivity);
-
 	public:
 		PVSearch(const PVSearch&) = default;
 		PVSearch(const std::shared_ptr<Engine>& engine) : AlphaBetaFailSoft(engine) {}
@@ -32,10 +30,15 @@ namespace Search
 		COutput ZWS_N(const CInput&);
 		COutput ZWS_A(const CInput&);
 
+		COutput Eval_d0(const CInput&);
+		COutput Eval_d1(const CInput&);
+
 		COutput StabilityAnalysis(const CPosition&);
 		COutput TranspositionTableAnalysis(const CPosition&);
 		COutput MpcAnalysis(const CInput&);
 
 		void TranspositionTableUpdate(const CPosition&, std::size_t initial_node_count, const COutput&);
+
+		COutput Result(const CInput& in, int score, int8_t depth, uint8_t selectivity);
 	};
 }

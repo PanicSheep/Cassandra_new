@@ -2,55 +2,36 @@
 #include <algorithm>
 #include "MacrosHell.h"
 
-PvsInfo::PvsInfo()
-	: cost(0)
-	, depth(-1)
-	, selectivity(0)
-	, min(-65)
-	, max(+65)
-	, PV(Field::invalid)
-	, AV(Field::invalid)
+PvsInfo::PvsInfo(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBestMoves best_moves, uint64_t node_count)
+	: min(min)
+	, max(max)
+	, depth(depth)
+	, selectivity(selectivity)
+	, cost(static_cast<uint8_t>(BitScanMSB(node_count + 1))) // +1 prevents it from failing at NodeCount == 0.
+	, best_moves(best_moves)
 {}
 
-PvsInfo::PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t min, int8_t max, CMove PV, CMove AV)
-	: depth(depth)
-	, selectivity(selectivity)
-	, min(min)
-	, max(max)
-	, PV(PV)
-	, AV(AV)
+void PvsInfo::Upgrade(const PvsInfo& novum)
 {
-	SetCost(NodeCount);
-}
-
-void PvsInfo::Upgrade(const PvsInfo& NewValue)
-{
-	if ((NewValue.depth > depth) || (NewValue.depth == depth && NewValue.selectivity < selectivity))
+	if ((novum.depth > depth) || (novum.depth == depth && novum.selectivity < selectivity))
 	{	// Evaluation is better
-		*this = NewValue;
+		*this = novum;
 	}
-	else if ((NewValue.depth == depth) && (NewValue.selectivity == selectivity))
+	else if ((novum.depth == depth) && (novum.selectivity == selectivity))
 	{	// Evaluation is the same
-		assert(std::max(min, NewValue.min) <= std::min(max, NewValue.max));
+		if (selectivity == 0)
+		{
+			assert(std::max(min, novum.min) <= std::min(max, novum.max));
 
-		// TODO: This should be subject to a broad range of tests.
-		//cost = std::max(cost, NewValue.cost);
-		SetCost(NodeCount() + NewValue.NodeCount());
-		min = std::max(min, NewValue.min);
-		max = std::min(max, NewValue.max);
-		if (NewValue.PV != Field::invalid) PV = NewValue.PV;
-		if (NewValue.AV != Field::invalid) AV = NewValue.AV;
+			cost = std::max(cost, novum.cost);
+			min = std::max(min, novum.min);
+			max = std::min(max, novum.max);
+			if (novum.best_moves.PV != Field::invalid)
+				best_moves = novum.best_moves;
+		}
+		else if (novum.cost > cost)
+			*this = novum;
 	}
-}
-
-void PvsInfo::SetCost(uint64_t NodeCount)
-{
-	cost = static_cast<int8_t>(BitScanMSB(NodeCount + 1)); // +1 prevents it from failing at NodeCount == 0.
-}
-
-uint64_t PvsInfo::NodeCount() const
-{
-	return MakeBit(cost);
 }
 
 
@@ -62,9 +43,9 @@ Node::Node(const CPosition & key, const PvsInfo & value, const uint8_t date)
 	: key(key), value(value), date(date)
 {}
 
-void Node::Upgrade(const PvsInfo& NewValue, const uint8_t date)
+void Node::Upgrade(const PvsInfo& novum, const uint8_t date)
 {
-	value.Upgrade(NewValue);
+	value.Upgrade(novum);
 	this->date = date;
 }
 

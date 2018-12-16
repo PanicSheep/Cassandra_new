@@ -12,20 +12,17 @@
 class PvsInfo
 {
 public:
-	int8_t min, max;
-	int8_t depth;
-	uint8_t selectivity;
-	CMove PV, AV;
-	uint8_t cost;
+	int8_t min = -65;
+	int8_t max = +65;
+	int8_t depth = -1;
+	uint8_t selectivity = 99;
+	uint8_t cost = 0;
+	CBestMoves best_moves{};
 
-	PvsInfo();
-	PvsInfo(uint64_t NodeCount, int8_t depth, uint8_t selectivity, int8_t min, int8_t max, CMove PV, CMove AV);
+	PvsInfo() = default;
+	PvsInfo(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBestMoves, uint64_t node_count);
 
-	void Upgrade(const PvsInfo& NewValue);
-
-	uint64_t NodeCount() const;
-private:
-	void SetCost(uint64_t NodeCount);
+	void Upgrade(const PvsInfo&);
 };
 
 class Node
@@ -65,6 +62,8 @@ public:
 
 	int NumberOfNonEmptyNodes() const;
 };
+
+static_assert(sizeof(TwoNode) <= CACHE_LINE_SIZE);
 
 typedef HashTable<TwoNode, CPosition, PvsInfo> CHashTablePVS;
 
