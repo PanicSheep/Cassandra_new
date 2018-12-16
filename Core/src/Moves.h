@@ -41,3 +41,13 @@ public:
 	void Remove(uint64_t moves) noexcept;
 	void Filter(uint64_t moves) noexcept;
 };
+
+class CBestMoves
+{
+public: // TODO: Make sure if there's an AV, there's a PV.
+	CMove PV = CMove::invalid; // TODO: Rename to first.
+	CMove AV = CMove::invalid; // TODO: Rename to second.
+
+	CBestMoves() = default;
+	CBestMoves(CMove PV, CMove AV) : PV(PV), AV(AV) {}
+};
