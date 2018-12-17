@@ -4,13 +4,14 @@
 #include "Position.h"
 #include "Engine.h"
 #include "HashtablePVS.h"
+#include "SearchInput.h"
 
 class CSortedMoves
 {
 	std::vector<std::pair<int32_t, CMove>> moves;
 public:
-	CSortedMoves(const CPosition&);
-	CSortedMoves(const CPosition&, CMove filter1, CMove filter2);
+	CSortedMoves(const Search::CInput&);
+	CSortedMoves(const Search::CInput&, CMove filter1, CMove filter2);
 
 	std::size_t size() const { return moves.size(); }
 	bool empty() const { return moves.empty(); }
@@ -23,32 +24,32 @@ public:
 	auto end() const { return moves.rend(); }
 	auto cend() const { return moves.crend(); }
 private:
-	int32_t Score(CMove, const CPosition&);
+	int32_t Score(CMove, const Search::CInput&);
 };
 
-inline CSortedMoves::CSortedMoves(const CPosition& pos)
+inline CSortedMoves::CSortedMoves(const Search::CInput& in)
 {
-	CMoves mov = pos.PossibleMoves();
+	CMoves mov = in.pos.PossibleMoves();
 	moves.reserve(mov.size());
 
 	while (!mov.empty()) {
 		const auto move = mov.ExtractMove();
-		moves.emplace_back(Score(move, pos), move);
+		moves.emplace_back(Score(move, in), move);
 	}
 
 	std::sort(moves.begin(), moves.end(), [](auto& left, auto& right) { return left.first < right.first; });
 }
 
-inline CSortedMoves::CSortedMoves(const CPosition& pos, const CMove filter1, const CMove filter2)
+inline CSortedMoves::CSortedMoves(const Search::CInput& in, const CMove filter1, const CMove filter2)
 {
-	CMoves mov = pos.PossibleMoves();
+	CMoves mov = in.pos.PossibleMoves();
 	mov.Remove(filter1);
 	mov.Remove(filter2);
 	moves.reserve(mov.size());
 
 	while (!mov.empty()) {
 		const auto move = mov.ExtractMove();
-		moves.emplace_back(Score(move, pos), move);
+		moves.emplace_back(Score(move, in), move);
 	}
 
 	std::sort(moves.begin(), moves.end(), [](auto& left, auto& right) { return left.first < right.first; });
@@ -71,7 +72,7 @@ inline uint64_t SMEAR_BITBOARD(uint64_t B)
 
 inline uint64_t OpponentsExposed(const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) & O; } // 13 OPs
 
-inline int32_t CSortedMoves::Score(CMove move, const CPosition& pos)
+inline int32_t CSortedMoves::Score(CMove move, const Search::CInput& in)
 {
 	static const uint64_t QuadrantMask[64] = {
 		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
@@ -95,12 +96,12 @@ inline int32_t CSortedMoves::Score(CMove move, const CPosition& pos)
 	};
 	static const uint8_t ParityValue[16] = { 0, 20, 0, 10, 1, 10, 2, 10, 3, 5, 3, 4, 3, 4, 3, 4 };
 
-	const auto next_pos = pos.Play(move);
+	const auto next_pos = in.pos.Play(move);
 	const auto next_possible_moves = next_pos.PossibleMoves();
 	const int32_t mobility_score = static_cast<int32_t>(next_possible_moves.size()) << 17;
 	const int32_t corner_mobility_score = ((next_possible_moves.HasMove(A1) ? 1 : 0) + (next_possible_moves.HasMove(A8) ? 1 : 0) + (next_possible_moves.HasMove(H1) ? 1 : 0) + (next_possible_moves.HasMove(H8) ? 1 : 0)) << 18;
 	const int32_t opponents_exposed_score = static_cast<int32_t>(PopCount(OpponentsExposed(next_pos.GetP(), next_pos.GetO()))) << 6;
 	const int32_t field_score = FieldValue[move];
-	const int32_t parity_score = ParityValue[PopCount(pos.Empties() & QuadrantMask[move])];
+	const int32_t parity_score = ParityValue[PopCount(in.pos.Empties() & QuadrantMask[move])];
 	return field_score + parity_score - mobility_score - corner_mobility_score - opponents_exposed_score;
 }

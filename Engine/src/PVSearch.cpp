@@ -235,7 +235,7 @@ COutput PVSearch::ZWS_N(const CInput& in)
 		}
 	}
 
-	CSortedMoves moves(in.pos, PV, AV);
+	CSortedMoves moves(in, PV, AV);
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
@@ -313,7 +313,7 @@ COutput PVSearch::PVS_N(const CInput& in)
 		}
 	}
 
-	CSortedMoves moves(in.pos, PV, AV);
+	CSortedMoves moves(in, PV, AV);
 	for (const auto& pair : moves)
 	{
 		const auto& move = pair.second;
