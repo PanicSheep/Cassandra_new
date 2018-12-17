@@ -9,40 +9,40 @@
 
 class CSortedMoves
 {
-	std::vector<std::pair<int32_t, CMove>> moves;
+	std::vector<std::pair<int32_t, CMove>> m_moves;
 public:
 	CSortedMoves(const CPosition&, std::function<int32_t(CMove)> score, CMove filter1 = CMove::invalid, CMove filter2 = CMove::invalid);
 
-	std::size_t size() const { return moves.size(); }
-	bool empty() const { return moves.empty(); }
+	std::size_t size() const { return m_moves.size(); }
+	bool empty() const { return m_moves.empty(); }
 
-	CMove PeekMove() const { return moves.back().second; }
+	CMove PeekMove() const { return m_moves.back().second; }
 	CMove ExtractMove();
 
-	auto begin() const { return moves.rbegin(); }
-	auto cbegin() const { return moves.crbegin(); }
-	auto end() const { return moves.rend(); }
-	auto cend() const { return moves.crend(); }
+	auto begin() const { return m_moves.rbegin(); }
+	auto cbegin() const { return m_moves.crbegin(); }
+	auto end() const { return m_moves.rend(); }
+	auto cend() const { return m_moves.crend(); }
 };
 
 inline CSortedMoves::CSortedMoves(const CPosition& pos, std::function<int32_t(CMove)> score, const CMove filter1, const CMove filter2)
 {
-	CMoves mov = pos.PossibleMoves();
-	mov.Remove(filter1);
-	mov.Remove(filter2);
-	moves.reserve(mov.size());
+	CMoves moves = pos.PossibleMoves();
+	moves.Remove(filter1);
+	moves.Remove(filter2);
+	m_moves.reserve(moves.size());
 
-	while (!mov.empty()) {
-		const auto move = mov.ExtractMove();
-		moves.emplace_back(score(move), move);
+	while (!moves.empty()) {
+		const auto move = moves.ExtractMove();
+		m_moves.emplace_back(score(move), move);
 	}
 
-	std::sort(moves.begin(), moves.end(), [](auto& left, auto& right) { return left.first < right.first; });
+	std::sort(m_moves.begin(), m_moves.end(), [](auto& left, auto& right) { return left.first < right.first; });
 }
 
 inline CMove CSortedMoves::ExtractMove()
 {
-	auto back = moves.back();
-	moves.pop_back();
+	auto back = m_moves.back();
+	m_moves.pop_back();
 	return back.second;
 }
