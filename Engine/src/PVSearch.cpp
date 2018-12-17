@@ -347,19 +347,6 @@ COutput PVSearch::PVS_N(const CInput& in)
 
 COutput PVSearch::StabilityAnalysis(const CPosition& pos)
 {
-	//static const char stability_cutoff_limits[64] = {
-	//	99, 99, 99, 99,  6,  8, 10, 12,
-	//	14, 16, 20, 22, 24, 26, 28, 30,
-	//	32, 34, 36, 38, 40, 42, 44, 46,
-	//	48, 48, 50, 50, 52, 52, 54, 54,
-	//	56, 56, 58, 58, 60, 60, 62, 62,
-	//	64, 64, 64, 64, 64, 64, 64, 64,
-	//	99, 99, 99, 99, 99, 99, 99, 99
-	//	};
-	//if (PopCount(pos.GetP()) - PopCount(pos.GetO()) > stability_cutoff_limits[pos.EmptyCount()])
-	//	return COutput();
-	//if (((pos.GetP() | pos.GetO()) & 0x8100000000000081ui64) == 0)
-	//	return COutput();
 	const auto opponents_stable_stones = engine->GetStableStones(pos);
 	const auto max_score = static_cast<int>(64 - 2 * PopCount(opponents_stable_stones));
 	return COutput::MaxBound(max_score, pos.EmptyCount(), 0);
