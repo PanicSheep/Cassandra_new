@@ -73,7 +73,7 @@ inline uint64_t OpponentsExposed(const uint64_t P, const uint64_t O) { return SM
 
 inline int32_t CSortedMoves::Score(CMove move, const CPosition& pos)
 {
-	static const uint64_t quadrant_mask[64] = {
+	static const uint64_t QuadrantMask[64] = {
 		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
 		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
 		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
@@ -95,12 +95,12 @@ inline int32_t CSortedMoves::Score(CMove move, const CPosition& pos)
 	};
 	static const uint8_t ParityValue[16] = { 0, 20, 0, 10, 1, 10, 2, 10, 3, 5, 3, 4, 3, 4, 3, 4 };
 
-	const auto NextPos = pos.Play(move);
-	const auto PM = NextPos.PossibleMoves();
-	const int32_t MobilityScore = static_cast<int32_t>(PM.size()) << 17;
-	const int32_t CornerMobilityScore = ((PM.HasMove(A1) ? 1 : 0) + (PM.HasMove(A8) ? 1 : 0) + (PM.HasMove(H1) ? 1 : 0) + (PM.HasMove(H8) ? 1 : 0)) << 18;
-	const int32_t OpponentsExposedScore = static_cast<int32_t>(PopCount(OpponentsExposed(NextPos.GetP(), NextPos.GetO()))) << 6;
-	const int32_t FieldScore = FieldValue[move];
-	const int32_t ParityScore = ParityValue[PopCount(pos.Empties() & quadrant_mask[move])];
-	return FieldScore + ParityScore - MobilityScore - CornerMobilityScore - OpponentsExposedScore;
+	const auto next_pos = pos.Play(move);
+	const auto next_possible_moves = next_pos.PossibleMoves();
+	const int32_t mobility_score = static_cast<int32_t>(next_possible_moves.size()) << 17;
+	const int32_t corner_mobility_score = ((next_possible_moves.HasMove(A1) ? 1 : 0) + (next_possible_moves.HasMove(A8) ? 1 : 0) + (next_possible_moves.HasMove(H1) ? 1 : 0) + (next_possible_moves.HasMove(H8) ? 1 : 0)) << 18;
+	const int32_t opponents_exposed_score = static_cast<int32_t>(PopCount(OpponentsExposed(next_pos.GetP(), next_pos.GetO()))) << 6;
+	const int32_t field_score = FieldValue[move];
+	const int32_t parity_score = ParityValue[PopCount(pos.Empties() & QuadrantMask[move])];
+	return field_score + parity_score - mobility_score - corner_mobility_score - opponents_exposed_score;
 }
