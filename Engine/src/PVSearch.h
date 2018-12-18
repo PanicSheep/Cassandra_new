@@ -32,6 +32,7 @@ namespace Search
 
 		COutput Eval_d0(const CInput&);
 		COutput Eval_d1(const CInput&);
+		COutput Eval_d2(const CInput&);
 
 		COutput StabilityAnalysis(const CPosition&);
 		COutput TranspositionTableAnalysis(const CPosition&);

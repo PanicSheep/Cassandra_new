@@ -102,6 +102,7 @@ COutput PVSearch::ZWS(const CInput& in)
 		{
 			case 0: return Eval_d0(in);
 			case 1: return Eval_d1(in);
+			case 2: return Eval_d2(in);
 			default:
 				break;
 		}
@@ -133,6 +134,33 @@ COutput PVSearch::Eval_d1(const CInput& in)
 	{
 		const auto move = moves.ExtractMove();
 		const auto zws = -Eval_d0(status_quo.Play(move));
+		const auto ret = status_quo.ImproveWith(zws, move);
+		if (ret)
+			return ret.value();
+	}
+
+	return status_quo.AllMovesTried();
+}
+
+COutput PVSearch::Eval_d2(const CInput& in)
+{
+	node_counter++;
+
+	CMoves moves = in.pos.PossibleMoves();
+	if (moves.empty()) {
+		const auto Pass = in.PlayPass();
+		if (Pass.pos.HasMoves())
+			return -Eval_d2(Pass);
+		else
+			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+	}
+
+	CStatusQuo status_quo(in);
+
+	while (!moves.empty())
+	{
+		const auto move = moves.ExtractMove();
+		const auto zws = -Eval_d1(status_quo.Play(move));
 		const auto ret = status_quo.ImproveWith(zws, move);
 		if (ret)
 			return ret.value();
