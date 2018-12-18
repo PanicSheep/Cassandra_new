@@ -121,6 +121,8 @@ int main(int argc, char* argv[])
 		
 	if (!input.test)
 		SavePuzzles(puzzles->Release(), input.filename);
+
+	hash_table->PrintStatistics();
 	return 0;
 }
 
