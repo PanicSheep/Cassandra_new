@@ -42,13 +42,37 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 	{
 		if (empties <= 14)
 			return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
+		else if (empties <= 20)
+		{
+			int score;
+			for (int d = 0; d < empties - 10; d++)
+				score = PVS(CInput(pos, alpha, beta, d, 33)).min;
+			score = PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
+			return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
+			//return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
+			//return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 11)).min;
 
-		for (int d = 0; d < empties - 10; d++)
-			PVS(CInput(pos, alpha, beta, d, 33));
-		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
-		//PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 19)).min;
-		//PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 11)).min;
-		return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
+			auto new_score = PVS(CInput(pos, score - 3, score + 3, pos.EmptyCount(), selectivity));
+			if (new_score.max <= score - 3) // fail low
+			{
+				return PVS(CInput(pos, alpha, new_score.max + 1, pos.EmptyCount(), selectivity)).min;
+			}
+			else if (new_score.min >= score + 3) // fail high
+			{
+				return PVS(CInput(pos, new_score.min - 1, beta, pos.EmptyCount(), selectivity)).min;
+			}
+			return new_score.min;
+		}
+		else
+		{
+			for (int d = 0; d < 5; d++)
+				PVS(CInput(pos, alpha, beta, d, selectivity)).min;
+			for (int d = 5; d < empties - 10; d++)
+				PVS(CInput(pos, alpha, beta, d, 33)).min;
+			PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
+			PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 21)).min;
+			return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
+		}
 	}
 	else
 	{
@@ -67,6 +91,8 @@ COutput PVSearch::PVS(const CInput& in)
 			case 0: return Result(in, Eval_0(in.pos), 0, 0);
 			case 1: return Result(in, Eval_1(in.pos), 1, 0);
 			case 2: return Result(in, Eval_2(in.pos, in.alpha, in.beta), 2, 0);
+			case 3: return Result(in, Eval_3(in.pos, in.alpha, in.beta), 3, 0);
+			case 4: return Result(in, Eval_4(in.pos, in.alpha, in.beta), 4, 0);
 			default:
 				break;
 		}
@@ -473,8 +499,7 @@ int32_t Search::PVSearch::MoveOrderingScorer(CMove move, const CInput& in)
 	};
 	static const uint8_t ParityValue[16] = { 0, 20, 0, 10, 1, 10, 2, 10, 3, 5, 3, 4, 3, 4, 3, 4 };
 
-	//int sort_depth = (in.depth >= 9) ? (in.depth - 15) / 3 : -1;
-	//sort_depth = std::clamp(sort_depth, 0, 6);
+	const int sort_depth = (in.depth >= 9) ? std::clamp((in.depth - 15) / 3, 0, 6) : -1;
 
 	const auto next_pos = in.pos.Play(move);
 	const auto next_possible_moves = next_pos.PossibleMoves();
@@ -484,8 +509,11 @@ int32_t Search::PVSearch::MoveOrderingScorer(CMove move, const CInput& in)
 	const int32_t field_score = FieldValue[move];
 	const int32_t parity_score = ParityValue[PopCount(in.pos.Empties() & QuadrantMask[move])];
 	auto score = field_score + parity_score - mobility_score - corner_mobility_score - opponents_exposed_score;
-	//if (sort_depth < 0)
+	if (sort_depth < 0)
 		return score;
-	//else if (sort_depth == 0)
-	//	return score +
+	else if (sort_depth == 0)
+		return score - (static_cast<int>(engine->Eval(next_pos)) << 16);
+	//else if (sort_depth < 3)
+	//	return score - (PVS(CInput(next_pos, -infinity, infinity, sort_depth, 0)).min << 17);
+	return score - (PVS(CInput(next_pos, -infinity, std::max(-64, in.alpha - 8), sort_depth, 0)).min << 17);
 }
