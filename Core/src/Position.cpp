@@ -1,6 +1,6 @@
 #include "Position.h"
-#include "Utility.h"
 #include "FlipFast.h"
+#include "Utility.h"
 
 namespace
 {
@@ -284,7 +284,7 @@ CMoves CPosition::PossibleMoves() const
 
 bool CPosition::HasMoves() const
 {
-	return PossibleMoves().size() > 0;
+	return !PossibleMoves().empty();
 	//const uint64_t empties = ~(P | O);
 	//if (get_some_moves<1>(P, O & 0x7E7E7E7E7E7E7E7Eui64) & empties) return true;
 	//if (get_some_moves<8>(P, O & 0x00FFFFFFFFFFFF00ui64) & empties) return true;

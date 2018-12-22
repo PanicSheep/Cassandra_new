@@ -1,5 +1,7 @@
 #include "Search.h"
 
+#include <utility>
+
 namespace Search
 {
 	CSpecification::CSpecification(int8_t depth, uint8_t selectivity)
@@ -10,8 +12,8 @@ namespace Search
 		: score(score), node_count(node_count), duration(duration)
 	{}
 
-	CAlgorithm::CAlgorithm(const std::shared_ptr<Engine>& engine)
-		: engine(engine)
+	CAlgorithm::CAlgorithm(std::shared_ptr<Engine> engine)
+		: engine(std::move(engine))
 	{}
 
 	CResult CAlgorithm::Eval(const CPosition& pos)
@@ -25,10 +27,9 @@ namespace Search
 		const auto Os = static_cast<int>(PopCount(pos.GetO()));
 		if (Ps > Os)
 			return 64 - 2 * Os;
-		else if (Ps < Os)
+		if (Ps < Os)
 			return 2 * Ps - 64;
-		else
-			return Ps - Os;
+		return Ps - Os;
 	}
 
 	std::unique_ptr<ILog> CLogNull::Clone() const

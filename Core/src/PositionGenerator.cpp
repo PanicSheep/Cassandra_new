@@ -1,11 +1,11 @@
 #include "PositionGenerator.h"
 
 #include <algorithm>
-#include <functional>
 #include <atomic>
-#include <thread>
+#include <functional>
 #include <mutex>
 #include <omp.h>
+#include <thread>
 
 class ThreadSavePosSet
 {
@@ -76,7 +76,7 @@ std::unordered_set<CPosition> CPositionGenerator::GenerateRandomPositionSet(uint
 
 	std::vector<std::thread> threads;
 	for (std::size_t i = 0; i < std::thread::hardware_concurrency() - 1; i++)
-		threads.push_back(std::thread(gen));
+		threads.emplace_back(gen);
 	gen();
 
 	for (auto& it : threads)

@@ -40,12 +40,10 @@ std::string CPath::GetRelativeFolderPath() const
 {
 	if (IsFolder())
 		return GetRelativePath();
-	else
-	{
-		const auto RelativePath = GetRelativePath();
-		const auto pos = RelativePath.rfind(GetFullFileName());
-		return RelativePath.substr(0, pos);
-	}
+
+	const auto RelativePath = GetRelativePath();
+	const auto pos = RelativePath.rfind(GetFullFileName());
+	return RelativePath.substr(0, pos);
 }
 
 std::string CPath::GetRelativeFilePath() const
@@ -60,11 +58,9 @@ std::string CPath::GetAbsoluteFolderPath() const
 {
 	if (IsFolder())
 		return m_fullpath;
-	else
-	{
-		const auto pos = m_fullpath.rfind(GetFullFileName());
-		return m_fullpath.substr(0, pos);
-	}
+	
+	const auto pos = m_fullpath.rfind(GetFullFileName());
+	return m_fullpath.substr(0, pos);
 }
 
 std::string CPath::GetAbsoluteFilePath() const
@@ -81,12 +77,12 @@ std::string CPath::GetRawFileName() const
 		throw std::logic_error("Not a file!");
 
 	const auto FolderSeparatorPos = m_fullpath.rfind(FOLDER_SEPARATOR);
-	const auto DotPos = m_fullpath.rfind(".");
+	const auto DotPos = m_fullpath.rfind('.');
 
 	if ((DotPos > FolderSeparatorPos) && (DotPos != std::string::npos))
 		return m_fullpath.substr(FolderSeparatorPos + 1, DotPos - FolderSeparatorPos - 1);
-	else
-		return m_fullpath.substr(FolderSeparatorPos + 1);
+	
+	return m_fullpath.substr(FolderSeparatorPos + 1);
 }
 
 std::string CPath::GetFullFileName() const
@@ -105,11 +101,9 @@ std::string CPath::GetFolderName() const
 		std::size_t begin_pos = m_fullpath.rfind(FOLDER_SEPARATOR, end_pos - 1);
 		return m_fullpath.substr(begin_pos + 1, end_pos - begin_pos);
 	}
-	else
-	{
-		std::size_t pos = m_fullpath.rfind(FOLDER_SEPARATOR, m_fullpath.length() - 2);
-		return m_fullpath.substr(pos + 1, m_fullpath.length() - pos - 1);
-	}
+		
+	std::size_t pos = m_fullpath.rfind(FOLDER_SEPARATOR, m_fullpath.length() - 2);
+	return m_fullpath.substr(pos + 1, m_fullpath.length() - pos - 1);
 }
 
 std::string CPath::GetExtension() const
@@ -117,29 +111,29 @@ std::string CPath::GetExtension() const
 	if (!IsFile())
 		throw std::logic_error("Not a file!");
 
-	const auto DotPos = m_fullpath.rfind(".");
+	const auto DotPos = m_fullpath.rfind('.');
 	const auto FolderSeparatorPos = m_fullpath.rfind(FOLDER_SEPARATOR);
 
 	if ((DotPos == std::string::npos) || (DotPos < FolderSeparatorPos))
 		return "";
-	else
-		return m_fullpath.substr(DotPos + 1);
+	
+	return m_fullpath.substr(DotPos + 1);
 }
 
 bool CPath::IsFile() const
 {
-	if (m_fullpath.length() > 0)
-		return m_fullpath.substr(m_fullpath.length() - 1) != FOLDER_SEPARATOR;
-	else
+	if (m_fullpath.empty())
 		return false;
+
+	return m_fullpath.substr(m_fullpath.length() - 1) != FOLDER_SEPARATOR;
 }
 
 bool CPath::IsFolder() const
 {
-	if (m_fullpath.length() > 0)
-		return m_fullpath.substr(m_fullpath.length() - 1) == FOLDER_SEPARATOR;
-	else
+	if (m_fullpath.empty())
 		return false;
+	
+	return m_fullpath.substr(m_fullpath.length() - 1) == FOLDER_SEPARATOR;
 }
 
 bool CPath::operator==(const CPath& o) const
@@ -190,7 +184,7 @@ std::string CPath::GetRelativePath() const
 	while ((idx < SplittedCwd.size()) && (idx < SplittedFullPath.size()) && (SplittedCwd[idx] == SplittedFullPath[idx]))
 		idx++;
 
-	if ((idx == 0) || ((idx == 1) && (SplittedFullPath[0] == ""))) // No common parts
+	if ((idx == 0) || ((idx == 1) && (SplittedFullPath[0].empty()))) // No common parts
 		return m_fullpath;
 
 	const std::size_t NumFoldersUp = SplittedCwd.size() - idx - 1;

@@ -1,7 +1,9 @@
 #pragma once
+#include <string>
+#include <utility>
+#include <utility>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
 class CArgs
 {
@@ -28,5 +30,5 @@ public:
 	std::string name;
 	std::size_t size;
 
-	CLI_Arg(std::string name, std::size_t size = UNDEFINED) : name(name), size(size) {}
+	CLI_Arg(std::string name, std::size_t size = UNDEFINED) : name(std::move(name)), size(size) {}
 };

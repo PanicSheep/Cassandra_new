@@ -4,10 +4,10 @@ int64_t Pow_int(int64_t base, uint64_t exponent)
 {
 	if (exponent == 0)
 		return 1;
-	else if (exponent % 2 == 0)
+	if (exponent % 2 == 0)
 		return Pow_int(base * base, exponent / 2);
-	else
-		return base * Pow_int(base, exponent - 1);
+	
+	return base * Pow_int(base, exponent - 1);
 }
 
 //ddd:hh:mm:ss.ccc
@@ -23,17 +23,17 @@ std::string time_format(const std::chrono::milliseconds duration)
 	std::ostringstream oss;
 	oss << std::setfill(' ');
 
-	if (days)
+	if (days != 0)
 		oss << std::setw(3) << days << ":" << std::setfill('0');
 	else
 		oss << "    ";
 
-	if (days || hours)
+	if ((days != 0) || (hours != 0))
 		oss << std::setw(2) << hours << ":" << std::setfill('0');
 	else
 		oss << "   ";
 
-	if (days || hours || minutes)
+	if ((days != 0) || (hours != 0) || (minutes != 0))
 		oss << std::setw(2) << minutes << ":" << std::setfill('0');
 	else
 		oss << "   ";
@@ -81,29 +81,29 @@ void replace_all(std::string& source, const std::string& from, const std::string
 		source.replace(i, from.length(), to);
 }
 
-std::vector<std::string> split(const std::string& src, const std::string& deli)
+std::vector<std::string> split(const std::string& source, const std::string& delimitter)
 {
-	assert(!deli.empty());
+	assert(!delimitter.empty());
 	std::vector<std::string> vec;
 
 	std::size_t begin = 0;
-	std::size_t end = src.find(deli);
+	std::size_t end = source.find(delimitter);
 	while (end != std::string::npos) {
-		vec.push_back(src.substr(begin, end-begin));
-		begin = end + deli.length();
-		end = src.find(deli, begin);
+		vec.push_back(source.substr(begin, end-begin));
+		begin = end + delimitter.length();
+		end = source.find(delimitter, begin);
 	}
-	vec.push_back(src.substr(begin));
+	vec.push_back(source.substr(begin));
 
 	return vec;
 }
 
-std::string join(const std::vector<std::string>& parts, const std::string& deli)
+std::string join(const std::vector<std::string>& parts, const std::string& delimitter)
 {
 	std::string str;
 	for (std::size_t i = 0; i+1 < parts.size(); i++)
-		str += parts[i] + deli;
-	if (parts.size() > 0)
+		str += parts[i] + delimitter;
+	if (!parts.empty())
 		str += parts.back();
 	return str;
 }
@@ -131,7 +131,7 @@ std::size_t ParseBytes(const std::string& bytes)
 	if (bytes.find("GB") != std::string::npos) return std::stoll(bytes) * 1024 * 1024 * 1024;
 	if (bytes.find("MB") != std::string::npos) return std::stoll(bytes) * 1024 * 1024;
 	if (bytes.find("kB") != std::string::npos) return std::stoll(bytes) * 1024;
-	if (bytes.find( "B") != std::string::npos) return std::stoll(bytes);
+	if (bytes.find( 'B') != std::string::npos) return std::stoll(bytes);
 	return 0;
 }
 

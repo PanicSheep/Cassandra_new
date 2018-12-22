@@ -6,7 +6,7 @@
 class CFlipper
 {
 public:
-	CFlipper() {}
+	CFlipper() = default;
 
 	uint64_t Flip(const CPosition& pos, CMove move) const noexcept;
 private:
@@ -262,4 +262,4 @@ private:
 	uint64_t H8(uint64_t P, uint64_t O) const noexcept;
 };
 
-uint64_t Flip(const CPosition& pos, const CMove move) noexcept;
+uint64_t Flip(const CPosition& pos, CMove move) noexcept;

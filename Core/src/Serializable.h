@@ -12,21 +12,21 @@ class CPuzzleAllMoveScore;
 class Serializable
 {
 public:
-	virtual ~Serializable() {}
+	virtual ~Serializable() = default;
 	virtual void Serialize(oArchive&) const = 0;
 };
 
 class iArchive
 {
 public:
-	virtual ~iArchive() {}
+	virtual ~iArchive() = default;
 	virtual std::unique_ptr<CPuzzle> Deserialize() = 0;
 };
 
 class oArchive
 {
 public:
-	virtual ~oArchive() {}
+	virtual ~oArchive() = default;
 
 	virtual void Serialize(const CPuzzle&) = 0;
 	virtual void Serialize(const CPuzzleScore&) = 0;
@@ -41,5 +41,5 @@ public:
 class Archive : public iArchive, public oArchive
 {
 public:
-	virtual ~Archive() {}
+	~Archive() override = default;
 };

@@ -17,7 +17,7 @@ void CPuzzle::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, Search::CS
 
 bool CPuzzleAllDepthScore::Test() const
 {
-	if (CPuzzle::Test() == false)
+	if (!CPuzzle::Test())
 		return false;
 
 	const auto emptyCount = GetPosition().EmptyCount();
@@ -84,7 +84,7 @@ int8_t CPuzzleAllDepthScore::MaxSolvedDepth() const
 
 bool CPuzzleAllDepthScore::isEqual(const CPuzzle & o) const
 {
-	if (CPuzzle::isEqual(o) == false)
+	if (!CPuzzle::isEqual(o))
 		return false;
 
 	const auto& O = dynamic_cast<const CPuzzleAllDepthScore&>(o);
@@ -137,7 +137,7 @@ void CPuzzleScoreDepth::Solve(Search::CAlgorithm& algorithm, Search::ILog& log, 
 bool CPuzzleScoreDepth::isEqual(const CPuzzle & o) const
 {
 	const auto& O = dynamic_cast<const CPuzzleScoreDepth&>(o);
-	return CPuzzle::isEqual(o) && (depth == O.depth) && (selectivity == O.selectivity);
+	return CPuzzleScore::isEqual(o) && (depth == O.depth) && (selectivity == O.selectivity);
 }
 
 std::unique_ptr<CPuzzleAllDepthScore> to_PuzzleAllDepthScore(const CPuzzle & puzzle)
@@ -154,7 +154,7 @@ std::unique_ptr<CPuzzleAllDepthScore> to_PuzzleAllDepthScore(const CPuzzle & puz
 
 bool CPuzzleAllMoveScore::Test() const
 {
-	if (CPuzzle::Test() == false)
+	if (!CPuzzle::Test())
 		return false;
 
 	const auto possibleMoves = GetPosition().PossibleMoves();
@@ -228,7 +228,7 @@ void CPuzzleAllMoveScore::Solve(Search::CAlgorithm& algorithm, Search::ILog& log
 
 bool CPuzzleAllMoveScore::isEqual(const CPuzzle & o) const
 {
-	if (CPuzzle::isEqual(o) == false)
+	if (!CPuzzle::isEqual(o))
 		return false;
 
 	const auto& O = dynamic_cast<const CPuzzleAllMoveScore&>(o);

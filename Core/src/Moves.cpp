@@ -12,7 +12,7 @@ CMove CMoves::PeekMove() const noexcept
 
 CMove CMoves::ExtractMove() noexcept
 {
-	const CMove LSB = static_cast<CMove>(BitScanLSB(m_moves));
+	const auto LSB = static_cast<CMove>(BitScanLSB(m_moves));
 	RemoveLSB(m_moves);
 	return LSB;
 }

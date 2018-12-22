@@ -221,7 +221,7 @@
 	FORCE_INLINE uint64_t GetLSB(const uint64_t b) noexcept { return b & -b; }
 #endif
 
-FORCE_INLINE uint64_t GetMSB(const uint64_t b) noexcept { return b ? 0x8000000000000000ui64 >> CountLeadingZeros(b) : 0; }
+FORCE_INLINE uint64_t GetMSB(const uint64_t b) noexcept { return b != 0u ? 0x8000000000000000ui64 >> CountLeadingZeros(b) : 0; }
 
 #ifdef HAS_BLSR
 	FORCE_INLINE void RemoveLSB(uint64_t & b) noexcept { b = _blsr_u64(b); }
@@ -323,9 +323,9 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 	inline uint64_t PDep(uint64_t src, uint64_t mask) noexcept
 	{
 		uint64_t res = 0;
-		for (uint64_t bb = 1; mask; bb += bb)
+		for (uint64_t bb = 1; mask != 0u; bb += bb)
 		{
-			if (src & bb)
+			if ((src & bb) != 0u)
 				res |= GetLSB(mask);
 			RemoveLSB(mask);
 		}
@@ -341,9 +341,9 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 	inline uint64_t PExt(uint64_t src, uint64_t mask) noexcept
 	{
 		uint64_t res = 0;
-		for (uint64_t bb = 1; mask; bb += bb)
+		for (uint64_t bb = 1; mask != 0u; bb += bb)
 		{
-			if (src & GetLSB(mask))
+			if ((src & GetLSB(mask)) != 0u)
 				res |= bb;
 			RemoveLSB(mask);
 		}

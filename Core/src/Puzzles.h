@@ -102,7 +102,7 @@ protected:
 class CPuzzleAllDepthScore : public CPuzzle
 {
 public:
-	int8_t score[61];
+	int8_t score[61]{};
 
 	CPuzzleAllDepthScore(CPosition pos) : CPuzzle(pos) { Reset(); }
 
@@ -128,7 +128,7 @@ protected:
 class CPuzzleAllMoveScore : public CPuzzle
 {
 public:
-	int8_t score[64];
+	int8_t score[64]{};
 
 	CPuzzleAllMoveScore(CPosition pos) : CPuzzle(pos) { Reset(); }
 

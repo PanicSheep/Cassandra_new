@@ -23,8 +23,7 @@ void CArgs::Load(int argc, char* argv[])
 				const std::string next_token = argv[j];
 				if (next_token.compare(0, prefix_length, prefix) == 0)
 					break;
-				else
-					values.emplace_back(std::move(next_token));
+				values.emplace_back(next_token);
 			}
 			std::move(values.begin(), values.end(), std::back_inserter(m_args[key]));
 

@@ -22,9 +22,9 @@ using CMove = Field;
 
 class CMoves
 {
-	uint64_t m_moves;
+	uint64_t m_moves{0};
 public:
-	CMoves() noexcept : m_moves(0) {}
+	CMoves() noexcept  = default;
 	CMoves(uint64_t moves) noexcept : m_moves(moves) {}
 
 	bool operator==(const CMoves& o) const noexcept { return m_moves == o.m_moves; }

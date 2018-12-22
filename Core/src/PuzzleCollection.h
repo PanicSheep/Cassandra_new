@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <memory>
-#include <vector>
 #include <shared_mutex>
+#include <vector>
 
 #include "Puzzles.h"
 
@@ -19,7 +19,7 @@ public:
 	PuzzleVectorGuard() = delete;
 	PuzzleVectorGuard(const PuzzleVector&) = delete;
 	PuzzleVectorGuard(PuzzleVector&&);
-	virtual ~PuzzleVectorGuard() {}
+	virtual ~PuzzleVectorGuard() = default;
 
 	virtual PuzzleVector Release();
 

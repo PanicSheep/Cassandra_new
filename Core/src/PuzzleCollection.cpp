@@ -39,7 +39,7 @@ void PuzzleVectorGuard::Set(std::size_t index, std::unique_ptr<CPuzzle>&& puzzle
 PuzzleVector Merge(std::vector<PuzzleVector>&& vec)
 {
 	PuzzleVector ret;
-	if (vec.size())
+	if (!vec.empty())
 		ret = std::move(vec.front());
 
 	for (auto it = vec.begin() + 1; it != vec.end(); ++it)

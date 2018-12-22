@@ -1,7 +1,7 @@
 #pragma once
 #include "Position.h"
-#include <cstdint>
 #include <chrono>
+#include <cstdint>
 #include <memory>
 
 class Engine;
@@ -36,7 +36,7 @@ namespace Search
 
 		static int EvalGameOver(const CPosition&); // TODO: Remove!
 	public:
-		CAlgorithm(const std::shared_ptr<Engine>&);
+		CAlgorithm(std::shared_ptr<Engine>);
 
 		virtual std::unique_ptr<CAlgorithm> Clone() const = 0;
 
@@ -72,7 +72,7 @@ namespace Search
 	class oArchive
 	{
 	public:
-		virtual ~oArchive() {}
+		virtual ~oArchive() = default;
 
 		virtual void Header() {}
 		virtual void Footer() {}
@@ -92,11 +92,11 @@ namespace Search
 	{
 		std::vector<CEntry> m_vec;
 	public:
-		CLogCollector() {}
+		CLogCollector() = default;
 		CLogCollector(const CLogCollector&);
 
 		std::unique_ptr<ILog> Clone() const override;
-		void push_back(CPosition pos, int original_score, CSpecification spec, CResult result) override { m_vec.push_back(CLogCollector::CEntry(pos, index, original_score, spec, result)); }
+		void push_back(CPosition pos, int original_score, CSpecification spec, CResult result) override { m_vec.emplace_back(pos, index, original_score, spec, result); }
 		void Serialize(oArchive& archive) const override { for (const auto& it : m_vec) archive.Serialize(it); }
 	};
 
