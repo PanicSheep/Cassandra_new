@@ -1,11 +1,11 @@
-#include <iostream>
-#include <chrono>
 #include "IoPuzzleCollection.h"
-#include "Path.h"
-#include "Utility.h"
-#include "PositionGenerator.h"
-#include "LastFlipCounter.h"
 #include "FlipFast.h"
+#include "LastFlipCounter.h"
+#include "Path.h"
+#include "PositionGenerator.h"
+#include "Utility.h"
+#include <chrono>
+#include <iostream>
 
 using namespace IO;
 
@@ -14,9 +14,8 @@ void Next(const CPath& input_file, const CPath& output_file)
 	const auto input = LoadPuzzles(input_file);
 	PuzzleVector output;
 
-	for (std::size_t i = 0; i < input.size(); i++)
+	for (const auto & pos : input)
 	{
-		auto& pos = input[i];
 		auto possibleMoves = pos->GetPosition().PossibleMoves();
 		while (!possibleMoves.empty())
 		{

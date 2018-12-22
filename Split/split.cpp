@@ -1,10 +1,10 @@
 #include "Args.h"
 #include "IoPuzzleCollection.h"
 #include <algorithm>
+#include <iostream>
 #include <iterator>
 #include <random>
 #include <vector>
-#include <iostream>
 
 PuzzleVector ExtractRandomSample(PuzzleVector& puzzles, const std::size_t count)
 {
@@ -31,7 +31,7 @@ std::vector<PuzzleVector> Split(PuzzleVector&& puzzles, const std::vector<double
 	for (const auto fraction : fractions)
 		ret.emplace_back(ExtractRandomSample(puzzles, std::round(size * fraction)));
 
-	if (puzzles.size())
+	if (!puzzles.empty())
 		ret.emplace_back(std::move(puzzles));
 
 	return ret;
@@ -46,10 +46,10 @@ std::vector<CPath> ParseFiles(const std::vector<std::string>& vec)
 {
 	std::vector<CPath> ret;
 	for (std::size_t i = 1; i < vec.size(); i += 2)
-		ret.push_back(CPath(vec[i]));
+		ret.emplace_back(vec[i]);
 
 	if (vec.size() % 2 == 1)
-		ret.push_back(CPath(vec.back()));
+		ret.emplace_back(vec.back());
 
 	return ret;
 }

@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
-#include <cstdint>
-#include <cmath>
 #include "VectorExtension.h"
+#include <cmath>
+#include <cstdint>
+#include <vector>
 
 template <typename T>
 class Vecvec

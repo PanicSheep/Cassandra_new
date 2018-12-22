@@ -1,11 +1,11 @@
 #pragma once
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iterator>
-#include <ostream>
-#include <cmath>
 #include <omp.h>
+#include <ostream>
 #include <vector>
 
 template <typename T>

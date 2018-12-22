@@ -1,12 +1,12 @@
 #pragma once
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 template <typename T>
 class Array2D
 {
-	std::size_t m_n; // Number of rows.
-	std::size_t m_m; // Number of columns.
+	std::size_t m_n{}; // Number of rows.
+	std::size_t m_m{}; // Number of columns.
 	std::vector<T> m_arr;
 public:
 	Array2D(std::size_t n, std::size_t m) : m_n(n), m_m(m) { m_arr.resize(n * m); }

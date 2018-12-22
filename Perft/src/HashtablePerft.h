@@ -1,7 +1,7 @@
 #pragma once
+#include "Hashtable.h"
 #include <atomic>
 #include <cstdint>
-#include "Hashtable.h"
 
 class PerftKey
 {
@@ -17,7 +17,7 @@ class BigNode
 public:
 	BigNode() : m_Value(0), m_P(0), m_O(0), m_depth(0) {}
 
-	void Update(const PerftKey& key, const uint64_t value, uint8_t date)
+	void Update(const PerftKey& key, const uint64_t value, uint8_t)
 	{
 		const uint64_t old_value = lock();
 		if (value > old_value)
@@ -103,7 +103,7 @@ private:
 typedef HashTable<BigNode, PerftKey, uint64_t> HashTablePerft;
 
 template <>
-std::size_t HashTablePerft::Hash(const PerftKey& key) const
+inline std::size_t HashTablePerft::Hash(const PerftKey& key) const
 {
 	uint64_t P = key.pos.GetP();
 	uint64_t O = key.pos.GetO();

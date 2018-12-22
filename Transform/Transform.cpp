@@ -1,8 +1,8 @@
 #include "Args.h"
 #include "IoPuzzleCollection.h"
 #include <algorithm>
-#include <iterator>
 #include <iostream>
+#include <iterator>
 #include <random>
 #include <vector>
 
@@ -16,7 +16,7 @@ PuzzleVector to_PuzzleAllDepthScore(const PuzzleVector& puzzles)
 	PuzzleVector ret;
 	ret.reserve(puzzles.size());
 	for (const auto& it : puzzles)
-		ret.emplace_back(to_PuzzleAllDepthScore(*it.get()));
+		ret.emplace_back(to_PuzzleAllDepthScore(*it));
 	return ret;
 }
 

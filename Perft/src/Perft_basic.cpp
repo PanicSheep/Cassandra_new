@@ -1,11 +1,11 @@
 #include "Perft_basic.h"
-#include "Utility.h"
 #include "HashtablePerft.h"
+#include "Utility.h"
 #include <chrono>
 #include <iostream>
 #include <map>
-#include <unordered_map>
 #include <optional>
+#include <unordered_map>
 
 namespace Perft
 {
@@ -29,8 +29,8 @@ namespace Perft
 				auto PosPass = pos.PlayPass();
 				if (PosPass.HasMoves())
 					return perft(PosPass, depth - 1);
-				else
-					return 0ui64;
+				
+				return 0ui64;
 			}
 
 			uint64_t sum = 0ui64;
@@ -46,18 +46,16 @@ namespace Perft
 
 			if (depth == 0)
 				return perft(pos, depth);
-			else
-			{
-				pos = pos.Play(pos.PossibleMoves().ExtractMove());
-				return 4ui64 * perft(pos, depth - 1);
-			}
+
+			pos = pos.Play(pos.PossibleMoves().ExtractMove());
+			return 4ui64 * perft(pos, depth - 1);
 		}
 	}
 
 	namespace Unrolled2
 	{
 		// perft for 0 plies left
-		uint64_t perft0(const CPosition& pos)
+		uint64_t perft0(const CPosition&)
 		{
 			return 1ui64;
 		}
@@ -84,7 +82,7 @@ namespace Perft
 				if (!moves2.empty())
 					sum += moves2.size();
 				else
-					sum += pos2.PlayPass().HasMoves();
+					sum += static_cast<uint64_t>(pos2.PlayPass().HasMoves());
 			}
 
 			return sum;
@@ -102,8 +100,8 @@ namespace Perft
 				auto PosPass = pos.PlayPass();
 				if (PosPass.HasMoves())
 					return perft_(PosPass, depth - 1);
-				else
-					return 0ui64;
+				
+				return 0ui64;
 			}
 
 			uint64_t sum = 0ui64;
@@ -130,11 +128,9 @@ namespace Perft
 
 			if (depth == 0)
 				return perft(pos, depth);
-			else
-			{
-				pos = pos.Play(pos.PossibleMoves().ExtractMove());
-				return 4ui64 * perft(pos, depth - 1);
-			}
+			
+			pos = pos.Play(pos.PossibleMoves().ExtractMove());
+			return 4ui64 * perft(pos, depth - 1);
 		}
 	}
 
@@ -164,8 +160,8 @@ namespace Perft
 				const auto PosPass = pos.PlayPass();
 				if (PosPass.HasMoves())
 					return perft_HT(PosPass, depth - 1);
-				else
-					return 0ui64;
+				
+				return 0ui64;
 			}
 
 			if (const auto ret = ht.LookUp(PerftKey(pos, depth)); ret.has_value())
@@ -205,7 +201,7 @@ namespace Perft
 		{
 			const std::size_t initialDepth = 9;
 			fill_unique(pos, initialDepth);
-			const int64_t size = static_cast<int64_t>(PosMap.size());
+			const auto size = static_cast<int64_t>(PosMap.size());
 			std::vector<std::pair<CPosition, std::size_t>> vec(PosMap.begin(), PosMap.end());
 			PosMap.clear();
 
@@ -222,8 +218,7 @@ namespace Perft
 		{
 			if (depth < 13)
 				return Unrolled2::perft(pos, depth);
-			else
-				return CPerft(BytesRAM).calculate(pos, depth);
+			return CPerft(BytesRAM).calculate(pos, depth);
 		}
 
 		uint64_t perft(const uint8_t depth, const uint64_t BytesRAM)
@@ -232,11 +227,9 @@ namespace Perft
 
 			if (depth == 0)
 				return perft(pos, depth, BytesRAM);
-			else
-			{
-				pos = pos.Play(pos.PossibleMoves().ExtractMove());
-				return 4ui64 * perft(pos, depth - 1, BytesRAM);
-			}
+			
+			pos = pos.Play(pos.PossibleMoves().ExtractMove());
+			return 4ui64 * perft(pos, depth - 1, BytesRAM);
 		}
 	}
 }

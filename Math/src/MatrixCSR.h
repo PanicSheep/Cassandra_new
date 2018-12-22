@@ -1,19 +1,19 @@
 #pragma once
+#include "VectorExtension.h"
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
+#include <fstream>
+#include <iostream>
 #include <numeric>
 #include <omp.h>
 #include <vector>
-#include <cstdint>
-#include <iostream>
-#include <fstream>
-#include "VectorExtension.h"
 
 /// Compressed Sparse Row Matrix
 template <typename ValueType, typename SizeType = std::size_t>
 class CMatrix_CSR
 {
-	std::size_t m_n; ///< number of rows
+	std::size_t m_n{0}; ///< number of rows
 	std::size_t m_m; ///< number of columns
 
 	std::vector<ValueType> data;
@@ -21,7 +21,7 @@ class CMatrix_CSR
 	std::vector<SizeType> row_starts;
 
 public:
-	CMatrix_CSR(const std::size_t m = 0);
+	CMatrix_CSR(std::size_t m = 0);
 	CMatrix_CSR(const std::string & filename);
 	CMatrix_CSR(const CMatrix_CSR&) = default;
 	CMatrix_CSR(CMatrix_CSR&&) = default;
@@ -63,7 +63,7 @@ public:
 // ------------------------------------------------------------------------------------------------
 template <typename ValueType, typename SizeType>
 CMatrix_CSR<ValueType, SizeType>::CMatrix_CSR(const std::size_t m)
-	: m_n(0), m_m(m), data(0), col_indices(0), row_starts(1, 0)
+	:  m_m(m), data(0), col_indices(0), row_starts(1, 0)
 {
 }
 

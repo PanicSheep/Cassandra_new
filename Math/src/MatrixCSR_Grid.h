@@ -1,13 +1,13 @@
 #pragma once
+#include "array2D.h"
+#include "matrixCSR.h"
+#include "vecvec.h"
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <numeric>
 #include <omp.h>
 #include <vector>
-#include <cstdint>
-#include "matrixCSR.h"
-#include "vecvec.h"
-#include "array2D.h"
 
 /// Compressed Sparse Row Matrix Grid
 template <typename ValueType, typename SizeType = std::size_t>

@@ -1,12 +1,12 @@
 #include "Args.h"
 #include "ConfigFile.h"
-#include "IoPuzzleCollection.h"
 #include "IoPattern.h"
+#include "IoPuzzleCollection.h"
 #include "PositionToMatrix.h"
 #include "VectorIO.h"
 
-#include <omp.h>
 #include <iostream>
+#include <omp.h>
 
 using namespace IO;
 

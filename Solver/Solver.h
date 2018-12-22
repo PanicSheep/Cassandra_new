@@ -1,6 +1,8 @@
 #pragma once
 #include "PuzzleCollection.h"
 #include <memory>
+#include <utility>
+#include <utility>
 
 class CSolver
 {
@@ -14,7 +16,7 @@ public:
 	CSolver(std::shared_ptr<PuzzleVectorGuard> puzzles,
 			std::size_t threads,
 			bool test, bool force, bool print_each_puzzle)
-		: m_puzzles(puzzles)
+		: m_puzzles(std::move(puzzles))
 		, m_node_counter(0)
 		, m_threads(threads)
 		, m_test(test)

@@ -1,15 +1,15 @@
 #include "Array2D.h"
-#include "PuzzleCollection.h"
 #include "ConfigFile.h"
 #include "MatrixCSR.h"
 #include "MatrixCSR_Grid.h"
-#include "Position.h"
-#include "Pattern.h"
 #include "Path.h"
+#include "Pattern.h"
+#include "Position.h"
+#include "PuzzleCollection.h"
 #include "VecVec.h"
-#include <vector>
-#include <map>
 #include <cstdint>
+#include <map>
+#include <vector>
 
 template <typename ValueType, typename SizeType>
 CMatrix_CSR<ValueType, SizeType> to_Matrix(const PuzzleVector& puzzles, const uint64_t pattern)

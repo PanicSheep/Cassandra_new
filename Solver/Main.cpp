@@ -1,32 +1,32 @@
 #include "Args.h"
-#include "ConfigFile.h" // TODO: Remove?
+#include "AlphaBetaFailHardSearch.h"
+#include "AlphaBetaFailSoftSearch.h"
 #include "Config.h"
+#include "ConfigFile.h" // TODO: Remove?
 #include "HashTablePVS.h"
 #include "IoPattern.h"
 #include "IoPuzzleCollection.h"
 #include "LastFlipCounter.h"
+#include "NegaMaxSearch.h"
+#include "PVSearch.h"
 #include "Path.h"
 #include "Pattern.h"
 #include "PositionGenerator.h"
 #include "Search.h"
-#include "NegaMaxSearch.h"
-#include "AlphaBetaFailHardSearch.h"
-#include "AlphaBetaFailSoftSearch.h"
-#include "PVSearch.h"
+#include "Solver.h"
 #include "Stability.h"
 #include "Utility.h"
 #include "VectorIO.h"
 #include "VerboseCliArchive.h"
-#include "Solver.h"
 
-#include <thread>
-#include <iostream>
-#include <iomanip>
 #include <chrono>
+#include <iomanip>
+#include <iostream>
 #include <iterator>
-#include <type_traits>
 #include <memory>
 #include <omp.h>
+#include <thread>
+#include <type_traits>
 
 using namespace IO;
 

@@ -1,15 +1,15 @@
 #include "Perft_basic.h"
 #include "Utility.h"
-#include <iostream>
 #include <chrono>
+#include <iostream>
 
 #include <algorithm>
-#include <random>
-#include <functional>
 #include <atomic>
-#include <thread>
+#include <functional>
 #include <mutex>
 #include <omp.h>
+#include <random>
+#include <thread>
 
 void PrintHelp()
 {
