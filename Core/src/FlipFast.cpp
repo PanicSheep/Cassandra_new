@@ -6,13 +6,13 @@
 uint64_t CFlipper::A1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0101010101010100ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010100ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0101010101010100ui64;
 
 	const auto outflank_h = ((O & 0x7E) + 0x02) & P;
-	const auto flipped_h = (outflank_h - (outflank_h != 0)) & 0x7E;
+	const auto flipped_h = (outflank_h - static_cast<uint64_t>(outflank_h != 0)) & 0x7E;
 
 	const auto outflank_d = GetLSB(~O & 0x8040201008040200ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008040200ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x8040201008040200ui64;
 
 	return flipped_v | flipped_h | flipped_d;
 }
@@ -20,13 +20,13 @@ uint64_t CFlipper::A1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::B1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0202020202020200ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020200ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0202020202020200ui64;
 
 	const auto outflank_h = ((O & 0x7C) + 0x04) & P;
-	const auto flipped_h = (outflank_h - (outflank_h != 0)) & 0x7C;
+	const auto flipped_h = (outflank_h - static_cast<uint64_t>(outflank_h != 0)) & 0x7C;
 
 	const auto outflank_d = GetLSB(~O & 0x0080402010080400ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0080402010080400ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0080402010080400ui64;
 
 	return flipped_v | flipped_h | flipped_d;
 }
@@ -34,7 +34,7 @@ uint64_t CFlipper::B1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::C1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0404040404040400ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040400ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0404040404040400ui64;
 
 	const auto outflank_h = OUTFLANK_2[BExtr(O, 1, 6)] & P;
 	const auto  flipped_h = FLIPPED_2_H[outflank_h] & 0xFFui64;
@@ -42,7 +42,7 @@ uint64_t CFlipper::C1(const uint64_t P, const uint64_t O) const noexcept
 	const auto flipped_c = (P >> 7) & 0x0000000000000200ui64 & O;
 
 	const auto outflank_d = GetLSB(~O & 0x0000804020100800ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000804020100800ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0000804020100800ui64;
 
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
@@ -50,16 +50,16 @@ uint64_t CFlipper::C1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::D1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0808080808080800ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080800ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0808080808080800ui64;
 
 	const auto outflank_h = OUTFLANK_3[BExtr(O, 1, 6)] & P;
 	const auto  flipped_h = FLIPPED_3_H[outflank_h] & 0xFFui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0000000001020400ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000001020400ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0000000001020400ui64;
 
 	const auto outflank_d = GetLSB(~O & 0x0000008040201000ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000008040201000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0000008040201000ui64;
 
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
@@ -67,16 +67,16 @@ uint64_t CFlipper::D1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::E1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x1010101010101000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010101000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x1010101010101000ui64;
 
 	const auto outflank_h = OUTFLANK_4[BExtr(O, 1, 6)] & P;
 	const auto  flipped_h = FLIPPED_4_H[outflank_h] & 0xFFui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0000000102040800ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000102040800ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0000000102040800ui64;
 
 	const auto outflank_d = GetLSB(~O & 0x0000000080402000ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000000080402000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0000000080402000ui64;
 
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
@@ -84,13 +84,13 @@ uint64_t CFlipper::E1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::F1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x2020202020202000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020202000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x2020202020202000ui64;
 
 	const auto outflank_h = OUTFLANK_5[BExtr(O, 1, 6)] & P;
 	const auto  flipped_h = FLIPPED_5_H[outflank_h] & 0xFFui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0000010204081000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000010204081000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0000010204081000ui64;
 
 	const auto flipped_d = ((P >> 9) & 0x0000000000004000ui64 & O);
 
@@ -100,13 +100,13 @@ uint64_t CFlipper::F1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::G1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x4040404040404000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040404000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x4040404040404000ui64;
 
 	const auto outflank_h = OUTFLANK_7[O & 0x3E] & (P << 1);
 	const auto flipped_h = (-outflank_h & 0x3E);
 
 	const auto outflank_c = GetLSB(~O & 0x0001020408102000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0001020408102000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0001020408102000ui64;
 
 	return flipped_v | flipped_h | flipped_c;
 }
@@ -114,13 +114,13 @@ uint64_t CFlipper::G1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::H1(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x8080808080808000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080808000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x8080808080808000ui64;
 
 	const auto outflank_h = OUTFLANK_7[BExtr(O, 1, 6)] & P;
 	const auto flipped_h = (-outflank_h & 0x3F) << 1;
 
 	const auto outflank_c = GetLSB(~O & 0x0102040810204000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810204000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0102040810204000ui64;
 
 	return flipped_v | flipped_h | flipped_c;
 }
@@ -128,13 +128,13 @@ uint64_t CFlipper::H1(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::A2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0101010101010000ui64) + 0x0000000000010000ui64) & P & 0x0101010101010000ui64;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101010000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0101010101010000ui64;
 
 	const auto outflank_h = ((O & 0x0000000000007E00ui64) + 0x0000000000000200ui64) & P;
 	const auto flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007E00ui64;
 
 	const auto outflank_d = ((O | ~0x4020100804020000ui64) + 0x0000000000020000ui64) & P & 0x4020100804020000ui64;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x4020100804020000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x4020100804020000ui64;
 
 	return flipped_v | flipped_h | flipped_d;
 }
@@ -142,13 +142,13 @@ uint64_t CFlipper::A2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::B2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0202020202020000ui64) + 0x0000000000020000ui64) & P & 0x0202020202020000ui64;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202020000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0202020202020000ui64;
 
 	const auto outflank_h = ((O & 0x0000000000007C00ui64) + 0x0000000000000400ui64) & P;
 	const auto flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000007C00ui64;
 
 	const auto outflank_d = ((O | ~0x8040201008040000ui64) + 0x0000000000040000ui64) & P & 0x8040201008040000ui64;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008040000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x8040201008040000ui64;
 
 	return flipped_v | flipped_h | flipped_d;
 }
@@ -156,7 +156,7 @@ uint64_t CFlipper::B2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::C2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0404040404040000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404040000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0404040404040000ui64;
 
 	const auto outflank_h = OUTFLANK_2[BExtr(O, 9, 6)] & (P >> 8);
 	const auto flipped_h = FLIPPED_2_H[outflank_h] & 0x000000000000FF00ui64;
@@ -164,7 +164,7 @@ uint64_t CFlipper::C2(const uint64_t P, const uint64_t O) const noexcept
 	const auto flipped_c = ((P >> 7) & 0x0000000000020000ui64 & O);
 
 	const auto outflank_d = GetLSB(~O & 0x0080402010080000ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0080402010080000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0080402010080000ui64;
 
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
@@ -172,16 +172,16 @@ uint64_t CFlipper::C2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::D2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0808080808080000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808080000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0808080808080000ui64;
 
 	const auto outflank_h = OUTFLANK_3[BExtr(O, 9, 6)] & (P >> 8);
 	const auto flipped_h = FLIPPED_3_H[outflank_h] & 0x000000000000FF00ui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0000000102040000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000000102040000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0000000102040000ui64;
 
 	const auto outflank_d = GetLSB(~O & 0x0000804020100000ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000804020100000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0000804020100000ui64;
 
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
@@ -189,16 +189,16 @@ uint64_t CFlipper::D2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::E2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x1010101010100000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010100000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x1010101010100000ui64;
 
 	const auto outflank_h = OUTFLANK_4[BExtr(O, 9, 6)] & (P >> 8);
 	const auto flipped_h = FLIPPED_4_H[outflank_h] & 0x000000000000FF00ui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0000010204080000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000010204080000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0000010204080000ui64;
 
 	const auto outflank_d = GetLSB(~O & 0x0000008040200000ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000008040200000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0000008040200000ui64;
 
 	return flipped_v | flipped_h | flipped_c | flipped_d;
 }
@@ -206,13 +206,13 @@ uint64_t CFlipper::E2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::F2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x2020202020200000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020200000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x2020202020200000ui64;
 
 	const auto outflank_h = OUTFLANK_5[BExtr(O, 9, 6)] & (P >> 8);
 	const auto flipped_h = FLIPPED_5_H[outflank_h] & 0x000000000000FF00ui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0001020408100000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0001020408100000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0001020408100000ui64;
 
 	const auto flipped_d = ((P >> 9) & 0x0000000000400000ui64 & O);
 
@@ -222,13 +222,13 @@ uint64_t CFlipper::F2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::G2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x4040404040400000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040400000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x4040404040400000ui64;
 
 	const auto outflank_h = OUTFLANK_7[(O >> 8) & 0x3E] & (P >> 7);
 	const auto flipped_h = (-outflank_h & 0x3E) << 8;
 
 	const auto outflank_c = GetLSB(~O & 0x0102040810200000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810200000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0102040810200000ui64;
 
 	return flipped_v | flipped_h | flipped_c;
 }
@@ -236,13 +236,13 @@ uint64_t CFlipper::G2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::H2(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x8080808080800000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080800000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x8080808080800000ui64;
 
 	const auto outflank_h = OUTFLANK_7[BExtr(O, 9, 6)] & (P >> 8);
 	const auto flipped_h = (-outflank_h & 0x3F) << 9;
 
 	const auto outflank_c = GetLSB(~O & 0x0204081020400000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0204081020400000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0204081020400000ui64;
 
 	return flipped_v | flipped_h | flipped_c;
 }
@@ -250,13 +250,13 @@ uint64_t CFlipper::H2(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::A3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0101010101000000ui64) + 0x0000000001000000ui64) & P & 0x0101010101000000ui64;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0101010101000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0101010101000000ui64;
 
 	const auto outflank_h = ((O & 0x00000000007e0000ui64) + 0x0000000000020000ui64) & P;
 	const auto flipped_h = (outflank_h - (outflank_h >> 8)) & 0x00000000007e0000ui64;
 
 	const auto outflank_d = ((O | ~0x2010080402000000ui64) + 0x0000000002000000ui64) & P & 0x2010080402000000ui64;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x2010080402000000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x2010080402000000ui64;
 
 	const auto flipped_c = (((P << 8) & 0x0000000000000100ui64) | ((P << 7) & 0x0000000000000200ui64)) & O;
 
@@ -266,13 +266,13 @@ uint64_t CFlipper::A3(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::B3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0202020202000000ui64) + 0x0000000002000000ui64) & P & 0x0202020202000000ui64;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0202020202000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0202020202000000ui64;
 
 	const auto outflank_h = ((O & 0x00000000007c0000ui64) + 0x0000000000040000ui64) & P;
 	const auto flipped_h = (outflank_h - (outflank_h >> 8)) & 0x00000000007c0000ui64;
 
 	const auto outflank_d = ((O | ~0x4020100804000000ui64) + 0x0000000004000000ui64) & P & 0x4020100804000000ui64;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x4020100804000000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x4020100804000000ui64;
 
 	const auto flipped_c = (((P << 8) & 0x0000000000000200ui64) | ((P << 7) & 0x0000000000000400ui64)) & O;
 
@@ -282,13 +282,13 @@ uint64_t CFlipper::B3(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::C3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = ((O | ~0x0404040404000000ui64) + 0x0000000004000000ui64) & P & 0x0404040404000000ui64;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0404040404000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0404040404000000ui64;
 
 	const auto outflank_h = ((O & 0x0000000000780000ui64) + 0x0000000000080000ui64) & P;
 	const auto flipped_h = (outflank_h - (outflank_h >> 8)) & 0x0000000000780000ui64;
 
 	const auto outflank_d = ((O | ~0x8040201008000000ui64) + 0x0000000008000000ui64) & P & 0x8040201008000000ui64;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x8040201008000000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x8040201008000000ui64;
 
 	const auto flipped_r = PDep(PExt(P, 0x0000000100010015ui64), 0x0000000002020E00ui64) & O;
 
@@ -298,16 +298,16 @@ uint64_t CFlipper::C3(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::D3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x0808080808000000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x0808080808000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x0808080808000000ui64;
 
 	const auto outflank_h = OUTFLANK_3[BExtr(O, 17, 6)] & (P >> 16);
 	const auto flipped_h = FLIPPED_3_H[outflank_h] & 0x0000000000FF0000ui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0000010204000000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0000010204000000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0000010204000000ui64;
 
 	const auto outflank_d = GetLSB(~O & 0x0080402010000000ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0080402010000000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0080402010000000ui64;
 
 	const auto flipped_r = (PExt(P, 0x000000000000002Aui64) << 10) & O;
 
@@ -317,16 +317,16 @@ uint64_t CFlipper::D3(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::E3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x1010101010000000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x1010101010000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x1010101010000000ui64;
 
 	const auto outflank_h = OUTFLANK_4[BExtr(O, 17, 6)] & (P >> 16);
 	const auto flipped_h = FLIPPED_4_H[outflank_h] & 0x0000000000FF0000ui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0001020408000000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0001020408000000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0001020408000000ui64;
 
 	const auto outflank_d = GetLSB(~O & 0x0000804020000000ui64) & P;
-	const auto flipped_d = (outflank_d - (outflank_d != 0)) & 0x0000804020000000ui64;
+	const auto flipped_d = (outflank_d - static_cast<uint64_t>(outflank_d != 0)) & 0x0000804020000000ui64;
 
 	const auto flipped_r = (PExt(P, 0x0000000000000054ui64) << 11) & O;
 
@@ -336,13 +336,13 @@ uint64_t CFlipper::E3(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::F3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x2020202020000000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x2020202020000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x2020202020000000ui64;
 
 	const auto outflank_h = OUTFLANK_5[BExtr(O, 17, 6)] & (P >> 16);
 	const auto flipped_h = FLIPPED_5_H[outflank_h] & 0x0000000000FF0000ui64;
 
 	const auto outflank_c = GetLSB(~O & 0x0102040810000000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0102040810000000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0102040810000000ui64;
 
 	const auto flipped_r = PDep(PExt(P, 0x00000080008000A8ui64), 0x0000000040407000ui64) & O;
 
@@ -352,13 +352,13 @@ uint64_t CFlipper::F3(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::G3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x4040404040000000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x4040404040000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x4040404040000000ui64;
 
 	const auto outflank_h = OUTFLANK_7[(O >> 16) & 0x3E] & (P >> 15);
 	const auto flipped_h = (-outflank_h & 0x3E) << 16;
 
 	const auto outflank_c = GetLSB(~O & 0x0204081020000000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0204081020000000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0204081020000000ui64;
 
 	const auto flipped_r = (((P << 8) & 0x0000000000004000ui64) | ((P << 9) & 0x0000000000002000ui64)) & O;
 
@@ -368,13 +368,13 @@ uint64_t CFlipper::G3(const uint64_t P, const uint64_t O) const noexcept
 uint64_t CFlipper::H3(const uint64_t P, const uint64_t O) const noexcept
 {
 	const auto outflank_v = GetLSB(~O & 0x8080808080000000ui64) & P;
-	const auto flipped_v = (outflank_v - (outflank_v != 0)) & 0x8080808080000000ui64;
+	const auto flipped_v = (outflank_v - static_cast<uint64_t>(outflank_v != 0)) & 0x8080808080000000ui64;
 
 	const auto outflank_h = OUTFLANK_7[BExtr(O, 17, 6)] & (P >> 16);
 	const auto flipped_h = (-outflank_h & 0x3F) << 17;
 
 	const auto outflank_c = GetLSB(~O & 0x0408102040000000ui64) & P;
-	const auto flipped_c = (outflank_c - (outflank_c != 0)) & 0x0408102040000000ui64;
+	const auto flipped_c = (outflank_c - static_cast<uint64_t>(outflank_c != 0)) & 0x0408102040000000ui64;
 
 	const auto flipped_r = (((P << 8) & 0x0000000000008000ui64) | ((P << 9) & 0x0000000000004000ui64)) & O;
 
@@ -401,7 +401,7 @@ uint64_t CFlipper::B4(const uint64_t P, const uint64_t O) const noexcept
 	const auto flipped_v = FLIPPED_3_V[outflank_v] & 0x0002020202020200ui64;
 
 	const auto outflank_h = ((O & 0x000000007c000000ui64) + 0x0000000004000000ui64) & P;
-	const auto flipped_h = (outflank_h - (outflank_h != 0)) & 0x000000007c000000ui64;
+	const auto flipped_h = (outflank_h - static_cast<uint64_t>(outflank_h != 0)) & 0x000000007c000000ui64;
 
 	const auto outflank_x = OUTFLANK_3[PExt(O, 0x0010080402040800ui64)] & PExt(P, 0x2010080402040810ui64);
 	const auto flipped_x = FLIPPED_3_V[outflank_x] & 0x0010080402040800ui64;
@@ -512,7 +512,7 @@ uint64_t CFlipper::A5(const uint64_t P, const uint64_t O) const noexcept
 	const auto flipped_a8a5e1 = FLIPPED_4_V[outflank_a8a5e1] & 0x0001010102040800ui64;
 
 	const auto outflank_h = ((O & 0x0000007e00000000ui64) + 0x0000000200000000ui64) & P;
-	const auto flipped_h = (outflank_h - (outflank_h != 0)) & 0x0000007e00000000ui64;
+	const auto flipped_h = (outflank_h - static_cast<uint64_t>(outflank_h != 0)) & 0x0000007e00000000ui64;
 
 	return flipped_a1a5d8 | flipped_a8a5e1 | flipped_h;
 }
@@ -526,7 +526,7 @@ uint64_t CFlipper::B5(const uint64_t P, const uint64_t O) const noexcept
 	const auto flipped_b8b5f1 = FLIPPED_4_V[outflank_b8b5f1] & 0x0002020204081000ui64;
 
 	const auto outflank_h = ((O & 0x0000007c00000000ui64) + 0x0000000400000000ui64) & P;
-	const auto flipped_h = (outflank_h - (outflank_h != 0)) & 0x0000007c00000000ui64;
+	const auto flipped_h = (outflank_h - static_cast<uint64_t>(outflank_h != 0)) & 0x0000007c00000000ui64;
 
 	return flipped_b1b5e8 | flipped_b8b5f1 | flipped_h;
 }
