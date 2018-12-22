@@ -1,6 +1,6 @@
 #pragma once
-#include <memory>
 #include <istream>
+#include <memory>
 
 #include "Serializable.h"
 

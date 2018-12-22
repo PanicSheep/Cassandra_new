@@ -1,11 +1,11 @@
 #include "BinaryStreamArchive.h"
 
-#include <string>
 #include <cstdint>
+#include <string>
 
-#include "Utility.h"
-#include "Puzzles.h"
 #include "Position.h"
+#include "Puzzles.h"
+#include "Utility.h"
 
 namespace IO
 {

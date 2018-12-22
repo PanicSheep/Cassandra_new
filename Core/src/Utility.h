@@ -32,7 +32,7 @@ inline int RoundInt(const float  f) { return static_cast<int>(std::round(f)); } 
 std::string time_format(std::chrono::milliseconds duration);
 
 template <class U, class V>
-std::string time_format(const std::chrono::duration<U, V> duration)
+std::string time_format(std::chrono::duration<U, V> duration)
 {
 	return time_format(std::chrono::duration_cast<std::chrono::milliseconds>(duration));
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include "Moves.h"
+#include <string>
 
 namespace IO
 {

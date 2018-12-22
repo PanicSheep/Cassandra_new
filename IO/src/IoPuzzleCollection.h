@@ -1,14 +1,14 @@
 #pragma once
-#include <cstdint>
-#include <memory>
-#include <vector>
 #include <atomic>
 #include <chrono>
-#include <thread>
 #include <condition_variable>
+#include <cstdint>
+#include <memory>
+#include <thread>
+#include <vector>
 
-#include "PuzzleCollection.h"
 #include "Path.h"
+#include "PuzzleCollection.h"
 #include "Serializable.h"
 
 
@@ -27,8 +27,8 @@ namespace IO
 		std::thread m_thread;
 
 	public:
-		AutoSavingPuzzleVector(PuzzleVector&&, CPath output_file, std::chrono::seconds interval);
-		~AutoSavingPuzzleVector();
+		AutoSavingPuzzleVector(PuzzleVector&&, const CPath& output_file, std::chrono::seconds interval);
+		~AutoSavingPuzzleVector() override;
 
 		PuzzleVector Release() override;
 

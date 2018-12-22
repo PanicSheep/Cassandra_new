@@ -1,10 +1,10 @@
 #pragma once
-#include <memory>
-#include <istream>
 #include <cstdint>
+#include <istream>
+#include <memory>
 
-#include "Serializable.h"
 #include "Puzzles.h"
+#include "Serializable.h"
 
 namespace IO
 {

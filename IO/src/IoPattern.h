@@ -1,6 +1,6 @@
 #pragma once
-#include "Pattern.h"
 #include "Path.h"
+#include "Pattern.h"
 
 namespace Pattern::IO
 {
@@ -15,7 +15,7 @@ namespace Pattern::IO
 		std::vector<std::string> m_names;
 		std::vector<uint64_t> m_patterns;
 	public:
-		CNameLookupTable() {}
+		CNameLookupTable() = default;
 		CNameLookupTable(std::vector<std::string> names, std::vector<uint64_t> patterns);
 		CNameLookupTable(std::iostream&);
 		CNameLookupTable(const CPath&);
@@ -40,13 +40,13 @@ namespace Pattern::IO
 		CNameLookupTable m_names;
 		std::array<std::shared_ptr<Pattern::Eval::CPack>, 61> m_packs;
 	public:
-		CFactory() {}
+		CFactory() = default;
 		CFactory(CNameLookupTable);
 
 		CWeights CreateDefaultWeight(const std::string& name) const;
 
-		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, CWeights compressed_weights) const;
-		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, const CPath& compressed_weights) const;
+		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, const CWeights& compressed_weights) const;
+		std::unique_ptr<Pattern::Eval::CBase> CreatePattern(const std::string& name, const CPath& file) const;
 		
 		Eval::CEnsemble CreateEnsemble(const CPath&) const;
 

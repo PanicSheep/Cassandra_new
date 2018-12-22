@@ -2,10 +2,10 @@
 #include "Search.h"
 #include "Statistics.h"
 #include <chrono>
-#include <ratio>
-#include <ostream>
-#include <mutex>
 #include <memory>
+#include <mutex>
+#include <ostream>
+#include <ratio>
 
 namespace Search
 {

@@ -1,12 +1,12 @@
 #include "IoPuzzleCollection.h"
 
-#include <memory>
 #include <fstream>
 #include <functional>
+#include <memory>
 
 #include "BinaryStreamArchive.h"
-#include "SingleLineStreamArchive.h"
 #include "MultiLineStreamArchive.h"
+#include "SingleLineStreamArchive.h"
 
 namespace IO
 {
@@ -49,7 +49,8 @@ namespace IO
 	std::vector<PuzzleVector> LoadPuzzles(const std::vector<CPath>& files)
 	{
 		std::vector<PuzzleVector> ret;
-		for (const auto& file : files)
+		ret.reserve(files.size());
+for (const auto& file : files)
 			ret.emplace_back(IO::LoadPuzzles(file));
 		return ret;
 	}
@@ -60,17 +61,17 @@ namespace IO
 			IO::SavePuzzles(puzzles[i], files[i]);
 	}
 
-	AutoSavingPuzzleVector::AutoSavingPuzzleVector(PuzzleVector&& puzzles, CPath output_file, std::chrono::seconds interval)
+	AutoSavingPuzzleVector::AutoSavingPuzzleVector(PuzzleVector&& puzzles, const CPath& output_file, std::chrono::seconds interval)
 		: PuzzleVectorGuard(std::move(puzzles)), m_terminate(false)
 	{
 		m_thread = std::thread(
 			[this, output_file, interval]()
 		{
 			std::unique_lock<std::shared_mutex> lock(m_mtx);
-			while (m_terminate.load(std::memory_order_acquire) == false)
+			while (!m_terminate.load(std::memory_order_acquire))
 			{
 				m_cv.wait_for(lock, interval);
-				if (m_terminate.load(std::memory_order_acquire) == false)
+				if (!m_terminate.load(std::memory_order_acquire))
 					SavePuzzles(m_puzzles, output_file);
 			}
 		}

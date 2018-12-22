@@ -1,12 +1,12 @@
 #include "SingleLineStreamArchive.h"
 
+#include <cstdint>
 #include <regex>
 #include <string>
-#include <cstdint>
 
 #include "IoMoves.h"
-#include "Utility.h"
 #include "Puzzles.h"
+#include "Utility.h"
 
 using namespace IO;
 
@@ -39,7 +39,7 @@ namespace
 
 		if (pos[65] == 'X')
 			return std::make_unique<CPuzzle>(CPosition(P, O));
-		else if (pos[65] == 'O')
+		if (pos[65] == 'O')
 			return std::make_unique<CPuzzle>(CPosition(O, P));
 		else
 			return nullptr;
@@ -60,10 +60,9 @@ namespace
 
 		if (pos[65] == 'X')
 			return std::make_unique<CPuzzleScore>(CPosition(P, O), score);
-		else if (pos[65] == 'O')
+		if (pos[65] == 'O')
 			return std::make_unique<CPuzzleScore>(CPosition(O, P), score);
-		else
-			return nullptr;
+		return nullptr;
 	}
 
 	std::unique_ptr<CPuzzleAllMoveScore> Parse_CPuzzleAllMoveScore(const std::string& pos)
@@ -83,8 +82,7 @@ namespace
 			baord = std::make_unique<CPuzzleAllMoveScore>(CPosition(P, O));
 		else if (pos[65] == 'O')
 			baord = std::make_unique<CPuzzleAllMoveScore>(CPosition(O, P));
-		else
-			return nullptr;
+		return nullptr;
 
 		for (std::size_t i = 69; i + 7 < pos.length(); i += 7)
 		{

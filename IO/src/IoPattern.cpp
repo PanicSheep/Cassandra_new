@@ -1,6 +1,8 @@
 #include "IoPattern.h"
 #include "VectorIO.h"
 #include <fstream>
+#include <utility>
+#include <utility>
 
 using namespace Pattern;
 
@@ -52,15 +54,16 @@ namespace Pattern::IO
 	Eval::CPack CreatePack(const CPath& prefix, const std::vector<std::string>& infix, const std::string& suffix)
 	{
 		std::vector<CPath> paths;
+		paths.reserve(infix.size());
 		for (const auto& it : infix)
-			paths.push_back(prefix.GetAbsoluteFilePath() + it + suffix);
+			paths.emplace_back(prefix.GetAbsoluteFilePath() + it + suffix);
 		return CreatePack(paths);
 	}
 
 
 
 	CNameLookupTable::CNameLookupTable(std::vector<std::string> names, std::vector<uint64_t> patterns)
-		: m_names(names), m_patterns(patterns)
+		: m_names(std::move(names)), m_patterns(std::move(patterns))
 	{}
 
 	CNameLookupTable::CNameLookupTable(std::iostream& stream)
@@ -106,14 +109,12 @@ namespace Pattern::IO
 	{
 		if (Has(name))
 			return Get(name);
-		else
-		{
-			auto ull = std::stoull(name, nullptr, 16);
-			if (ull != 0)
-				return ull;
-			else
-				throw std::runtime_error("Invalid pattern name");
-		}
+				
+		auto ull = std::stoull(name, nullptr, 16);
+		if (ull != 0)
+			return ull;
+			
+		throw std::runtime_error("Invalid pattern name");
 	}
 
 	void CNameLookupTable::Read(std::iostream& stream)
@@ -161,7 +162,7 @@ namespace Pattern::IO
 		return Configurations::CreateDefaultWeight(pattern);
 	}
 
-	std::unique_ptr<Eval::CBase> CFactory::CreatePattern(const std::string& name, CWeights compressed_weights) const
+	std::unique_ptr<Eval::CBase> CFactory::CreatePattern(const std::string& name, const CWeights& compressed_weights) const
 	{
 		const uint64_t pattern = Translate(name);
 		return Eval::CreatePattern(pattern, compressed_weights);
@@ -196,8 +197,8 @@ namespace Pattern::IO
 		std::string line;
 		while (std::getline(stream, line))
 		{
-			const std::size_t begin = line.find("{");
-			const std::size_t end = line.find("}");
+			const std::size_t begin = line.find('{');
+			const std::size_t end = line.find('}');
 			const std::string str_depths = line.substr(begin + 1, end - begin - 1);
 			const auto empties = ParseEmpties(str_depths);
 
@@ -225,8 +226,7 @@ namespace Pattern::IO
 	{
 		if (m_names.Has(name))
 			return m_names.Get(name);
-		else
-			return std::stoull(name, nullptr, 16);
+		return std::stoull(name, nullptr, 16);
 	}
 
 	std::shared_ptr<Pattern::Eval::CEnsemble> CreateEnsemble(const CPath& names, const CPath& use)
