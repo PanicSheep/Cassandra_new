@@ -10,8 +10,8 @@ namespace Search
 		bool Constrained() const;
 	public:
 		int8_t min, max;
-		int8_t depth;
-		uint8_t selectivity;
+		int8_t depth = -1;
+		uint8_t selectivity = 99;
 		CBestMoves best_moves;
 
 		COutput();

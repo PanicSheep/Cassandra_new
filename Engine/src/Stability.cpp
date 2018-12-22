@@ -9,7 +9,7 @@ CStabilityAnalyzer::CStabilityAnalyzer()
 		for (unsigned int P = 0; P < 256; P++)
 			for (unsigned int O = 0; O < 256; O++)
 			{
-				if (P & O)
+				if ((P & O) != 0u)
 					continue;
 
 				if (8 - PopCount(P) - PopCount(O) == empty)
@@ -47,9 +47,9 @@ uint64_t CStabilityAnalyzer::Flip_dir(const CPosition& pos, const CMove move, co
 	while ((x >= 0) && (x < 8))
 	{
 		const uint64_t bit = MakeBit(x);
-		if (pos.GetO() & bit)
+		if ((pos.GetO() & bit) != 0u)
 			flips |= bit;
-		else if (pos.GetP() & bit)
+		else if ((pos.GetP() & bit) != 0u)
 			return flips;
 		else
 			return 0;
@@ -86,7 +86,7 @@ uint64_t CStabilityAnalyzer::GetStableStones(const CPosition & pos) const
 	new_stables |= full_h & full_v & full_d & full_c & pos.GetO() & 0x007E7E7E7E7E7E00ui64;
 
 	uint64_t stables = 0;
-	while (new_stables & ~stables)
+	while ((new_stables & ~stables) != 0u)
 	{
 		stables |= new_stables;
 		const uint64_t stables_h = (stables >> 1) | (stables << 1) | full_h;

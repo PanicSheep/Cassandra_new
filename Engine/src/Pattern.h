@@ -1,14 +1,14 @@
 #pragma once
-#include "Utility.h"
+#include "Engine.h"
 #include "Path.h"
 #include "Position.h"
-#include "Engine.h"
+#include "Utility.h"
 #include <array>
 #include <cstdint>
-#include <vector>
-#include <memory>
 #include <functional>
+#include <memory>
 #include <unordered_map>
+#include <vector>
 
 namespace Pattern
 {
@@ -16,13 +16,13 @@ namespace Pattern
 
 	class CSumPow3Cache
 	{
-		std::array<uint32_t, (1ui64 << 15)> m_cache;
+		std::array<uint32_t, (1ui64 << 15)> m_cache{};
 	public:
 		CSumPow3Cache();
 		uint64_t SumPow3(uint64_t exp) const;
 	};
 		
-	uint32_t FullIndex(const CPosition&, const uint64_t pattern);
+	uint32_t FullIndex(const CPosition&, uint64_t pattern);
 
 	namespace Configurations
 	{
@@ -30,7 +30,7 @@ namespace Pattern
 		{
 		public:
 			CBase(uint64_t pattern) : Pattern(pattern) {}
-			virtual ~CBase() {}
+			virtual ~CBase() = default;
 
 			virtual std::vector<uint32_t> Configurations(const CPosition&) const = 0;
 			virtual uint32_t Configuration(const CPosition&, std::size_t index) const = 0;
@@ -121,14 +121,14 @@ namespace Pattern
 
 	namespace Eval
 	{
-		void For_each_config(const uint64_t pattern, std::function<void(CPosition)>);
+		void For_each_config(uint64_t pattern, const std::function<void(CPosition)>&);
 
 		class CBase : public IEvaluator
 		{
 		public:
 			CBase(uint64_t pattern) : Pattern(pattern) {}
 
-			virtual float Eval(const CPosition&) const = 0;
+			float Eval(const CPosition&) const override = 0;
 
 			const uint64_t Pattern;
 		};
@@ -172,7 +172,7 @@ namespace Pattern
 		{
 			std::vector<std::unique_ptr<CBase>> m_pack;
 		public:
-			CPack() {}
+			CPack() = default;
 			CPack(std::size_t size) : m_pack(size) {}
 			CPack(const std::vector<std::pair<uint64_t, CWeights>>&);
 
@@ -181,7 +181,7 @@ namespace Pattern
 
 			std::vector<uint64_t> Pattern() const;
 
-			float Eval(const CPosition&) const;
+			float Eval(const CPosition&) const override;
 		};
 
 		// Holds a Pack for every 'empty_count'.

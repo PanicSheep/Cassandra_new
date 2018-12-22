@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-#include "LastFlipCounter.h"
 #include "FlipFast.h"
+#include "LastFlipCounter.h"
 
 using namespace Search;
 
@@ -92,13 +92,13 @@ int NegaMax::Eval_1(const CPosition& pos, const CMove move1)
 		node_counter++;
 		return score + diff + 1;
 	}
-	else if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
+	if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		node_counter += 2;
 		return score - diff - 1;
 	}
-	else
-		return (score > 0) ? score + 1 : score - 1;
+	
+	return (score > 0) ? score + 1 : score - 1;
 }
 
 int NegaMax::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
@@ -128,8 +128,8 @@ int NegaMax::Eval_2(const CPosition& pos, const CMove move1, const CMove move2)
 		node_counter++;
 		return score;
 	}
-	else
-		return -EvalGameOver(posPass);
+	
+	return -EvalGameOver(posPass);
 }
 
 int NegaMax::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3)
@@ -165,8 +165,8 @@ int NegaMax::Eval_3(const CPosition& pos, const CMove move1, const CMove move2, 
 		node_counter++;
 		return score;
 	}
-	else
-		return -EvalGameOver(posPass);
+	
+	return -EvalGameOver(posPass);
 }
 
 int NegaMax::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
@@ -208,8 +208,8 @@ int NegaMax::Eval_4(const CPosition& pos, const CMove move1, const CMove move2, 
 		node_counter++;
 		return score;
 	}
-	else
-		return -EvalGameOver(posPass);
+	
+	return -EvalGameOver(posPass);
 }
 
 int NegaMax::Eval_N(const CPosition& pos)
@@ -221,8 +221,8 @@ int NegaMax::Eval_N(const CPosition& pos)
 		const auto PosPass = pos.PlayPass();
 		if (PosPass.HasMoves())
 			return -Eval_(PosPass);
-		else
-			return EvalGameOver(pos);
+		
+		return EvalGameOver(pos);
 	}
 
 	int score = -infinity;

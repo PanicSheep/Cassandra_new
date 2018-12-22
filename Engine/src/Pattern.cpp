@@ -7,7 +7,7 @@ static CSumPow3Cache sum_pow_3_cache;
 uint64_t sum_pow3(uint64_t exp)
 {
 	uint64_t sum = 0;
-	while (exp) {
+	while (exp != 0u) {
 		sum += Pow_int(3, BitScanLSB(exp));
 		RemoveLSB(exp);
 	}
@@ -375,7 +375,7 @@ namespace Pattern::Eval
 			return std::make_unique<CAsymmetric>(pattern, std::move(weights));
 	}
 
-	void For_each_config(const uint64_t pattern, std::function<void(CPosition)> fkt)
+	void For_each_config(const uint64_t pattern, const std::function<void(CPosition)>& fkt)
 	{
 		const uint64_t MID = 0x0000001818000000ui64;
 		const uint64_t size = 1ui64 << PopCount(pattern);
@@ -385,7 +385,7 @@ namespace Pattern::Eval
 			const uint64_t P = PDep(i, pattern);
 			for (uint64_t j = 0; j < size; j++)
 			{
-				if (i & j) continue; // fields can only be taken by one player
+				if ((i & j) != 0u) continue; // fields can only be taken by one player
 				if (((i | j) & extracted_center) != extracted_center) continue; // center fields can't be empty
 				const uint64_t O = PDep(j, pattern);
 

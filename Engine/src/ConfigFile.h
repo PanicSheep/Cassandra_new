@@ -1,13 +1,13 @@
 #pragma once
-#include <unordered_map>
-#include <string>
 #include "Path.h"
+#include <string>
+#include <unordered_map>
 
 class CConfigurations
 {
 	std::unordered_map<std::string, std::string> m_conf;
 public:
-	CConfigurations() {}
+	CConfigurations() = default;
 	CConfigurations(const CPath& ConfigFile);
 
 	void Load(const CPath& ConfigFile);

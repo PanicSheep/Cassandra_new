@@ -1,6 +1,6 @@
 #include "LastFlipCounter.h"
-#include "MacrosHell.h"
 #include "FlipFast.h"
+#include "MacrosHell.h"
 
 CLastFlipCounter::CLastFlipCounter()
 {
@@ -16,9 +16,9 @@ CLastFlipCounter::CLastFlipCounter()
 
 uint8_t CLastFlipCounter::CountFlip(const uint8_t P, const CMove move)
 {
-	if (P & MakeBit(move))
+	if ((P & MakeBit(move)) != 0u)
 		return 0;
-	const uint8_t O = static_cast<uint8_t>(P ^ 0xFF ^ MakeBit(move));
+	const auto O = static_cast<uint8_t>(P ^ 0xFF ^ MakeBit(move));
 	const auto flips = Flip(CPosition(P, O), move);
 	return static_cast<uint8_t>(PopCount(flips));
 }
@@ -36,9 +36,9 @@ uint64_t CLastFlipCounter::Flip_dir(const CPosition& pos, const CMove move, cons
 	while ((x >= 0) && (x < 8))
 	{
 		const uint64_t bit = MakeBit(x);
-		if (pos.GetO() & bit)
+		if ((pos.GetO() & bit) != 0u)
 			flips |= bit;
-		else if (pos.GetP() & bit)
+		else if ((pos.GetP() & bit) != 0u)
 			return flips;
 		else
 			return 0;

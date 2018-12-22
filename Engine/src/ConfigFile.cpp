@@ -1,6 +1,6 @@
 #include "configfile.h"
-#include <fstream>
 #include <algorithm>
+#include <fstream>
 
 CConfigurations::CConfigurations(const CPath & ConfigFile)
 {

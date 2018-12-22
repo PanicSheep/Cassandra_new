@@ -1,16 +1,16 @@
 #pragma once
+#include "Position.h"
+#include <atomic>
 #include <cassert>
 #include <cstdint>
-#include <atomic>
 #include <iostream>
 #include <optional>
-#include "Position.h"
 
 template <typename KeyType, typename ValueType>
 class IHashTable
 {
 public:
-	virtual ~IHashTable() {}
+	virtual ~IHashTable() = default;
 	virtual void Update(const KeyType& key, const ValueType& value) = 0;
 	virtual std::optional<ValueType> LookUp(const KeyType& key) const = 0;
 	virtual void Refresh(const KeyType& key) = 0;
@@ -22,9 +22,9 @@ template <typename NodeType, typename KeyType, typename ValueType>
 class HashTable : public IHashTable<KeyType, ValueType>
 {
 public:
-	typedef NodeType nodetype;
-	typedef KeyType keytype;
-	typedef ValueType valuetype;
+	using nodetype = NodeType;
+	using keytype = CPosition;
+	using valuetype = ValueType;
 
 	HashTable(uint64_t Buckets);
 	HashTable() : HashTable(1) {}

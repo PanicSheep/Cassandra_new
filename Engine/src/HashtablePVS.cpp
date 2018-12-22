@@ -1,6 +1,6 @@
 #include "HashtablePVS.h"
-#include <algorithm>
 #include "MacrosHell.h"
+#include <algorithm>
 
 PvsInfo::PvsInfo(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBestMoves best_moves, uint64_t node_count)
 	: min(min)
@@ -35,10 +35,6 @@ void PvsInfo::Upgrade(const PvsInfo& novum)
 }
 
 
-Node::Node()
-	: date(0)
-{}
-
 Node::Node(const CPosition & key, const PvsInfo & value, const uint8_t date)
 	: key(key), value(value), date(date)
 {}
@@ -49,7 +45,7 @@ void Node::Upgrade(const PvsInfo& novum, const uint8_t date)
 	this->date = date;
 }
 
-void Node::Refresh(const CPosition& key, uint8_t date)
+void Node::Refresh(const CPosition&, uint8_t date)
 {
 	this->date = date;
 }
@@ -77,8 +73,8 @@ TwoNode::TwoNode()
 }
 
 TwoNode::TwoNode(Node node1, Node node2)
-	: node1(std::move(node1))
-	, node2(std::move(node2))
+	: node1(node1)
+	, node2(node2)
 {
 	unlock();
 }

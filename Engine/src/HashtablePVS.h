@@ -1,13 +1,13 @@
 #pragma once
+#include "Hashtable.h"
+#include "Moves.h"
+#include "Position.h"
+#include <atomic>
 #include <cassert>
 #include <cstdint>
-#include <atomic>
 #include <iostream>
 #include <memory>
 #include <optional>
-#include "Moves.h"
-#include "Position.h"
-#include "Hashtable.h"
 
 class PvsInfo
 {
@@ -31,12 +31,12 @@ class Node
 public:
 	CPosition key;
 	PvsInfo value;
-	uint8_t date;
+	uint8_t date{0};
 
-	Node();
-	Node(const CPosition& key, const PvsInfo& value, const uint8_t date);
+	Node() = default;
+	Node(const CPosition& key, const PvsInfo& value, uint8_t date);
 
-	void Upgrade(const PvsInfo& NewValue, uint8_t date);
+	void Upgrade(const PvsInfo& novum, uint8_t date);
 	void Refresh(const CPosition& key, uint8_t date);
 	bool IsOld(uint8_t CompareDate) const;
 };

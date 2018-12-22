@@ -11,7 +11,7 @@ std::unique_ptr<CAlgorithm> AlphaBetaFailSoft::Clone() const
 	return std::make_unique<AlphaBetaFailSoft>(*this);
 }
 
-CResult AlphaBetaFailSoft::Eval(const CPosition& pos, CSpecification spec)
+CResult AlphaBetaFailSoft::Eval(const CPosition& pos, CSpecification)
 {
 	const auto old_node_counter = node_counter;
 	const auto start_time = std::chrono::high_resolution_clock::now();
@@ -91,13 +91,13 @@ int AlphaBetaFailSoft::Eval_1(const CPosition& pos, const CMove move1)
 		node_counter++;
 		return score + diff + 1;
 	}
-	else if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
+	if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		node_counter += 2;
 		return score - diff - 1;
 	}
-	else
-		return (score > 0) ? score + 1 : score - 1;
+	
+	return (score > 0) ? score + 1 : score - 1;
 }
 
 int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
@@ -133,8 +133,8 @@ int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const C
 		node_counter++;
 		return bestscore;
 	}
-	else
-		return -EvalGameOver(posPass);
+	
+	return -EvalGameOver(posPass);
 }
 
 int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
@@ -187,8 +187,8 @@ int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const C
 		node_counter++;
 		return bestscore;
 	}
-	else
-		return -EvalGameOver(posPass);
+	
+	return -EvalGameOver(posPass);
 }
 
 int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
@@ -254,8 +254,8 @@ int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const C
 		node_counter++;
 		return bestscore;
 	}
-	else
-		return -EvalGameOver(posPass);
+	
+	return -EvalGameOver(posPass);
 }
 
 int AlphaBetaFailSoft::Eval_N(const CPosition& pos, int alpha, int beta)
@@ -267,8 +267,8 @@ int AlphaBetaFailSoft::Eval_N(const CPosition& pos, int alpha, int beta)
 		const auto PosPass = pos.PlayPass();
 		if (PosPass.HasMoves())
 			return -Eval(PosPass, -beta, -alpha);
-		else
-			return EvalGameOver(pos);
+		
+		return EvalGameOver(pos);
 	}
 
 	int bestscore = -infinity;

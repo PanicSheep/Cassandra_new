@@ -1,17 +1,17 @@
 #pragma once
+#include "Engine.h"
+#include "HashtablePVS.h"
+#include "Position.h"
+#include "SearchInput.h"
 #include <algorithm>
 #include <cstdint>
 #include <functional>
-#include "Position.h"
-#include "Engine.h"
-#include "HashtablePVS.h"
-#include "SearchInput.h"
 
 class CSortedMoves
 {
 	std::vector<std::pair<int32_t, CMove>> m_moves;
 public:
-	CSortedMoves(const CPosition&, std::function<int32_t(CMove)> score, CMove filter1 = CMove::invalid, CMove filter2 = CMove::invalid);
+	CSortedMoves(const CPosition&, const std::function<int32_t(CMove)>& score, CMove filter1 = CMove::invalid, CMove filter2 = CMove::invalid);
 
 	std::size_t size() const { return m_moves.size(); }
 	bool empty() const { return m_moves.empty(); }
@@ -25,7 +25,7 @@ public:
 	auto cend() const { return m_moves.crend(); }
 };
 
-inline CSortedMoves::CSortedMoves(const CPosition& pos, std::function<int32_t(CMove)> score, const CMove filter1, const CMove filter2)
+inline CSortedMoves::CSortedMoves(const CPosition& pos, const std::function<int32_t(CMove)>& score, const CMove filter1, const CMove filter2)
 {
 	CMoves moves = pos.PossibleMoves();
 	moves.Remove(filter1);

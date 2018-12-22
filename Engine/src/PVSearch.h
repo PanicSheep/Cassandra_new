@@ -1,9 +1,9 @@
 #pragma once
 #include "AlphaBetaFailSoftSearch.h"
 #include "Engine.h"
+#include "Moves.h"
 #include "Position.h"
 #include "Search.h"
-#include "Moves.h"
 #include "SearchInput.h"
 #include "SearchOutput.h"
 #include "SearchStatusQuo.h"

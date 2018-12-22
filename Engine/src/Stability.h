@@ -16,12 +16,12 @@ public:
 
 private:
 	static uint64_t Flip(const CPosition&, CMove);
-	static uint64_t Flip_dir(const CPosition&, CMove, const int dX);
+	static uint64_t Flip_dir(const CPosition&, CMove, int dX);
 
 	static uint64_t FullLineHorizontal(uint64_t discs);
 	static uint64_t FullLineVertival(uint64_t discs);
 	static uint64_t FullLineDiagonal(uint64_t discs);
 	static uint64_t FullLineCodiagonal(uint64_t discs);
 
-	uint8_t edge_stables[256][256];
+	uint8_t edge_stables[256][256]{};
 };

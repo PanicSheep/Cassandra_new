@@ -11,7 +11,7 @@ std::unique_ptr<CAlgorithm> AlphaBetaFailHard::Clone() const
 	return std::make_unique<AlphaBetaFailHard>(*this);
 }
 
-CResult AlphaBetaFailHard::Eval(const CPosition& pos, CSpecification spec)
+CResult AlphaBetaFailHard::Eval(const CPosition& pos, CSpecification)
 {
 	const auto old_node_counter = node_counter;
 	const auto start_time = std::chrono::high_resolution_clock::now();
@@ -91,13 +91,12 @@ int AlphaBetaFailHard::Eval_1(const CPosition& pos, const int alpha, const int b
 		node_counter++;
 		return std::clamp(score + diff + 1, alpha, beta);
 	}
-	else if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
+	if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
 	{
 		node_counter += 2;
 		return std::clamp(score - diff - 1, alpha, beta);
 	}
-	else
-		return std::clamp((score > 0) ? score + 1 : score - 1, alpha, beta);
+	return std::clamp((score > 0) ? score + 1 : score - 1, alpha, beta);
 }
 
 int AlphaBetaFailHard::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
@@ -138,8 +137,8 @@ int AlphaBetaFailHard::Eval_2(const CPosition& pos, int alpha, int beta, const C
 		node_counter++;
 		return beta;
 	}
-	else
-		return std::clamp(-EvalGameOver(posPass), alpha, beta);
+	
+	return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
 int AlphaBetaFailHard::Eval_3(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3)
@@ -192,8 +191,8 @@ int AlphaBetaFailHard::Eval_3(const CPosition& pos, int alpha, int beta, const C
 		node_counter++;
 		return beta;
 	}
-	else
-		return std::clamp(-EvalGameOver(posPass), alpha, beta);
+	
+	return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
 int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2, const CMove move3, const CMove move4)
@@ -258,8 +257,8 @@ int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta, const C
 		node_counter++;
 		return beta;
 	}
-	else
-		return std::clamp(-EvalGameOver(posPass), alpha, beta);
+	
+	return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
 int AlphaBetaFailHard::Eval_N(const CPosition& pos, int alpha, int beta)
@@ -271,8 +270,8 @@ int AlphaBetaFailHard::Eval_N(const CPosition& pos, int alpha, int beta)
 		const auto PosPass = pos.PlayPass();
 		if (PosPass.HasMoves())
 			return -Eval(PosPass, -beta, -alpha);
-		else
-			return std::clamp(EvalGameOver(pos), alpha, beta);
+		
+		return std::clamp(EvalGameOver(pos), alpha, beta);
 	}
 
 	int score = -infinity;

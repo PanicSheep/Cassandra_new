@@ -1,8 +1,8 @@
 #include "PVSearch.h"
-#include "LastFlipCounter.h"
 #include "FlipFast.h"
-#include "Stability.h"
+#include "LastFlipCounter.h"
 #include "SortedMoves.h"
+#include "Stability.h"
 #include <algorithm>
 
 using namespace Search;
@@ -42,7 +42,7 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 	{
 		if (empties <= 14)
 			return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
-		else if (empties <= 20)
+		if (empties <= 20)
 		{
 			int score;
 			for (int d = 0; d < empties - 10; d++)
@@ -57,22 +57,20 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 			{
 				return PVS(CInput(pos, alpha, new_score.max + 1, pos.EmptyCount(), selectivity)).min;
 			}
-			else if (new_score.min >= score + 3) // fail high
+			if (new_score.min >= score + 3) // fail high
 			{
 				return PVS(CInput(pos, new_score.min - 1, beta, pos.EmptyCount(), selectivity)).min;
 			}
 			return new_score.min;
 		}
-		else
-		{
-			for (int d = 0; d < 5; d++)
-				PVS(CInput(pos, alpha, beta, d, selectivity)).min;
-			for (int d = 5; d < empties - 10; d++)
-				PVS(CInput(pos, alpha, beta, d, 33)).min;
-			PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
-			PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 21)).min;
-			return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
-		}
+		
+		for (int d = 0; d < 5; d++)
+			PVS(CInput(pos, alpha, beta, d, selectivity)).min;
+		for (int d = 5; d < empties - 10; d++)
+			PVS(CInput(pos, alpha, beta, d, 33)).min;
+		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
+		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 21)).min;
+		return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
 	}
 	else
 	{
@@ -150,8 +148,7 @@ COutput PVSearch::Eval_d1(const CInput& in)
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
 			return -Eval_d1(Pass);
-		else
-			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+		return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -177,8 +174,7 @@ COutput PVSearch::Eval_d2(const CInput& in)
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
 			return -Eval_d2(Pass);
-		else
-			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+		return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -206,8 +202,7 @@ COutput PVSearch::ZWS_A(const CInput& in)
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
 			return -ZWS_A(Pass);
-		else
-			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+		return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -246,12 +241,11 @@ COutput PVSearch::ZWS_N(const CInput& in)
 	
 	const uint64_t initial_node_count = node_counter++;
 
-	if (in.pos.HasMoves() == false) {
+	if (!in.pos.HasMoves()) {
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
 			return -ZWS_N(Pass);
-		else
-			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+		return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -310,12 +304,11 @@ COutput PVSearch::PVS_N(const CInput& in)
 {
 	const uint64_t initial_node_count = node_counter++;
 
-	if (in.pos.HasMoves() == false) {
+	if (!in.pos.HasMoves()) {
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
 			return -PVS_N(Pass);
-		else
-			return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+		return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
 	}
 
 	CStatusQuo status_quo(in);
@@ -411,8 +404,7 @@ COutput PVSearch::TranspositionTableAnalysis(const CPosition& pos)
 	const auto ret = engine->LookUp(pos);
 	if (ret.has_value())
 		return COutput(ret.value().min, ret.value().max, ret.value().depth, ret.value().selectivity, ret.value().best_moves);
-	else
-		return COutput();
+	return COutput();
 }
 
 void PVSearch::TranspositionTableUpdate(const CPosition& pos, std::size_t initial_node_count, const COutput& novum)
@@ -511,7 +503,7 @@ int32_t Search::PVSearch::MoveOrderingScorer(CMove move, const CInput& in)
 	auto score = field_score + parity_score - mobility_score - corner_mobility_score - opponents_exposed_score;
 	if (sort_depth < 0)
 		return score;
-	else if (sort_depth == 0)
+	if (sort_depth == 0)
 		return score - (static_cast<int>(engine->Eval(next_pos)) << 16);
 	//else if (sort_depth < 3)
 	//	return score - (PVS(CInput(next_pos, -infinity, infinity, sort_depth, 0)).min << 17);

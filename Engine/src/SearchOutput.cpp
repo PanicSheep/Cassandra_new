@@ -13,8 +13,6 @@ bool COutput::Constrained() const
 COutput::COutput()
 	: min(min_score)
 	, max(max_score)
-	, depth(-1)
-	, selectivity(99)
 	, best_moves({})
 {
 	assert(Constrained());

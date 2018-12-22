@@ -1,34 +1,36 @@
 #pragma once
-#include <memory>
-#include "Position.h"
-#include "Moves.h"
 #include "HashtablePVS.h"
+#include "Moves.h"
+#include "Position.h"
+#include <memory>
+#include <utility>
+#include <utility>
 
 class IFlipper
 {
 public:
-	virtual ~IFlipper() {}
+	virtual ~IFlipper() = default;
 	virtual CPosition Play(const CPosition&, CMove) const = 0;
 };
 
 class ILastFlipCounter
 {
 public:
-	virtual ~ILastFlipCounter() {}
+	virtual ~ILastFlipCounter() = default;
 	virtual uint8_t CountLastFlip(const CPosition&, CMove) const = 0;
 };
 
 class IStabilityAnalyzer
 {
 public:
-	virtual ~IStabilityAnalyzer() {}
+	virtual ~IStabilityAnalyzer() = default;
 	virtual uint64_t GetStableStones(const CPosition&) const = 0;
 };
 
 class IEvaluator
 {
 public:
-	virtual ~IEvaluator() {}
+	virtual ~IEvaluator() = default;
 	virtual float Eval(const CPosition&) const = 0;
 };
 
@@ -48,12 +50,12 @@ public:
 		std::shared_ptr<IStabilityAnalyzer> stability_analyzer = nullptr,
 		std::shared_ptr<IEvaluator> midgame_evaluator = nullptr,
 		std::shared_ptr<IEvaluator> game_over_evaluator = nullptr)
-		: flipper(flipper)
-		, last_flip_counter(last_flip_counter)
-		, hash_table(hash_table)
-		, stability_analyzer(stability_analyzer)
-		, midgame_evaluator(midgame_evaluator)
-		, game_over_evaluator(game_over_evaluator)
+		: flipper(std::move(std::move(flipper)))
+		, last_flip_counter(std::move(std::move(last_flip_counter)))
+		, hash_table(std::move(std::move(hash_table)))
+		, stability_analyzer(std::move(std::move(stability_analyzer)))
+		, midgame_evaluator(std::move(std::move(midgame_evaluator)))
+		, game_over_evaluator(std::move(std::move(game_over_evaluator)))
 	{}
 
 	CPosition Play(const CPosition& pos, CMove move) const override { return flipper->Play(pos, move); }

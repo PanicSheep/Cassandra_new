@@ -1,9 +1,9 @@
 #pragma once
-#include <memory>
 #include "Engine.h"
+#include "Moves.h"
 #include "Position.h"
 #include "Search.h"
-#include "Moves.h"
+#include <memory>
 
 namespace Search
 {

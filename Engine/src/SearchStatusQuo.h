@@ -25,8 +25,8 @@ namespace Search
 		CInput Play(CMove) const;
 		CInput PlayZWS(CMove) const;
 
-		std::optional<COutput> ImproveWith(const COutput& nouvm);
-		std::optional<COutput> ImproveWith(const COutput& nouvm, CMove);
+		std::optional<COutput> ImproveWith(const COutput& novum);
+		std::optional<COutput> ImproveWith(const COutput& novum, CMove);
 
 		COutput AllMovesTried();
 	};
