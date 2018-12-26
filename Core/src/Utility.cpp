@@ -13,7 +13,7 @@ int64_t Pow_int(int64_t base, uint64_t exponent)
 //ddd:hh:mm:ss.ccc
 std::string time_format(const std::chrono::milliseconds duration)
 {
-	typedef std::chrono::duration<int, std::ratio<24 * 3600> > days_t;
+	using days_t = std::chrono::duration<int, std::ratio<24 * 3600> >;
 	const auto millis  = duration.count() % 1000;
 	const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count() % 60;
 	const auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration).count() % 60;
