@@ -30,9 +30,9 @@ namespace Search
 		COutput ZWS_N(const CInput&);
 		COutput ZWS_A(const CInput&);
 
-		COutput Eval_d0(const CInput&);
-		COutput Eval_d1(const CInput&);
-		COutput Eval_d2(const CInput&);
+		int Eval_d0(const CPosition&);
+		int Eval_d1(const CPosition&, int alpha, int beta);
+		int Eval_d2(const CPosition&, int alpha, int beta);
 
 		COutput StabilityAnalysis(const CPosition&);
 		COutput TranspositionTableAnalysis(const CPosition&);

@@ -95,8 +95,17 @@ COutput PVSearch::PVS(const CInput& in)
 				break;
 		}
 	}
-	else if (in.depth == 0)
-		return Result(in, std::clamp(static_cast<int8_t>(engine->Eval(in.pos)), (int8_t)-64, (int8_t)+64), 0, 0);
+	else
+	{
+		switch (in.depth)
+		{
+			case 0: return Result(in, std::clamp(Eval_d0(in.pos), -64, +64), 0, 0);
+			case 1: return Result(in, std::clamp(Eval_d1(in.pos, in.alpha, in.beta), -64, +64), 1, 0);
+			case 2: return Result(in, std::clamp(Eval_d2(in.pos, in.alpha, in.beta), -64, +64), 2, 0);
+			default:
+				break;
+		}
+	}
 	return PVS_N(in);
 }
 
@@ -124,9 +133,9 @@ COutput PVSearch::ZWS(const CInput& in)
 	{
 		switch (in.depth)
 		{
-			case 0: return Eval_d0(in);
-			case 1: return Eval_d1(in);
-			case 2: return Eval_d2(in);
+			case 0: return Result(in, std::clamp(Eval_d0(in.pos), -64, +64), 0, 0);
+			case 1: return Result(in, std::clamp(Eval_d1(in.pos, in.alpha, in.alpha + 1), -64, +64), 1, 0);
+			case 2: return Result(in, std::clamp(Eval_d2(in.pos, in.alpha, in.alpha + 1), -64, +64), 2, 0);
 			default:
 				break;
 		}
@@ -134,61 +143,60 @@ COutput PVSearch::ZWS(const CInput& in)
 	return ZWS_N(in);
 }
 
-COutput PVSearch::Eval_d0(const CInput& in)
-{
-	return Result(in, std::clamp(static_cast<int>(engine->Eval(in.pos)), -64, +64), 0, 0);
-}
-
-COutput PVSearch::Eval_d1(const CInput& in)
+int PVSearch::Eval_d0(const CPosition& pos)
 {
 	node_counter++;
 
-	CMoves moves = in.pos.PossibleMoves();
-	if (moves.empty()) {
-		const auto Pass = in.PlayPass();
-		if (Pass.pos.HasMoves())
-			return -Eval_d1(Pass);
-		return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
-	}
-
-	CStatusQuo status_quo(in);
-	
-	while (!moves.empty())
-	{
-		const auto move = moves.ExtractMove();
-		const auto zws = -Eval_d0(status_quo.Play(move));
-		const auto ret = status_quo.ImproveWith(zws, move);
-		if (ret)
-			return ret.value();
-	}
-
-	return status_quo.AllMovesTried();
+	return static_cast<int>(engine->Eval(pos));
 }
 
-COutput PVSearch::Eval_d2(const CInput& in)
+int PVSearch::Eval_d1(const CPosition& pos, int alpha, int beta)
 {
 	node_counter++;
 
-	CMoves moves = in.pos.PossibleMoves();
+	CMoves moves = pos.PossibleMoves();
 	if (moves.empty()) {
-		const auto Pass = in.PlayPass();
-		if (Pass.pos.HasMoves())
-			return -Eval_d2(Pass);
-		return COutput::ExactScore(EvalGameOver(in.pos), in.pos.EmptyCount(), 0);
+		const auto PosPass = pos.PlayPass();
+		if (PosPass.HasMoves())
+			return -Eval_d1(PosPass, -beta, -alpha);
+
+		return EvalGameOver(pos);
 	}
 
-	CStatusQuo status_quo(in);
-
+	int bestscore = -infinity;
 	while (!moves.empty())
 	{
-		const auto move = moves.ExtractMove();
-		const auto zws = -Eval_d1(status_quo.Play(move));
-		const auto ret = status_quo.ImproveWith(zws, move);
-		if (ret)
-			return ret.value();
+		const auto score = -Eval_d0(pos.Play(moves.ExtractMove()));
+		if (score >= beta) return score;
+		bestscore = std::max(score, bestscore);
 	}
 
-	return status_quo.AllMovesTried();
+	return bestscore;
+}
+
+int PVSearch::Eval_d2(const CPosition& pos, int alpha, int beta)
+{
+	node_counter++;
+
+	CMoves moves = pos.PossibleMoves();
+	if (moves.empty()) {
+		const auto PosPass = pos.PlayPass();
+		if (PosPass.HasMoves())
+			return -Eval_d2(PosPass, -beta, -alpha);
+
+		return EvalGameOver(pos);
+	}
+
+	int bestscore = -infinity;
+	while (!moves.empty())
+	{
+		const auto score = -Eval_d1(pos.Play(moves.ExtractMove()), -beta, -alpha);
+		if (score >= beta) return score;
+		alpha = std::max(score, alpha);
+		bestscore = std::max(score, bestscore);
+	}
+
+	return bestscore;
 }
 
 COutput PVSearch::ZWS_A(const CInput& in)
