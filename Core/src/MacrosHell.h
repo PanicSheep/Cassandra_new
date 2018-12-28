@@ -413,17 +413,6 @@ template <typename T> FORCE_INLINE bool      TestBits(const uint64_t  b, const T
 	#endif
 #endif
 
-// ### Fix for Visual Studio bug ###
-#if defined(HAS_AVX2) && defined(_MSC_VER)
-inline uint64_t _mm256_extract_epi64(__m256i X, const unsigned int N) noexcept
-{
-	const __m128i Y = _mm256_extracti128_si256(X, N >> 1);
-	if (N & 1)
-		return _mm_extract_epi64(Y, 1);
-	else
-		return _mm_extract_epi64(Y, 0);
-}
-#endif
 
 #ifdef _WIN32
 	const std::string       FOLDER_SEPARATOR = "\\";
