@@ -51,8 +51,6 @@
 //#define HAS_TBM
 //#define HAS_POPCNT
 //#define HAS_LZCNT
-
-#define CACHE_LINE_SIZE 64
 // #####################################
 
 // CPUs instruction sets
