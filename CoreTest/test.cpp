@@ -176,45 +176,6 @@ TEST(MacrosHell, BitScanLSB_1) {
 	ASSERT_EQ(BitScanLSB(3), 0u);
 	ASSERT_EQ(BitScanLSB(0x8000000000000000ui64), 63u);
 }
-
-TEST(MacrosHell, BitScanLSB_2) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanLSB(index, 1);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 0u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanLSB_3) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanLSB(index, 2);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 1u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanLSB_4) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanLSB(index, 3);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 0u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanLSB_5) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanLSB(index, 0x8000000000000000ui64);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 63u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanLSB_6) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanLSB(index, 0);
-	ASSERT_EQ(ret, 0u);
-	delete index;
-}
 // --------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -228,45 +189,6 @@ TEST(MacrosHell, BitScanMSB_1) {
 	ASSERT_EQ(BitScanMSB(2), 1u);
 	ASSERT_EQ(BitScanMSB(3), 1u);
 	ASSERT_EQ(BitScanMSB(0x8000000000000000ui64), 63u);
-}
-
-TEST(MacrosHell, BitScanMSB_2) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanMSB(index, 1);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 0u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanMSB_3) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanMSB(index, 2);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 1u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanMSB_4) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanMSB(index, 3);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 1u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanMSB_5) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanMSB(index, 0x8000000000000000ui64);
-	ASSERT_NE(ret, 0);
-	ASSERT_EQ(*index, 63u);
-	delete index;
-}
-
-TEST(MacrosHell, BitScanMSB_6) {
-	unsigned long * index = new unsigned long();
-	unsigned char ret = BitScanMSB(index, 0);
-	ASSERT_EQ(ret, 0u);
-	delete index;
 }
 // --------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////

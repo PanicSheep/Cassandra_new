@@ -149,23 +149,31 @@
 	#pragma intrinsic(_BitScanForward)
 	#pragma intrinsic(_BitScanReverse64)
 	#pragma intrinsic(_BitScanReverse)
-
-	inline unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) noexcept { return _BitScanForward64(index, mask); }
-	inline unsigned long BitScanLSB(const uint64_t mask) noexcept { assert(mask); unsigned long index; _BitScanForward64(&index, mask); return index; }
-	template <typename T> inline unsigned char bsf(unsigned long * index, const T mask) noexcept { return BitScanLSB(index, mask); }
-
-	inline unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) noexcept { return _BitScanReverse64(index, mask); }
-	inline unsigned long BitScanMSB(const uint64_t mask) noexcept { assert(mask); unsigned long index; _BitScanReverse64(&index, mask); return index; }
-	template <typename T> inline unsigned char bsr(unsigned long * index, const T mask) noexcept { return BitScanMSB(index, mask); }
-#elif defined(__GNUC__)
-	inline unsigned char BitScanLSB(unsigned long * index, const uint64_t mask) noexcept { *index = __builtin_ctzll(mask); return mask != 0; }
-	inline unsigned long BitScanLSB(const uint64_t mask) noexcept { assert(mask); return __builtin_ctzll(mask); }
-	template <typename T> inline unsigned char bsf(unsigned long * index, const T mask) noexcept { return BitScanLSB(index, mask); }
-
-	inline unsigned char BitScanMSB(unsigned long * index, const uint64_t mask) noexcept { *index = __builtin_clzll(mask) ^ 63; return mask != 0; }
-	inline unsigned long BitScanMSB(const uint64_t mask) noexcept { assert(mask); return __builtin_clzll(mask) ^ 63; }
-	template <typename T> inline unsigned char bsr(unsigned long * index, const T mask) noexcept { return BitScanMSB(index, mask); }
 #endif
+
+inline unsigned long BitScanLSB(const uint64_t mask) noexcept
+{
+	assert(mask);
+	#if defined(_MSC_VER)
+		unsigned long index;
+		_BitScanForward64(&index, mask);
+		return index;
+	#elif defined(__GNUC__)
+		return __builtin_ctzll(mask);
+	#endif
+}
+	
+inline unsigned long BitScanMSB(const uint64_t mask) noexcept
+{
+	assert(mask);
+	#if defined(_MSC_VER)
+		unsigned long index;
+		_BitScanReverse64(&index, mask);
+		return index;
+	#elif defined(__GNUC__)
+		return __builtin_clzll(mask) ^ 63;
+	#endif
+}
 
 
 // Count Leading Zeros
