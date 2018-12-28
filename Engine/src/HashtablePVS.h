@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <new>
 #include <optional>
 
 class PvsInfo
@@ -41,7 +42,7 @@ public:
 	bool IsOld(uint8_t CompareDate) const;
 };
 
-class /*alignas(CACHE_LINE_SIZE)*/ TwoNode
+class /*alignas(std::hardware_destructive_interference_size)*/ TwoNode
 {
 	mutable std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
 	Node node1, node2;
@@ -63,7 +64,7 @@ public:
 	int NumberOfNonEmptyNodes() const;
 };
 
-//static_assert(sizeof(TwoNode) <= CACHE_LINE_SIZE);
+//static_assert(sizeof(TwoNode) <= std::hardware_destructive_interference_size);
 
 typedef HashTable<TwoNode, CPosition, PvsInfo> CHashTablePVS;
 
