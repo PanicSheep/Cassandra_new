@@ -10,7 +10,6 @@ namespace Search
 	class AlphaBetaFailHard : public CAlgorithm
 	{
 	public:
-		AlphaBetaFailHard(const AlphaBetaFailHard&) = default;
 		AlphaBetaFailHard(const std::shared_ptr<Engine>& engine) : CAlgorithm(engine) {}
 
 		std::unique_ptr<CAlgorithm> Clone() const override;

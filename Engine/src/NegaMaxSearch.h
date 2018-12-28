@@ -10,7 +10,6 @@ namespace Search
 	class NegaMax : public CAlgorithm
 	{
 	public:
-		NegaMax(const NegaMax&) = default;
 		NegaMax(const std::shared_ptr<Engine>& engine) : CAlgorithm(engine) {}
 		
 		std::unique_ptr<CAlgorithm> Clone() const override;
