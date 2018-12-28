@@ -142,19 +142,6 @@
 #endif
 
 
-// alignas work-around
-#if (__GNUC__ == 4) && (__GNUC_MINOR__ <= 7)
-	#define alignas(A) __attribute__((aligned(A)))
-#endif
-
-// CACHE_LINE_ALIGNMENT
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-	#define CACHE_LINE_ALIGNMENT __declspec(align(CACHE_LINE_SIZE))
-#else
-	#define CACHE_LINE_ALIGNMENT __attribute__((aligned(CACHE_LINE_SIZE)))
-#endif
-
-
 // FORCE_INLINE
 #if defined(_MSC_VER)
 	#define FORCE_INLINE __forceinline
