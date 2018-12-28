@@ -37,14 +37,14 @@ namespace Search
 		return std::make_unique<CLogNull>();
 	}
 
-	CLogCollector::CLogCollector(const CLogCollector& o) : m_vec(o.m_vec) {}
+	CLogCollector::CLogCollector(const CLogCollector& o) : ILog(o), m_vec(o.m_vec) {}
 
 	std::unique_ptr<ILog> CLogCollector::Clone() const
 	{
 		return std::make_unique<CLogCollector>(*this);
 	}
 
-	CLogPassThrough::CLogPassThrough(const CLogPassThrough& o) : m_archive(o.m_archive) {}
+	CLogPassThrough::CLogPassThrough(const CLogPassThrough& o) : ILog(o), m_archive(o.m_archive) {}
 
 	std::unique_ptr<ILog> CLogPassThrough::Clone() const
 	{
