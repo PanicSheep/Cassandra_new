@@ -299,14 +299,6 @@ TEST(MacrosHell, PopCountTest) {
 	ASSERT_EQ(PopCount(3), 2u);
 	ASSERT_EQ(PopCount(0xFFFFFFFFFFFFFFFFui64), 64u);
 }
-
-TEST(MacrosHell, PopCount_max15Test) {
-	ASSERT_EQ(PopCount_max15(0), 0u);
-	ASSERT_EQ(PopCount_max15(1), 1u);
-	ASSERT_EQ(PopCount_max15(2), 1u);
-	ASSERT_EQ(PopCount_max15(3), 2u);
-	ASSERT_EQ(PopCount_max15(0xFF000000000000FEui64), 15u);
-}
 // --------------------------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -9,6 +9,8 @@
 
 #if defined(_MSC_VER)
 	#include <intrin.h>
+	#pragma intrinsic(_BitScanForward64)
+	#pragma intrinsic(_BitScanReverse64)
 #elif defined(__GNUC__)
 	#include <x86intrin.h>
 #else
@@ -141,21 +143,12 @@
 	#define HAS_TZMSK	// Mask from trailing zeros                 (~x &  (x - 1))
 #endif
 
-
-// BitScan
-// OUT: mask == 0 results in undefined index
-#if defined(_MSC_VER)
-	#pragma intrinsic(_BitScanForward64)
-	#pragma intrinsic(_BitScanForward)
-	#pragma intrinsic(_BitScanReverse64)
-	#pragma intrinsic(_BitScanReverse)
-#endif
-
 inline unsigned long BitScanLSB(const uint64_t mask) noexcept
 {
+	// OUT: mask == 0 results in undefined index
 	assert(mask);
 	#if defined(_MSC_VER)
-		unsigned long index;
+		unsigned long index = 0;
 		_BitScanForward64(&index, mask);
 		return index;
 	#elif defined(__GNUC__)
@@ -167,7 +160,7 @@ inline unsigned long BitScanMSB(const uint64_t mask) noexcept
 {
 	assert(mask);
 	#if defined(_MSC_VER)
-		unsigned long index;
+		unsigned long index = 0;
 		_BitScanReverse64(&index, mask);
 		return index;
 	#elif defined(__GNUC__)
@@ -175,44 +168,58 @@ inline unsigned long BitScanMSB(const uint64_t mask) noexcept
 	#endif
 }
 
+inline uint64_t CountLeadingZeros(const uint64_t mask) noexcept
+{
+	// _lzcnt_u64(0) == 64
+	// __builtin_clzll(0) is undefined
+	assert(mask);
+	#if defined(_MSC_VER)
+		return _lzcnt_u64(mask);
+	#elif defined(__GNUC__)
+		return __builtin_clzll(mask);
+	#endif
+}
 
-// Count Leading Zeros
-// _lzcnt_u64(0) == 64
-// __builtin_clzll(0) is undefined
-#if defined(_MSC_VER)
-	inline uint64_t CountLeadingZeros(const uint64_t mask) noexcept { assert(mask); return _lzcnt_u64(mask); }
-#elif defined(__GNUC__)
-	inline uint64_t CountLeadingZeros(const uint64_t mask) noexcept { assert(mask); return __builtin_clzll(mask); }
-#endif
-	template <typename T> inline T clz(const T mask) noexcept { return CountLeadingZeros(mask); }
+inline uint64_t CountTrailingZeros(const uint64_t mask) noexcept
+{
+	// _tzcnt_u64(0) is undefined
+	// __builtin_ctzll(0) is undefined
+	assert(mask);
+	#if defined(_MSC_VER)
+			return _tzcnt_u64(mask);
+	#elif defined(__GNUC__)
+			return __builtin_ctzll(mask);
+	#endif
+}
 
-// Count Trailing Zeros
-// _tzcnt_u64(0) is undefined
-// __builtin_ctzll(0) is undefined
-#if defined(_MSC_VER)
-	inline uint64_t CountTrailingZeros(const uint64_t mask) noexcept { assert(mask); return _tzcnt_u64(mask); }
-#elif defined(__GNUC__)
-	inline uint64_t CountTrailingZeros(const uint64_t mask) noexcept { assert(mask); return __builtin_ctzll(mask); }
-#endif
-	template <typename T> inline T ctz(const T mask) noexcept { return CountTrailingZeros(mask); }
+inline uint64_t GetLSB(const uint64_t b) noexcept
+{
+	#ifdef HAS_BLSI
+		return _blsi_u64(b); 
+	#else
+		#pragma warning(disable : 4146)
+		return b & -b;
+	#endif
+}
 
+inline uint64_t GetMSB(const uint64_t b) noexcept
+{ 
+	return b != 0u ? 0x8000000000000000ui64 >> CountLeadingZeros(b) : 0;
+}
 
-#ifdef HAS_BLSI
-	inline uint64_t GetLSB(const uint64_t b) noexcept { return _blsi_u64(b); }
-#else
-	#pragma warning(disable : 4146)
-	inline uint64_t GetLSB(const uint64_t b) noexcept { return b & -b; }
-#endif
+inline void RemoveLSB(uint64_t & b) noexcept
+{
+	#ifdef HAS_BLSR
+		b = _blsr_u64(b);
+	#else
+		b &= b - 1;
+	#endif
+}
 
-inline uint64_t GetMSB(const uint64_t b) noexcept { return b != 0u ? 0x8000000000000000ui64 >> CountLeadingZeros(b) : 0; }
-
-#ifdef HAS_BLSR
-	inline void RemoveLSB(uint64_t & b) noexcept { b = _blsr_u64(b); }
-#else
-	inline void RemoveLSB(uint64_t & b) noexcept { b &= b - 1; }
-#endif
-
-inline void RemoveMSB(uint64_t & b) noexcept { b ^= GetMSB(b); }
+inline void RemoveMSB(uint64_t & b) noexcept
+{
+	b ^= GetMSB(b);
+}
 
 template <typename T> inline uint64_t  MakeBit (                   const T pos ) noexcept { assert(pos < 64); return         1ui64 << pos; }
 template <typename T> inline void       SetBit (      uint64_t& b, const T pos ) noexcept { assert(pos < 64);         b |=  (1ui64 << pos); }
@@ -220,47 +227,39 @@ template <typename T> inline void     ResetBit (      uint64_t& b, const T pos )
 template <typename T> inline bool      TestBit (const uint64_t  b, const T pos ) noexcept { assert(pos < 64); return (b &   (1ui64 << pos)) != 0; }
 template <typename T> inline bool      TestBits(const uint64_t  b, const T mask) noexcept { return (b & mask) == mask; }
 
-// PopCount
-#ifdef HAS_POPCNT
-	#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-		inline uint64_t PopCount(const uint64_t b) noexcept { return _mm_popcnt_u64(b); }
-		inline uint64_t PopCount_max15(const uint64_t b) noexcept { return PopCount(b); }
+inline uint64_t PopCount(const uint64_t b) noexcept
+{
+	#ifdef HAS_POPCNT
+		#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
+			return _mm_popcnt_u64(b);
+		#else
+			return __builtin_popcountll(b);
+		#endif
 	#else
-		inline uint64_t PopCount(uint64_t b) noexcept { return __builtin_popcountll(b); }
-		inline uint64_t PopCount_max15(uint64_t b) noexcept { return PopCount(b); }
-	#endif
-#else
-	inline uint64_t PopCount(uint64_t b) noexcept
-	{
-		b -=  (b >> 1) & 0x5555555555555555ui64;
-		b  = ((b >> 2) & 0x3333333333333333ui64) + (b & 0x3333333333333333ui64);
-		b  = ((b >> 4) + b) & 0x0F0F0F0F0F0F0F0Fui64;
+		b -= (b >> 1) & 0x5555555555555555ui64;
+		b = ((b >> 2) & 0x3333333333333333ui64) + (b & 0x3333333333333333ui64);
+		b = ((b >> 4) + b) & 0x0F0F0F0F0F0F0F0Fui64;
 		return (b * 0x0101010101010101ui64) >> 56;
-	}
-	inline uint64_t PopCount_max15(uint64_t b) noexcept
-	{
-		assert(PopCount(b) < 16);
-		b -=  (b >> 1) & 0x5555555555555555ui64;
-		b  = ((b >> 2) & 0x3333333333333333ui64) + (b & 0x3333333333333333ui64);
-		return (b * 0x1111111111111111ui64) >> 60;
-	}
-#endif
+	#endif
+}
 
+inline uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) noexcept
+{
+	#if defined(HAS_BEXTR) || defined(HAS_TBM)
+		return _bextr_u64(src, start, len);
+	#else
+		return (src >> start) & ((1ui64 << len) - 1);
+	#endif
+}
 
-// BExtr
-#if defined(HAS_BEXTR) || defined(HAS_TBM)
-	inline uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) noexcept { return _bextr_u64(src, start, len); }
-#else
-	inline uint64_t BExtr(const uint64_t src, const unsigned int start, unsigned int len) noexcept { return (src >> start) & ((1ui64 << len) - 1); }
-#endif
-
-
-// BZHI
-#ifdef HAS_BZHI
-	inline uint64_t BZHI(const uint64_t src, const uint32_t index) noexcept { return _bzhi_u64(src, index); }
-#else
-	inline uint64_t BZHI(const uint64_t src, const uint32_t index) noexcept { return src & ((1ui64 << index) - 1); }
-#endif
+inline uint64_t BZHI(const uint64_t src, const uint32_t index) noexcept
+{
+	#ifdef HAS_BZHI
+		return _bzhi_u64(src, index);
+	#else
+		return src & ((1ui64 << index) - 1);
+	#endif
+}
 
 #ifdef HAS_BLCFILL
 #else
@@ -298,13 +297,11 @@ template <typename T> inline bool      TestBits(const uint64_t  b, const T mask)
 #else
 #endif
 
-
-// PDep
-#ifdef HAS_PDEP
-	inline uint64_t PDep(const uint64_t src, const uint64_t mask) noexcept { return _pdep_u64(src, mask); }
-#else
-	inline uint64_t PDep(uint64_t src, uint64_t mask) noexcept
-	{
+inline uint64_t PDep(uint64_t src, uint64_t mask) noexcept
+{
+	#ifdef HAS_PDEP
+		return _pdep_u64(src, mask);
+	#else
 		uint64_t res = 0;
 		for (uint64_t bb = 1; mask != 0u; bb += bb)
 		{
@@ -313,16 +310,14 @@ template <typename T> inline bool      TestBits(const uint64_t  b, const T mask)
 			RemoveLSB(mask);
 		}
 		return res;
-	}
-#endif
+	#endif
+}
 
-
-// PExt
-#ifdef HAS_PEXT
-	inline uint64_t PExt(const uint64_t src, const uint64_t mask) noexcept { return _pext_u64(src, mask); }
-#else
-	inline uint64_t PExt(uint64_t src, uint64_t mask) noexcept
-	{
+inline uint64_t PExt(uint64_t src, uint64_t mask) noexcept
+{
+	#ifdef HAS_PEXT
+		return _pext_u64(src, mask);
+	#else
 		uint64_t res = 0;
 		for (uint64_t bb = 1; mask != 0u; bb += bb)
 		{
@@ -331,15 +326,17 @@ template <typename T> inline bool      TestBits(const uint64_t  b, const T mask)
 			RemoveLSB(mask);
 		}
 		return res;
-	}
-#endif
+	#endif
+}
 
-// BSWAP
-#if defined(_MSC_VER)
-	inline uint64_t BSwap(const uint64_t b) noexcept { return _byteswap_uint64(b); }
-#elif defined(__GNUC__)
-	inline uint64_t BSwap(const uint64_t b) noexcept { return __builtin_bswap64(b); }
-#endif
+inline uint64_t BSwap(const uint64_t b) noexcept
+{
+	#if defined(_MSC_VER)
+		return _byteswap_uint64(b);
+	#elif defined(__GNUC__)
+		return __builtin_bswap64(b);
+	#endif
+}
 
 
 #if defined(_MSC_VER)
