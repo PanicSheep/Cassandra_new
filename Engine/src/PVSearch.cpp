@@ -412,7 +412,7 @@ COutput PVSearch::TranspositionTableAnalysis(const CPosition& pos)
 	const auto ret = engine->LookUp(pos);
 	if (ret.has_value())
 		return COutput(ret.value().min, ret.value().max, ret.value().depth, ret.value().selectivity, ret.value().best_moves);
-	return COutput();
+	return {};
 }
 
 void PVSearch::TranspositionTableUpdate(const CPosition& pos, std::size_t initial_node_count, const COutput& novum)
@@ -437,7 +437,7 @@ float Sigma(const int D, const int d, const int E) noexcept
 COutput PVSearch::MpcAnalysis(const CInput& in)
 {
 	if (in.selectivity == 0 || in.depth < 4)
-		return COutput();
+		return {};
 
 	const int D = in.depth;
 	const int d = D / 2;
@@ -461,7 +461,7 @@ COutput PVSearch::MpcAnalysis(const CInput& in)
 			return COutput::MaxBound(in.alpha, in.depth, in.selectivity, ret.best_moves);
 		}
 
-	return COutput();
+	return {};
 }
 
 uint64_t SMEAR_BITBOARD(uint64_t B)
