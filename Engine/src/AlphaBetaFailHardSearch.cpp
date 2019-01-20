@@ -99,7 +99,7 @@ int AlphaBetaFailHard::Eval_2(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(pos, move2)) {
 		score = -Eval_1(pos.Play(move2, flips), -beta, -alpha, move1);
 		if (score >= beta) return beta;
-		if (score > alpha) alpha = score;
+		return std::max(score, alpha);
 	}
 
 	if (score != infinity)
@@ -116,7 +116,7 @@ int AlphaBetaFailHard::Eval_2(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(posPass, move2)) {
 		score = Eval_1(posPass.Play(move2, flips), alpha, beta, move1);
 		if (score <= alpha) return alpha;
-		if (score < beta) beta = score;
+		return std::min(score, beta);
 	}
 
 	if (score != infinity) {
@@ -147,7 +147,7 @@ int AlphaBetaFailHard::Eval_3(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(pos, move3)) {
 		score = -Eval_2(pos.Play(move3, flips), -beta, -alpha, move1, move2);
 		if (score >= beta) return beta;
-		if (score > alpha) alpha = score;
+		return std::max(score, alpha);
 	}
 
 	if (score != infinity)
@@ -170,7 +170,7 @@ int AlphaBetaFailHard::Eval_3(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(posPass, move3)) {
 		score = Eval_2(posPass.Play(move3, flips), alpha, beta, move1, move2);
 		if (score <= alpha) return alpha;
-		if (score < beta) beta = score;
+		return std::min(score, beta);
 	}
 
 	if (score != infinity) {
@@ -207,7 +207,7 @@ int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(pos, move4)) {
 		score = -Eval_3(pos.Play(move4, flips), -beta, -alpha, move1, move2, move3);
 		if (score >= beta) return beta;
-		if (score > alpha) alpha = score;
+		return std::max(score, alpha);
 	}
 
 	if (score != infinity)
@@ -236,7 +236,7 @@ int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(posPass, move4)) {
 		score = Eval_3(posPass.Play(move4, flips), alpha, beta, move1, move2, move3);
 		if (score <= alpha) return alpha;
-		if (score < beta) beta = score;
+		return std::min(score, beta);
 	}
 
 	if (score != infinity) {
