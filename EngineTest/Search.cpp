@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Search.h"
-//#include "SearchInput.h"
-//#include "SearchOutput.h"
-//#include "SearchStatusQuo.h"
+#include "SearchInput.h"
+#include "SearchOutput.h"
+#include "SearchStatusQuo.h"
 
 using namespace Search;
 
@@ -31,233 +31,521 @@ TEST(Algorithm, EvalGameOver)
 	ASSERT_EQ(Search_Test::EvalGameOver(pos4), score4);
 	ASSERT_EQ(Search_Test::EvalGameOver(pos5), score5);
 }
-//
-//void Improving_on_analysis(int8_t alpha, int8_t beta, int8_t min, int8_t max, int8_t new_alpha, int8_t new_beta)
-//{
-//	const auto input = CInput(CPosition(), alpha, beta, 64, 0);
-//	CStatusQuo status_quo(input);
-//
-//	const auto analysis = COutput(min, max, 64, 0, { CMove::A1, CMove::B2 });
-//	const auto cut = status_quo.ImproveWith(analysis);
-//
-//	ASSERT_FALSE(cut);
-//	ASSERT_EQ(status_quo.alpha, new_alpha);
-//	ASSERT_EQ(status_quo.beta, new_beta);
-//	ASSERT_EQ(status_quo.best_moves.PV, CMove::A1);
-//	ASSERT_EQ(status_quo.best_moves.AV, CMove::B2);
-//}
-//
-//TEST(StatusQuo, Improving_on_analysis_1)
-//{
-//	// analysis bounds within alpha beta.
-//	Improving_on_analysis(-65, +65,  // alpha, beta
-//						  -10, +10,  // min, max
-//						  -10, +65); // new_alpha, new_beta
-//}
-//
-//TEST(StatusQuo, Improving_on_analysis_2)
-//{
-//	// analysis bounds match alpha beta.
-//	Improving_on_analysis(-10, +10,  // alpha, beta
-//						  -10, +10,  // min, max
-//						  -10, +10); // new_alpha, new_beta
-//}
-//
-//TEST(StatusQuo, Improving_on_analysis_3)
-//{
-//	// no analysis bounds.
-//	Improving_on_analysis(-10, +10,  // alpha, beta
-//						  -64, +64,  // min, max
-//						  -10, +10); // new_alpha, new_beta
-//}
-//
-//TEST(StatusQuo, Improving_on_analysis_4)
-//{
-//	// analysis bounds below alpha and beta.
-//	Improving_on_analysis(-10, +10,  // alpha, beta
-//						  -20, +01,  // min, max
-//						  -10, +10); // new_alpha, new_beta
-//}
-//
-//TEST(StatusQuo, Improving_on_analysis_5)
-//{
-//	// analysis bounds above alpha and beta.
-//	Improving_on_analysis(-10, +10,  // alpha, beta
-//						  -01, +20,  // min, max
-//						  -01, +10); // new_alpha, new_beta
-//}
-//
-//TEST(StatusQuo, Improving_on_analysis_6)
-//{
-//	// analysis bounds above alpha and beta.
-//	const auto input = CInput(CPosition(), -10, +10, 64, 0);
-//	CStatusQuo status_quo(input);
-//
-//	const auto analysis1 = COutput(-1, +20, 64, 0, CMove::A1, CMove::B2);
-//	const auto cut1 = status_quo.ImproveWith(analysis1);
-//
-//	const auto analysis2 = COutput(-2, +1, 64, 0, CMove::A2, CMove::B3);
-//	const auto cut2 = status_quo.ImproveWith(analysis2);
-//
-//	ASSERT_FALSE(cut1);
-//	ASSERT_FALSE(cut2);
-//	ASSERT_EQ(status_quo.alpha, -1);
-//	ASSERT_EQ(status_quo.beta, +10);
-//	ASSERT_EQ(status_quo.PV, CMove::A2);
-//	ASSERT_EQ(status_quo.AV, CMove::B3);
-//}
-//
-//void Cutting_on_analysis(int8_t alpha, int8_t beta, int8_t min, int8_t max, int8_t cut_min, int8_t cut_max)
-//{
-//	const auto input = CInput(CPosition(), alpha, beta, 64, 0);
-//	CStatusQuo status_quo(input);
-//
-//	const auto analysis = COutput(min, max, 64, 0, CMove::A1, CMove::B2);
-//	const auto cut = status_quo.ImproveWith(analysis);
-//
-//	ASSERT_TRUE(cut);
-//	ASSERT_EQ(cut.value().min, cut_min);
-//	ASSERT_EQ(cut.value().max, cut_max);
-//	ASSERT_EQ(status_quo.PV, CMove::A1);
-//	ASSERT_EQ(status_quo.AV, CMove::B2);
-//}
-//
-//TEST(StatusQuo, Cutting_on_analysis_1)
-//{
-//	// analysis bounds below.
-//	Cutting_on_analysis(-10, +10,  // alpha, beta
-//						-21, -20,  // min, max
-//						-64, -20); // cut_min, cut_max
-//}
-//
-//TEST(StatusQuo, Cutting_on_analysis_2)
-//{
-//	// analysis bounds above.
-//	Cutting_on_analysis(-10, +10,  // alpha, beta
-//						+20, +21,  // min, max
-//						+20, +64); // cut_min, cut_max
-//}
-//
-//TEST(StatusQuo, Cutting_on_analysis_3)
-//{
-//	// analysis bounds within.
-//	Cutting_on_analysis(-10, +10,  // alpha, beta
-//						+02, +02,  // min, max
-//						+02, +02); // cut_min, cut_max
-//}
-//
-////TEST(StatusQuo, Cutting_on_analysis_4)
-////{
-////	// analysis bounds within.
-////	const auto input = CInput(CPosition(), -10, +10, 64, 0);
-////	CStatusQuo status_quo(input);
-////
-////	const auto analysis1 = COutput(-64, +2, 64, 0, CMove::A1, CMove::B2);
-////	const auto cut1 = status_quo.ImproveWith(analysis1);
-////
-////	ASSERT_FALSE(cut1);
-////	ASSERT_EQ(status_quo.alpha, -10);
-////	ASSERT_EQ(status_quo.beta, +10);
-////
-////	const auto analysis2 = COutput(+2, +64, 64, 0, CMove::A2, CMove::B3);
-////	const auto cut2 = status_quo.ImproveWith(analysis2);
-////
-////	ASSERT_TRUE(cut2);
-////	ASSERT_EQ(cut2.value().min, +2);
-////	ASSERT_EQ(cut2.value().max, +2);
-////	ASSERT_EQ(status_quo.PV, CMove::A2);
-////	ASSERT_EQ(status_quo.AV, CMove::B3);
-////}
-//
-//TEST(StatusQuo, Improving_move)
-//{
-//	const auto input = CInput(CPosition(), -10, +10, 64, 0);
-//	CStatusQuo status_quo(input);
-//
-//	const auto analysis = COutput(+2, +60, 64, 0, CMove::A1, CMove::B2);
-//	const auto cut1 = status_quo.ImproveWith(analysis);
-//	ASSERT_FALSE(cut1);
-//
-//	const auto move = COutput(+3, +3, 64, 0, CMove::A4, CMove::B4);
-//	const auto cut2 = status_quo.ImproveWith(move, CMove::A2);
-//	ASSERT_FALSE(cut2);
-//
-//	ASSERT_EQ(status_quo.alpha, +3);
-//	ASSERT_EQ(status_quo.beta, +10);
-//	//ASSERT_EQ(status_quo.min, +2);
-//	//ASSERT_EQ(status_quo.max, +60);
-//	ASSERT_EQ(status_quo.best_score, +3);
-//	ASSERT_EQ(status_quo.PV, CMove::A2);
-//	ASSERT_EQ(status_quo.AV, CMove::A1);
-//}
-//
-//TEST(StatusQuo, Beta_cut_move)
-//{
-//	const auto input = CInput(CPosition(), -10, +10, 64, 0);
-//	CStatusQuo status_quo(input);
-//
-//	const auto analysis = COutput(+2, +60, 64, 0, CMove::A1, CMove::B2);
-//	const auto cut1 = status_quo.ImproveWith(analysis);
-//	ASSERT_FALSE(cut1);
-//
-//	const auto move = COutput(+11, +64, 64, 0, CMove::A4, CMove::B4);
-//	const auto cut2 = status_quo.ImproveWith(move, CMove::A2);
-//
-//	ASSERT_TRUE(cut2);
-//	ASSERT_EQ(cut2.value().min, +11);
-//	ASSERT_EQ(cut2.value().max, +64);
-//}
-//
-//TEST(StatusQuo, Max_score_move)
-//{
-//	const auto input = CInput(CPosition(), -10, +10, 64, 0);
-//	CStatusQuo status_quo(input);
-//
-//	const auto analysis = COutput(+2, +60, 64, 0, CMove::A1, CMove::B2);
-//	const auto cut1 = status_quo.ImproveWith(analysis);
-//
-//	ASSERT_FALSE(cut1);
-//	ASSERT_EQ(status_quo.alpha, +2);
-//	ASSERT_EQ(status_quo.beta, +10);
-//
-//	const auto move = COutput(+60, +64, 64, 0, CMove::A4, CMove::B4);
-//	const auto cut2 = status_quo.ImproveWith(move, CMove::A2);
-//
-//	ASSERT_TRUE(cut2);
-//	ASSERT_EQ(cut2.value().min, +60);
-//	ASSERT_EQ(cut2.value().max, +64);
-//}
-//
-//TEST(StatusQuo, sub_alpha_moves)
-//{
-//	const auto input = CInput(CPosition(), -10, +10, 64, 0);
-//	CStatusQuo status_quo(input);
-//
-//	const auto move1 = COutput(-64, -20, 64, 0, CMove::A4, CMove::B4);
-//	const auto cut1 = status_quo.ImproveWith(move1, CMove::A2);
-//
-//	ASSERT_FALSE(cut1);
-//	ASSERT_EQ(status_quo.alpha, -10);
-//	ASSERT_EQ(status_quo.beta, +10);
-//	ASSERT_EQ(status_quo.PV, CMove::A2);
-//	ASSERT_EQ(status_quo.AV, CMove::invalid);
-//
-//	const auto move2 = COutput(-15, -11, 64, 0, CMove::A4, CMove::B4);
-//	const auto cut2 = status_quo.ImproveWith(move2, CMove::A3);
-//
-//	ASSERT_FALSE(cut2);
-//	ASSERT_EQ(status_quo.alpha, -10);
-//	ASSERT_EQ(status_quo.beta, +10);
-//	ASSERT_EQ(status_quo.PV, CMove::A3);
-//	ASSERT_EQ(status_quo.AV, CMove::A2);
-//
-//	const auto ret = status_quo.AllMovesTried();
-//
-//	ASSERT_EQ(ret.min, -15);
-//	ASSERT_EQ(ret.max, -10);
-//	ASSERT_EQ(ret.PV, CMove::A3);
-//	ASSERT_EQ(ret.AV, CMove::A2);
-//}
-////TEST(StatusQuo, Max_score_move)
-////{
-////}
+
+
+void ExactSearch_NoCut(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	CInput input(CPosition(), -infinity, +infinity, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	const auto result = status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+	ASSERT_FALSE(result.has_value());
+}
+
+TEST(StatusQuo, ExactSearch_NoCut_MinScore)
+{
+	ExactSearch_NoCut(-64);
+}
+
+TEST(StatusQuo, ExactSearch_NoCut_ArbitraryScore)
+{
+	ExactSearch_NoCut(0);
+}
+
+TEST(StatusQuo, ExactSearch_NoCut_MaxScore)
+{
+	ExactSearch_NoCut(+64);
+}
+
+
+void ExactSearch_ExactScore_OneMove(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	CInput input(CPosition(), -infinity, +infinity, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+
+	const auto result = status_quo.AllMovesTried();
+	ASSERT_EQ(result.best_moves.PV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, score);
+	ASSERT_EQ(result.max, score);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_MinScore)
+{
+	ExactSearch_ExactScore_OneMove(-64);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_ArbitraryScore)
+{
+	ExactSearch_ExactScore_OneMove(0);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_MaxScore)
+{
+	ExactSearch_ExactScore_OneMove(+64);
+}
+
+
+void ExactSearch_ExactScore_TwoMoves(const int smaller_score, const int bigger_score)
+{
+	ASSERT_LE(smaller_score, bigger_score); // Input test.
+
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	CInput input(CPosition(), -infinity, +infinity, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(smaller_score, depth - 1, selectivity), CMove::A1);
+	status_quo.ImproveWith(COutput::ExactScore(bigger_score, depth - 1, selectivity), CMove::A2);
+
+	const auto result = status_quo.AllMovesTried();
+
+	ASSERT_EQ(result.best_moves.PV, CMove::A2);
+	ASSERT_EQ(result.best_moves.AV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, bigger_score);
+	ASSERT_EQ(result.max, bigger_score);
+}
+
+void ExactSearch_ExactScore_TwoMoves(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	CInput input(CPosition(), -infinity, +infinity, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A2);
+
+	const auto result = status_quo.AllMovesTried();
+
+	ASSERT_EQ(result.best_moves.PV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, score);
+	ASSERT_EQ(result.max, score);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_TwoMoves_MinScore)
+{
+	ExactSearch_ExactScore_TwoMoves(-64, -63);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_TwoMoves_ArbitraryScore)
+{
+	ExactSearch_ExactScore_TwoMoves(0, 1);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_TwoMoves_MaxScore)
+{
+	ExactSearch_ExactScore_TwoMoves(+63, +64);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_TwoMoves_SameMinScore)
+{
+	ExactSearch_ExactScore_TwoMoves(-64);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_TwoMoves_SameArbitraryScore)
+{
+	ExactSearch_ExactScore_TwoMoves(0);
+}
+
+TEST(StatusQuo, ExactSearch_ExactScore_TwoMoves_SameMaxScore)
+{
+	ExactSearch_ExactScore_TwoMoves(+64);
+}
+
+
+void WindowSearch_CutTest(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int alpha = -1;
+	const int beta = +1;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	const auto result = status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+	ASSERT_EQ(result.has_value(), (score >= beta));
+}
+
+TEST(StatusQuo, WindowSearch_CutTest_MinScore)
+{
+	WindowSearch_CutTest(-64);
+}
+
+TEST(StatusQuo, WindowSearch_CutTest_ArbitraryScore_NoCut)
+{
+	WindowSearch_CutTest(0);
+}
+TEST(StatusQuo, WindowSearch_CutTest_ArbitraryScore_Cut)
+{
+	WindowSearch_CutTest(+1);
+}
+
+TEST(StatusQuo, WindowSearch_CutTest_MaxScore)
+{
+	WindowSearch_CutTest(+64);
+}
+
+
+void WindowSearch_ExactScore_FailLow(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int alpha = -1;
+	const int beta = +1;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+
+	const auto result = status_quo.AllMovesTried();
+	ASSERT_EQ(result.best_moves.PV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, -infinity);
+	ASSERT_LE(result.max, alpha);
+}
+
+void WindowSearch_ExactScore_FailExtraLow(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int alpha = -1;
+	const int beta = +1;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+
+	const auto result = status_quo.AllMovesTried();
+	ASSERT_EQ(result.best_moves.PV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, -infinity);
+	ASSERT_EQ(result.max, score);
+}
+
+TEST(StatusQuo, WindowSearch_ExactScore_FailLow_MaxScore)
+{
+	WindowSearch_ExactScore_FailLow(-1);
+}
+TEST(StatusQuo, WindowSearch_ExactScore_FailLow_ArbitraryScore)
+{
+	WindowSearch_ExactScore_FailLow(-10);
+}
+TEST(StatusQuo, WindowSearch_ExactScore_FailLow_MinScore)
+{
+	WindowSearch_ExactScore_FailLow(-64);
+}
+
+TEST(StatusQuo, WindowSearch_ExactScore_FailExtraLow_MaxScore)
+{
+	WindowSearch_ExactScore_FailExtraLow(-1);
+}
+TEST(StatusQuo, WindowSearch_ExactScore_FailExtraLow_ArbitraryScore)
+{
+	WindowSearch_ExactScore_FailExtraLow(-10);
+}
+TEST(StatusQuo, WindowSearch_ExactScore_FailExtraLow_MinScore)
+{
+	WindowSearch_ExactScore_FailExtraLow(-64);
+}
+
+
+void WindowSearch_MinBound(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int alpha = -1;
+	const int beta = +1;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	// This simulates a child returning from fail low.
+	const auto result = status_quo.ImproveWith(COutput::MinBound(score, depth - 1, selectivity), CMove::A1);
+	ASSERT_TRUE(result.has_value());
+	ASSERT_EQ(result.value().best_moves.PV, CMove::A1);
+	ASSERT_EQ(result.value().depth, depth);
+	ASSERT_EQ(result.value().selectivity, selectivity);
+	ASSERT_EQ(result.value().min, score);
+	ASSERT_EQ(result.value().max, +infinity);
+}
+
+TEST(StatusQuo, WindowSearch_MinBound_MinScore)
+{
+	WindowSearch_MinBound(+1);
+}
+
+TEST(StatusQuo, WindowSearch_MinBound_ArbitraryScore)
+{
+	WindowSearch_MinBound(+10);
+}
+
+TEST(StatusQuo, WindowSearch_MinBound_MaxScore)
+{
+	WindowSearch_MinBound(+64);
+}
+
+
+void WindowSearch_MaxBound(const int score)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int alpha = -1;
+	const int beta = +1;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	// This simulates a child returning from a beta cut.
+	status_quo.ImproveWith(COutput::MaxBound(score, depth - 1, selectivity), CMove::A1);
+
+	ASSERT_EQ(status_quo.best_moves.PV, CMove::invalid);
+	ASSERT_EQ(status_quo.worst_depth, depth);
+	ASSERT_EQ(status_quo.worst_selectivity, selectivity);
+	ASSERT_EQ(status_quo.best_score, -infinity);
+}
+
+TEST(StatusQuo, WindowSearch_MaxBound_MinScore)
+{
+	WindowSearch_MaxBound(-1);
+}
+
+TEST(StatusQuo, WindowSearch_MaxBound_ArbitraryScore)
+{
+	WindowSearch_MaxBound(-10);
+}
+
+TEST(StatusQuo, WindowSearch_MaxBound_MaxScore)
+{
+	WindowSearch_MaxBound(-64);
+}
+
+
+void SelectiveSearch_CutTest(const int score)
+{
+	const int8_t depth = 5;
+	const uint8_t selectivity = 10;
+	const int alpha = -1;
+	const int beta = +1;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	const auto result = status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+	ASSERT_EQ(result.has_value(), (score >= beta));
+}
+
+TEST(StatusQuo, SelectiveSearch_CutTest_MinScore)
+{
+	SelectiveSearch_CutTest(-64);
+}
+
+TEST(StatusQuo, SelectiveSearch_CutTest_ArbitraryScore_NoCut)
+{
+	SelectiveSearch_CutTest(0);
+}
+TEST(StatusQuo, SelectiveSearch_CutTest_ArbitraryScore_Cut)
+{
+	SelectiveSearch_CutTest(+1);
+}
+
+TEST(StatusQuo, SelectiveSearch_CutTest_MaxScore)
+{
+	SelectiveSearch_CutTest(+64);
+}
+
+
+TEST(StatusQuo, SelectiveSearch_ExactScore)
+{
+	const int8_t depth = 5;
+	const uint8_t selectivity = 10;
+	const int alpha = -1;
+	const int beta = +1;
+	const int score = 0;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+
+	const auto result = status_quo.AllMovesTried();
+	ASSERT_EQ(result.best_moves.PV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, score);
+	ASSERT_EQ(result.max, score);
+}
+
+
+void SelectiveSearch_ExactScore_TwoMoves(const int smaller_score, const int bigger_score)
+{
+	ASSERT_LE(smaller_score, bigger_score); // Input test.
+
+	const int8_t depth = 5;
+	const uint8_t selectivity = 10;
+	CInput input(CPosition(), -infinity, +infinity, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(smaller_score, depth - 1, selectivity), CMove::A1);
+	status_quo.ImproveWith(COutput::ExactScore(bigger_score, depth - 1, selectivity), CMove::A2);
+
+	const auto result = status_quo.AllMovesTried();
+
+	ASSERT_EQ(result.best_moves.PV, CMove::A2);
+	ASSERT_EQ(result.best_moves.AV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, bigger_score);
+	ASSERT_EQ(result.max, bigger_score);
+}
+
+void SelectiveSearch_ExactScore_TwoMoves(const int score)
+{
+	const int8_t depth = 5;
+	const uint8_t selectivity = 10;
+	CInput input(CPosition(), -infinity, +infinity, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A1);
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A2);
+
+	const auto result = status_quo.AllMovesTried();
+
+	ASSERT_EQ(result.best_moves.PV, CMove::A1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, score);
+	ASSERT_EQ(result.max, score);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_MinScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves(-64, -63);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_ArbitraryScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves(0, 1);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_MaxScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves(+63, +64);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_SameMinScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves(-64);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_SameArbitraryScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves(0);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_SameMaxScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves(+64);
+}
+
+
+void SelectiveSearch_ExactScore_TwoMoves_ReturnMoreThanRequested(const int smaller_score, const int bigger_score)
+{
+	ASSERT_LE(smaller_score, bigger_score); // Input test.
+
+	const int8_t initial_depth = 5;
+	const int8_t depth1 = 20;
+	const int8_t depth2 = 21;
+	const uint8_t initial_selectivity = 10;
+	const uint8_t selectivity1 = 5;
+	const uint8_t selectivity2 = 6;
+	CInput input(CPosition(), -infinity, +infinity, initial_depth, initial_selectivity);
+	CStatusQuo status_quo(input);
+
+	status_quo.ImproveWith(COutput::ExactScore(smaller_score, depth1 - 1, selectivity1), CMove::A1);
+	status_quo.ImproveWith(COutput::ExactScore(bigger_score, depth2 - 1, selectivity2), CMove::A2);
+
+	const auto result = status_quo.AllMovesTried();
+
+	ASSERT_EQ(result.best_moves.PV, CMove::A2);
+	ASSERT_EQ(result.best_moves.AV, CMove::A1);
+	ASSERT_EQ(result.depth, std::min(depth1, depth2));
+	ASSERT_EQ(result.selectivity, std::max(selectivity1, selectivity2));
+	ASSERT_EQ(result.min, bigger_score);
+	ASSERT_EQ(result.max, bigger_score);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_ReturnMoreThanRequested_MinScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves_ReturnMoreThanRequested(-64, -63);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_ReturnMoreThanRequested_ArbitraryScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves_ReturnMoreThanRequested(0, 1);
+}
+
+TEST(StatusQuo, SelectiveSearch_ExactScore_TwoMoves_ReturnMoreThanRequested_MaxScore)
+{
+	SelectiveSearch_ExactScore_TwoMoves_ReturnMoreThanRequested(+63, +64);
+}
+
+
+TEST(StatusQuo, ExactSearch_Analysis_noEffect)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int score = 0;
+	CInput input(CPosition(), -infinity, +infinity, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	// This simulates a hash table value.
+	const auto ret = status_quo.ImproveWith(CAnalysisOutput(0, 0, 5, 0, CBestMoves(CMove::B1, CMove::B2)));
+	ASSERT_FALSE(ret.has_value());
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A2);
+
+	const auto result = status_quo.AllMovesTried();
+
+	ASSERT_EQ(result.best_moves.PV, CMove::A2);
+	ASSERT_EQ(result.best_moves.AV, CMove::B1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, score);
+	ASSERT_EQ(result.max, score);
+}
+
+TEST(StatusQuo, ExactSearch_Analysis_BetaCut)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int score = 0;
+	const int alpha = -10;
+	const int beta = +10;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	// This simulates a hash table value.
+	const auto ret = status_quo.ImproveWith(CAnalysisOutput::MinBound(beta, depth, 10, CBestMoves(CMove::B1, CMove::B2)));
+	ASSERT_FALSE(ret.has_value());
+
+	status_quo.ImproveWith(COutput::ExactScore(score, depth - 1, selectivity), CMove::A2);
+
+	const auto result = status_quo.AllMovesTried();
+
+	ASSERT_EQ(result.best_moves.PV, CMove::A2);
+	ASSERT_EQ(result.best_moves.AV, CMove::B1);
+	ASSERT_EQ(result.depth, depth);
+	ASSERT_EQ(result.selectivity, selectivity);
+	ASSERT_EQ(result.min, score);
+	ASSERT_EQ(result.max, score);
+}
