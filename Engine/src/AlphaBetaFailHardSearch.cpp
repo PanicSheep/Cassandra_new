@@ -106,6 +106,7 @@ int AlphaBetaFailHard::Eval_2(const CPosition& pos, int alpha, int beta, const C
 		return alpha;
 
 	const auto posPass = pos.PlayPass();
+	node_counter++;
 
 	if (const auto flips = Flip(posPass, move1)) {
 		score = Eval_1(posPass.Play(move1, flips), alpha, beta, move2);
@@ -119,11 +120,10 @@ int AlphaBetaFailHard::Eval_2(const CPosition& pos, int alpha, int beta, const C
 		return std::min(score, beta);
 	}
 
-	if (score != infinity) {
-		node_counter++;
+	if (score != infinity)
 		return beta;
-	}
-	
+
+	node_counter--;
 	return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
@@ -154,6 +154,7 @@ int AlphaBetaFailHard::Eval_3(const CPosition& pos, int alpha, int beta, const C
 		return alpha;
 
 	const auto posPass = pos.PlayPass();
+	node_counter++;
 
 	if (const auto flips = Flip(posPass, move1)) {
 		score = Eval_2(posPass.Play(move1, flips), alpha, beta, move2, move3);
@@ -173,11 +174,10 @@ int AlphaBetaFailHard::Eval_3(const CPosition& pos, int alpha, int beta, const C
 		return std::min(score, beta);
 	}
 
-	if (score != infinity) {
-		node_counter++;
+	if (score != infinity)
 		return beta;
-	}
-	
+
+	node_counter--;
 	return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 
@@ -214,6 +214,7 @@ int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta, const C
 		return alpha;
 
 	const auto posPass = pos.PlayPass();
+	node_counter++;
 
 	if (const auto flips = Flip(posPass, move1)) {
 		score = Eval_3(posPass.Play(move1, flips), alpha, beta, move2, move3, move4);
@@ -239,11 +240,10 @@ int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta, const C
 		return std::min(score, beta);
 	}
 
-	if (score != infinity) {
-		node_counter++;
+	if (score != infinity)
 		return beta;
-	}
 	
+	node_counter--;
 	return std::clamp(-EvalGameOver(posPass), alpha, beta);
 }
 

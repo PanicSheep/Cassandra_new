@@ -86,6 +86,7 @@ int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const C
 	bestscore = infinity;
 
 	const auto posPass = pos.PlayPass();
+	node_counter++;
 
 	if (const auto flips = Flip(posPass, move1)) {
 		const auto score = Eval_1(posPass.Play(move1, flips), move2);
@@ -96,11 +97,10 @@ int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(posPass, move2))
 		return std::min(bestscore, Eval_1(posPass.Play(move2, flips), move1));
 
-	if (bestscore != infinity) {
-		node_counter++;
+	if (bestscore != infinity)
 		return bestscore;
-	}
 	
+	node_counter--;
 	return -EvalGameOver(posPass);
 }
 
@@ -131,6 +131,7 @@ int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const C
 	bestscore = infinity;
 
 	const auto posPass = pos.PlayPass();
+	node_counter++;
 
 	if (const auto flips = Flip(posPass, move1)) {
 		const auto score = Eval_2(posPass.Play(move1, flips), alpha, beta, move2, move3);
@@ -149,11 +150,10 @@ int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(posPass, move3))
 		return std::min(bestscore, Eval_2(posPass.Play(move3, flips), alpha, beta, move1, move2));
 
-	if (bestscore != infinity) {
-		node_counter++;
+	if (bestscore != infinity)
 		return bestscore;
-	}
-	
+
+	node_counter--;
 	return -EvalGameOver(posPass);
 }
 
@@ -191,6 +191,7 @@ int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const C
 	bestscore = infinity;
 
 	const auto posPass = pos.PlayPass();
+	node_counter++;
 
 	if (const auto flips = Flip(posPass, move1)) {
 		const auto score = Eval_3(posPass.Play(move1, flips), alpha, beta, move2, move3, move4);
@@ -216,11 +217,10 @@ int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(posPass, move4))
 		return std::min(bestscore, Eval_3(posPass.Play(move4, flips), alpha, beta, move1, move2, move3));
 
-	if (bestscore != infinity) {
-		node_counter++;
+	if (bestscore != infinity)
 		return bestscore;
-	}
-	
+
+	node_counter--;
 	return -EvalGameOver(posPass);
 }
 
