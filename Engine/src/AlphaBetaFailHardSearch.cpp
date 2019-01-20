@@ -77,27 +77,12 @@ int AlphaBetaFailHard::Eval_4(const CPosition& pos, int alpha, int beta)
 
 int AlphaBetaFailHard::Eval_0(const CPosition& pos, int alpha, int beta)
 {
-	node_counter++;
-	return std::clamp(EvalGameOver(pos), alpha, beta);
+	return std::clamp(NegaMax::Eval_0(pos), alpha, beta);
 }
 
 int AlphaBetaFailHard::Eval_1(const CPosition& pos, const int alpha, const int beta, const CMove move1)
 {
-	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
-
-	if (const auto diff = engine->CountLastFlip(pos, move1))
-	{
-		node_counter += 2;
-		return std::clamp(score + diff + 1, alpha, beta);
-	}
-	if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
-	{
-		node_counter += 3;
-		return std::clamp(score - diff - 1, alpha, beta);
-	}
-
-	node_counter++;
-	return std::clamp((score > 0) ? score + 1 : score - 1, alpha, beta);
+	return std::clamp(NegaMax::Eval_1(pos, move1), alpha, beta);
 }
 
 int AlphaBetaFailHard::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)

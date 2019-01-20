@@ -2,15 +2,15 @@
 #include "Engine.h"
 #include "Moves.h"
 #include "Position.h"
-#include "Search.h"
+#include "NegaMaxSearch.h"
 #include <memory>
 
 namespace Search
 {
-	class AlphaBetaFailHard : public CAlgorithm
+	class AlphaBetaFailHard : public NegaMax
 	{
 	public:
-		AlphaBetaFailHard(const std::shared_ptr<Engine>& engine) : CAlgorithm(engine) {}
+		AlphaBetaFailHard(const std::shared_ptr<Engine>& engine) : NegaMax(engine) {}
 
 		std::unique_ptr<CAlgorithm> Clone() const override;
 

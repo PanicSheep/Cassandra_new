@@ -17,9 +17,11 @@ namespace Search
 		CResult Eval(const CPosition&, CSpecification) override;
 	private:
 		int Eval_ (const CPosition&);
+	protected:
 		int Eval_0(const CPosition&);
 		int Eval_1(const CPosition&);
 		int Eval_1(const CPosition&, CMove);
+	private:
 		int Eval_2(const CPosition&);
 		int Eval_2(const CPosition&, CMove, CMove);
 		int Eval_3(const CPosition&);

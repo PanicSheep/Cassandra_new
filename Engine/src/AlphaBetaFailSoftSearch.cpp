@@ -37,14 +37,6 @@ int AlphaBetaFailSoft::Eval(const CPosition& pos, int alpha, int beta)
 	}
 }
 
-int AlphaBetaFailSoft::Eval_1(const CPosition& pos)
-{
-	auto moves = CMoves(pos.Empties());
-	const auto move1 = moves.ExtractMove();
-
-	return Eval_1(pos, move1);
-}
-
 int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta)
 {
 	auto moves = CMoves(pos.Empties());
@@ -73,31 +65,6 @@ int AlphaBetaFailSoft::Eval_4(const CPosition& pos, int alpha, int beta)
 	const auto move4 = moves.ExtractMove();
 
 	return Eval_4(pos, alpha, beta, move1, move2, move3, move4);
-}
-
-int AlphaBetaFailSoft::Eval_0(const CPosition& pos)
-{
-	node_counter++;
-	return EvalGameOver(pos);
-}
-
-int AlphaBetaFailSoft::Eval_1(const CPosition& pos, const CMove move1)
-{
-	const int score = static_cast<int>(2 * PopCount(pos.GetP())) - 63; // == PopCount(pos.GetP()) - PopCount(pos.GetO())
-
-	if (const auto diff = engine->CountLastFlip(pos, move1))
-	{
-		node_counter += 2;
-		return score + diff + 1;
-	}
-	if (const auto diff = engine->CountLastFlip(pos.PlayPass(), move1))
-	{
-		node_counter += 3;
-		return score - diff - 1;
-	}
-	
-	node_counter++;
-	return (score > 0) ? score + 1 : score - 1;
 }
 
 int AlphaBetaFailSoft::Eval_2(const CPosition& pos, int alpha, int beta, const CMove move1, const CMove move2)
