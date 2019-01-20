@@ -34,9 +34,9 @@ namespace Search
 		int Eval_d1(const CPosition&, int alpha, int beta);
 		int Eval_d2(const CPosition&, int alpha, int beta);
 
-		COutput StabilityAnalysis(const CPosition&);
-		COutput TranspositionTableAnalysis(const CPosition&);
-		COutput MpcAnalysis(const CInput&);
+		CAnalysisOutput StabilityAnalysis(const CPosition&);
+		std::optional<CAnalysisOutput> TranspositionTableAnalysis(const CPosition&);
+		std::optional<CAnalysisOutput> MpcAnalysis(const CInput&);
 
 		void TranspositionTableUpdate(const CPosition&, std::size_t initial_node_count, const COutput&);
 

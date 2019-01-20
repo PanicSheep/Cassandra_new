@@ -2,20 +2,12 @@
 
 using namespace Search;
 
-constexpr int8_t max_score = +64;
-constexpr int8_t min_score = -64;
-
-bool COutput::Constrained() const
+void COutput::TestConstraints() const // TODO: Test if this bothers performance.
 {
-	return (min >= min_score) && (max <= max_score) && (min <= max);
-}
-
-COutput::COutput()
-	: min(min_score)
-	, max(max_score)
-	, best_moves({})
-{
-	assert(Constrained());
+	bool constraints = (min >= -infinity) && (max <= infinity) && (min <= max);
+	constraints &= (min == -infinity) || (max == infinity) || (min == max);
+	if (!constraints)
+		throw std::runtime_error("Constraint violated!");
 }
 
 COutput::COutput(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBestMoves best_moves)
@@ -25,7 +17,7 @@ COutput::COutput(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBes
 	, selectivity(selectivity)
 	, best_moves(best_moves)
 {
-	assert(Constrained());
+	TestConstraints();
 }
 
 COutput COutput::ExactScore(int8_t score, int8_t depth, uint8_t selectivity, CBestMoves best_moves)
@@ -35,15 +27,43 @@ COutput COutput::ExactScore(int8_t score, int8_t depth, uint8_t selectivity, CBe
 
 COutput COutput::MaxBound(int8_t max, int8_t depth, uint8_t selectivity, CBestMoves best_moves)
 {
-	return COutput(min_score, max, depth, selectivity, best_moves);
+	return COutput(-infinity, max, depth, selectivity, best_moves);
 }
 
 COutput COutput::MinBound(int8_t min, int8_t depth, uint8_t selectivity, CBestMoves best_moves)
 {
-	return COutput(min, max_score, depth, selectivity, best_moves);
+	return COutput(min, infinity, depth, selectivity, best_moves);
 }
 
-COutput Search::operator-(const COutput & o)
+COutput COutput::operator-() const
 {
-	return COutput(-o.max, -o.min, o.depth, o.selectivity, o.best_moves);
+	return COutput(-max, -min, depth, selectivity, best_moves);
+}
+
+
+void CAnalysisOutput::TestConstraints() const // TODO: Test if this bothers performance.
+{
+	const bool constraints = (min >= -infinity) && (max <= infinity) && (min <= max);
+	if (!constraints)
+		throw std::runtime_error("Constraint violated!");
+}
+
+CAnalysisOutput::CAnalysisOutput(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBestMoves best_moves)
+	: min(min)
+	, max(max)
+	, depth(depth)
+	, selectivity(selectivity)
+	, best_moves(best_moves)
+{
+	TestConstraints();
+}
+
+CAnalysisOutput CAnalysisOutput::MaxBound(int8_t max, int8_t depth, uint8_t selectivity, CBestMoves best_moves)
+{
+	return CAnalysisOutput(-infinity, max, depth, selectivity, best_moves);
+}
+
+CAnalysisOutput CAnalysisOutput::MinBound(int8_t min, int8_t depth, uint8_t selectivity, CBestMoves best_moves)
+{
+	return CAnalysisOutput(min, +infinity, depth, selectivity, best_moves);
 }

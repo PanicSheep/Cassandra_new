@@ -5,7 +5,7 @@ using namespace Search;
 
 bool CStatusQuo::Constrained() const
 {
-	return (alpha < beta) && (best_score <= alpha);
+	return (alpha < beta);
 }
 
 CStatusQuo::CStatusQuo(const CInput & in)
@@ -18,34 +18,52 @@ CStatusQuo::CStatusQuo(const CInput & in)
 	assert(Constrained());
 }
 
+int8_t CStatusQuo::CurrentAlpha() const
+{
+	return std::max(alpha, best_score);
+}
+
 CInput CStatusQuo::Play(CMove move) const
 {
-	return CInput(pos.Play(move), -beta, -alpha, depth - 1, selectivity);
+	return CInput(pos.Play(move), -beta, -CurrentAlpha(), depth - 1, selectivity);
 }
 
 CInput CStatusQuo::PlayZWS(CMove move) const
 {
-	return CInput(pos.Play(move), -alpha - 1, -alpha, depth - 1, selectivity);
+	return CInput(pos.Play(move), -CurrentAlpha() - 1, -CurrentAlpha(), depth - 1, selectivity);
 }
 
-std::optional<COutput> CStatusQuo::ImproveWith(const COutput & novum)
+std::optional<COutput> CStatusQuo::ImproveWith(const CAnalysisOutput & novum)
 {
 	assert(Constrained());
-	const bool novum_is_better = (novum.depth >= depth) && (novum.selectivity <= selectivity);
-	if ((best_moves.PV == Field::invalid) || (novum_is_better && (novum.best_moves.PV != Field::invalid)))
+	const bool consider_novum = (novum.depth >= depth) && (novum.selectivity <= selectivity);
+
+	if (consider_novum || (best_moves.PV == Field::invalid))
 		best_moves = novum.best_moves;
-	if (novum_is_better)
+	
+	if (consider_novum)
 	{
 		if (novum.min == novum.max) // exact score
 			return COutput::ExactScore(novum.min, novum.depth, novum.selectivity, best_moves);
 		if (novum.min >= beta) // upper cut
 			return COutput::MinBound(novum.min, novum.depth, novum.selectivity, best_moves);
-		if (novum.max <= alpha) // lower cut
+		if (novum.max <= alpha)
 			return COutput::MaxBound(novum.max, novum.depth, novum.selectivity, best_moves);
-
-		alpha = std::max(alpha, static_cast<int8_t>(novum.min - 1));
-		beta = std::min(beta, static_cast<int8_t>(novum.max + 1));
 	}
+	assert(Constrained());
+	return {};
+}
+
+std::optional<COutput> CStatusQuo::ImproveWithZWS(const COutput & novum, CMove move)
+{
+	assert(Constrained());
+	assert((novum.depth + 1 >= depth) && (novum.selectivity <= selectivity));
+	if (novum.depth + 1 < worst_depth) worst_depth = novum.depth + 1;
+	if (novum.selectivity > worst_selectivity) worst_selectivity = novum.selectivity;
+
+	if (novum.min >= beta) // upper cut
+		return COutput::MinBound(novum.min, worst_depth, worst_selectivity, { move, best_moves.PV });
+
 	assert(Constrained());
 	return {};
 }
@@ -53,22 +71,20 @@ std::optional<COutput> CStatusQuo::ImproveWith(const COutput & novum)
 std::optional<COutput> CStatusQuo::ImproveWith(const COutput & novum, CMove move)
 {
 	assert(Constrained());
-	if ((novum.depth + 1 >= depth) && (novum.selectivity <= selectivity)) // TODO: Probably an irrelevant check.
-	{
-		if (novum.min >= beta) // upper cut
-			return COutput::MinBound(novum.min, novum.depth + 1, novum.selectivity, { move, best_moves.PV });
+	assert((novum.depth + 1 >= depth) && (novum.selectivity <= selectivity));
+	if (novum.depth + 1 < worst_depth) worst_depth = novum.depth + 1;
+	if (novum.selectivity > worst_selectivity) worst_selectivity = novum.selectivity;
 
-		if (novum.min > best_score)
-		{
-			best_score = novum.min;
-			//depth = novum.depth + 1; // TODO: implement best_depth.
-			//selectivity = novum.selectivity; // TODO: implement best_selectivity.
-			if (move != best_moves.PV) {
-				best_moves.AV = best_moves.PV;
-				best_moves.PV = move;
-			}
+	if (novum.min >= beta) // upper cut
+		return COutput::MinBound(novum.min, worst_depth, worst_selectivity, { move, best_moves.PV });
+
+	if (novum.min > best_score)
+	{
+		best_score = novum.min;
+		if (move != best_moves.PV) {
+			best_moves.AV = best_moves.PV;
+			best_moves.PV = move;
 		}
-		alpha = std::max(alpha, novum.min);
 	}
 	assert(Constrained());
 	return {};
@@ -77,5 +93,13 @@ std::optional<COutput> CStatusQuo::ImproveWith(const COutput & novum, CMove move
 COutput CStatusQuo::AllMovesTried()
 {
 	assert(Constrained());
-	return COutput(best_score, alpha, depth, selectivity, best_moves);
+	assert(worst_depth >= depth);
+	assert(worst_selectivity <= selectivity);
+
+	if (best_score > alpha)
+		return COutput::ExactScore(best_score, worst_depth, worst_selectivity, best_moves);
+	else if (best_score != -infinity)
+		return COutput::MaxBound(best_score, worst_depth, worst_selectivity, best_moves);
+	else
+		return COutput::MaxBound(alpha, worst_depth, worst_selectivity, best_moves);
 }
