@@ -111,13 +111,20 @@ void TwoNode::Update(const CPosition& key, const PvsInfo& value, const uint8_t d
 {
 	lock();
 
+	//if (key == node1.key)
+	//	node1 = Node(key, value, date);
+	//else if (value.cost > node1.value.cost)
+	//	node1 = Node(key, value, date);
+
 	if (key == node1.key)
 	{
-		node1.Upgrade(value, date);
+		node1 = Node(key, value, date);
+		//node1.Upgrade(value, date); // TODO: Implement this here with min max optimization when evaluation is exact.
 	}
 	else if (key == node2.key)
 	{
-		node2.Upgrade(value, date);
+		node2 = Node(key, value, date);
+		//node2.Upgrade(value, date); // TODO: Implement this here with min max optimization when evaluation is exact.
 	}
 	else if (value.cost > node1.value.cost) { // TODO: This should be subject to a broad range of tests.
 		node2 = node1;
@@ -125,22 +132,6 @@ void TwoNode::Update(const CPosition& key, const PvsInfo& value, const uint8_t d
 	}
 	else if (value.cost > node2.value.cost) { // TODO: This should be subject to a broad range of tests.
 		node2 = Node(key, value, date);
-	}
-	else // TODO: This should be subject to a broad range of tests
-	{
-		const bool IsOld1 = node1.IsOld(date);
-		const bool IsOld2 = node2.IsOld(date);
-		if (IsOld1 && IsOld2) {
-			node2 = node1;
-			node1 = Node(key, value, date);
-		}
-		else if (!IsOld1 && IsOld2) {
-			node2 = Node(key, value, date);
-		}
-		else if (IsOld1 && !IsOld2) {
-			node1 = node2;
-			node2 = Node(key, value, date);
-		}
 	}
 
 	unlock();
