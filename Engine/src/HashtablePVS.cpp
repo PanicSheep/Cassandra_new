@@ -23,9 +23,9 @@ void PvsInfo::Upgrade(const PvsInfo& novum)
 		{
 			assert(std::max(min, novum.min) <= std::min(max, novum.max));
 
-			cost = std::max(cost, novum.cost);
-			min = std::max(min, novum.min);
-			max = std::min(max, novum.max);
+			if (novum.cost > cost) cost = novum.cost;
+			if (novum.min > min) min = novum.min;
+			if (novum.max < max) max = novum.max;
 			if (novum.best_moves.PV != Field::invalid)
 				best_moves = novum.best_moves;
 		}
