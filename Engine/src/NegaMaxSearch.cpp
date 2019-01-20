@@ -34,7 +34,7 @@ int NegaMax::Eval_(const CPosition& pos)
 		case 2: return Eval_2(pos);
 		case 3: return Eval_3(pos);
 		case 4: return Eval_4(pos);
-		default: return Eval_N(pos);;
+		default: return Eval_N(pos);
 	}
 }
 
