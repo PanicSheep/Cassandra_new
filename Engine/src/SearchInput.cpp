@@ -5,7 +5,7 @@ using namespace Search;
 
 bool CInput::Constrained() const
 {
-	return alpha < beta;
+	return (-65 <= alpha) && (alpha < beta) && (beta <= +65);
 }
 
 CInput::CInput(CPosition pos, int8_t alpha, int8_t beta, int8_t depth, uint8_t selectivity)
