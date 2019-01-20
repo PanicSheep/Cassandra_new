@@ -135,7 +135,6 @@ int AlphaBetaFailSoft::Eval_3(const CPosition& pos, int alpha, int beta, const C
 	if (const auto flips = Flip(posPass, move1)) {
 		const auto score = Eval_2(posPass.Play(move1, flips), alpha, beta, move2, move3);
 		if (score <= alpha) return score;
-		if (score <= alpha) return score;
 		if (score < beta) beta = score;
 		if (score < bestscore) bestscore = score;
 	}
