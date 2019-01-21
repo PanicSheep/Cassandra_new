@@ -2,7 +2,6 @@
 #include "AlphaBetaFailHardSearch.h"
 #include "AlphaBetaFailSoftSearch.h"
 #include "Config.h"
-#include "ConfigFile.h" // TODO: Remove?
 #include "HashTablePVS.h"
 #include "IoPattern.h"
 #include "IoPuzzleCollection.h"

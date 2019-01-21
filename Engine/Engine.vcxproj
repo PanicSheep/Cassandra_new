@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClCompile Include="src\AlphaBetaFailHardSearch.cpp" />
     <ClCompile Include="src\AlphaBetaFailSoftSearch.cpp" />
-    <ClCompile Include="src\ConfigFile.cpp" />
     <ClCompile Include="src\HashtablePVS.cpp" />
     <ClCompile Include="src\LastFlipCounter.cpp" />
     <ClCompile Include="src\NegaMaxSearch.cpp" />
@@ -27,7 +26,6 @@
   <ItemGroup>
     <ClInclude Include="src\AlphaBetaFailHardSearch.h" />
     <ClInclude Include="src\AlphaBetaFailSoftSearch.h" />
-    <ClInclude Include="src\ConfigFile.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\HashtablePVS.h" />
     <ClInclude Include="src\LastFlipCounter.h" />

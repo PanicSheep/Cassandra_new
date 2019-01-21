@@ -9,7 +9,6 @@
     <ClCompile Include="src\AlphaBetaFailHardSearch.cpp" />
     <ClCompile Include="src\Stability.cpp" />
     <ClCompile Include="src\Pattern.cpp" />
-    <ClCompile Include="src\ConfigFile.cpp" />
     <ClCompile Include="src\SearchInput.cpp" />
     <ClCompile Include="src\SearchOutput.cpp" />
     <ClCompile Include="src\SearchStatusQuo.cpp" />
@@ -19,7 +18,6 @@
     <ClInclude Include="src\LastFlipCounter.h" />
     <ClInclude Include="src\Stability.h" />
     <ClInclude Include="src\Pattern.h" />
-    <ClInclude Include="src\ConfigFile.h" />
     <ClInclude Include="src\NegaMaxSearch.h" />
     <ClInclude Include="src\AlphaBetaFailHardSearch.h" />
     <ClInclude Include="src\AlphaBetaFailSoftSearch.h" />

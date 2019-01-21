@@ -1,5 +1,4 @@
 #include "Array2D.h"
-#include "ConfigFile.h"
 #include "MatrixCSR.h"
 #include "MatrixCSR_Grid.h"
 #include "Path.h"

@@ -1,5 +1,4 @@
 #include "Args.h"
-#include "ConfigFile.h"
 #include "IoPattern.h"
 #include "IoPuzzleCollection.h"
 #include "PositionToMatrix.h"
