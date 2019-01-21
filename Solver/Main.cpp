@@ -70,54 +70,12 @@ int main(int argc, char* argv[])
 	auto midgame_evaluator = Pattern::IO::CreateEnsemble(input.pattern_names, input.pattern_use);
 	auto engine = std::make_shared<Engine>(nullptr, last_flip_counter, hash_table, stability_analyzer, midgame_evaluator);
 
-	// Algorithm
-	std::unique_ptr<Search::CAlgorithm> algorithm = std::make_unique<Search::PVSearch>(engine);
 	Search::CSpecification spec(input.depth, 0);
+	auto archive = Search::CreateArchive(input.test, input.print_each_puzzle, std::cout);
 
-	// Output
-	std::unique_ptr<Search::oArchive> archive = Search::CreateArchive(input.test, input.print_each_puzzle, std::cout);
-
-	// Log
-	std::unique_ptr<Search::ILog> logger;
-	if (input.threads == 1)
-		logger = std::make_unique<Search::CLogPassThrough>(*archive);
-	else
-		logger = std::make_unique<Search::CLogCollector>();
-
-	archive->Header();
-	const auto start_time = std::chrono::high_resolution_clock::now();
-	{
-		const auto size = static_cast<int64_t>(puzzles->size());
-
-		#pragma omp parallel for num_threads(input.threads) schedule(dynamic,1)
-		for (int64_t i = 0; i < size; i++)
-		{
-			auto puzzle = puzzles->Get(i);
-
-			if (!input.test)
-			{
-				if (input.force)
-					puzzle->Reset();
-				else
-					if (puzzle->IsSolved())
-						continue; // Skip solved.
-			}
-
-			auto log = logger->Clone();
-			log->index = i;
-
-			puzzle->Solve(*algorithm->Clone(), *log, spec);
-
-			*archive << *log;
-
-			if (!input.test)
-				puzzles->Set(i, std::move(puzzle));
-		}
-	}
-	const auto end_time = std::chrono::high_resolution_clock::now();
-	const double time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-	archive->Footer();
-		
+	CSolver solver(puzzles, spec, std::move(archive), input.threads, input.test, input.force, input.print_each_puzzle);
+	solver.Solve(Search::PVSearch(engine));
+	
 	if (!input.test)
 		SavePuzzles(puzzles->Release(), input.filename);
 

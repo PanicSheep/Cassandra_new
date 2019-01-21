@@ -12,6 +12,7 @@
     <ClCompile Include="src\SearchInput.cpp" />
     <ClCompile Include="src\SearchOutput.cpp" />
     <ClCompile Include="src\SearchStatusQuo.cpp" />
+    <ClCompile Include="src\Solver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HashtablePVS.h" />
@@ -27,5 +28,6 @@
     <ClInclude Include="src\SearchInput.h" />
     <ClInclude Include="src\SearchOutput.h" />
     <ClInclude Include="src\SearchStatusQuo.h" />
+    <ClInclude Include="src\Solver.h" />
   </ItemGroup>
 </Project>
