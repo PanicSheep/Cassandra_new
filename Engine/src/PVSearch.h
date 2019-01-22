@@ -21,6 +21,7 @@ namespace Search
 		std::unique_ptr<CAlgorithm> Clone() const override;
 
 		CResult Eval(const CPosition&, CSpecification) override;
+		using CAlgorithm::Eval;
 	private:
 		int Eval(const CPosition&, int alpha, int beta, int8_t depth, uint8_t selectivity);
 		COutput PVS(const CInput&);
