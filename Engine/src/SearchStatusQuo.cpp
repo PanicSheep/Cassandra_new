@@ -98,8 +98,7 @@ COutput CStatusQuo::AllMovesTried()
 
 	if (best_score > alpha)
 		return COutput::ExactScore(best_score, worst_depth, worst_selectivity, best_moves);
-	else if (best_score != -infinity)
-		return COutput::MaxBound(best_score, worst_depth, worst_selectivity, best_moves);
-	else
-		return COutput::MaxBound(alpha, worst_depth, worst_selectivity, best_moves);
+	//else if (best_score != -infinity)
+	//	return COutput(best_score, alpha, worst_depth, worst_selectivity, best_moves);
+	return COutput::MaxBound(alpha, worst_depth, worst_selectivity, best_moves);
 }
