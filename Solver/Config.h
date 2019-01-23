@@ -12,9 +12,9 @@ struct CInputParser
 	std::size_t RAM = 1ui64 << 30; // 1GB
 	std::size_t threads = std::thread::hardware_concurrency();
 	uint8_t depth = 99;
-	bool test{};
-	bool force{};
-	bool print_each_puzzle{};
+	bool test = false;
+	bool force = false;
+	bool print_each_puzzle = false;
 
 	CInputParser(const CPath& exe_folder);
 	CInputParser(const CPath& exe_folder, const CArgs&);
