@@ -73,8 +73,11 @@ int main(int argc, char* argv[])
 	Search::CSpecification spec(input.depth, 0);
 	auto archive = Search::CreateArchive(input.test, input.print_each_puzzle, std::cout);
 
-	CSolver solver(puzzles, spec, std::move(archive), input.threads, input.test, input.force, input.print_each_puzzle);
-	solver.Solve(Search::PVSearch(engine));
+	CSolver solver(puzzles, spec, input.threads, input.test, input.force, input.print_each_puzzle);
+
+	archive->Header();
+	solver.Solve(Search::PVSearch(engine), *archive);
+	archive->Footer();
 	
 	if (!input.test)
 		SavePuzzles(puzzles->Release(), input.filename);
