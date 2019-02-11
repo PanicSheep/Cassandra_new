@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
 	// Engine
 	auto last_flip_counter = std::make_shared<CLastFlipCounter>();
-	auto hash_table = std::make_shared<CHashTablePVS>(input.RAM / sizeof(TwoNode));
+	auto hash_table = std::make_shared<CHashTablePVS>(input.RAM / sizeof(CHashTablePVS::nodetype));
 	auto stability_analyzer = std::make_shared<CStabilityAnalyzer>();
 	auto midgame_evaluator = Pattern::IO::CreateEnsemble(input.pattern_names, input.pattern_use);
 	auto engine = std::make_shared<Engine>(nullptr, last_flip_counter, hash_table, stability_analyzer, midgame_evaluator);
