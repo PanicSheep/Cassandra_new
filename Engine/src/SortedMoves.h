@@ -11,7 +11,10 @@ class CSortedMoves
 {
 	std::vector<std::pair<int32_t, CMove>> m_moves;
 public:
-	CSortedMoves(const CPosition&, const std::function<int32_t(CMove)>& score, CMove filter1 = CMove::invalid, CMove filter2 = CMove::invalid);
+	CSortedMoves(const CPosition&,
+				 const std::function<int32_t(CMove)>& score,
+				 CMove filter1 = CMove::invalid,
+				 CMove filter2 = CMove::invalid);
 
 	std::size_t size() const { return m_moves.size(); }
 	bool empty() const { return m_moves.empty(); }
