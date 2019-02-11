@@ -112,11 +112,10 @@ namespace test
 		static void SetUpTestCase()
 		{
 			std::shared_ptr<ILastFlipCounter> last_flip_counter = std::make_shared<CLastFlipCounter>();
-			std::shared_ptr<IHashTable<CPosition, PvsInfo>> hash_table = nullptr; // TODO: Replace!
 			std::shared_ptr<IStabilityAnalyzer> stability_analyzer = std::make_shared<CStabilityAnalyzer>();
 			std::shared_ptr<IEvaluator> midgame_evaluator = std::make_shared<ZeroPattern>();
 
-			engine = std::make_shared<Engine>(nullptr, last_flip_counter, hash_table, stability_analyzer, midgame_evaluator);
+			engine = std::make_shared<Engine>(nullptr, last_flip_counter, nullptr, stability_analyzer, midgame_evaluator);
 		}
 	};
 
