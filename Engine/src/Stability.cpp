@@ -42,9 +42,7 @@ uint64_t CStabilityAnalyzer::Flip(const CPosition& pos, const CMove move)
 uint64_t CStabilityAnalyzer::Flip_dir(const CPosition& pos, const CMove move, const int dX)
 {
 	uint64_t flips = 0;
-	int x = (move % 8) + dX;
-
-	while ((x >= 0) && (x < 8))
+	for (int x = (move % 8) + dX; (x >= 0) && (x < 8); x += dX)
 	{
 		const uint64_t bit = MakeBit(x);
 		if ((pos.GetO() & bit) != 0u)
@@ -53,18 +51,18 @@ uint64_t CStabilityAnalyzer::Flip_dir(const CPosition& pos, const CMove move, co
 			return flips;
 		else
 			return 0;
-		x += dX;
 	}
 	return 0;
 }
 
 uint64_t CStabilityAnalyzer::GetStableEdges(const CPosition & pos) const
-{	// 2 x AND, 2 X SHIFT, 3 x OR, 4 x PEXT, 2 X PDEP
+{
+	// 2 x AND, 2 X SHIFT, 3 x OR, 4 x PEXT, 2 X PDEP
 	// 13 OPs
 	const auto P = pos.GetP();
 	const auto O = pos.GetO();
-	const uint64_t L0_Left = 0x8080808080808080ui64;
-	const uint64_t L0_Right = 0x0101010101010101ui64;
+	constexpr uint64_t L0_Left = 0x8080808080808080ui64;
+	constexpr uint64_t L0_Right = 0x0101010101010101ui64;
 
 	const auto StableL0_Bottom = edge_stables[static_cast<uint8_t>(P)][static_cast<uint8_t>(O)];
 	const auto StableL0_Top = static_cast<uint64_t>(edge_stables[P >> 56][O >> 56]) << 56;
@@ -99,7 +97,8 @@ uint64_t CStabilityAnalyzer::GetStableStones(const CPosition & pos) const
 }
 
 uint64_t CStabilityAnalyzer::FullLineHorizontal(uint64_t discs)
-{	// 4 x AND, 3 x SHIFT, 1 x MUL
+{
+	// 4 x AND, 3 x SHIFT, 1 x MUL
 	// 8 OPs
 	discs &= discs >> 4;
 	discs &= discs >> 2;
@@ -109,7 +108,8 @@ uint64_t CStabilityAnalyzer::FullLineHorizontal(uint64_t discs)
 }
 
 uint64_t CStabilityAnalyzer::FullLineVertival(uint64_t discs)
-{	// 4 x AND, 3 x SHIFT, 1 x MUL
+{
+	// 4 x AND, 3 x SHIFT, 1 x MUL
 	// 8 OPs
 	discs &= discs >> 32;
 	discs &= discs >> 16;
@@ -119,9 +119,10 @@ uint64_t CStabilityAnalyzer::FullLineVertival(uint64_t discs)
 }
 
 uint64_t CStabilityAnalyzer::FullLineDiagonal(const uint64_t discs)
-{	// 5 x SHR, 5 x SHL, 7x AND, 10 x OR
+{
+	// 5 x SHR, 5 x SHL, 7x AND, 10 x OR
 	// 27 OPs
-	const uint64_t edge = 0xFF818181818181FFui64;
+	constexpr uint64_t edge = 0xFF818181818181FFui64;
 
 	uint64_t full_l = discs & (edge | (discs >> 9));
 	uint64_t full_r = discs & (edge | (discs << 9));
@@ -138,9 +139,10 @@ uint64_t CStabilityAnalyzer::FullLineDiagonal(const uint64_t discs)
 }
 
 uint64_t CStabilityAnalyzer::FullLineCodiagonal(const uint64_t discs)
-{	// 5 x SHR, 5 x SHL, 7x AND, 10 x OR
+{
+	// 5 x SHR, 5 x SHL, 7x AND, 10 x OR
 	// 27 OPs
-	const uint64_t edge = 0xFF818181818181FFui64;
+	constexpr uint64_t edge = 0xFF818181818181FFui64;
 
 	uint64_t full_l = discs & (edge | (discs >> 7));
 	uint64_t full_r = discs & (edge | (discs << 7));
