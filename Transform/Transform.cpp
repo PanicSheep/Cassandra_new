@@ -87,8 +87,16 @@ int main(int argc, char* argv[])
 	const auto input_files = to_Path(args.Get("i"));
 	const auto output_file = CPath(args.Get("o").back());
 	const auto mode = TryParseMode(args);
-
-	Transform(input_files, output_file, mode);
+	
+	try
+	{
+		Transform(input_files, output_file, mode);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		throw;
+	}
 
 	return 0;
 }
