@@ -4,10 +4,10 @@
 
 class CPosition
 {
-	uint64_t P, O;
+	uint64_t P{ 0 }, O{ 0 };
 public:
 
-	CPosition() : CPosition(0, 0) {}
+	CPosition() = default;
 	CPosition(uint64_t P, uint64_t O) : P(P), O(O) {}
 
 	static CPosition StartPosition   () { return CPosition(0x0000000810000000ui64, 0x0000001008000000ui64); }
