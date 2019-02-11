@@ -7,12 +7,12 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <new>
 #include <optional>
 
-class PvsInfo
+struct PvsInfo
 {
-public:
 	int8_t min = -65;
 	int8_t max = +65;
 	int8_t depth = -1;
@@ -22,65 +22,73 @@ public:
 
 	PvsInfo() = default;
 	PvsInfo(int8_t min, int8_t max, int8_t depth, uint8_t selectivity, CBestMoves, uint64_t node_count);
-
-	void Upgrade(const PvsInfo&);
 };
 
-class Node
+struct Node
 {
-	static const uint8_t OLD_AGE = 6;
-public:
 	CPosition key;
 	PvsInfo value;
-	uint8_t date{0};
 
 	Node() = default;
-	Node(const CPosition& key, const PvsInfo& value, uint8_t date);
-
-	void Upgrade(const PvsInfo& novum, uint8_t date);
-	void Refresh(const CPosition& key, uint8_t date);
-	bool IsOld(uint8_t CompareDate) const;
+	Node(const CPosition& key, const PvsInfo& value) : key(key), value(value) {}
 };
 
-class /*alignas(std::hardware_destructive_interference_size)*/ TwoNode
+class SpinlockMutex
 {
-	mutable std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
-	Node node1, node2;
-
-	void lock() const; // blocking
-	void unlock() const;
+	std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
 public:
-	TwoNode();
-	TwoNode(Node node1, Node node2);
-	TwoNode(const TwoNode&);
+	void lock() { while (spinlock.test_and_set(std::memory_order_acquire)) continue; }
+	void unlock() { spinlock.clear(std::memory_order_release); }
+};
 
-	TwoNode& operator=(const TwoNode&);
+class OneNode
+{
+	mutable SpinlockMutex mutex;
+	Node node;
 
-	void Update(const CPosition& key, const PvsInfo& value, uint8_t date);
-	std::optional<PvsInfo> LookUp(const CPosition& key) const;
-	void Refresh(const CPosition& key, uint8_t date);
+public:
+	OneNode() = default;
+	OneNode(const OneNode&);
+
+	OneNode& operator=(const OneNode&);
+
+	void Update(const CPosition&, const PvsInfo&);
+	std::optional<PvsInfo> LookUp(const CPosition&) const;
 	void Clear();
 
 	int NumberOfNonEmptyNodes() const;
 };
 
-//static_assert(sizeof(TwoNode) <= std::hardware_destructive_interference_size);
-
-typedef HashTable<TwoNode, CPosition, PvsInfo> CHashTablePVS;
-
-template <>
-inline std::size_t HashTable<TwoNode, CPosition, PvsInfo>::Hash(const CPosition& key) const
+class alignas(std::hardware_destructive_interference_size) TwoNode
 {
-	uint64_t P = key.GetP();
-	uint64_t O = key.GetO();
-	P ^= P >> 36;
-	O ^= O >> 21;
-	return (P * O) % table.size();
+	mutable SpinlockMutex mutex;
+	Node node1, node2;
 
-	//P ^= P >> 33;
-	//O ^= O >> 33;
-	//P *= 0xFF14AFD7ED558CCDui64;
-	//O *= 0xFF14AFD7ED558CCDui64;
-	//O ^= O >> 33;
-	//return (P + O + (O << 41)) % table.size();
-}
+public:
+	TwoNode() = default;
+	TwoNode(Node node1, Node node2);
+	TwoNode(const TwoNode&);
+
+	TwoNode& operator=(const TwoNode&);
+
+	void Update(const CPosition&, const PvsInfo&);
+	std::optional<PvsInfo> LookUp(const CPosition&) const;
+	void Clear();
+
+	int NumberOfNonEmptyNodes() const;
+};
+
+static_assert(sizeof(TwoNode) <= std::hardware_constructive_interference_size);
+
+struct CHashTablePVS : public HashTable<CPosition, PvsInfo, TwoNode>
+{
+	CHashTablePVS(uint64_t buckets)
+		: HashTable(buckets, [](const keytype& key) {
+			uint64_t P = key.GetP();
+			uint64_t O = key.GetO();
+			P ^= P >> 36;
+			O ^= O >> 21;
+			return P * O;
+			})
+	{}
+};
