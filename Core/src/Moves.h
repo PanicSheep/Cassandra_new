@@ -20,11 +20,12 @@ enum Field : uint8_t
 
 using CMove = Field;
 
+
 class CMoves
 {
 	uint64_t m_moves{0};
 public:
-	CMoves() noexcept  = default;
+	CMoves() noexcept = default;
 	CMoves(uint64_t moves) noexcept : m_moves(moves) {}
 
 	bool operator==(const CMoves& o) const noexcept { return m_moves == o.m_moves; }
@@ -51,3 +52,5 @@ public: // TODO: Make sure if there's an AV, there's a PV.
 	CBestMoves() = default;
 	CBestMoves(CMove PV, CMove AV) : PV(PV), AV(AV) {}
 };
+
+CBestMoves Merge(CBestMoves, int8_t depth1, uint8_t selectivity1, CBestMoves, int8_t depth2, uint8_t selectivity2);
