@@ -14,6 +14,7 @@ namespace Search
 {
 	class PVSearch : public AlphaBetaFailSoft
 	{
+		int AspirationSearch(const CPosition& pos, int alpha, int beta, int score, int delta, int8_t depth, uint8_t selectivity);
 	public:
 		PVSearch(const PVSearch&) = default;
 		PVSearch(const std::shared_ptr<Engine>& engine) : AlphaBetaFailSoft(engine) {}

@@ -35,6 +35,16 @@ CResult PVSearch::Eval(const CPosition& pos, CSpecification spec)
 	return CResult(score, node_count, duration);
 }
 
+int PVSearch::AspirationSearch(const CPosition& pos, int alpha, int beta, int score, int delta, int8_t depth, uint8_t selectivity)
+{
+	const auto new_score = PVS(CInput(pos, score - delta, score + delta, depth, selectivity));
+	if (new_score.max <= score - delta) // fail low
+		return PVS(CInput(pos, alpha, new_score.max + 1, depth, selectivity)).min;
+	if (new_score.min >= score + delta) // fail high
+		return PVS(CInput(pos, new_score.min - 1, beta, depth, selectivity)).min;
+	return new_score.min;
+}
+
 int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity) // TODO: Replace parameters with CInput.
 {
 	const auto empties = pos.EmptyCount();
