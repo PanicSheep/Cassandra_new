@@ -31,11 +31,6 @@ public:
 			unlock(old_value);
 	}
 
-	void Refresh(const PerftKey& key, uint8_t date)
-	{
-		// This function is intentionally empty. Because this class does not contain a date.
-	}
-
 	std::optional<uint64_t> LookUp(const PerftKey& key) const
 	{
 		const uint64_t old_value = lock();

@@ -7,14 +7,12 @@
 #include <optional>
 
 template <typename KeyType, typename ValueType>
-class IHashTable
+struct IHashTable
 {
-public:
 	virtual ~IHashTable() = default;
-	virtual void Update(const KeyType& key, const ValueType& value) = 0;
-	virtual std::optional<ValueType> LookUp(const KeyType& key) const = 0;
-	virtual void Refresh(const KeyType& key) = 0;
-	virtual void AdvanceDate() = 0;
+
+	virtual void Update(const KeyType&, const ValueType&) = 0;
+	virtual std::optional<ValueType> LookUp(const KeyType&) const = 0;
 	virtual void Clear() = 0;
 };
 
@@ -30,9 +28,7 @@ public:
 	HashTable() : HashTable(1) {}
 
 	void Update(const KeyType& key, const ValueType& value) override;
-	std::optional<ValueType> LookUp(const KeyType& key) const override;
-	void Refresh(const KeyType& key) override;
-	void AdvanceDate() override;
+	std::optional<ValueType> LookUp(const KeyType&) const override;
 	void Clear() override;
 	void PrintStatistics();
 
@@ -72,19 +68,6 @@ inline std::optional<ValueType> HashTable<NodeType, KeyType, ValueType>::LookUp(
 	if (ret.has_value())
 		HitCounter++;
 	return ret;
-}
-
-template <typename NodeType, typename KeyType, typename ValueType>
-inline void HashTable<NodeType, KeyType, ValueType>::Refresh(const KeyType& key)
-{
-	RefreshCounter++;
-	table[Hash(key)].Refresh(key, date);
-}
-
-template <typename NodeType, typename KeyType, typename ValueType>
-inline void HashTable<NodeType, KeyType, ValueType>::AdvanceDate()
-{
-	date++;
 }
 
 template <typename NodeType, typename KeyType, typename ValueType>
