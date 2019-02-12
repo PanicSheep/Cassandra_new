@@ -34,7 +34,12 @@ public:
 	virtual float Eval(const CPosition&) const = 0;
 };
 
-class Engine : public IFlipper, public ILastFlipCounter, public IHashTable<CPosition, PvsInfo>, public IStabilityAnalyzer, public IEvaluator
+class Engine
+	: public IFlipper
+	, public ILastFlipCounter
+	, public IHashTable<CPosition, PvsInfo>
+	, public IStabilityAnalyzer
+	, public IEvaluator
 {
 	std::shared_ptr<IFlipper> flipper;
 	std::shared_ptr<ILastFlipCounter> last_flip_counter;
@@ -62,8 +67,6 @@ public:
 	uint8_t CountLastFlip(const CPosition& pos, CMove move) const override { return last_flip_counter->CountLastFlip(pos, move); }
 	void Update(const CPosition& pos, const PvsInfo& info) override { hash_table->Update(pos, info); }
 	std::optional<PvsInfo> LookUp(const CPosition& pos) const override { return hash_table->LookUp(pos); }
-	void Refresh(const CPosition& pos) override { hash_table->Refresh(pos); }
-	void AdvanceDate() override { hash_table->AdvanceDate(); }
 	void Clear() override { hash_table->Clear(); }
 	uint64_t GetStableStones(const CPosition& pos) const override { return stability_analyzer->GetStableStones(pos); }
 	float Eval(const CPosition& pos) const override { return midgame_evaluator->Eval(pos); }
