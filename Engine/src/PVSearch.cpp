@@ -47,49 +47,19 @@ int PVSearch::AspirationSearch(const CPosition& pos, int alpha, int beta, int sc
 
 int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint8_t selectivity) // TODO: Replace parameters with CInput.
 {
-	const auto empties = pos.EmptyCount();
-	if (depth == empties)
+	const auto empty_count = pos.EmptyCount();
+	if (depth == empty_count)
 	{
-		if (empties <= 14)
-			return PVS(CInput(pos, alpha, beta, pos.EmptyCount(), selectivity)).min;
-		if (empties <= 20)
-		{
-			int score;
-			for (int d = 0; d < empties - 10; d++)
-				score = PVS(CInput(pos, alpha, beta, d, 33)).min;
-			score = PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
-
-			// TODO: Move this to a dedicated aspiration search!
-			auto new_score = PVS(CInput(pos, score - 4, score + 4, pos.EmptyCount(), selectivity));
-			if (new_score.max <= score - 4) // fail low
-			{
-				return PVS(CInput(pos, alpha, new_score.max + 1, pos.EmptyCount(), selectivity)).min;
-			}
-			if (new_score.min >= score + 4) // fail high
-			{
-				return PVS(CInput(pos, new_score.min - 1, beta, pos.EmptyCount(), selectivity)).min;
-			}
-			return new_score.min;
-		}
+		if (empty_count <= 15)
+			return PVS(CInput(pos, alpha, beta, empty_count, selectivity)).min;
 		
-		for (int d = 0; d < 5; d++)
-			PVS(CInput(pos, alpha, beta, d, selectivity)).min;
-		for (int d = 5; d < empties - 10; d++)
-			PVS(CInput(pos, alpha, beta, d, 33)).min;
-		PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 33)).min;
-		int score = PVS(CInput(pos, alpha, beta, pos.EmptyCount(), 11)).min;
-
-		// TODO: Move this to a dedicated aspiration search!
-		auto new_score = PVS(CInput(pos, score - 4, score + 4, pos.EmptyCount(), selectivity));
-		if (new_score.max <= score - 4) // fail low
-		{
-			return PVS(CInput(pos, alpha, new_score.max + 1, pos.EmptyCount(), selectivity)).min;
-		}
-		if (new_score.min >= score + 4) // fail high
-		{
-			return PVS(CInput(pos, new_score.min - 1, beta, pos.EmptyCount(), selectivity)).min;
-		}
-		return new_score.min;
+		int score = 0;
+		for (int d = 3; d <= empty_count - 10; d++)
+			score = PVS(CInput(pos, alpha, beta, d, 100 - 11)).min;
+		
+		for (uint8_t selectivity : {100 - 11, 100 - 15, 100 - 20, 100 - 26, 100 - 33})
+			score = AspirationSearch(pos, alpha, beta, score, 5, empty_count, selectivity);
+		return AspirationSearch(pos, alpha, beta, score, 1, empty_count, selectivity);
 	}
 	else
 	{
