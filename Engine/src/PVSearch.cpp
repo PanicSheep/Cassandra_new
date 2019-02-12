@@ -70,16 +70,16 @@ int PVSearch::Eval(const CPosition& pos, int alpha, int beta, int8_t depth, uint
 
 COutput PVSearch::PVS(const CInput& in)
 {
-	const auto EmptyCount = in.pos.EmptyCount();
-	if (in.depth == EmptyCount)
+	const auto empty_count = in.pos.EmptyCount();
+	if (in.depth == empty_count)
 	{
-		switch (EmptyCount)
+		switch (empty_count)
 		{
-			case 0: return Result(in, Eval_0(in.pos), 0, 0);
-			case 1: return Result(in, Eval_1(in.pos), 1, 0);
-			case 2: return Result(in, Eval_2(in.pos, in.alpha, in.beta), 2, 0);
-			case 3: return Result(in, Eval_3(in.pos, in.alpha, in.beta), 3, 0);
 			case 4: return Result(in, Eval_4(in.pos, in.alpha, in.beta), 4, 0);
+			case 3: return Result(in, Eval_3(in.pos, in.alpha, in.beta), 3, 0);
+			case 2: return Result(in, Eval_2(in.pos, in.alpha, in.beta), 2, 0);
+			case 1: return Result(in, Eval_1(in.pos), 1, 0);
+			case 0: return Result(in, Eval_0(in.pos), 0, 0);
 			default:
 				break;
 		}
@@ -88,9 +88,9 @@ COutput PVSearch::PVS(const CInput& in)
 	{
 		switch (in.depth)
 		{
-			case 0: return Result(in, std::clamp(Eval_d0(in.pos), -64, +64), 0, 0);
-			case 1: return Result(in, std::clamp(Eval_d1(in.pos, in.alpha, in.beta), -64, +64), 1, 0);
 			case 2: return Result(in, std::clamp(Eval_d2(in.pos, in.alpha, in.beta), -64, +64), 2, 0);
+			case 1: return Result(in, std::clamp(Eval_d1(in.pos, in.alpha, in.beta), -64, +64), 1, 0);
+			case 0: return Result(in, std::clamp(Eval_d0(in.pos), -64, +64), 0, 0);
 			default:
 				break;
 		}
@@ -100,31 +100,32 @@ COutput PVSearch::PVS(const CInput& in)
 
 COutput PVSearch::ZWS(const CInput& in)
 {
-	const auto EmptyCount = in.pos.EmptyCount();
-	if (in.depth == EmptyCount)
+	const auto empty_count = in.pos.EmptyCount();
+	if (in.depth == empty_count)
 	{
-		switch (EmptyCount)
+		switch (empty_count)
 		{
-			case 0: return Result(in, Eval_0(in.pos), 0, 0);
-			case 1: return Result(in, Eval_1(in.pos), 1, 0);
-			case 2: return Result(in, Eval_2(in.pos, in.alpha, in.alpha+1), 2, 0);
-			case 3: return Result(in, Eval_3(in.pos, in.alpha, in.alpha+1), 3, 0);
-			case 4: return Result(in, Eval_4(in.pos, in.alpha, in.alpha+1), 4, 0);
-			case 5:
-			case 6:
-			case 7:
-				return ZWS_A(in);
-			default:
-				break;
+		case 8:
+		case 7:
+		case 6:
+		case 5:
+			return ZWS_A(in);
+		case 4: return Result(in, Eval_4(in.pos, in.alpha, in.alpha + 1), 4, 0);
+		case 3: return Result(in, Eval_3(in.pos, in.alpha, in.alpha + 1), 3, 0);
+		case 2: return Result(in, Eval_2(in.pos, in.alpha, in.alpha + 1), 2, 0);
+		case 1: return Result(in, Eval_1(in.pos), 1, 0);
+		case 0: return Result(in, Eval_0(in.pos), 0, 0);
+		default:
+			break;
 		}
 	}
 	else
 	{
 		switch (in.depth)
 		{
-			case 0: return Result(in, std::clamp(Eval_d0(in.pos), -64, +64), 0, 0);
-			case 1: return Result(in, std::clamp(Eval_d1(in.pos, in.alpha, in.alpha + 1), -64, +64), 1, 0);
 			case 2: return Result(in, std::clamp(Eval_d2(in.pos, in.alpha, in.alpha + 1), -64, +64), 2, 0);
+			case 1: return Result(in, std::clamp(Eval_d1(in.pos, in.alpha, in.alpha + 1), -64, +64), 1, 0);
+			case 0: return Result(in, std::clamp(Eval_d0(in.pos), -64, +64), 0, 0);
 			default:
 				break;
 		}
