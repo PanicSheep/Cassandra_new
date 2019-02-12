@@ -222,9 +222,11 @@ COutput PVSearch::ZWS_A(const CInput& in)
 {
 	assert(in.beta == in.alpha + 1);
 
+	if (in.pos.EmptyCount() == 4)
+		return Result(in, Eval_4(in.pos, in.alpha, in.beta), 4, 0);
 	node_counter++;
 
-	const CMoves moves = in.pos.PossibleMoves();
+	const auto moves = in.pos.PossibleMoves();
 	if (moves.empty()) {
 		const auto Pass = in.PlayPass();
 		if (Pass.pos.HasMoves())
@@ -234,15 +236,12 @@ COutput PVSearch::ZWS_A(const CInput& in)
 
 	CStatusQuo status_quo(in);
 
-	const auto stability = StabilityAnalysis(in.pos);
-	if (const auto ret = status_quo.ImproveWith(stability); ret) return ret.value();
-
 	CMoves parity_moves = moves;
 	parity_moves.Filter(in.pos.GetParityQuadrants());
 	while (!parity_moves.empty())
 	{
 		const auto move = parity_moves.ExtractMove();
-		const auto zws = -ZWS(status_quo.Play(move));
+		const auto zws = -ZWS_A(status_quo.Play(move));
 		const auto ret = status_quo.ImproveWith(zws, move);
 		if (ret)
 			return ret.value();
@@ -253,12 +252,11 @@ COutput PVSearch::ZWS_A(const CInput& in)
 	while (!non_parity_moves.empty())
 	{
 		const auto move = non_parity_moves.ExtractMove();
-		const auto zws = -ZWS(status_quo.Play(move));
+		const auto zws = -ZWS_A(status_quo.Play(move));
 		const auto ret = status_quo.ImproveWith(zws, move);
 		if (ret)
 			return ret.value();
 	}
-
 	return status_quo.AllMovesTried();
 }
 
