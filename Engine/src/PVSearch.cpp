@@ -454,37 +454,43 @@ float Sigma(const int D, const int d, const int E) noexcept
 
 std::optional<CAnalysisOutput> PVSearch::MpcAnalysis(const CInput& in)
 {
-	if (in.selectivity == 0 || in.depth < 4)
+	if (in.selectivity == 0 || in.depth < 6)
 		return {};
 
+	const int zero_eval = Eval_d0(in.pos);
 	const int D = in.depth;
-	const int d = D / 2;
+	const int d = D / 3.0;
 	const int E = in.pos.EmptyCount();
-	const float sigma = Sigma(D, d, E);
-	const float sigmas = 32.0f /(in.selectivity + 8.0f);
+	const float sigma_d = Sigma(D, d, E);
+	const float t = (100 - in.selectivity) / 10.0;
 
-	const auto upper_bound = static_cast<int8_t>(in.beta + sigmas * sigma);
+	const auto upper_bound = std::ceil(in.beta + t * sigma_d);
 	const auto upper_alpha = upper_bound - 1;
 	const auto upper_beta = upper_bound;
 
-	if (-64 <= upper_alpha && upper_beta <= +64)
+	if (zero_eval >= upper_bound && -65 <= upper_alpha && upper_beta <= +64)
 		if (const auto ret = ZWS(CInput(in.pos, upper_alpha, upper_beta, d, 0)); ret.min >= upper_beta)
 		{
-			//std::cout << "High ProbCut\n";
-			return CAnalysisOutput::MinBound(in.beta, in.depth, in.selectivity, ret.best_moves);
+			const auto cut_t = (ret.min - in.beta) / sigma_d;
+			const auto cut_selectivity = std::ceil(100 - cut_t * 10.0);
+			//std::cout << "High ProbCut: in_selectivity=" << std::to_string(in.selectivity) 
+			//	<< " out_selectivity=" << std::to_string(cut_selectivity) << "\n";
+			return CAnalysisOutput::MinBound(in.beta, in.depth, cut_selectivity, ret.best_moves);
 		}
 
-	const auto lower_bound = static_cast<int8_t>(in.alpha - sigmas * sigma);
+	const auto lower_bound = std::floor(in.alpha - t * sigma_d);
 	const auto lower_alpha = lower_bound;
 	const auto lower_beta = lower_bound + 1;
 
-	if (-64 <= lower_alpha && lower_beta <= +64)
+	if (zero_eval <= lower_bound && -64 <= lower_alpha && lower_beta <= +65)
 		if (const auto ret = ZWS(CInput(in.pos, lower_alpha, lower_beta, d, 0)); ret.max <= lower_alpha)
 		{
-			//std::cout << "Low ProbCut\n";
-			return CAnalysisOutput::MaxBound(in.alpha, in.depth, in.selectivity, ret.best_moves);
+			const auto cut_t = (in.alpha - ret.max) / sigma_d;
+			const auto cut_selectivity = std::ceil(100 - cut_t * 10.0);
+			//std::cout << "Low ProbCut: in_selectivity=" << std::to_string(in.selectivity)
+			//	<< " out_selectivity=" << std::to_string(cut_selectivity) << "\n";
+			return CAnalysisOutput::MaxBound(in.alpha, in.depth, cut_selectivity, ret.best_moves);
 		}
-
 	return {};
 }
 
