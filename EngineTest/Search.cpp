@@ -549,3 +549,57 @@ TEST(StatusQuo, ExactSearch_Analysis_BetaCut)
 	ASSERT_EQ(result.min, score);
 	ASSERT_EQ(result.max, score);
 }
+
+TEST(StatusQuo, ExactSearch_with_Analysis_PV_and_AV_failing_high_on_PV_keeps_AV)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int score = +20;
+	const int alpha = -10;
+	const int beta = +10;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	// This simulates a hash table value.
+	const auto ret1 = status_quo.ImproveWith(CAnalysisOutput(0, 0, depth-8, 10, CBestMoves(CMove::B1, CMove::B2)));
+	ASSERT_FALSE(ret1.has_value());
+	ASSERT_EQ(status_quo.best_moves.PV, CMove::B1);
+	ASSERT_EQ(status_quo.best_moves.AV, CMove::B2);
+
+	const auto result = status_quo.ImproveWithZWS(COutput::MinBound(score, depth - 1, selectivity), CMove::B1);
+	ASSERT_TRUE(result.has_value());
+
+	ASSERT_EQ(result.value().best_moves.PV, CMove::B1);
+	ASSERT_EQ(result.value().best_moves.AV, CMove::B2);
+	ASSERT_EQ(result.value().depth, depth);
+	ASSERT_EQ(result.value().selectivity, selectivity);
+	ASSERT_EQ(result.value().min, score);
+	ASSERT_EQ(result.value().max, +infinity);
+}
+
+TEST(StatusQuo, ExactSearch_with_Analysis_PV_and_AV_failing_high_on_AV_swaps_PV_and_AV)
+{
+	const int8_t depth = 64;
+	const uint8_t selectivity = 0;
+	const int score = +20;
+	const int alpha = -10;
+	const int beta = +10;
+	CInput input(CPosition(), alpha, beta, depth, selectivity);
+	CStatusQuo status_quo(input);
+
+	// This simulates a hash table value.
+	const auto ret1 = status_quo.ImproveWith(CAnalysisOutput(0, 0, depth - 8, 10, CBestMoves(CMove::B1, CMove::B2)));
+	ASSERT_FALSE(ret1.has_value());
+	ASSERT_EQ(status_quo.best_moves.PV, CMove::B1);
+	ASSERT_EQ(status_quo.best_moves.AV, CMove::B2);
+
+	const auto result = status_quo.ImproveWithZWS(COutput::MinBound(score, depth - 1, selectivity), CMove::B2);
+	ASSERT_TRUE(result.has_value());
+
+	ASSERT_EQ(result.value().best_moves.PV, CMove::B2);
+	ASSERT_EQ(result.value().best_moves.AV, CMove::B1);
+	ASSERT_EQ(result.value().depth, depth);
+	ASSERT_EQ(result.value().selectivity, selectivity);
+	ASSERT_EQ(result.value().min, score);
+	ASSERT_EQ(result.value().max, +infinity);
+}
