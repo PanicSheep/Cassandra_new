@@ -494,7 +494,7 @@ std::optional<CAnalysisOutput> PVSearch::MpcAnalysis(const CInput& in)
 	return {};
 }
 
-uint64_t SMEAR_BITBOARD(uint64_t B)
+constexpr uint64_t SMEAR_BITBOARD(uint64_t B) noexcept
 {
 	// 4x SHIFT, 4x OR, 2x AND
 	// = 10 OPs
@@ -502,21 +502,10 @@ uint64_t SMEAR_BITBOARD(uint64_t B)
 	return B | (B >> 8) | (B << 8);
 }
 
-uint64_t OpponentsExposed(const uint64_t P, const uint64_t O) { return SMEAR_BITBOARD(~(P | O)) & O; } // 13 OPs
+constexpr uint64_t OpponentsExposed(const uint64_t P, const uint64_t O) noexcept { return SMEAR_BITBOARD(~(P | O)) & O; } // 13 OPs
 
-
-int32_t Search::PVSearch::MoveOrderingScorer(CMove move, const CInput& in)
+int32_t Search::MoveOrderingScorer(CMove move, const CInput& in) noexcept
 {
-	static const uint64_t QuadrantMask[64] = {
-		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
-		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
-		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
-		0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x000000000F0F0F0Fui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64, 0x00000000F0F0F0F0ui64,
-		0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64,
-		0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64,
-		0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64,
-		0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0x0F0F0F0F00000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64, 0xF0F0F0F000000000ui64,
-	};
 	static const int8_t FieldValue[64] = {
 		9, 2, 8, 6, 6, 8, 2, 9,
 		2, 1, 3, 4, 4, 3, 1, 2,
@@ -527,23 +516,15 @@ int32_t Search::PVSearch::MoveOrderingScorer(CMove move, const CInput& in)
 		2, 1, 3, 4, 4, 3, 1, 2,
 		9, 2, 8, 6, 6, 8, 2, 9,
 	};
-	static const uint8_t ParityValue[16] = { 0, 20, 0, 10, 1, 10, 2, 10, 3, 5, 3, 4, 3, 4, 3, 4 };
-
-	const int sort_depth = (in.depth >= 9) ? std::clamp((in.depth - 15) / 3, 0, 6) : -1;
 
 	const auto next_pos = in.pos.Play(move);
 	const auto next_possible_moves = next_pos.PossibleMoves();
-	const int32_t mobility_score = static_cast<int32_t>(next_possible_moves.size()) << 17;
-	const int32_t corner_mobility_score = ((next_possible_moves.HasMove(A1) ? 1 : 0) + (next_possible_moves.HasMove(A8) ? 1 : 0) + (next_possible_moves.HasMove(H1) ? 1 : 0) + (next_possible_moves.HasMove(H8) ? 1 : 0)) << 18;
-	const int32_t opponents_exposed_score = static_cast<int32_t>(PopCount(OpponentsExposed(next_pos.GetP(), next_pos.GetO()))) << 6;
-	const int32_t field_score = FieldValue[move];
-	const int32_t parity_score = ParityValue[PopCount(in.pos.Empties() & QuadrantMask[move])];
-	auto score = field_score + parity_score - mobility_score - corner_mobility_score - opponents_exposed_score;
-	if (sort_depth < 0)
-		return score;
-	if (sort_depth == 0)
-		return score - (static_cast<int>(engine->Eval(next_pos)) << 16);
-	//else if (sort_depth < 3)
-	//	return score - (PVS(CInput(next_pos, -infinity, infinity, sort_depth, 0)).min << 17);
-	return score - (PVS(CInput(next_pos, -infinity, std::max(-64, in.alpha - 8), sort_depth, 0)).min << 17);
+	const auto mobility_score = next_possible_moves.size() << 17;
+	const auto corner_mobility_score = ((next_possible_moves.HasMove(CMove::A1) ? 1 : 0)
+		+ (next_possible_moves.HasMove(CMove::A8) ? 1 : 0) 
+		+ (next_possible_moves.HasMove(CMove::H1) ? 1 : 0) 
+		+ (next_possible_moves.HasMove(CMove::H8) ? 1 : 0)) << 18;
+	const auto opponents_exposed_score = PopCount(OpponentsExposed(next_pos.GetP(), next_pos.GetO())) << 6;
+	const auto field_score = FieldValue[move];
+	return field_score - mobility_score - corner_mobility_score - opponents_exposed_score;
 }

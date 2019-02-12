@@ -43,7 +43,7 @@ namespace Search
 		void TranspositionTableUpdate(const CPosition&, std::size_t initial_node_count, const COutput&);
 
 		COutput Result(const CInput& in, int score, int8_t depth, uint8_t selectivity);
-
-		int32_t MoveOrderingScorer(CMove, const CInput&);
 	};
+
+	int32_t MoveOrderingScorer(CMove, const CInput&) noexcept;
 }
