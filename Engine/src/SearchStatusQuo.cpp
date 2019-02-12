@@ -38,8 +38,7 @@ std::optional<COutput> CStatusQuo::ImproveWith(const CAnalysisOutput & novum)
 	assert(Constrained());
 	const bool consider_novum = (novum.depth >= depth) && (novum.selectivity <= selectivity);
 
-	if (consider_novum || (best_moves.PV == Field::invalid))
-		best_moves = novum.best_moves;
+	best_moves = Merge(best_moves, depth, selectivity, novum.best_moves, novum.depth, novum.selectivity);
 	
 	if (consider_novum)
 	{
@@ -62,7 +61,11 @@ std::optional<COutput> CStatusQuo::ImproveWithZWS(const COutput & novum, CMove m
 	if (novum.selectivity > worst_selectivity) worst_selectivity = novum.selectivity;
 
 	if (novum.min >= beta) // upper cut
+	{
+		if (move == best_moves.PV)
+			return COutput::MinBound(novum.min, worst_depth, worst_selectivity, best_moves);
 		return COutput::MinBound(novum.min, worst_depth, worst_selectivity, { move, best_moves.PV });
+	}
 
 	assert(Constrained());
 	return {};
