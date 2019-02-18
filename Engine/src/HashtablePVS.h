@@ -43,12 +43,12 @@ public:
 
 class OneNode
 {
-	mutable SpinlockMutex mutex;
+	mutable SpinlockMutex mutex{};
 	Node node;
 
 public:
 	OneNode() = default;
-	OneNode(const OneNode&);
+	OneNode(const OneNode& o) : node(o.node) {}
 
 	OneNode& operator=(const OneNode&);
 

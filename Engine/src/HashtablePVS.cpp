@@ -123,13 +123,6 @@ int TwoNode::NumberOfNonEmptyNodes() const
 
 
 
-
-OneNode::OneNode(const OneNode& o)
-{
-	std::lock_guard<SpinlockMutex> lock{ mutex };
-	node = o.node;
-}
-
 OneNode& OneNode::operator=(const OneNode& o)
 {
 	if (&o == this)
