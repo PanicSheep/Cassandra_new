@@ -47,7 +47,11 @@ namespace std
 	{
 		std::size_t operator()(const CPosition& pos) const
 		{
-			return pos.GetP() ^ ((pos.GetO() << 32) | (pos.GetO() >> 32));
+			uint64_t P = pos.GetP();
+			uint64_t O = pos.GetO();
+			P ^= P >> 36;
+			O ^= O >> 21;
+			return P * O;
 		}
 	};
 }
