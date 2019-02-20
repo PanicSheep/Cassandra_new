@@ -7,30 +7,6 @@
 #include <optional>
 #include <functional>
 
-namespace
-{
-	inline bool IsPrime(uint64_t n)
-	{
-		if (n == 0 || n == 1)
-			return false;
-		if (n == 2 || n == 3)
-			return true;
-		if (n % 2 == 0 || n % 3 == 0)
-			return false;
-		for (uint64_t d = 6; d * d - 2 * d + 1 <= n; d += 6)
-			if ((n % (d - 1) == 0) || n % (d + 1) == 0)
-				return false;
-		return true;
-	}
-
-	inline uint64_t NextPrime(uint64_t n)
-	{
-		while (!IsPrime(++n))
-			continue;
-		return n;
-	}
-}
-
 template <typename KeyType, typename ValueType>
 struct IHashTable
 {
@@ -53,8 +29,8 @@ public:
 	using keytype = KeyType;
 	using valuetype = ValueType;
 
-	HashTable(uint64_t buckets, std::function<std::size_t(const KeyType&)> hash)
-		: table(NextPrime(buckets))
+	HashTable(uint64_t buckets, std::function<std::size_t(const KeyType&)> hash = [](const KeyType& key) { return std::hash<KeyType>()(key); })
+		: table(buckets)
 		, hash(std::move(hash)){}
 	
 	void Update(const KeyType&, const ValueType&) override;
