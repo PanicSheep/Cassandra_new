@@ -4,5 +4,6 @@
 [![codecov.io](https://codecov.io/gh/PanicSheep/Cassandra_new/coverage.svg?branch=master)](https://codecov.io/gh/PanicSheep/Cassandra_new/branch/master/)
 [![CodeFactor](https://www.codefactor.io/repository/github/panicsheep/cassandra_new/badge)](https://www.codefactor.io/repository/github/panicsheep/cassandra_new)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/372e90287a5f43c8bb58e954e679d6a1)](https://app.codacy.com/app/PanicSheep/Cassandra_new?utm_source=github.com&utm_medium=referral&utm_content=PanicSheep/Cassandra_new&utm_campaign=Badge_Grade_Dashboard)
+[![BCH compliance](https://bettercodehub.com/edge/badge/PanicSheep/Cassandra_new?branch=master)](https://bettercodehub.com/)
 
 Towards solving reversi.
